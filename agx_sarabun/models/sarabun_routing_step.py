@@ -53,7 +53,6 @@ class SarabunRoutingStep(models.Model):
     # === Verb (การดำเนินการ — configurable master data) ===
     verb = fields.Many2one(
         "sarabun.verb",
-        string="Verb",
         required=True,
         ondelete="restrict",
         tracking=True,
@@ -564,8 +563,14 @@ class SarabunRoutingStep(models.Model):
         actor = actor.sudo()
         employee = actor.employee_id
         position = capacity or self.position_id
+        name = employee.name or actor.name
+        # คำนำหน้าทางวิชาการ (ศ./รศ./ผศ./ดร./นายแพทย์ ฯลฯ) นำหน้าชื่อแบบติดกัน (ไม่เว้นวรรค)
+        # — เฉพาะผู้ลงนามสายวิชาการ. สาย support ใช้ academic_standing_title ไม่ได้เพราะ
+        # มันคือ job+ระดับ ซึ่งซ้ำกับบรรทัดตำแหน่ง (capacity) ด้านล่าง จึงเว้นว่างไว้.
+        if employee.role == "academic" and employee.academic_standing_title:
+            name = "%s%s" % (employee.academic_standing_title, name)
         return {
-            "signed_name": employee.name or actor.name,
+            "signed_name": name,
             "signed_position_name": position.name or "",
             "signed_signature": employee.signature or False,
         }

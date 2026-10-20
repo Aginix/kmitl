@@ -16,8 +16,9 @@
                  heading — one signature per row, right-aligned, stacked downward:
                  signature image + (ชื่อ) + ตำแหน่ง + วันที่ (พ.ศ.) + ความเห็น. Non-signing
                  verbs (ตรวจสอบ / พิจารณา / ส่งต่อ, a non-signing ผู้จัดทำ) render nothing —
-                 the routing trail is audit-only. Academic prefix / time / sign method /
-                 sign code stay phase-2. -->
+                 the routing trail is audit-only. The academic prefix is prepended onto the
+                 signed_name snapshot (academic-role signers); time / sign method / sign code
+                 stay phase-2. -->
             <div style="margin-top:24px;">
                 <div
                     t-foreach="doc._signature_block_steps()"

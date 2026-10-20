@@ -1,252 +1,625 @@
 # e-Saraban (สารบรรณอิเล็กทรอนิกส์)
 
-Electronic official-correspondence (งานสารบรรณ) for KMITL. The **หนังสือ (Document) is the protagonist**: it is registered, numbered per the records regulation, and routed through an approval/endorsement chain. A heavy emphasis sits on the **approval-routing engine** — how a document flows through people/positions for เกษียน → เสนอ → ลงนาม → รับทราบ. Integration with other modules (e.g. a purchase request that spawns a memo) is a *secondary adapter*, not the centre of gravity.
+Electronic official-correspondence (งานสารบรรณ) for KMITL. The **หนังสือ (Document) is
+the protagonist**: it is registered, numbered per the records regulation, and routed
+through an approval/endorsement chain. A heavy emphasis sits on the **approval-routing
+engine** — how a document flows through people/positions for เกษียน → เสนอ → ลงนาม →
+รับทราบ. Integration with other modules (e.g. a purchase request that spawns a memo) is
+a _secondary adapter_, not the centre of gravity.
 
 ## Language
 
-**Document (หนังสือ / เอกสาร, `sarabun.document`)**:
-The protagonist — one official correspondence item that is registered, numbered, and routed. Everything else (route, steps, register entries) hangs off it.
-_Avoid_: ticket, request, approval (those describe the routing, not the หนังสือ)
+**Document (หนังสือ / เอกสาร, `sarabun.document`)**: The protagonist — one official
+correspondence item that is registered, numbered, and routed. Everything else (route,
+steps, register entries) hangs off it. _Avoid_: ticket, request, approval (those
+describe the routing, not the หนังสือ)
 
-**Origin record**:
-A business object in another module (e.g. `purchase.request`) that spawns a Document and is notified of its outcome via callbacks. It is the *adapter* side, never the protagonist — the engine must not bend toward approval semantics to serve it. One origin may own **several** Documents over time (a rejected one is superseded by a duplicated new draft — see ADR-0002), so the relation is 1:N; the mixin exposes all of them plus an `active_sarabun_document_id` pointer to the current live one. The mixin also **reflects the active Document's status back onto the origin** (draft-not-sent / routing progress / state) so the source form shows where its หนังสือ stands.
-_Avoid_: source document, parent (reserve "document" for the หนังสือ itself); a 1:1 origin↔document assumption
+**Origin record**: A business object in another module (e.g. `purchase.request`) that
+spawns a Document and is notified of its outcome via callbacks. It is the _adapter_
+side, never the protagonist — the engine must not bend toward approval semantics to
+serve it. One origin may own **several** Documents over time (a rejected one is
+superseded by a duplicated new draft — see ADR-0002), so the relation is 1:N; the mixin
+exposes all of them plus an `active_sarabun_document_id` pointer to the current live
+one. The mixin also **reflects the active Document's status back onto the origin**
+(draft-not-sent / routing progress / state) so the source form shows where its หนังสือ
+stands. _Avoid_: source document, parent (reserve "document" for the หนังสือ itself); a
+1:1 origin↔document assumption
 
-**Route**:
-The **living, ordered chain of steps that lives on the Document** and flows through people/positions. It is mutable at runtime — authorised actors may insert, append, redirect, return, or CC mid-flow (เกษียนสั่งการ). The Route is not a frozen copy of a template; it *is* the document's current state of who-acts-next.
-_Avoid_: workflow, approval flow (those imply a fixed pre-planned graph)
+**Route**: The **living, ordered chain of steps that lives on the Document** and flows
+through people/positions. It is mutable at runtime — authorised actors may insert,
+append, redirect, return, or CC mid-flow (เกษียนสั่งการ). The Route is not a frozen copy
+of a template; it _is_ the document's current state of who-acts-next. _Avoid_: workflow,
+approval flow (those imply a fixed pre-planned graph)
 
-**Route Template**:
-A reusable preset that *seeds* a Route's steps at send time (e.g. a standard PR-approval chain). It is a convenience pre-fill only — it does **not** own or constrain the flow once seeded. Templates now carry per-record **visibility** (`personal` / `unit` / `public`) and an **owner** (`owner_id`): regular users author personal/unit templates and managers administer the institute-wide `public` catalogue, all from a single unified "แม่แบบเส้นทางอนุมัติ" menu at the e-Sarabun root (the old manager-only entry under Configuration is hidden). The template model carries chatter (`mail.thread`) and a `description` field for documentation. See `agx_sarabun_user_template` (ADR-0016).
-_Avoid_: workflow definition, process (it is not the source of truth for the flow); assuming all templates are manager-owned or globally visible (they can be personal or unit-scoped)
+**Route Template**: A reusable preset that _seeds_ a Route's steps at send time (e.g. a
+standard PR-approval chain). It is a convenience pre-fill only — it does **not** own or
+constrain the flow once seeded. Templates now carry per-record **visibility**
+(`personal` / `unit` / `public`) and an **owner** (`owner_id`): regular users author
+personal/unit templates and managers administer the institute-wide `public` catalogue,
+all from a single unified "แม่แบบเส้นทางอนุมัติ" menu at the e-Sarabun root (the old
+manager-only entry under Configuration is hidden). The template model carries chatter
+(`mail.thread`) and a `description` field for documentation. See
+`agx_sarabun_user_template` (ADR-0016). _Avoid_: workflow definition, process (it is not
+the source of truth for the flow); assuming all templates are manager-owned or globally
+visible (they can be personal or unit-scoped)
 
-**Routing Step (`sarabun.routing.step`)**:
-One row of a Route = *target* (who acts) + *verb* (what they must do) + *state* + *outcome* (who acted, when, the เกษียน note, the capacity they signed in). A **single entity** — it replaces the old `routing.line` (plan) / `document.recipient` (tracker) split, so there is nothing to keep in sync and steps can be inserted mid-flow.
-_Avoid_: routing line, recipient (both meant half of a step in the old model)
+**Routing Step (`sarabun.routing.step`)**: One row of a Route = _target_ (who acts) +
+_verb_ (what they must do) + _state_ + _outcome_ (who acted, when, the เกษียน note, the
+capacity they signed in). A **single entity** — it replaces the old `routing.line`
+(plan) / `document.recipient` (tracker) split, so there is nothing to keep in sync and
+steps can be inserted mid-flow. _Avoid_: routing line, recipient (both meant half of a
+step in the old model)
 
-**เกษียนสั่งการ (Direct)**:
-A first-class action by the actor at a step: annotate, then insert/redirect the next step(s) at runtime. Treated as the *common* path of routing, not an exception.
-_Avoid_: forward (forward implies handing off without annotation/authority)
+**เกษียนสั่งการ (Direct)**: A first-class action by the actor at a step: annotate, then
+insert/redirect the next step(s) at runtime. Treated as the _common_ path of routing,
+not an exception. _Avoid_: forward (forward implies handing off without
+annotation/authority)
 
-**Position (ตำแหน่งบริหาร, `sarabun.position`)**:
-An administrative/authority position — the **primary routing target** and the capacity a document is signed in (คณบดี, ผอ.กอง, อธิการบดี). Purpose-built for e-Saraban, distinct from `hr.job` (employment position) and from academic rank. Its **holder(s) are personnel (`hr.employee`)**; when a step becomes *active* the engine resolves each holder to their **linked user account** and **snapshots** that user-set onto the step, so later org changes never rewrite history. A holder without a linked user may be listed but can never act (see ADR-0005). (รักษาการ/มอบอำนาจ — acting & delegated authority — is a planned phase-2 seam; interim, add the acting person as a temporary holder.)
-_Avoid_: role, hr.job, job position; res.users as the holder (holders are personnel, resolved to a user only to act)
+**Position (ตำแหน่งบริหาร, `sarabun.position`)**: An administrative/authority position —
+the **primary routing target** and the capacity a document is signed in (คณบดี, ผอ.กอง,
+อธิการบดี). Purpose-built for e-Saraban, distinct from `hr.job` (employment position)
+and from academic rank. Its **holder(s) are personnel (`hr.employee`)**; when a step
+becomes _active_ the engine resolves each holder to their **linked user account** and
+**snapshots** that user-set onto the step, so later org changes never rewrite history. A
+holder without a linked user may be listed but can never act (see ADR-0005).
+(รักษาการ/มอบอำนาจ — acting & delegated authority — is a planned phase-2 seam; interim,
+add the acting person as a temporary holder.) _Avoid_: role, hr.job, job position;
+res.users as the holder (holders are personnel, resolved to a user only to act)
 
-**Academic rank (วุฒิ/คำนำหน้าทางวิชาการ)**:
-A person's scholarly title (ศ., รศ., ผศ., ดร.) shown in the signature block **for display only** — never a routing target or signing authority. The old `role_category` wrongly merged this with Position.
-_Avoid_: position, role
+**Academic rank (วุฒิ/คำนำหน้าทางวิชาการ)**: A person's scholarly title (ศ., รศ., ผศ.,
+ดร.) shown in the signature block **for display only** — never a routing target or
+signing authority. Sourced from `hr.employee.academic_standing_title` (the full form,
+e.g. รองศาสตราจารย์ ดร.) and **prepended onto the signer's name** in the block — but
+only for **academic-role** signers (a support-role person's `academic_standing_title` is
+their job + level, which the capacity line already carries, so it is omitted). It is
+**frozen into the `signed_name` snapshot** at the instant of signing (ADR-0009), not a
+separate field. The old `role_category` wrongly merged this with Position. _Avoid_:
+position, role
 
-**Targeting mode**:
-What a Routing Step points at — exactly one of **ตำแหน่ง (Position)** (canonical), **บุคลากร (Person)** (a specific `hr.employee`), or **ธุรการหน่วยงาน (Unit clerk)** (the document clerk(s) configured on a หน่วยงาน, `hr.department`). All three are configured as personnel (`hr.employee`) and resolved to a user account to act (see Position / ADR-0005).
-_Avoid_: the old `recipient_type` vocabulary "user / department / role"; framing the unit target as a "central registry" or single institute-wide office (it is the per-หน่วยงาน clerk)
+**Targeting mode**: What a Routing Step points at — exactly one of **ตำแหน่ง
+(Position)** (canonical), **บุคลากร (Person)** (a specific `hr.employee`), or
+**ธุรการหน่วยงาน (Unit clerk)** (the document clerk(s) configured on a หน่วยงาน,
+`hr.department`). All three are configured as personnel (`hr.employee`) and resolved to
+a user account to act (see Position / ADR-0005). _Avoid_: the old `recipient_type`
+vocabulary "user / department / role"; framing the unit target as a "central registry"
+or single institute-wide office (it is the per-หน่วยงาน clerk)
 
-**Person capacity label (extension)**:
-When a step uses บุคลากร (Person) targeting, the optional `agx_sarabun_person_capacity` extension lets the sender also pick a **capacity Position** — one of the pinned person's current `sarabun.position` holdings — stored on the step's existing `position_id` (shown as the ลงนามในฐานะ column on the Route tree). It is a **UX convenience** for name-first lookup (the user knows the person but not the title) and feeds the signature block / `_resolve_capacity` enforcement already provided by the core. The person stays **pinned** (ADR-0003 holder resolution does not apply — a Position mode step would resolve to whoever currently holds the Position; a Person-with-capacity step always goes to this specific employee no matter who holds the Position later); the Position here is a **capacity label**, not a routing resolver. Optional (not required), filtered to the person's current holdings in the pickers, cleared on target_mode / employee change, and re-checked server-side at send and at signing (holdings may change after authoring). Owned by the optional `agx_sarabun_person_capacity` extension — the core wizard, routing form, and route template work unchanged without it.
-_Avoid_: using Person-with-capacity when the intent is role-based routing (use Position mode); treating the capacity Position as a resolver (it is not — the person is pinned)
+**Person capacity label (extension)**: When a step uses บุคลากร (Person) targeting, the
+optional `agx_sarabun_person_capacity` extension lets the sender also pick a **capacity
+Position** — one of the pinned person's current `sarabun.position` holdings — stored on
+the step's existing `position_id` (shown as the ลงนามในฐานะ column on the Route tree).
+It is a **UX convenience** for name-first lookup (the user knows the person but not the
+title) and feeds the signature block / `_resolve_capacity` enforcement already provided
+by the core. The person stays **pinned** (ADR-0003 holder resolution does not apply — a
+Position mode step would resolve to whoever currently holds the Position; a
+Person-with-capacity step always goes to this specific employee no matter who holds the
+Position later); the Position here is a **capacity label**, not a routing resolver.
+Optional (not required), filtered to the person's current holdings in the pickers,
+cleared on target*mode / employee change, and re-checked server-side at send and at
+signing (holdings may change after authoring). Owned by the optional
+`agx_sarabun_person_capacity` extension — the core wizard, routing form, and route
+template work unchanged without it. \_Avoid*: using Person-with-capacity when the intent
+is role-based routing (use Position mode); treating the capacity Position as a resolver
+(it is not — the person is pinned)
 
 ### Step verbs (what a step requires)
 
-Step verbs are **admin-configurable master data** (`sarabun.verb`); the built-ins below are seeded and referenced by the engine via their **xmlid** (`agx_sarabun.verb_*`) — there is no separate identity/code field. Admins may add or relabel verbs. A verb carries **four independent axes**: **`gating`** (must be positively completed for its Stage to pass), **`show_signature`** (renders a signature block on the official document — the แสดง / ไม่แสดงลายเซ็น toggle), **`is_signature`** (an authoritative approval-sign that closes the ดึงกลับ / ยกเลิก window and signs in the step's Position capacity) (ADR-0008), and **`issues_number`** (ออกเลขที่หนังสือ — completing the step runs ลงทะเบียน; independent of the signature axes so a non-signing ธุรการ verb may issue the number — ADR-0017). Invariant: `is_signature ⇒ show_signature`. Two verbs may share the same axes and still be kept as **distinct records** — the label is the human instruction the actor reads ("what am I being asked to do"), so a different instruction earns its own verb even when behaviour coincides. The catalogue below is the **UAT-reviewed set** (the earlier behaviour-derived 6 were replaced on UAT feedback); it is **provisional, pending review after real use**. The ผู้จัดทำ verbs are separate (see originator) and were left untouched by the UAT revision.
+Step verbs are **admin-configurable master data** (`sarabun.verb`); the built-ins below
+are seeded and referenced by the engine via their **xmlid** (`agx_sarabun.verb_*`) —
+there is no separate identity/code field. Admins may add or relabel verbs. A verb
+carries **four independent axes**: **`gating`** (must be positively completed for its
+Stage to pass), **`show_signature`** (renders a signature block on the official document
+— the แสดง / ไม่แสดงลายเซ็น toggle), **`is_signature`** (an authoritative approval-sign
+that closes the ดึงกลับ / ยกเลิก window and signs in the step's Position capacity)
+(ADR-0008), and **`issues_number`** (ออกเลขที่หนังสือ — completing the step runs
+ลงทะเบียน; independent of the signature axes so a non-signing ธุรการ verb may issue the
+number — ADR-0017). Invariant: `is_signature ⇒ show_signature`. Two verbs may share the
+same axes and still be kept as **distinct records** — the label is the human instruction
+the actor reads ("what am I being asked to do"), so a different instruction earns its
+own verb even when behaviour coincides. The catalogue below is the **UAT-reviewed set**
+(the earlier behaviour-derived 6 were replaced on UAT feedback); it is **provisional,
+pending review after real use**. The ผู้จัดทำ verbs are separate (see originator) and
+were left untouched by the UAT revision.
 
-**รับทราบ / ถือปฏิบัติ / จัดเก็บเข้าแฟ้ม (Acknowledge, read-only)** — gating ✗ · show_signature ✗:
-For information; the actor confirms receipt. **Non-gating** — does not block the chain and may run in parallel; renders nothing on the letter.
+**รับทราบ / ถือปฏิบัติ / จัดเก็บเข้าแฟ้ม (Acknowledge, read-only)** — gating ✗ ·
+show_signature ✗: For information; the actor confirms receipt. **Non-gating** — does not
+block the chain and may run in parallel; renders nothing on the letter.
 
-**รับทราบและลงนาม (Acknowledge & sign)** — gating ✗ · show_signature ✓:
-An acknowledgement that also **puts a signature on the letter** (e.g. a post-decision sign-off). Still **non-gating** — never blocks the chain.
+**รับทราบและลงนาม (Acknowledge & sign)** — gating ✗ · show_signature ✓: An
+acknowledgement that also **puts a signature on the letter** (e.g. a post-decision
+sign-off). Still **non-gating** — never blocks the chain.
 
-**ตรวจเอกสาร (Check)** — gating ✓ · show_signature ✗:
-An intermediate actor must check the document before it moves on, but **carries no signature** — name in the Route, not on the letter.
+**ตรวจเอกสาร (Check)** — gating ✓ · show_signature ✗: An intermediate actor must check
+the document before it moves on, but **carries no signature** — name in the Route, not
+on the letter.
 
-**ผ่านเรื่อง / กลั่นกรอง (Screen)** — gating ✓ · show_signature ✓:
-A screening gate the matter must pass; the screener **signs** (ลงนามกำกับ). **Gating**; not the authoritative sign.
+**ผ่านเรื่อง / กลั่นกรอง (Screen)** — gating ✓ · show_signature ✓: A screening gate the
+matter must pass; the screener **signs** (ลงนามกำกับ). **Gating**; not the authoritative
+sign.
 
-**ตรวจสอบและลงนามกำกับ (Verify & countersign)** — gating ✓ · show_signature ✓:
-Verify and **countersign**. **Gating**; not the authoritative sign (does not close recall).
+**ตรวจสอบและลงนามกำกับ (Verify & countersign)** — gating ✓ · show_signature ✓: Verify
+and **countersign**. **Gating**; not the authoritative sign (does not close recall).
 
-**พิจารณา / ให้ความเห็นและลงนามกำกับ (Consider & countersign)** — gating ✓ · show_signature ✓:
-Give an opinion and **countersign**, passing upward. **Gating**; may also ตีกลับ / ปฏิเสธ. Not the authoritative sign (does not close recall).
+**พิจารณา / ให้ความเห็นและลงนามกำกับ (Consider & countersign)** — gating ✓ ·
+show_signature ✓: Give an opinion and **countersign**, passing upward. **Gating**; may
+also ตีกลับ / ปฏิเสธ. Not the authoritative sign (does not close recall).
 
-**ลงนามในใบปะหน้า / เอกสารเพื่อลงนาม (Sign-out)** — gating ✓ · show_signature ✓ · is_signature ✓ · issues_number ✓:
-The authoritative signature that **issues** the หนังสือ (ส่งออก), made in the capacity of the step's target Position. **Gating**, closes the recall window, and **gives the หนังสือ its number** (ADR-0017).
+**ลงนามในใบปะหน้า / เอกสารเพื่อลงนาม (Sign-out)** — gating ✓ · show_signature ✓ ·
+is_signature ✓ · issues_number ✓: The authoritative signature that **issues** the
+หนังสือ (ส่งออก), made in the capacity of the step's target Position. **Gating**, closes
+the recall window, and **gives the หนังสือ its number** (ADR-0017).
 
-**อนุมัติ / อนุญาต / เห็นชอบและลงนามกำกับ (Approve & sign)** — gating ✓ · show_signature ✓ · is_signature ✓:
-An approving authority's **decision and signature**. Also **authoritative** — closes the recall window (a document may legitimately have more than one authoritative sign; the *first* to occur closes ดึงกลับ / ยกเลิก).
-_Avoid_: coupling "shows a signature" with "gating" (they are independent axes — ADR-0008); assuming a **single** authoritative signer (both Sign-out and Approve are is_signature — supersedes the earlier "only ลงนาม-อนุมัติ" wording in ADR-0008); a pure non-signing "ส่งต่อ (Forward)" verb (dropped in the UAT set — a pass-along now either checks, screens, or acknowledges)
+**อนุมัติ / อนุญาต / เห็นชอบและลงนามกำกับ (Approve & sign)** — gating ✓ · show*signature
+✓ · is_signature ✓: An approving authority's **decision and signature**. Also
+**authoritative** — closes the recall window (a document may legitimately have more than
+one authoritative sign; the *first* to occur closes ดึงกลับ / ยกเลิก). \_Avoid*:
+coupling "shows a signature" with "gating" (they are independent axes — ADR-0008);
+assuming a **single** authoritative signer (both Sign-out and Approve are is_signature —
+supersedes the earlier "only ลงนาม-อนุมัติ" wording in ADR-0008); a pure non-signing
+"ส่งต่อ (Forward)" verb (dropped in the UAT set — a pass-along now either checks,
+screens, or acknowledges)
 
 ### Dispositions (how the active actor responds)
 
-The set of moves available at an active step, subject to authority: **complete** (perform the required verb) · **เกษียนสั่งการ (Direct)** (I acted, now insert the next step) · **มอบหมาย (Delegate)** (I will not act — X performs *this* step instead) · **ตีกลับ (Return)** (send back for revision) · **ปฏิเสธ (Reject)** (terminal negative). **ตีกลับ and ปฏิเสธ are available only on a *gating* step (เห็นชอบ / ลงนาม-อนุมัติ) and only to that step's own active actor** — a รับทราบ / สำเนาเรียน (CC) recipient may only complete (acknowledge), and the sender/manager cannot ตีกลับ/ปฏิเสธ on an actor's behalf (contrast ดึงกลับ / ยกเลิกการส่ง, which *are* the sender's).
-_Avoid_: treating มอบหมาย and เกษียนสั่งการ as the same move — Delegate reassigns *this* step, Direct inserts the *next*; letting a CC/รับทราบ actor ตีกลับ.
+The set of moves available at an active step, subject to authority: **complete**
+(perform the required verb) · **เกษียนสั่งการ (Direct)** (I acted, now insert the next
+step) · **มอบหมาย (Delegate)** (I will not act — X performs _this_ step instead) ·
+**ตีกลับ (Return)** (send back for revision) · **ปฏิเสธ (Reject)** (terminal negative).
+**ตีกลับ and ปฏิเสธ are available only on a _gating_ step (เห็นชอบ / ลงนาม-อนุมัติ) and
+only to that step's own active actor** — a รับทราบ / สำเนาเรียน (CC) recipient may only
+complete (acknowledge), and the sender/manager cannot ตีกลับ/ปฏิเสธ on an actor's behalf
+(contrast ดึงกลับ / ยกเลิกการส่ง, which _are_ the sender's). _Avoid_: treating มอบหมาย
+and เกษียนสั่งการ as the same move — Delegate reassigns _this_ step, Direct inserts the
+_next_; letting a CC/รับทราบ actor ตีกลับ.
 
 ### Lifecycle
 
-**Circulating (กำลังดำเนินการ)**:
-A Document in flight along its Route. Renamed from the old `sent` to capture "moving through the chain", not "delivered once".
-_Avoid_: sent, in transit
+**Circulating (กำลังดำเนินการ)**: A Document in flight along its Route. Renamed from the
+old `sent` to capture "moving through the chain", not "delivered once". _Avoid_: sent,
+in transit
 
-**ตีกลับ (Return)**:
-Send a circulating Document back for revision — available **only to the active actor of a gating step** (see Dispositions). The returner **picks the destination every time**: the **previous stage** (resume — the default), the **original sender** (restart the chain), or **any earlier step** to resume from. Lands the Document in state `returned` (revisable like a draft; the prior chain is **archived as history, never overwritten**). A restart recreates the **same เส้นทาง verbatim**, like ดึงกลับ — it is never re-seeded from the template, so the sender does not have to rebuild the route. A **reason is required** and kept in the routing history.
-_Avoid_: reject (Return is recoverable; Reject is terminal); a fixed sender-restart default (the returner chooses each time)
+**ตีกลับ (Return)**: Send a circulating Document back for revision — available **only to
+the active actor of a gating step** (see Dispositions). The returner **picks the
+destination every time**: the **previous stage** (resume — the default), the **original
+sender** (restart the chain), or **any earlier step** to resume from. Lands the Document
+in state `returned` (revisable like a draft; the prior chain is **archived as history,
+never overwritten**). A restart recreates the **same เส้นทาง verbatim**, like ดึงกลับ —
+it is never re-seeded from the template, so the sender does not have to rebuild the
+route. A **reason is required** and kept in the routing history. _Avoid_: reject (Return
+is recoverable; Reject is terminal); a fixed sender-restart default (the returner
+chooses each time)
 
-**ดึงกลับ (Recall)**:
-The **sender** pulls a circulating Document **back to an editable state**, to revise and re-send (แบบ pull-back-to-edit). The prior attempt is archived as history, but the **same เส้นทาง is recreated verbatim** (ADR-0006 UAT update) — the sender only wants to pull back and re-send on the **identical** route, so the approval path is **never wiped or re-seeded from the template**: runtime เกษียนสั่งการ (direct) insertions and delegated targets survive. The Document lands in state `returned`. Permitted **only while no ลงนาม-อนุมัติ step has occurred**. Contrast ยกเลิกการส่ง: ดึงกลับ is recoverable and expects a re-send; ยกเลิกการส่ง is terminal. (Since ADR-0010 the number runs only at completion, so neither act touches a number — a circulating หนังสือ has none.)
-_Avoid_: เรียกคืน (one term now — ดึงกลับ); "keeps the number" as the distinguishing trait (there is no number yet — ADR-0010; the distinction is recoverable-vs-terminal); re-seeding the route from the template on pull-back (that **wipes** the actual approval path — ดึงกลับ recreates it exactly; only the admin **Reset** restores the original seed and drops direct insertions)
+**ดึงกลับ (Recall)**: The **sender** pulls a circulating Document **back to an editable
+state**, to revise and re-send (แบบ pull-back-to-edit). The prior attempt is archived as
+history, but the **same เส้นทาง is recreated verbatim** (ADR-0006 UAT update) — the
+sender only wants to pull back and re-send on the **identical** route, so the approval
+path is **never wiped or re-seeded from the template**: runtime เกษียนสั่งการ (direct)
+insertions and delegated targets survive. The Document lands in state `returned`.
+Permitted **only while no ลงนาม-อนุมัติ step has occurred**. Contrast ยกเลิกการส่ง:
+ดึงกลับ is recoverable and expects a re-send; ยกเลิกการส่ง is terminal. (Since ADR-0010
+the number runs only at completion, so neither act touches a number — a circulating
+หนังสือ has none.) _Avoid_: เรียกคืน (one term now — ดึงกลับ); "keeps the number" as the
+distinguishing trait (there is no number yet — ADR-0010; the distinction is
+recoverable-vs-terminal); re-seeding the route from the template on pull-back (that
+**wipes** the actual approval path — ดึงกลับ recreates it exactly; only the admin
+**Reset** restores the original seed and drops direct insertions)
 
-**ยกเลิกการส่ง (Cancel-send)**:
-The **sender** withdraws a circulating Document **terminally** — it lands in state `cancelled`. For "this send should never have happened", not "let me fix it" (that is ดึงกลับ). Permitted **only while no ลงนาม-อนุมัติ step has occurred**; once a signature exists the Document is part of the record and withdrawal instead requires issuing a cancellation หนังสือ. (Since ADR-0010 the หนังสือ was never numbered at this point, so there is no number to void.)
-_Avoid_: ดึงกลับ (ดึงกลับ is recoverable and re-sends; ยกเลิกการส่ง ends the Document); recall / เรียกคืน (the old name conflated these two acts); "voids the number" (nothing to void — ADR-0010)
+**ยกเลิกการส่ง (Cancel-send)**: The **sender** withdraws a circulating Document
+**terminally** — it lands in state `cancelled`. For "this send should never have
+happened", not "let me fix it" (that is ดึงกลับ). Permitted **only while no
+ลงนาม-อนุมัติ step has occurred**; once a signature exists the Document is part of the
+record and withdrawal instead requires issuing a cancellation หนังสือ. (Since ADR-0010
+the หนังสือ was never numbered at this point, so there is no number to void.) _Avoid_:
+ดึงกลับ (ดึงกลับ is recoverable and re-sends; ยกเลิกการส่ง ends the Document); recall /
+เรียกคืน (the old name conflated these two acts); "voids the number" (nothing to void —
+ADR-0010)
 
-**Voided number (เลขยกเลิก)**:
-A register ledger row marked as a permanent, never-reissued gap. Since [ADR-0017](./docs/adr/0017-register-number-at-issuing-sign.md) the number is issued at the ลงนามในใบปะหน้า sign, so a **ปฏิเสธ by a later step** voids it — a rare but normal outcome. A หนังสือ abandoned *before* that sign was never numbered and leaves no gap. Where such a voided row *does* exist, an admin **Reset** ([ADR-0011](./docs/adr/0011-admin-reset-to-draft.md)) may let the *original* Document **reclaim its own** number (un-void → `used`), audited on the ledger + chatter; a voided number is still never handed to a *different* Document.
-_Avoid_: released number, reusable number; expecting a gap from a reject/cancel that happened before the issuing sign (nothing was numbered); reissuing a voided number to *another* Document (only the original may reclaim its own, via Reset — ADR-0011)
+**Voided number (เลขยกเลิก)**: A register ledger row marked as a permanent,
+never-reissued gap. Since [ADR-0017](./docs/adr/0017-register-number-at-issuing-sign.md)
+the number is issued at the ลงนามในใบปะหน้า sign, so a **ปฏิเสธ by a later step** voids
+it — a rare but normal outcome. A หนังสือ abandoned _before_ that sign was never
+numbered and leaves no gap. Where such a voided row _does_ exist, an admin **Reset**
+([ADR-0011](./docs/adr/0011-admin-reset-to-draft.md)) may let the _original_ Document
+**reclaim its own** number (un-void → `used`), audited on the ledger + chatter; a voided
+number is still never handed to a _different_ Document. _Avoid_: released number,
+reusable number; expecting a gap from a reject/cancel that happened before the issuing
+sign (nothing was numbered); reissuing a voided number to _another_ Document (only the
+original may reclaim its own, via Reset — ADR-0011)
 
-**Reset (to draft — admin override, ADR-0011)**:
-An **admin-only** force-return of a หนังสือ from **any non-draft state** — including `completed`, and even the otherwise-terminal `rejected` / `cancelled` — back to an editable **`draft`**, **keeping its registered number (when it has one) and its original Route**. It exists for the case ดึงกลับ cannot serve: a mistake found *after* the document is signed / completed (typically a typo in an already-fully-approved หนังสือ) that must be corrected and re-sent from the start. It **archives the finished attempt as history** (never overwrites — prior signatures survive on the archived Route), **recreates the Route as it was originally created** (the seeded backbone; runtime เกษียนสั่งการ insertions are *dropped*), **un-freezes** the ฉบับลงนาม (the prior signed PDF is discarded), and **rolls the origin back** so it is treated exactly like a ดึงกลับ. Since [ADR-0017](./docs/adr/0017-register-number-at-issuing-sign.md) any หนังสือ past its ลงนามในใบปะหน้า sign carries a number — it survives the reset and is re-used verbatim at the re-sign (`_assign_register_number` is idempotent); a หนังสือ reset before that sign simply has no number to keep (a voided number is reclaimed). A reason is mandatory (kept in chatter). It is a **deliberately separate, optional capability**, granted **per-user independently of the Manager access level** (a Sarabun Manager need not hold it) — and not every deployment grants it at all.
-_Avoid_: equating Reset with ดึงกลับ (Reset is admin-only, works *after* signing / completion / rejection, and un-freezes); treating `rejected` / `cancelled` as absolutely terminal (Reset is the one admin escape); carrying the prior run's เกษียนสั่งการ insertions into the new Route (Reset restores the original); assuming every reset หนังสือ has a number to keep (only one past the issuing sign does — ADR-0017)
+**Reset (to draft — admin override, ADR-0011)**: An **admin-only** force-return of a
+หนังสือ from **any non-draft state** — including `completed`, and even the
+otherwise-terminal `rejected` / `cancelled` — back to an editable **`draft`**, **keeping
+its registered number (when it has one) and its original Route**. It exists for the case
+ดึงกลับ cannot serve: a mistake found _after_ the document is signed / completed
+(typically a typo in an already-fully-approved หนังสือ) that must be corrected and
+re-sent from the start. It **archives the finished attempt as history** (never
+overwrites — prior signatures survive on the archived Route), **recreates the Route as
+it was originally created** (the seeded backbone; runtime เกษียนสั่งการ insertions are
+_dropped_), **un-freezes** the ฉบับลงนาม (the prior signed PDF is discarded), and
+**rolls the origin back** so it is treated exactly like a ดึงกลับ. Since
+[ADR-0017](./docs/adr/0017-register-number-at-issuing-sign.md) any หนังสือ past its
+ลงนามในใบปะหน้า sign carries a number — it survives the reset and is re-used verbatim at
+the re-sign (`_assign_register_number` is idempotent); a หนังสือ reset before that sign
+simply has no number to keep (a voided number is reclaimed). A reason is mandatory (kept
+in chatter). It is a **deliberately separate, optional capability**, granted **per-user
+independently of the Manager access level** (a Sarabun Manager need not hold it) — and
+not every deployment grants it at all. _Avoid_: equating Reset with ดึงกลับ (Reset is
+admin-only, works _after_ signing / completion / rejection, and un-freezes); treating
+`rejected` / `cancelled` as absolutely terminal (Reset is the one admin escape);
+carrying the prior run's เกษียนสั่งการ insertions into the new Route (Reset restores the
+original); assuming every reset หนังสือ has a number to keep (only one past the issuing
+sign does — ADR-0017)
 
-**แก้ไขเส้นทาง (Route edit — admin, ADR-0018)**:
-A **Sarabun Route Editor** (optional `agx_sarabun_route_edit`, an independent checkbox like Reset) edits the Route of a **circulating** หนังสือ in place, to fix a wrong step or follow a change of executive, **without** restarting it.
+**แก้ไขเส้นทาง (Route edit — admin, ADR-0018)**: A **Sarabun Route Editor** (optional
+`agx_sarabun_route_edit`, an independent checkbox like Reset) edits the Route of a
+**circulating** หนังสือ in place, to fix a wrong step or follow a change of executive,
+**without** restarting it.
+
 - **Waiting steps** may be changed or deleted.
-- An **active step** may only be **re-targeted**: its to-dos move to the new holders. An active step may also be deleted.
-- **A person taken off a step loses access**, whether by re-target, delete or holder refresh. Their recipient row is deleted and they are unfollowed. They keep access only if another step, a prior attempt, or being the sender still reaches them. This is the one exception to "the reach ledger only grows".
+- An **active step** may only be **re-targeted**: its to-dos move to the new holders. An
+  active step may also be deleted.
+- **A person taken off a step loses access**, whether by re-target, delete or holder
+  refresh. Their recipient row is deleted and they are unfollowed. They keep access only
+  if another step, a prior attempt, or being the sender still reaches them. This is the
+  one exception to "the reach ledger only grows".
 - **Done steps are locked**.
 - Added steps are waiting `direct` insertions.
 - A step may only be placed after the last Stage already passed.
-- After each save the Route must still pass the ส่ง checks, and the engine advances at once.
-- After a Position's holder changes, the per-document button **ดึงผู้ดำรงตำแหน่งปัจจุบัน** re-resolves the active Position / unit steps. Waiting steps need nothing, because they resolve at activation.
+- After each save the Route must still pass the ส่ง checks, and the engine advances at
+  once.
+- After a Position's holder changes, the per-document button
+  **ดึงผู้ดำรงตำแหน่งปัจจุบัน** re-resolves the active Position / unit steps. Waiting
+  steps need nothing, because they resolve at activation.
 - Every edit is logged to the chatter.
 
-_Avoid_: re-targeting a done step (signatures never change); leaving a removed person with read access (route edit revokes it); using Reset or ดึงกลับ just to fix a later step (route edit keeps the signatures already given); expecting a Position holder change to move in-flight to-dos by itself (press the button)
+_Avoid_: re-targeting a done step (signatures never change); leaving a removed person
+with read access (route edit revokes it); using Reset or ดึงกลับ just to fix a later
+step (route edit keeps the signatures already given); expecting a Position holder change
+to move in-flight to-dos by itself (press the button)
 
-**แก้ไขตำแหน่งที่ลงนาม (Correct signed capacity — ADR-0019)**:
-A Sarabun Route Editor may correct the **ตำแหน่ง a signed บุคลากร step was signed in** when it was genuinely wrong, whether the หนังสือ is still circulating or already completed. It uses the ✏️ row button on the Route (optional `agx_sarabun_route_edit_person_capacity`, auto-installed with both route edit and person capacity).
-- Only the capacity changes: the step's capacity label, `signed_as_position_id` and the frozen `signed_position_name`. The **name, signature and date stay as signed**.
+**แก้ไขตำแหน่งที่ลงนาม (Correct signed capacity — ADR-0019)**: A Sarabun Route Editor
+may correct the **ตำแหน่ง a signed บุคลากร step was signed in** when it was genuinely
+wrong, whether the หนังสือ is still circulating or already completed. It uses the ✏️ row
+button on the Route (optional `agx_sarabun_route_edit_person_capacity`, auto-installed
+with both route edit and person capacity).
+
+- Only the capacity changes: the step's capacity label, `signed_as_position_id` and the
+  frozen `signed_position_name`. The **name, signature and date stay as signed**.
 - The new Position must be one the person currently holds.
 - Positive-done, show_signature, non-originator Person steps only.
 - **Not logged to the chatter**, because only route editors may do it.
-- A completed หนังสือ's frozen PDF still shows the old title until it is regenerated (see ฉบับลงนาม).
+- A completed หนังสือ's frozen PDF still shows the old title until it is regenerated
+  (see ฉบับลงนาม).
 
-_Avoid_: changing the signer's name / signature / date (never); correcting a Position-mode step (its capacity *is* its target); expecting the frozen PDF to update by itself
+_Avoid_: changing the signer's name / signature / date (never); correcting a
+Position-mode step (its capacity _is_ its target); expecting the frozen PDF to update by
+itself
 
 ### Concurrency
 
-**Stage**:
-The set of Routing Steps sharing one `order` — they run **in parallel**. The Route advances to the next Stage as soon as **any one** *gating* step (เห็นชอบ / ลงนาม-อนุมัติ) in the current Stage is positively completed; the Stage's other gating steps are then `skipped` and their to-dos cleared. Sequential routing is just stages of one step each.
-_Avoid_: level, round
+**Stage**: The set of Routing Steps sharing one `order` — they run **in parallel**. The
+Route advances to the next Stage as soon as **any one** _gating_ step (เห็นชอบ /
+ลงนาม-อนุมัติ) in the current Stage is positively completed; the Stage's other gating
+steps are then `skipped` and their to-dos cleared. Sequential routing is just stages of
+one step each. _Avoid_: level, round
 
-**สำเนาเรียน (CC / for-info)**:
-A non-gating รับทราบ step — often parallel and at the final stage. Modelled as an ordinary step flagged `for_info`, **not** a separate entity. Pending CCs never block completion; they are only tracked ("ค้างรับทราบ N").
-_Avoid_: a separate copy/recipient list
+**สำเนาเรียน (CC / for-info)**: A non-gating รับทราบ step — often parallel and at the
+final stage. Modelled as an ordinary step flagged `for_info`, **not** a separate entity.
+Pending CCs never block completion; they are only tracked ("ค้างรับทราบ N"). _Avoid_: a
+separate copy/recipient list
 
-**First-to-act (quorum)**:
-When a step targets a Position or ธุรการหน่วยงาน held by several people, the **first holder to act completes it** on the group's behalf. The same rule holds across a Stage: the first gating step positively completed passes the whole Stage (UAT 2026-10). "Everyone must act" is expressed as consecutive Stages instead. A single ปฏิเสธ within a Stage rejects the whole Document immediately.
-_Avoid_: all-must-approve quorum on a single step or Stage
+**First-to-act (quorum)**: When a step targets a Position or ธุรการหน่วยงาน held by
+several people, the **first holder to act completes it** on the group's behalf. The same
+rule holds across a Stage: the first gating step positively completed passes the whole
+Stage (UAT 2026-10). "Everyone must act" is expressed as consecutive Stages instead. A
+single ปฏิเสธ within a Stage rejects the whole Document immediately. _Avoid_:
+all-must-approve quorum on a single step or Stage
 
 ### Numbering
 
-**ลงทะเบียน (Register)**:
-The act of assigning a Document its official running number from a sequence. It fires **automatically when the number-issuing step is completed** — by default when the holder of **ลงนามในใบปะหน้า** signs ([ADR-0017](./docs/adr/0017-register-number-at-issuing-sign.md), superseding ADR-0010's at-completion timing); the first issuing act wins. Steps may follow it, so a หนังสือ can be **numbered while still circulating**; before that sign ที่ = `/`. It is kept a *distinct event* (the `issues_number` verb axis) so a ธุรการหน่วยงาน clerk-gate verb can issue the number in phase 2. **Send** does not number; it *verifies* the Route has an issuing step and a register resolves (fail-fast). The sequence is a **เล่มทะเบียน** owned by the **sender ส่วนงาน** — a หน่วยงาน may keep **several เล่มทะเบียน** side by side (e.g. หนังสือภายนอก vs หนังสือเวียน), each with its own prefix and its own running counter ([ADR-0012](./docs/adr/0012-multiple-register-books-per-unit.md)); never one institute-wide pool, and the *type* never selects the book. The หนังสือ says which book it issues from, defaulting to the unit's **เล่มทะเบียนหลัก** (or its only book — a single-book unit never has to choose), and the choice is pinned at ส่ง. If the unit has no register — or several with no default and none picked — the send is **blocked with a clear error**, never silently numbered from a default. Numbers reset per **ปีงบประมาณ (fiscal year, Oct–Sep)** by default, but the **running number itself carries no year** (เลขที่หนังสือไม่มีเลขปี — the ปีงบ only buckets/resets the counter internally; the year is read from the ลงวันที่, not printed in ที่); the counter's ปีงบ bucket is taken from the **registration (issuing-sign) moment**. A number is allocated atomically (row-locked) and never recycled. A หนังสือ abandoned before the issuing sign consumes **no** number; one rejected after it leaves a voided gap, and one returned (ตีกลับ) after it keeps its number for the re-sign. While unnumbered the หนังสือ is referred to **by its เรื่อง** — there is **no interim/temporary reference code**; the official number replaces the เรื่อง as its identifier only once ลงทะเบียน runs. **Operationally a หนังสือ never straddles a ปีงบประมาณ boundary** — a draft prepared near year-end is only *ส่ง* in the new year — so the registration ปีงบ (which buckets the counter) and the ลงวันที่ ปีงบ always coincide.
-_Avoid_: numbering (reserve "register" for the official, audited act); assuming the number waits for the last step of the Route (it runs at the issuing sign — ADR-0017); an interim/provisional number during the route (there is none — the เรื่อง identifies it)
+**ลงทะเบียน (Register)**: The act of assigning a Document its official running number
+from a sequence. It fires **automatically when the number-issuing step is completed** —
+by default when the holder of **ลงนามในใบปะหน้า** signs
+([ADR-0017](./docs/adr/0017-register-number-at-issuing-sign.md), superseding ADR-0010's
+at-completion timing); the first issuing act wins. Steps may follow it, so a หนังสือ can
+be **numbered while still circulating**; before that sign ที่ = `/`. It is kept a
+_distinct event_ (the `issues_number` verb axis) so a ธุรการหน่วยงาน clerk-gate verb can
+issue the number in phase 2. **Send** does not number; it _verifies_ the Route has an
+issuing step and a register resolves (fail-fast). The sequence is a **เล่มทะเบียน**
+owned by the **sender ส่วนงาน** — a หน่วยงาน may keep **several เล่มทะเบียน** side by
+side (e.g. หนังสือภายนอก vs หนังสือเวียน), each with its own prefix and its own running
+counter ([ADR-0012](./docs/adr/0012-multiple-register-books-per-unit.md)); never one
+institute-wide pool, and the _type_ never selects the book. The หนังสือ says which book
+it issues from, defaulting to the unit's **เล่มทะเบียนหลัก** (or its only book — a
+single-book unit never has to choose), and the choice is pinned at ส่ง. If the unit has
+no register — or several with no default and none picked — the send is **blocked with a
+clear error**, never silently numbered from a default. Numbers reset per **ปีงบประมาณ
+(fiscal year, Oct–Sep)** by default, but the **running number itself carries no year**
+(เลขที่หนังสือไม่มีเลขปี — the ปีงบ only buckets/resets the counter internally; the year
+is read from the ลงวันที่, not printed in ที่); the counter's ปีงบ bucket is taken from
+the **registration (issuing-sign) moment**. A number is allocated atomically
+(row-locked) and never recycled. A หนังสือ abandoned before the issuing sign consumes
+**no** number; one rejected after it leaves a voided gap, and one returned (ตีกลับ)
+after it keeps its number for the re-sign. While unnumbered the หนังสือ is referred to
+**by its เรื่อง** — there is **no interim/temporary reference code**; the official
+number replaces the เรื่อง as its identifier only once ลงทะเบียน runs. **Operationally a
+หนังสือ never straddles a ปีงบประมาณ boundary** — a draft prepared near year-end is only
+_ส่ง_ in the new year — so the registration ปีงบ (which buckets the counter) and the
+ลงวันที่ ปีงบ always coincide. _Avoid_: numbering (reserve "register" for the official,
+audited act); assuming the number waits for the last step of the Route (it runs at the
+issuing sign — ADR-0017); an interim/provisional number during the route (there is none
+— the เรื่อง identifies it)
 
-**ลงวันที่ (Document date, `date`)**:
-The official date printed on the หนังสือ header beside ที่. It is the date the **number is issued** — stamped together with ที่ at the ลงนามในใบปะหน้า sign ([ADR-0017](./docs/adr/0017-register-number-at-issuing-sign.md)), so ที่ and ลงวันที่ always share one ปีงบ. **Empty until then** — an unnumbered หนังสือ shows no date, just as ที่ shows `/`; a numbered หนังสือ re-sent after ตีกลับ keeps its ลงวันที่. Owner-adjustable in a later phase.
-_Avoid_: the create/draft timestamp; a provisional date before the number (there is none); the ส่ง date or the completion date as ลงวันที่ (both superseded — ADR-0017); a separate "issue date" field (ลงวันที่ *is* it)
+**ลงวันที่ (Document date, `date`)**: The official date printed on the หนังสือ header
+beside ที่. It is the date the **number is issued** — stamped together with ที่ at the
+ลงนามในใบปะหน้า sign ([ADR-0017](./docs/adr/0017-register-number-at-issuing-sign.md)),
+so ที่ and ลงวันที่ always share one ปีงบ. **Empty until then** — an unnumbered หนังสือ
+shows no date, just as ที่ shows `/`; a numbered หนังสือ re-sent after ตีกลับ keeps its
+ลงวันที่. Owner-adjustable in a later phase. _Avoid_: the create/draft timestamp; a
+provisional date before the number (there is none); the ส่ง date or the completion date
+as ลงวันที่ (both superseded — ADR-0017); a separate "issue date" field (ลงวันที่ _is_
+it)
 
 ### Signing & record
 
-**ผู้จัดทำ/ผู้ส่ง step (originator, `is_originator`)**:
-The mandatory, locked **first Routing Step** — the หนังสือ's ผู้จัดทำ/ผู้ส่ง. Present from creation (row 1); it **cannot be removed** and only its **verb** is editable (a per-document default — signing by default). It is **auto-completed at send** (ส่ง); whether it **renders a signature depends on its verb's `show_signature`** (ADR-0008): a **signing drafter** (ลงนามผู้จัดทำ, show_signature ✓) puts the sender's signature on the document, while a **non-signing drafter** (จัดทำ/ร่าง, show_signature ✗ — e.g. a เจ้าหน้าที่ธุรการ who ร่าง but does not sign, leaving the หัวหน้าส่วนงาน to ตรวจสอบ + ลงนามส่งออก) has only their name in the Route, **no signature**. Either way the originator is **excluded from `has_signed` / strongest-verb** — an originator step is not an approval, so the sender may still **ดึงกลับ / ยกเลิกการส่ง** after sending (until a real approver signs). It is `copy=False` (a duplicate gets a fresh originator for its own sender). Sending is gated behind a **confirm wizard**.
-_Avoid_: assuming the drafter always signs (a non-signing ธุรการ drafter is a first-class case — ADR-0008); counting the originator step as an approval (would block recall); a route that starts with an approver (the ผู้จัดทำ is always first); letting a user delete or re-target it
+**ผู้จัดทำ/ผู้ส่ง step (originator, `is_originator`)**: The mandatory, locked **first
+Routing Step** — the หนังสือ's ผู้จัดทำ/ผู้ส่ง. Present from creation (row 1); it
+**cannot be removed** and only its **verb** is editable (a per-document default —
+signing by default). It is **auto-completed at send** (ส่ง); whether it **renders a
+signature depends on its verb's `show_signature`** (ADR-0008): a **signing drafter**
+(ลงนามผู้จัดทำ, show*signature ✓) puts the sender's signature on the document, while a
+**non-signing drafter** (จัดทำ/ร่าง, show_signature ✗ — e.g. a เจ้าหน้าที่ธุรการ who
+ร่าง but does not sign, leaving the หัวหน้าส่วนงาน to ตรวจสอบ + ลงนามส่งออก) has only
+their name in the Route, **no signature**. Either way the originator is **excluded from
+`has_signed` / strongest-verb** — an originator step is not an approval, so the sender
+may still **ดึงกลับ / ยกเลิกการส่ง** after sending (until a real approver signs). It is
+`copy=False` (a duplicate gets a fresh originator for its own sender). Sending is gated
+behind a **confirm wizard**. \_Avoid*: assuming the drafter always signs (a non-signing
+ธุรการ drafter is a first-class case — ADR-0008); counting the originator step as an
+approval (would block recall); a route that starts with an approver (the ผู้จัดทำ is
+always first); letting a user delete or re-target it
 
-**ฉบับลงนาม (Signed copy)**:
-The **immutable PDF snapshot** frozen when a Document reaches `completed`. From then on portal/print serve this file, never a live render. Before completion, preview renders live (own report, or a delegated origin report). A Sarabun Manager may **regenerate** it after a correction (optional `agx_sarabun_pdf_regenerate`, Action menu **สร้างไฟล์ PDF ใหม่** — ADR-0019): it is re-rendered from current data and **replaces** the old file. This is the only way a frozen copy changes.
-_Avoid_: attachment, printout
+**ฉบับลงนาม (Signed copy)**: The **immutable PDF snapshot** frozen when a Document
+reaches `completed`. From then on portal/print serve this file, never a live render.
+Before completion, preview renders live (own report, or a delegated origin report). A
+Sarabun Manager may **regenerate** it after a correction (optional
+`agx_sarabun_pdf_regenerate`, Action menu **สร้างไฟล์ PDF ใหม่** — ADR-0019): it is
+re-rendered from current data and **replaces** the old file. This is the only way a
+frozen copy changes. _Avoid_: attachment, printout
 
-**Signature block**:
-The rendered authority line on the Document — the digitized signature image, the signer's name, the Position/target signed in, the **signing date in พ.ศ. — date only, no time**, and any **เกษียน note (ความเห็น)**. The **ชื่อ / ตำแหน่ง / ลายเซ็น are a per-step snapshot frozen at the instant of signing** (`signed_name` / `signed_position_name` / `signed_signature`), captured only for positive-done `show_signature` steps, with the live records (`hr.employee.signature` / `.name`, `signed_as_position_id` else `position_id`) as fallback for legacy / in-flight rows — so a later HR-name change, Position rename, or replaced signature image **never rewrites an already-signed หนังสือ**, on any render path (frozen PDF, live preview, direct-origin print) — ADR-0009. **No verb heading**; **one signature per row, right-aligned, stacked downward**. Composed for **every positive-done `show_signature` step** (the signing ผู้จัดทำ + เห็นชอบ + ลงนาม-อนุมัติ) in **one uniform format** (ADR-0008) — endorsers are shown as signatures too, **not** split into a separate เกษียน table; a non-signing step (ตรวจสอบ / พิจารณา / ส่งต่อ, a non-signing ผู้จัดทำ) renders **nothing** here. The academic prefix (`hr.employee.academic_standing_title`), the รักษาการแทน capacity, and the **e-sign metadata line** (time-of-day, the "Non-PKI Server Sign-LN" method label, the Signature Code) are all **phase-2** — the metadata line lands with PKI; when the academic prefix lands it is snapshotted here too (ADR-0009).
-_Avoid_: signature (reserve for the act/data, not the rendered block); splitting endorsers into a separate table; rendering a non-`show_signature` step as a signature; **dereferencing name / position / signature live for a signed step** (use the signing snapshot — ADR-0009); printing the sign-method label / Signature Code / time-of-day before PKI exists
+**Signature block**: The rendered authority line on the Document — the digitized
+signature image, the signer's name, the Position/target signed in, the **signing date in
+พ.ศ. — date only, no time**, and any **เกษียน note (ความเห็น)**. The **ชื่อ / ตำแหน่ง /
+ลายเซ็น are a per-step snapshot frozen at the instant of signing** (`signed_name` /
+`signed_position_name` / `signed_signature`), captured only for positive-done
+`show_signature` steps, with the live records (`hr.employee.signature` / `.name`,
+`signed_as_position_id` else `position_id`) as fallback for legacy / in-flight rows — so
+a later HR-name change, Position rename, or replaced signature image **never rewrites an
+already-signed หนังสือ**, on any render path (frozen PDF, live preview, direct-origin
+print) — ADR-0009. **No verb heading**; **one signature per row, right-aligned, stacked
+downward**. Composed for **every positive-done `show_signature` step** (the signing
+ผู้จัดทำ + เห็นชอบ + ลงนาม-อนุมัติ) in **one uniform format** (ADR-0008) — endorsers are
+shown as signatures too, **not** split into a separate เกษียน table; a non-signing step
+(ตรวจสอบ / พิจารณา / ส่งต่อ, a non-signing ผู้จัดทำ) renders **nothing** here. The
+**academic prefix** (`hr.employee.academic_standing_title`, full form) is **prepended
+onto the `signed_name` snapshot** at signing for academic-role signers (ADR-0009),
+joined to the name **with no space** — so ชื่อ reads e.g. _(รองศาสตราจารย์ ดร.สมชาย
+ใจดี)_ or _(อาจารย์ แพทย์หญิงทิพวัลย์ เรืองฤทธิ์)_. The รักษาการแทน capacity and the
+**e-sign metadata line** (time-of-day, the "Non-PKI Server Sign-LN" method label, the
+Signature Code) remain **phase-2** — the metadata line lands with PKI. _Avoid_:
+signature (reserve for the act/data, not the rendered block); splitting endorsers into a
+separate table; rendering a non-`show_signature` step as a signature; **dereferencing
+name / position / signature live for a signed step** (use the signing snapshot —
+ADR-0009); printing the sign-method label / Signature Code / time-of-day before PKI
+exists
 
-**เกษียน trail**:
-The accumulated endorsement/signing history (who, when, in what capacity, with what comment). As of **ADR-0008 it is audit-only** — kept on the Routing Steps + chatter and visible in the Route, **no longer rendered onto the official document** (the document shows **signatures only** — the `show_signature` steps). A signing step's own ความเห็น still shows **under its signature block**, but non-signing checks (ตรวจสอบ / พิจารณา / ส่งต่อ) leave no mark on the letter.
-_Avoid_: history, log; printing the trail on the official document (superseded — ADR-0008); rendering **backward-move** events (ดึงกลับ / ยกเลิกการส่ง / ตีกลับ / ปฏิเสธ) anywhere on the หนังสือ — those are internal routing history kept in the audit/chatter with their required reason
+**เกษียน trail**: The accumulated endorsement/signing history (who, when, in what
+capacity, with what comment). As of **ADR-0008 it is audit-only** — kept on the Routing
+Steps + chatter and visible in the Route, **no longer rendered onto the official
+document** (the document shows **signatures only** — the `show_signature` steps). A
+signing step's own ความเห็น still shows **under its signature block**, but non-signing
+checks (ตรวจสอบ / พิจารณา / ส่งต่อ) leave no mark on the letter. _Avoid_: history, log;
+printing the trail on the official document (superseded — ADR-0008); rendering
+**backward-move** events (ดึงกลับ / ยกเลิกการส่ง / ตีกลับ / ปฏิเสธ) anywhere on the
+หนังสือ — those are internal routing history kept in the audit/chatter with their
+required reason
 
-**ข้อความมาตรฐาน (Standard comment)**:
-Admin-configurable canned text for the เกษียน note, offered as a picker in the Act-on-step wizard (it **replaces** the comment on select, which stays freely editable). A **verb** may name one as its **default**, pre-filled when a step of that verb is acted on. Owned by the optional `agx_sarabun_standard_comment` extension — the core wizard works unchanged without it.
+**ข้อความมาตรฐาน (Standard comment)**: Admin-configurable canned text for the เกษียน
+note, offered as a picker in the Act-on-step wizard (it **replaces** the comment on
+select, which stays freely editable). A **verb** may name one as its **default**,
+pre-filled when a step of that verb is acted on. Owned by the optional
+`agx_sarabun_standard_comment` extension — the core wizard works unchanged without it.
 
 ### Access
 
-**Route visibility (the reach ledger, `reached_user_ids`)**:
-Who may **read** a หนังสือ — its **sender** (`sender_user_id`), **everyone it has reached**, and **managers**. "Reached" = the user holds (or has ever held) a `sarabun.step.recipient` row on any step — the per-person *reach ledger*, minted for **every** snapshot holder the instant a step activates (gating actors and รับทราบ / สำเนาเรียน holders alike) and **never removed**. So read **persists after the หนังสือ completes and across ตีกลับ / ดึงกลับ / Reset** — keyed on the stored `reached_user_ids`, which spans **archived** attempts too ([ADR-0013](./docs/adr/0013-e-saraban-access-control-model.md)), because being involved is a property of the *หนังสือ*, not of the current attempt. Steps not yet reached (waiting/future) grant **no** visibility, even if pre-seeded with a named person — you don't see a หนังสือ before it routes to you. Read is **read-only for the involved**: only the sender may write, and **delete** belongs to the sender alone and only for an *unnumbered* **ร่าง or ยกเลิกแล้ว** หนังสือ — a live one (circulating / returned / rejected / completed) leaves circulation through **ยกเลิกการส่ง** and only then may be deleted, and a number, once ลงทะเบียน, keeps its Document link for audit (both enforced in `unlink()`, so they bind managers too); **acting** on an *active* step (the ลงนาม/อนุมัติ/รับทราบ the user is entitled to) runs authority-check-then-`sudo`, so a read-only actor still performs their move without document-write rights (ADR-0013). ชั้นความลับ (secrecy) and its need-to-know restriction are **phase-2** — not modeled in v1 (the interim display-label field was removed); v1 keeps manager-see-all. Acting is backend-first in v1, but the act-on-step API is designed token-ready so phase-2 can add passwordless **magic-link** approval from email. **This หนังสือ read access alone governs the official report/preview**: a recipient renders the letter (and sees the origin *reference* on it) **even without rights on the origin record** — the render resolves the origin under `sudo` (ADR-0007). Opening the origin *record itself* (`action_view_origin`) still needs origin rights.
-_Avoid_: "active-or-completed actors" as the key (the key is the reach ledger — a recipient row — which also covers waiting-then-reached and survives archiving); losing read when a หนังสือ is returned/reset (read persists across attempts — ADR-0013); gating the report/preview on origin-record access (the หนังสือ's own ACL governs — ADR-0007)
+**Route visibility (the reach ledger, `reached_user_ids`)**: Who may **read** a หนังสือ
+— its **sender** (`sender_user_id`), **everyone it has reached**, and **managers**.
+"Reached" = the user holds (or has ever held) a `sarabun.step.recipient` row on any step
+— the per-person _reach ledger_, minted for **every** snapshot holder the instant a step
+activates (gating actors and รับทราบ / สำเนาเรียน holders alike) and **never removed**.
+So read **persists after the หนังสือ completes and across ตีกลับ / ดึงกลับ / Reset** —
+keyed on the stored `reached_user_ids`, which spans **archived** attempts too
+([ADR-0013](./docs/adr/0013-e-saraban-access-control-model.md)), because being involved
+is a property of the _หนังสือ_, not of the current attempt. Steps not yet reached
+(waiting/future) grant **no** visibility, even if pre-seeded with a named person — you
+don't see a หนังสือ before it routes to you. Read is **read-only for the involved**:
+only the sender may write, and **delete** belongs to the sender alone and only for an
+_unnumbered_ **ร่าง or ยกเลิกแล้ว** หนังสือ — a live one (circulating / returned /
+rejected / completed) leaves circulation through **ยกเลิกการส่ง** and only then may be
+deleted, and a number, once ลงทะเบียน, keeps its Document link for audit (both enforced
+in `unlink()`, so they bind managers too); **acting** on an _active_ step (the
+ลงนาม/อนุมัติ/รับทราบ the user is entitled to) runs authority-check-then-`sudo`, so a
+read-only actor still performs their move without document-write rights (ADR-0013).
+ชั้นความลับ (secrecy) and its need-to-know restriction are **phase-2** — not modeled in
+v1 (the interim display-label field was removed); v1 keeps manager-see-all. Acting is
+backend-first in v1, but the act-on-step API is designed token-ready so phase-2 can add
+passwordless **magic-link** approval from email. **This หนังสือ read access alone
+governs the official report/preview**: a recipient renders the letter (and sees the
+origin _reference_ on it) **even without rights on the origin record** — the render
+resolves the origin under `sudo` (ADR-0007). Opening the origin _record itself_
+(`action_view_origin`) still needs origin rights. _Avoid_: "active-or-completed actors"
+as the key (the key is the reach ledger — a recipient row — which also covers
+waiting-then-reached and survives archiving); losing read when a หนังสือ is
+returned/reset (read persists across attempts — ADR-0013); gating the report/preview on
+origin-record access (the หนังสือ's own ACL governs — ADR-0007)
 
-**เกี่ยวข้อง (Involved)**:
-The precise membership that grants read: a user who **holds or has held a recipient row** on any step of the หนังสือ (active or archived). It is the read set minus the sender and manager-see-all. A **follower** (mail.thread) is **not** involved — following grants no record read; involvement comes only from the route.
-_Avoid_: treating a chatter follower as involved; equating "involved" with "currently has an active step" (a past actor stays involved)
+**เกี่ยวข้อง (Involved)**: The precise membership that grants read: a user who **holds
+or has held a recipient row** on any step of the หนังสือ (active or archived). It is the
+read set minus the sender and manager-see-all. A **follower** (mail.thread) is **not**
+involved — following grants no record read; involvement comes only from the route.
+_Avoid_: treating a chatter follower as involved; equating "involved" with "currently
+has an active step" (a past actor stays involved)
 
-**เอกสารของตนเอง (Own document)**:
-A user's *own* หนังสือ = the ones they **sent** (`sender_user_id`) — not `create_uid`, not the originator routing step. A เจ้าหน้าที่ธุรการ who ร่าง on behalf and presses ส่ง is the owner (read/write); the downstream signer is only an actor (reads via the route).
-_Avoid_: equating ownership with the create timestamp or the originator step holder
+**เอกสารของตนเอง (Own document)**: A user's _own_ หนังสือ = the ones they **sent**
+(`sender_user_id`) — not `create_uid`, not the originator routing step. A
+เจ้าหน้าที่ธุรการ who ร่าง on behalf and presses ส่ง is the owner (read/write); the
+downstream signer is only an actor (reads via the route). _Avoid_: equating ownership
+with the create timestamp or the originator step holder
 
 ### Notifications & inbox
 
 The inbox is **two distinct surfaces**, deliberately not the same set:
 
-**กล่องหนังสือเข้า (Incoming box)**:
-The user's **persistent mailbox** — every หนังสือ that has **reached them via the route**, i.e. a step whose snapshot holders include them has activated. A หนังสือ only *enters* once its step actually reaches the user (waiting/future steps grant nothing — "ต้องรอถึง step ก่อนถึงจะเข้า"), and it **stays after they act and after the whole route finishes** (completed / rejected / cancelled). The backend menu. Each row shows the per-person read status / วันที่ได้รับ / เพื่อดำเนินการ, keyed on the step that reached the user (see สถานะการอ่าน). Membership is by *reach*, never by read/unread or by pending action.
-_Avoid_: equating it with the awaiting-action surface (native activity / Todo — that is only the subset with an active step); read/unread as a membership rule
+**กล่องหนังสือเข้า (Incoming box)**: The user's **persistent mailbox** — every หนังสือ
+that has **reached them via the route**, i.e. a step whose snapshot holders include them
+has activated. A หนังสือ only _enters_ once its step actually reaches the user
+(waiting/future steps grant nothing — "ต้องรอถึง step ก่อนถึงจะเข้า"), and it **stays
+after they act and after the whole route finishes** (completed / rejected / cancelled).
+The backend menu. Each row shows the per-person read status / วันที่ได้รับ /
+เพื่อดำเนินการ, keyed on the step that reached the user (see สถานะการอ่าน). Membership
+is by _reach_, never by read/unread or by pending action. _Avoid_: equating it with the
+awaiting-action surface (native activity / Todo — that is only the subset with an active
+step); read/unread as a membership rule
 
-**Awaiting-action surface (native `mail.activity` / Todo)**:
-The transient "to-do" view of หนังสือ **awaiting the current user's action** — the subset with an *active* step assigned to them, which **clears as soon as they act**. e-Saraban no longer ships its own systray for this: base e-Saraban raises a **native `mail.activity`** per active-step holder (surfaced in Odoo's native activity bell), and the bespoke Action tray + `sarabun_inbox` bus were **dissolved** ([ADR-0014](./docs/adr/0014-dissolve-inbox-tray-onto-native-activity-and-todo-bridge.md)). Every active step raises an activity now — **gating and non-gating รับทราบ / CC alike** — picking the `_action` type when the step gates or signs (`gating` OR `show_signature`) and the `_ack` type for a pure รับทราบ. When [`mail_activity_todo`](../mail_activity_todo/CONTEXT.md) is installed, the `agx_sarabun_todo` bridge tags those types with `todo_category` (`_action → execution`, `_ack → acknowledgement`) so they flow into the **one unified Todo inbox** (which already hides the native bell): gating/signing to-dos clear only by acting at the หนังสือ, a pure รับทราบ clears by **Mark as Read** (the Todo-inbox dismissal that *performs* รับทราบ — distinct from merely *opening* the document, เปิดอ่านแล้ว). Always reflects Route visibility.
-_Avoid_: a bespoke sarabun systray (dissolved — ADR-0014); scheduling an activity only for *gating* steps (รับทราบ / CC raise one too now); treating this as an archive — it is a live "to-do", not the incoming history (that is the Incoming box)
+**Awaiting-action surface (native `mail.activity` / Todo)**: The transient "to-do" view
+of หนังสือ **awaiting the current user's action** — the subset with an _active_ step
+assigned to them, which **clears as soon as they act**. e-Saraban no longer ships its
+own systray for this: base e-Saraban raises a **native `mail.activity`** per active-step
+holder (surfaced in Odoo's native activity bell), and the bespoke Action tray +
+`sarabun_inbox` bus were **dissolved**
+([ADR-0014](./docs/adr/0014-dissolve-inbox-tray-onto-native-activity-and-todo-bridge.md)).
+Every active step raises an activity now — **gating and non-gating รับทราบ / CC alike**
+— picking the `_action` type when the step gates or signs (`gating` OR `show_signature`)
+and the `_ack` type for a pure รับทราบ. When
+[`mail_activity_todo`](../mail_activity_todo/CONTEXT.md) is installed, the
+`agx_sarabun_todo` bridge tags those types with `todo_category` (`_action → execution`,
+`_ack → acknowledgement`) so they flow into the **one unified Todo inbox** (which
+already hides the native bell): gating/signing to-dos clear only by acting at the
+หนังสือ, a pure รับทราบ clears by **Mark as Read** (the Todo-inbox dismissal that
+_performs_ รับทราบ — distinct from merely _opening_ the document, เปิดอ่านแล้ว). Always
+reflects Route visibility. _Avoid_: a bespoke sarabun systray (dissolved — ADR-0014);
+scheduling an activity only for _gating_ steps (รับทราบ / CC raise one too now);
+treating this as an archive — it is a live "to-do", not the incoming history (that is
+the Incoming box)
 
-**สถานะการอ่าน (Read status, `sarabun.step.recipient`)**:
-Per-person tracking of whether a holder has **opened** the หนังสือ — รอการเปิดอ่าน (unread) / เปิดอ่านแล้ว (read) — shown per row in the Incoming box, keyed on **the step that reached the user** (their active step, or once they have acted, their most recent completed step). **วันที่ได้รับ** is the per-person timestamp when the step reached that holder (their own recipient row — may be later than the step's activation under delegation). Tracked **individually even when one target has several holders** (each ธุรการหน่วยงาน clerk / co-holder carries their own row). Opening is informational and distinct from acting: **เปิดอ่านแล้ว ≠ รับทราบ** (opening the document is not performing the รับทราบ verb). รอการส่งต่อ (pending-forward) is a reserved state, unused in v1.
-_Avoid_: conflating read status with the รับทราบ step verb, or with incoming-box membership
+**สถานะการอ่าน (Read status, `sarabun.step.recipient`)**: Per-person tracking of whether
+a holder has **opened** the หนังสือ — รอการเปิดอ่าน (unread) / เปิดอ่านแล้ว (read) —
+shown per row in the Incoming box, keyed on **the step that reached the user** (their
+active step, or once they have acted, their most recent completed step).
+**วันที่ได้รับ** is the per-person timestamp when the step reached that holder (their
+own recipient row — may be later than the step's activation under delegation). Tracked
+**individually even when one target has several holders** (each ธุรการหน่วยงาน clerk /
+co-holder carries their own row). Opening is informational and distinct from acting:
+**เปิดอ่านแล้ว ≠ รับทราบ** (opening the document is not performing the รับทราบ verb).
+รอการส่งต่อ (pending-forward) is a reserved state, unused in v1. _Avoid_: conflating
+read status with the รับทราบ step verb, or with incoming-box membership
 
 ### Classification
 
-**Document kind**:
-The behaviour/format axis of a Document — `memo` (บันทึกข้อความ), `circular` (หนังสือเวียน), `from_record` (spawned from an origin). A small dev-extensible set that drives report template, numbering and routing rules. **v1 focuses on `from_record`** (origin-driven e-flow, the live use today); memo/circular are carried by the same engine but their manual-compose UX comes later (หนังสือภายนอก/คำสั่ง/ประกาศ are phase-2 kinds).
-_Avoid_: the old hardcoded `code` selection that doubled as both behaviour key and identifier
+**Document kind**: The behaviour/format axis of a Document — `memo` (บันทึกข้อความ),
+`circular` (หนังสือเวียน), `from_record` (spawned from an origin). A small
+dev-extensible set that drives report template, numbering and routing rules. **v1
+focuses on `from_record`** (origin-driven e-flow, the live use today); memo/circular are
+carried by the same engine but their manual-compose UX comes later
+(หนังสือภายนอก/คำสั่ง/ประกาศ are phase-2 kinds). _Avoid_: the old hardcoded `code`
+selection that doubled as both behaviour key and identifier
 
-**Document type (`sarabun.document.type`)**:
-An **admin-configurable** record naming a concrete type ("บันทึกข้อความกองคลัง") and binding its default route / template, pointing at one Document kind. The configurable layer above the fixed kind axis. Consumer modules routinely **seed their own type** (e.g. `budget_transfer_sarabun` adds "ขออนุมัติโอนงบประมาณ", `kind=from_record`) so their หนังสือ are searchable/filterable by a meaningful type — this is the encouraged pattern. (The register/number sequence is resolved per **ส่วนงาน**, not per type — see Register.) The kind axis still exists on the model but is hidden from the หนังสือ form (only `from_record` is exercised in v1).
+**Document type (`sarabun.document.type`)**: An **admin-configurable** record naming a
+concrete type ("บันทึกข้อความกองคลัง") and binding its default route / template,
+pointing at one Document kind. The configurable layer above the fixed kind axis.
+Consumer modules routinely **seed their own type** (e.g. `budget_transfer_sarabun` adds
+"ขออนุมัติโอนงบประมาณ", `kind=from_record`) so their หนังสือ are searchable/filterable
+by a meaningful type — this is the encouraged pattern. (The register/number sequence is
+resolved per **ส่วนงาน**, not per type — see Register.) The kind axis still exists on
+the model but is hidden from the หนังสือ form (only `from_record` is exercised in v1).
 
-**Manual-creatable (`allow_manual`)** — a per-type property deciding whether a user may **compose a หนังสือ of this type by hand** from the Documents form (vs. it arising **only** from an origin record). It **defaults from the kind** — `from_record` types default to *not* manual-creatable (they must be spawned by their origin), `memo` / `circular` default to manual-creatable — but is an **overridable checkbox** on the type, so an admin can retire a composed type from manual use, or (rarely) open a from_record type to hand-composition, without changing its kind. It governs which types appear in the manual-create dropdown, the integrity rule that a non-manual type's หนังสือ must carry an origin, and the form lock — once a หนังสือ holds a non-manual type, ประเภทเอกสาร is read-only, so the classification a document was spawned with cannot be swapped afterwards.
-_Avoid_: treating type and kind as one field; expecting the type to carry its own number series; equating manual-creatability with kind (it *defaults* from kind but is a distinct, overridable axis)
+**Manual-creatable (`allow_manual`)** — a per-type property deciding whether a user may
+**compose a หนังสือ of this type by hand** from the Documents form (vs. it arising
+**only** from an origin record). It **defaults from the kind** — `from_record` types
+default to _not_ manual-creatable (they must be spawned by their origin), `memo` /
+`circular` default to manual-creatable — but is an **overridable checkbox** on the type,
+so an admin can retire a composed type from manual use, or (rarely) open a from*record
+type to hand-composition, without changing its kind. It governs which types appear in
+the manual-create dropdown, the integrity rule that a non-manual type's หนังสือ must
+carry an origin, and the form lock — once a หนังสือ holds a non-manual type,
+ประเภทเอกสาร is read-only, so the classification a document was spawned with cannot be
+swapped afterwards. \_Avoid*: treating type and kind as one field; expecting the type to
+carry its own number series; equating manual-creatability with kind (it _defaults_ from
+kind but is a distinct, overridable axis)
 
-**ชั้นความเร็ว / ชั้นความลับ (Speed / Secrecy levels)**:
-Records-regulation handling labels — ชั้นความเร็ว (ปกติ / ด่วน / ด่วนมาก / ด่วนที่สุด) and ชั้นความลับ (ปกติ / ลับ / ลับมาก / ลับที่สุด). **Phase-2** — not modeled in v1 (the interim fields were removed); v1 has no urgency flag and keeps manager-see-all (see Access).
-_Avoid_: modeling these as routing behaviour (they are header/handling labels, not gating)
+**ชั้นความเร็ว / ชั้นความลับ (Speed / Secrecy levels)**: Records-regulation handling
+labels — ชั้นความเร็ว (ปกติ / ด่วน / ด่วนมาก / ด่วนที่สุด) and ชั้นความลับ (ปกติ / ลับ /
+ลับมาก / ลับที่สุด). **Phase-2** — not modeled in v1 (the interim fields were removed);
+v1 has no urgency flag and keeps manager-see-all (see Access). _Avoid_: modeling these
+as routing behaviour (they are header/handling labels, not gating)
 
 ### Attachments & links
 
-**อ้างถึง (Reference)**:
-Links to prior หนังสือ (m2m `sarabun.document`) plus free-text lines for letters outside the system (e.g. "หนังสือ อว 6801/123 ลว 1 พ.ค."). Distinct from the **origin link** (which connects to the spawning ERP record).
-_Avoid_: the dropped `sarabun.reference` hardcoded PR/PO/budget link — that was *related ERP records*, not อ้างถึง
+**อ้างถึง (Reference)**: Links to prior หนังสือ (m2m `sarabun.document`) plus free-text
+lines for letters outside the system (e.g. "หนังสือ อว 6801/123 ลว 1 พ.ค."). Distinct
+from the **origin link** (which connects to the spawning ERP record). _Avoid_: the
+dropped `sarabun.reference` hardcoded PR/PO/budget link — that was _related ERP
+records_, not อ้างถึง
 
-**สิ่งที่ส่งมาด้วย (Enclosure)**:
-An **ordered, described** attachment of the Document, rendered as a numbered list ("สิ่งที่ส่งมาด้วย ๑. …") per the regulation.
-_Avoid_: bare attachment with no order or caption
+**สิ่งที่ส่งมาด้วย (Enclosure)**: An **ordered, described** attachment of the Document,
+rendered as a numbered list ("สิ่งที่ส่งมาด้วย ๑. …") per the regulation. _Avoid_: bare
+attachment with no order or caption
 
 ### Header
 
-**เรียน (Addressee) + คำขึ้นต้น (Prefix)**:
-The ceremonial recipient printed on the หนังสือ header — its **own field** (free multi-line text), set manually or by the origin, and opened by a configurable **คำขึ้นต้น (salutation, `sarabun.addressee.prefix`)** — เรียน today, with กราบทูล / เสนอ / ยื่นต่อ … as configurable alternatives. Deliberately separate from the routing actors (you address "เรียน คณบดี" while the หนังสือ still routes clerk → หัวหน้างาน → คณบดี). (**ผ่าน** "เรียน X ผ่าน Y", and auto-suggesting the addressee from the final ลงนาม-อนุมัติ step's Position, are **phase-2** — not modeled in v1.)
-_Avoid_: the old free-text `recipient` / "To" that floated free of routing; conflating the addressee with the people who actually act; a hardcoded "เรียน" label (the salutation is configurable)
+**เรียน (Addressee) + คำขึ้นต้น (Prefix)**: The ceremonial recipient printed on the
+หนังสือ header — its **own field** (free multi-line text), set manually or by the
+origin, and opened by a configurable **คำขึ้นต้น (salutation,
+`sarabun.addressee.prefix`)** — เรียน today, with กราบทูล / เสนอ / ยื่นต่อ … as
+configurable alternatives. Deliberately separate from the routing actors (you address
+"เรียน คณบดี" while the หนังสือ still routes clerk → หัวหน้างาน → คณบดี). (**ผ่าน**
+"เรียน X ผ่าน Y", and auto-suggesting the addressee from the final ลงนาม-อนุมัติ step's
+Position, are **phase-2** — not modeled in v1.) _Avoid_: the old free-text `recipient` /
+"To" that floated free of routing; conflating the addressee with the people who actually
+act; a hardcoded "เรียน" label (the salutation is configurable)
 
-**เนื้อหา (Content / body, `content`)**:
-The หนังสือ's own body — free **rich text** typed on the form — the letter body **only for a no-source Document** (composed memo/circular). For a `from_record` / has-source Document it is **not rendered on the official PDF at all**: the source report is the self-contained body (the removed cover sheet used to render `content` as a covering note above the origin report — that covering note is gone). v1 is plain rich text; the full regulation บันทึกข้อความ layout is phase-2.
-_Avoid_: rendering `content` on a has-source PDF (covering note removed with the cover sheet); assuming the body always comes from the origin report; treating this rich-text box as the regulation memo template
+**เนื้อหา (Content / body, `content`)**: The หนังสือ's own body — free **rich text**
+typed on the form — the letter body **only for a no-source Document** (composed
+memo/circular). For a `from_record` / has-source Document it is **not rendered on the
+official PDF at all**: the source report is the self-contained body (the removed cover
+sheet used to render `content` as a covering note above the origin report — that
+covering note is gone). v1 is plain rich text; the full regulation บันทึกข้อความ layout
+is phase-2. _Avoid_: rendering `content` on a has-source PDF (covering note removed with
+the cover sheet); assuming the body always comes from the origin report; treating this
+rich-text box as the regulation memo template
 
-**หมายเหตุ (Remark, `remark`)**:
-An **optional internal note** (rich text) on the หนังสือ, captured after the body — **not part of the letter body** and not rendered as the official content. For working notes.
-_Avoid_: conflating หมายเหตุ with เนื้อหา (content) — remark is internal, content is the letter itself
+**หมายเหตุ (Remark, `remark`)**: An **optional internal note** (rich text) on the
+หนังสือ, captured after the body — **not part of the letter body** and not rendered as
+the official content. For working notes. _Avoid_: conflating หมายเหตุ with เนื้อหา
+(content) — remark is internal, content is the letter itself
 
-**Endorsement block (บล็อกลายเซ็น)**:
-The reusable rendered **tail** of an official document — the **Signature block(s)** (as of ADR-0008, **signatures only**; the เกษียน trail is no longer printed). Owned by agx_sarabun as a single QWeb layout that the **source report `t-call`s at its own end**: the origin *embeds* sarabun's block; sarabun no longer wraps the origin. It is **self-limiting** — it renders only positive-done `show_signature` steps, so a draft shows nothing. The Document to render is resolved from the origin via `active_sarabun_document_id`. The old prepended **ใบปะหน้าสารบรรณ (cover sheet)** and the front-merge of a separate sarabun page are **removed**.
-_Avoid_: printing the เกษียน trail here (signatures only — ADR-0008); cover sheet / ใบปะหน้า prepended to the origin; PDF-merging a separate sarabun page in front of the body; re-keying origin content into a memo template
+**Endorsement block (บล็อกลายเซ็น)**: The reusable rendered **tail** of an official
+document — the **Signature block(s)** (as of ADR-0008, **signatures only**; the เกษียน
+trail is no longer printed). Owned by agx*sarabun as a single QWeb layout that the
+**source report `t-call`s at its own end**: the origin *embeds* sarabun's block; sarabun
+no longer wraps the origin. It is **self-limiting** — it renders only positive-done
+`show_signature` steps, so a draft shows nothing. The Document to render is resolved
+from the origin via `active_sarabun_document_id`. The old prepended **ใบปะหน้าสารบรรณ
+(cover sheet)** and the front-merge of a separate sarabun page are **removed**.
+\_Avoid*: printing the เกษียน trail here (signatures only — ADR-0008); cover sheet /
+ใบปะหน้า prepended to the origin; PDF-merging a separate sarabun page in front of the
+body; re-keying origin content into a memo template
 
-**Standalone document report (no-source)**:
-For a Document with **no source report** (a composed บันทึกข้อความ / หนังสือเวียน), agx_sarabun renders its **own** whole document — official header (หน่วยงาน / ที่ / วันที่ / เรื่อง / เรียน) + **เนื้อหา (content)** body + the same Endorsement block — as the official PDF. Today every real Document has a source report, so this is a **planned seam**; the full regulation บันทึกข้อความ layout (ครุฑ, ด่วน label, หมายเหตุ footer, in-body hyperlinks — per the KMITL example) is **still to be designed**.
-_Avoid_: assuming every Document has a source body; reusing the removed cover-sheet-merge for this path
+**Standalone document report (no-source)**: For a Document with **no source report** (a
+composed บันทึกข้อความ / หนังสือเวียน), agx*sarabun renders its **own** whole document —
+official header (หน่วยงาน / ที่ / วันที่ / เรื่อง / เรียน) + **เนื้อหา (content)**
+body + the same Endorsement block — as the official PDF. Today every real Document has a
+source report, so this is a **planned seam**; the full regulation บันทึกข้อความ layout
+(ครุฑ, ด่วน label, หมายเหตุ footer, in-body hyperlinks — per the KMITL example) is
+**still to be designed**. \_Avoid*: assuming every Document has a source body; reusing
+the removed cover-sheet-merge for this path

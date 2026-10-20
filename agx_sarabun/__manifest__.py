@@ -1,7 +1,7 @@
 {
     "name": "e-Sarabun",
     "summary": "Electronic Correspondence Management System (สารบรรณอิเล็กทรอนิกส์)",
-    "version": "16.0.7.1.3",
+    "version": "16.0.7.1.4",
     "category": "KMITL/Correspondence",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
@@ -11,8 +11,9 @@
         "thai_date_utils",
         "l10n_th_fonts",  # Thai font rendering for the cover-sheet PDF (P5)
         "hr_employee_digitized_signature",  # hr.employee.signature image (signature block)
-        # academic prefix (hr_employee_academic_standing_thailand / academic_standing_title)
-        # is deferred to a later phase — see report/sarabun_reports.xml.
+        # academic_standing_title + role — academic prefix prepended onto the signed_name
+        # snapshot in the signature block (academic-role signers only).
+        "hr_employee_academic_standing_thailand",
     ],
     "data": [
         # Security
