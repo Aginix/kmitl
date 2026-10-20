@@ -13,6 +13,7 @@
         "data/mail_activity_type.xml",
         "views/purchase_request_views.xml",
     ],
+    "post_init_hook": "post_init_hook",
     "installable": True,
     "auto_install": False,
     "license": "LGPL-3",

@@ -21,12 +21,18 @@ class PurchaseRequest(models.Model):
 
     @api.depends("operating_unit_id")
     def _compute_verifier_candidate_ids(self):
-        """Who may be named ผู้ยืนยันตรวจสอบ; extension hook (OU layer narrows)."""
+        for rec in self:
+            rec.verifier_candidate_ids = rec._get_verifier_candidates()
+
+    def _get_verifier_candidates(self):
+        """Who may be named ผู้ยืนยันตรวจสอบ; extension hook (OU layer narrows).
+
+        A plain method, not a read of ``verifier_candidate_ids``: on a new
+        record that x2many reads back as new-record ids, which never
+        intersect real users."""
         group = self.env.ref("purchase_request_kmitl.group_purchase_request_verify")
         # sudo: regular users cannot read group membership
-        users = group.sudo().users.filtered(lambda u: not u.share)
-        for rec in self:
-            rec.verifier_candidate_ids = users
+        return group.sudo().users.filtered(lambda u: not u.share)
 
     @api.constrains("assigned_to", "operating_unit_id")
     def _check_assigned_to_verifier(self):
@@ -35,7 +41,10 @@ class PurchaseRequest(models.Model):
                 raise ValidationError(
                     _("คำขอ %s อยู่ระหว่างรอตรวจสอบ ต้องระบุผู้ยืนยันตรวจสอบ") % rec.name
                 )
-            if rec.assigned_to and rec.assigned_to not in rec.verifier_candidate_ids:
+            if (
+                rec.assigned_to
+                and rec.assigned_to not in rec._get_verifier_candidates()
+            ):
                 raise ValidationError(
                     _("%(user)s ไม่ใช่ผู้ตรวจสอบแบบขอให้จัดหา (พ.1) ของคำขอ %(pr)s")
                     % {"user": rec.assigned_to.display_name, "pr": rec.name}
@@ -43,7 +52,7 @@ class PurchaseRequest(models.Model):
 
     @api.onchange("operating_unit_id")
     def _onchange_verifier_candidates(self):
-        candidates = self.verifier_candidate_ids
+        candidates = self._get_verifier_candidates()
         if self.assigned_to and self.assigned_to not in candidates:
             self.assigned_to = False
         if not self.assigned_to and len(candidates) == 1:

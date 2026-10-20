@@ -28,6 +28,6 @@ unchanged). Naming someone only decides who receives the Todo.
 
 ``purchase_request_verifier_operating_unit`` (auto-install) limits the choice
 to verifiers of the request's own Operating Unit. Override
-``_compute_verifier_candidate_ids`` to narrow the candidates further. The
+``_get_verifier_candidates()`` to narrow the candidates further. The
 field domain, constraint, onchange clearing and single-candidate auto-pick all
 follow it.

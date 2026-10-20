@@ -9,6 +9,10 @@
                  the request ends — not tied to is_editable -->
             <xpath expr="//field[@name='user_id']" position="after">
                 <field name="verifier_candidate_ids" invisible="1" />
+                <!-- the visible OU field is gated on multi-OU: without this one a
+                     plain requester's new form never loads the default OU, so the
+                     candidates (and the dropdown) come up empty -->
+                <field name="operating_unit_id" invisible="1" />
                 <xpath expr="//field[@name='assigned_to']" position="move" />
             </xpath>
             <field name="assigned_to" position="attributes">

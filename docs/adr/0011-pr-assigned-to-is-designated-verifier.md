@@ -22,7 +22,7 @@ now dormant on the PR and holds no data in production.
   `purchase_request_verifier_operating_unit`. The PA's own `assigned_to` (Approver) is
   untouched.
 - **Candidates**: Verifier-group users, and in the OU layer only those in the PR's
-  Operating Unit. One compute hook, `_compute_verifier_candidate_ids`, feeds:
+  Operating Unit. One method hook, `_get_verifier_candidates()`, feeds:
   - the field domain;
   - an `@api.constrains`;
   - an onchange that clears a non-candidate and auto-picks a lone candidate.

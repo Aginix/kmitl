@@ -50,7 +50,7 @@ class TestPurchaseRequestVerifier(TransactionCase):
             "ignore_exception": True,
             "line_ids": [
                 Command.create(
-                    {"name": "Item", "product_qty": 1.0, "estimated_cost": 100.0}
+                    {"name": "Item", "product_qty": 1.0, "price_unit": 100.0}
                 )
             ],
             **vals,
