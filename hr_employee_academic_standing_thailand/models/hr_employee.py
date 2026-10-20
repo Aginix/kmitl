@@ -25,6 +25,11 @@ class HrEmployee(models.Model):
     profession_id = fields.Many2one(
         "hr.employee.profession", string="Profession", tracking=True
     )
+    title_dr = fields.Boolean(
+        string="ดร. (Dr.)",
+        tracking=True,
+        help="ติ๊กเพื่อใส่คำนำหน้า ดร./Dr. ในคำนำหน้าชื่อทางวิชาการ (สำหรับ role วิชาการ)",
+    )
 
     academic_standing_title = fields.Char(
         compute="_compute_academic_standing_title",
@@ -54,7 +59,7 @@ class HrEmployee(models.Model):
         "rank_id",
         "rank_nobility_id",
         "profession_id",
-        "education_level_id",
+        "title_dr",
         "role",
         "job_id",
         "position_level_relation_id",
@@ -63,18 +68,12 @@ class HrEmployee(models.Model):
         def get_value(value):
             return value + " " if value else ""
 
-        dr_education = self.env.ref(
-            "hr_employee_education_history.Q01", raise_if_not_found=False
-        )
-
         def get_academic_standing_for_academic_role(rec):
-            title_dr = bool(dr_education and dr_education == rec.education_level_id)
-
             rec.academic_standing_title = (
                 "{academic}{rank}{dr}{profession}{rank_nobility}".format(
                     academic=get_value(rec.academic_standing_id.name),
                     rank=get_value(rec.rank_id.name),
-                    dr="ดร. " if title_dr else "",
+                    dr="ดร. " if rec.title_dr else "",
                     profession=get_value(rec.profession_id.name),
                     rank_nobility=get_value(rec.rank_nobility_id.name),
                 )
@@ -84,7 +83,7 @@ class HrEmployee(models.Model):
                 "{academic}{rank}{dr}{profession}{rank_nobility}".format(
                     academic=get_value(rec.academic_standing_id.name_abbreviation),
                     rank=get_value(rec.rank_id.name_abbreviation),
-                    dr="ดร. " if title_dr else "",
+                    dr="ดร. " if rec.title_dr else "",
                     profession=get_value(rec.profession_id.name_abbreviation),
                     rank_nobility=get_value(rec.rank_nobility_id.name_abbreviation),
                 )
@@ -94,7 +93,7 @@ class HrEmployee(models.Model):
                 "{academic}{rank}{dr}{profession}{rank_nobility}".format(
                     academic=get_value(rec.academic_standing_id.name_en),
                     rank=get_value(rec.rank_id.name_en),
-                    dr="Dr. " if title_dr else "",
+                    dr="Dr. " if rec.title_dr else "",
                     profession=get_value(rec.profession_id.name_en),
                     rank_nobility=get_value(rec.rank_nobility_id.name_en),
                 )
@@ -104,7 +103,7 @@ class HrEmployee(models.Model):
                 "{academic}{rank}{dr}{profession}{rank_nobility}".format(
                     academic=get_value(rec.academic_standing_id.name_abbreviation_en),
                     rank=get_value(rec.rank_id.name_abbreviation_en),
-                    dr="Dr. " if title_dr else "",
+                    dr="Dr. " if rec.title_dr else "",
                     profession=get_value(rec.profession_id.name_abbreviation_en),
                     rank_nobility=get_value(rec.rank_nobility_id.name_abbreviation_en),
                 )
