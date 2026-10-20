@@ -102,6 +102,11 @@ class PurchaseRequestApproval(models.Model):
         compute="_compute_disbursement_request",
     )
 
+    active_disbursement_request_count = fields.Integer(
+        string="Active Disbursement Request Count",
+        compute="_compute_disbursement_request",
+    )
+
     disbursement_request_total = fields.Monetary(
         string="Total Disbursement Request",
         compute="_compute_disbursement_request",
@@ -132,13 +137,22 @@ class PurchaseRequestApproval(models.Model):
     def action_view_purchase_order(self):
         return self.request_id.action_view_purchase_order()
 
-    @api.depends("disbursement_request_ids", "disbursement_request_ids.amount_total")
+    @api.depends(
+        "disbursement_request_ids",
+        "disbursement_request_ids.amount_total",
+        "disbursement_request_ids.state",
+    )
     def _compute_disbursement_request(self):
         for approval in self:
             approval.disbursement_request_total = sum(
                 approval.disbursement_request_ids.mapped("amount_total")
             )
             approval.disbursement_request_count = len(approval.disbursement_request_ids)
+            approval.active_disbursement_request_count = len(
+                approval.disbursement_request_ids.filtered(
+                    lambda r: r.state != "cancel"
+                )
+            )
 
     # Vocabulary read off disbursement.request.state — never pipeline_status,
     # which lives on a different field and was never reachable from here.
