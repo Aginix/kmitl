@@ -378,16 +378,26 @@
                 <group string="Acceptance Evidence" name="acceptance_evidence"
                        attrs="{'invisible': [('wa_tier_validation', '=', True)]}">
                     <group>
+                        <div colspan="2" class="alert alert-info" role="alert"
+                             attrs="{'invisible': [('id', '!=', False)]}">
+                            กรุณาบันทึกใบตรวจรับก่อน จึงจะแนบไฟล์ได้
+                        </div>
                         <field name="attachment_ids"
                                widget="many2many_binary"
                                colspan="2"
                                nolabel="1"
-                               attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                               attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('id', '=', False)]}"/>
                     </group>
                 </group>
                 <group string="Supporting Documents" name="support_document">
                     <group>
-                        <field name="supporting_document_ids" nolabel="1" colspan="2" widget="many2many_binary"/>
+                        <div colspan="2" class="alert alert-info" role="alert"
+                             attrs="{'invisible': [('id', '!=', False)]}">
+                            กรุณาบันทึกใบตรวจรับก่อน จึงจะแนบไฟล์ได้
+                        </div>
+                        <field name="supporting_document_ids" nolabel="1" colspan="2"
+                               widget="many2many_binary"
+                               attrs="{'readonly': [('id', '=', False)]}"/>
                     </group>
                 </group>
             </xpath>
