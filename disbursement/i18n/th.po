@@ -1063,8 +1063,8 @@ msgstr "สามารถอนุมัติได้เฉพาะคำข
 #. odoo-python
 #: code:addons/disbursement/models/disbursement_request.py:0
 #, python-format
-msgid "Only submitted, sent, or cancelled requests can be reset to draft."
-msgstr "สามารถกลับไปฉบับร่างได้เฉพาะคำขอเบิกที่อยู่ในสถานะ \"ยืนยันแล้ว\" \"ลงนามแล้ว\" หรือ \"ยกเลิก\" เท่านั้น"
+msgid "Only submitted, signed, verified, or cancelled requests can be reset to draft."
+msgstr "สามารถกลับไปฉบับร่างได้เฉพาะคำขอเบิกที่อยู่ในสถานะ \"ยืนยันแล้ว\" \"ลงนามแล้ว\" \"ตรวจสอบแล้ว\" หรือ \"ยกเลิก\" เท่านั้น"
 
 #. module: disbursement
 #: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
@@ -1876,3 +1876,42 @@ msgstr "ใช้งาน"
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request_signature__signature_image
 msgid "Signature"
 msgstr "ลายเซ็น"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+msgid "Are you sure you want to approve this request?"
+msgstr "ยืนยันการอนุมัติใบขอเบิกนี้?"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__partner_type_id
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
+msgid "Payee Type"
+msgstr "ประเภทผู้รับเงิน"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__payee_display
+msgid "Payees"
+msgstr "ผู้รับเงิน"
+
+#. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_request.py:0
+#, python-format
+msgid "Payee type changed"
+msgstr "เปลี่ยนประเภทผู้รับเงิน"
+
+#. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_request.py:0
+#, python-format
+msgid ""
+"These payees are not of type %(type)s and must be changed before "
+"submitting: %(names)s"
+msgstr "ผู้รับเงินต่อไปนี้ไม่ใช่ประเภท %(type)s ต้องเปลี่ยนก่อนส่งขออนุมัติ: %(names)s"
+
+#. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_request.py:0
+#, python-format
+msgid "Set a payee type on %s before raising a disbursement request."
+msgstr "กรุณาระบุประเภทผู้รับเงินของ %s ก่อนสร้างใบขอเบิก"

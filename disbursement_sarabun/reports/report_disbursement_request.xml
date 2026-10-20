@@ -19,10 +19,11 @@
             วิธีการจ่ายเงิน:
             <u><strong><span t-field="o.payment_type"/></strong></u>
         </p>
-        <p t-if="o.ref">
+        <t t-set="source_document" t-value="o.sudo()._get_source_document()"/>
+        <p t-if="source_document">
             <span class="oe-tabs" style="width: 40px;">&#9;</span>
             อ้างอิง
-            <u><strong><span t-out="o.ref"/></strong></u>
+            <u><strong><span t-out="source_document.display_name"/></strong></u>
         </p>
     </template>
 
@@ -44,14 +45,6 @@
         <p>รายละเอียดงบประมาณ</p>
         <table border="0" class="budget">
             <tbody>
-                <tr class="o_field_budget_commitment_id">
-                    <td>เลขที่ใบจองงบประมาณ</td>
-                    <td><span t-field="o.budget_commitment_id"/></td>
-                </tr>
-                <tr class="o_field_budget_account_id">
-                    <td>รหัสงบประมาณค่าใช้จ่าย</td>
-                    <td><span t-field="o.budget_account_id"/></td>
-                </tr>
                 <tr class="o_field_source_analytic_id">
                     <td>แหล่งเงิน</td>
                     <td><span t-field="o.source_analytic_id"/></td>

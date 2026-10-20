@@ -2,7 +2,7 @@
 
 {
     "name": "Disbursement ↔ KMITL Accounting Bridge",
-    "version": "16.0.1.2.0",
+    "version": "16.0.1.3.0",
     "category": "KMITL/Accounting",
     "summary": "DR ↔ Bill: enable vendor bill creation from disbursement "
     "requests and pipeline status sync",
@@ -10,7 +10,8 @@
     "website": "https://www.kmitl.ac.th",
     "license": "LGPL-3",
     "depends": [
-        "disbursement",
+        # bills show the DR's consumed budget (account.move related fields)
+        "disbursement_budget",
         "accounting_kmitl",
         "accounting_kmitl_workflow",
     ],

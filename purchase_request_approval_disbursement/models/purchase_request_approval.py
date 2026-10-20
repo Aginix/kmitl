@@ -192,9 +192,10 @@ class PurchaseRequestApproval(models.Model):
 
     def _prepare_disbursement_request_vals(self):
         return {
-            "reference": "purchase.request.approval,%d" % self.id,
-            "partner_id": self.partner_id.id,
-            "partner_type": "multi",
+            "purchase_request_approval_id": self.id,
+            "partner_type_id": self.env["disbursement.request"]
+            ._get_payee_type(self.partner_id)
+            .id,
             "line_ids": [
                 Command.create(
                     {
@@ -204,7 +205,6 @@ class PurchaseRequestApproval(models.Model):
                 )
                 for line in self.line_ids
             ],
-            "ref": self.name,
         }
 
     def action_view_disbursement_request(self):

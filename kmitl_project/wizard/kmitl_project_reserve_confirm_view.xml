@@ -4,12 +4,13 @@
         <field name="name">kmitl.project.reserve.confirm.form</field>
         <field name="model">kmitl.project.reserve.confirm</field>
         <field name="arch" type="xml">
-            <form string="จองงบประมาณ">
+            <form string="ยืนยันงบประมาณ">
                 <sheet>
-                    <p>ยืนยันการจองงบประมาณสำหรับโครงการนี้ใช่หรือไม่?</p>
+                    <p>ยืนยันงบประมาณที่ได้รับจัดสรรสำหรับโครงการนี้ใช่หรือไม่?</p>
+                    <p class="text-muted">ระบบจะจองงบประมาณเมื่อโครงการได้รับอนุมัติ</p>
                 </sheet>
                 <footer>
-                    <button name="action_confirm" type="object" string="ยืนยันจองงบประมาณ" class="btn-primary" />
+                    <button name="action_confirm" type="object" string="ยืนยันงบประมาณ" class="btn-primary" />
                     <button string="ยกเลิก" class="btn-secondary" special="cancel" />
                 </footer>
             </form>

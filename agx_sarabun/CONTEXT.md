@@ -85,7 +85,7 @@ A Document in flight along its Route. Renamed from the old `sent` to capture "mo
 _Avoid_: sent, in transit
 
 **ตีกลับ (Return)**:
-Send a circulating Document back for revision — available **only to the active actor of a gating step** (see Dispositions). The returner **picks the destination every time**: the **previous stage** (resume — the default), the **original sender** (restart the chain), or **any earlier step** to resume from. Lands the Document in state `returned` (revisable like a draft; the prior chain is **archived as history, never overwritten**). A **reason is required** and kept in the routing history.
+Send a circulating Document back for revision — available **only to the active actor of a gating step** (see Dispositions). The returner **picks the destination every time**: the **previous stage** (resume — the default), the **original sender** (restart the chain), or **any earlier step** to resume from. Lands the Document in state `returned` (revisable like a draft; the prior chain is **archived as history, never overwritten**). A restart recreates the **same เส้นทาง verbatim**, like ดึงกลับ — it is never re-seeded from the template, so the sender does not have to rebuild the route. A **reason is required** and kept in the routing history.
 _Avoid_: reject (Return is recoverable; Reject is terminal); a fixed sender-restart default (the returner chooses each time)
 
 **ดึงกลับ (Recall)**:
@@ -103,6 +103,30 @@ _Avoid_: released number, reusable number; expecting a gap from a reject/cancel 
 **Reset (to draft — admin override, ADR-0011)**:
 An **admin-only** force-return of a หนังสือ from **any non-draft state** — including `completed`, and even the otherwise-terminal `rejected` / `cancelled` — back to an editable **`draft`**, **keeping its registered number (when it has one) and its original Route**. It exists for the case ดึงกลับ cannot serve: a mistake found *after* the document is signed / completed (typically a typo in an already-fully-approved หนังสือ) that must be corrected and re-sent from the start. It **archives the finished attempt as history** (never overwrites — prior signatures survive on the archived Route), **recreates the Route as it was originally created** (the seeded backbone; runtime เกษียนสั่งการ insertions are *dropped*), **un-freezes** the ฉบับลงนาม (the prior signed PDF is discarded), and **rolls the origin back** so it is treated exactly like a ดึงกลับ. Since [ADR-0017](./docs/adr/0017-register-number-at-issuing-sign.md) any หนังสือ past its ลงนามในใบปะหน้า sign carries a number — it survives the reset and is re-used verbatim at the re-sign (`_assign_register_number` is idempotent); a หนังสือ reset before that sign simply has no number to keep (a voided number is reclaimed). A reason is mandatory (kept in chatter). It is a **deliberately separate, optional capability**, granted **per-user independently of the Manager access level** (a Sarabun Manager need not hold it) — and not every deployment grants it at all.
 _Avoid_: equating Reset with ดึงกลับ (Reset is admin-only, works *after* signing / completion / rejection, and un-freezes); treating `rejected` / `cancelled` as absolutely terminal (Reset is the one admin escape); carrying the prior run's เกษียนสั่งการ insertions into the new Route (Reset restores the original); assuming every reset หนังสือ has a number to keep (only one past the issuing sign does — ADR-0017)
+
+**แก้ไขเส้นทาง (Route edit — admin, ADR-0018)**:
+A **Sarabun Route Editor** (optional `agx_sarabun_route_edit`, an independent checkbox like Reset) edits the Route of a **circulating** หนังสือ in place, to fix a wrong step or follow a change of executive, **without** restarting it.
+- **Waiting steps** may be changed or deleted.
+- An **active step** may only be **re-targeted**: its to-dos move to the new holders. An active step may also be deleted.
+- **A person taken off a step loses access**, whether by re-target, delete or holder refresh. Their recipient row is deleted and they are unfollowed. They keep access only if another step, a prior attempt, or being the sender still reaches them. This is the one exception to "the reach ledger only grows".
+- **Done steps are locked**.
+- Added steps are waiting `direct` insertions.
+- A step may only be placed after the last Stage already passed.
+- After each save the Route must still pass the ส่ง checks, and the engine advances at once.
+- After a Position's holder changes, the per-document button **ดึงผู้ดำรงตำแหน่งปัจจุบัน** re-resolves the active Position / unit steps. Waiting steps need nothing, because they resolve at activation.
+- Every edit is logged to the chatter.
+
+_Avoid_: re-targeting a done step (signatures never change); leaving a removed person with read access (route edit revokes it); using Reset or ดึงกลับ just to fix a later step (route edit keeps the signatures already given); expecting a Position holder change to move in-flight to-dos by itself (press the button)
+
+**แก้ไขตำแหน่งที่ลงนาม (Correct signed capacity — ADR-0019)**:
+A Sarabun Route Editor may correct the **ตำแหน่ง a signed บุคลากร step was signed in** when it was genuinely wrong, whether the หนังสือ is still circulating or already completed. It uses the ✏️ row button on the Route (optional `agx_sarabun_route_edit_person_capacity`, auto-installed with both route edit and person capacity).
+- Only the capacity changes: the step's capacity label, `signed_as_position_id` and the frozen `signed_position_name`. The **name, signature and date stay as signed**.
+- The new Position must be one the person currently holds.
+- Positive-done, show_signature, non-originator Person steps only.
+- **Not logged to the chatter**, because only route editors may do it.
+- A completed หนังสือ's frozen PDF still shows the old title until it is regenerated (see ฉบับลงนาม).
+
+_Avoid_: changing the signer's name / signature / date (never); correcting a Position-mode step (its capacity *is* its target); expecting the frozen PDF to update by itself
 
 ### Concurrency
 
@@ -135,7 +159,7 @@ The mandatory, locked **first Routing Step** — the หนังสือ's ผ
 _Avoid_: assuming the drafter always signs (a non-signing ธุรการ drafter is a first-class case — ADR-0008); counting the originator step as an approval (would block recall); a route that starts with an approver (the ผู้จัดทำ is always first); letting a user delete or re-target it
 
 **ฉบับลงนาม (Signed copy)**:
-The **immutable PDF snapshot** frozen when a Document reaches `completed`. From then on portal/print serve this file, never a live render. Before completion, preview renders live (own report, or a delegated origin report).
+The **immutable PDF snapshot** frozen when a Document reaches `completed`. From then on portal/print serve this file, never a live render. Before completion, preview renders live (own report, or a delegated origin report). A Sarabun Manager may **regenerate** it after a correction (optional `agx_sarabun_pdf_regenerate`, Action menu **สร้างไฟล์ PDF ใหม่** — ADR-0019): it is re-rendered from current data and **replaces** the old file. This is the only way a frozen copy changes.
 _Avoid_: attachment, printout
 
 **Signature block**:

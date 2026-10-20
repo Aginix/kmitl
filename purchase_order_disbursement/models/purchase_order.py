@@ -71,10 +71,11 @@ class PurchaseOrder(models.Model):
         return self.disbursement_return_attachment_ids
 
     def _prepare_disbursement_request_vals(self):
-        return {
-            "reference": "purchase.order,%d" % self.id,
-            "partner_id": self.partner_id.id,
-            "partner_type": "multi",
+        vals = {
+            "purchase_id": self.id,
+            "partner_type_id": self.env["disbursement.request"]
+            ._get_payee_type(self.partner_id)
+            .id,
             "line_ids": [
                 Command.create({
                     **line._prepare_disbursement_request_line_vals(),
@@ -83,8 +84,19 @@ class PurchaseOrder(models.Model):
                 for line in self.order_line
                 if not line.display_type
             ],
-            "ref": self.name,
         }
+        # The request's dimensions come from the first PO line carrying them.
+        analytic = next(
+            (
+                line.analytic_distribution
+                for line in self.order_line
+                if line.analytic_distribution
+            ),
+            False,
+        )
+        if analytic:
+            vals["analytic_distribution"] = analytic
+        return vals
 
     def action_disbursement_request(self):
         self.ensure_one()
@@ -224,7 +236,6 @@ class PurchaseOrder(models.Model):
         disbursement_requests = self.env['disbursement.request'].search(
             [('purchase_id', '=', self.id)]
         )
-        default_reference = "purchase.order,%d" % self.id
 
         if len(disbursement_requests) == 1:
             return {
@@ -233,7 +244,7 @@ class PurchaseOrder(models.Model):
                 'res_model': 'disbursement.request',
                 'res_id': disbursement_requests.id,
                 'view_mode': 'form',
-                'context': {'default_reference': default_reference},
+                'context': {'default_purchase_id': self.id},
             }
 
         return {
@@ -242,5 +253,5 @@ class PurchaseOrder(models.Model):
             'res_model': 'disbursement.request',
             'view_mode': 'tree,form',
             'domain': [('purchase_id', '=', self.id)],
-            'context': {'default_reference': default_reference},
+            'context': {'default_purchase_id': self.id},
         }

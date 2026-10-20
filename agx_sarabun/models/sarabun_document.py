@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """sarabun.document — the หนังสือ (Document), protagonist of e-Saraban.
 
 P1 scope: the static data foundation only (header, classification, origin link,
@@ -7,6 +6,7 @@ lifecycle state *machine* (transitions, numbering, freeze, callbacks) arrive in
 P2–P5 — see DESIGN.md and IMPLEMENTATION-PLAN.md. Methods here are intentionally
 minimal; behaviour is added per phase.
 """
+
 import base64
 import logging
 
@@ -284,19 +284,24 @@ class SarabunDocument(models.Model):
         "after the user has acted.",
     )
     pending_ack_count = fields.Integer(
-        compute="_compute_routing_progress", string="ค้างรับทราบ",
+        compute="_compute_routing_progress",
+        string="ค้างรับทราบ",
     )
     routing_progress = fields.Float(
-        compute="_compute_routing_progress", string="Routing Progress",
+        compute="_compute_routing_progress",
+        string="Routing Progress",
     )
     # === Inbox (per current user — from the step that reached them) ===
     my_received_date = fields.Datetime(
-        compute="_compute_my_inbox", string="วันที่ได้รับ",
+        compute="_compute_my_inbox",
+        string="วันที่ได้รับ",
         help="When the step that reached the current user was received by them "
         "(per-person; may differ from the step's activation under delegation).",
     )
     my_action_verb_id = fields.Many2one(
-        "sarabun.verb", compute="_compute_my_inbox", string="เพื่อดำเนินการ",
+        "sarabun.verb",
+        compute="_compute_my_inbox",
+        string="เพื่อดำเนินการ",
         help="What the current user was asked to do on the step that reached them "
         "(may already be a completed step).",
     )
@@ -306,7 +311,8 @@ class SarabunDocument(models.Model):
             ("read", "เปิดอ่านแล้ว"),
             ("forwarded", "รอการส่งต่อ"),
         ],
-        compute="_compute_my_inbox", string="สถานะการอ่าน",
+        compute="_compute_my_inbox",
+        string="สถานะการอ่าน",
         help="Whether the current user has opened this หนังสือ — tracked per person.",
     )
 
@@ -355,7 +361,10 @@ class SarabunDocument(models.Model):
 
     # === Signing / official record (P5 — DESIGN §5) ===
     signed_pdf = fields.Binary(
-        string="ฉบับลงนาม (Signed Copy)", attachment=True, copy=False, readonly=True,
+        string="ฉบับลงนาม (Signed Copy)",
+        attachment=True,
+        copy=False,
+        readonly=True,
         help="Immutable PDF frozen at completion (cover sheet + origin body merged).",
     )
     signed_pdf_filename = fields.Char(copy=False, readonly=True)
@@ -394,7 +403,9 @@ class SarabunDocument(models.Model):
     @api.model
     def _default_sender_department_id(self):
         employee = self.env.user.employee_id
-        return employee.department_id.id if employee and employee.department_id else False
+        return (
+            employee.department_id.id if employee and employee.department_id else False
+        )
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -448,7 +459,9 @@ class SarabunDocument(models.Model):
             if record.register_number_id:
                 record.sequence_id = record.register_number_id.sequence_id
             elif record.sender_department_id:
-                record.sequence_id = record.sender_department_id._sarabun_default_sequence()
+                record.sequence_id = (
+                    record.sender_department_id._sarabun_default_sequence()
+                )
             else:
                 record.sequence_id = False
 
@@ -465,12 +478,15 @@ class SarabunDocument(models.Model):
                     break
                 dept = dept.parent_id
             else:
-                raise ValidationError(_(
-                    "เล่มทะเบียน '%(book)s' ไม่ใช่ของหน่วยงาน '%(unit)s' หรือหน่วยงานต้นสังกัด."
-                ) % {
-                    "book": seq.display_name,
-                    "unit": record.sender_department_id.display_name,
-                })
+                raise ValidationError(
+                    _(
+                        "เล่มทะเบียน '%(book)s' ไม่ใช่ของหน่วยงาน '%(unit)s' หรือหน่วยงานต้นสังกัด."
+                    )
+                    % {
+                        "book": seq.display_name,
+                        "unit": record.sender_department_id.display_name,
+                    }
+                )
 
     @api.depends("origin_model", "origin_res_id")
     def _compute_origin_reference(self):
@@ -498,9 +514,7 @@ class SarabunDocument(models.Model):
         that the ``active``-scoped ``routing_step_ids`` traversal would drop. The
         field only ever grows (rows are never deleted), so read never lapses."""
         Recipient = (
-            self.env["sarabun.step.recipient"]
-            .sudo()
-            .with_context(active_test=False)
+            self.env["sarabun.step.recipient"].sudo().with_context(active_test=False)
         )
         for record in self:
             rid = record.id if isinstance(record.id, int) else record._origin.id
@@ -523,9 +537,11 @@ class SarabunDocument(models.Model):
             # an approval, so it must not set has_signed (which would block the
             # sender's own ดึงกลับ / ยกเลิกการส่ง right after sending).
             done = record.routing_step_ids.filtered(
-                lambda s: s.state == "done"
-                and s.disposition in POSITIVE_DISPOSITIONS
-                and not s.is_originator
+                lambda s: (
+                    s.state == "done"
+                    and s.disposition in POSITIVE_DISPOSITIONS
+                    and not s.is_originator
+                )
             )
             strongest = done.mapped("verb").sorted(key=lambda v: v.rank)[-1:]
             record.strongest_verb_id = strongest
@@ -563,9 +579,9 @@ class SarabunDocument(models.Model):
             )
             active = my_recips.filtered(lambda r: r.step_id.state == "active")[:1]
             # latest-reached: higher stage order, then later-created row (id monotonic)
-            reaching = active or my_recips.sorted(
-                key=lambda r: (r.step_id.order, r.id)
-            )[-1:]
+            reaching = (
+                active or my_recips.sorted(key=lambda r: (r.step_id.order, r.id))[-1:]
+            )
             record.my_reaching_step_id = reaching.step_id
 
     # Depend on the real routing_step_ids O2m (searchable), not the non-stored
@@ -597,11 +613,17 @@ class SarabunDocument(models.Model):
         or already-acted recipient must flip to อ่านแล้ว too). Idempotent; only
         touches own rows. Waiting/future steps carry no recipient row yet, so nothing
         is marked before the หนังสือ actually reaches the user."""
-        recipients = self.env["sarabun.step.recipient"].sudo().search([
-            ("document_id", "in", self.ids),
-            ("user_id", "=", self.env.user.id),
-            ("read_date", "=", False),
-        ])
+        recipients = (
+            self.env["sarabun.step.recipient"]
+            .sudo()
+            .search(
+                [
+                    ("document_id", "in", self.ids),
+                    ("user_id", "=", self.env.user.id),
+                    ("read_date", "=", False),
+                ]
+            )
+        )
         if recipients:
             recipients.write({"read_date": fields.Datetime.now()})
         return True
@@ -616,7 +638,9 @@ class SarabunDocument(models.Model):
             gating = steps.filtered(lambda s: s.gating and s.state != "skipped")
             if gating:
                 done = gating.filtered(
-                    lambda s: s.state == "done" and s.disposition in POSITIVE_DISPOSITIONS
+                    lambda s: (
+                        s.state == "done" and s.disposition in POSITIVE_DISPOSITIONS
+                    )
                 )
                 record.routing_progress = 100.0 * len(done) / len(gating)
             else:
@@ -647,8 +671,9 @@ class SarabunDocument(models.Model):
             gating = self.routing_step_ids.filtered("gating")
             if gating:
                 done = gating.filtered(
-                    lambda s: s.state == "done"
-                    and s.disposition in POSITIVE_DISPOSITIONS
+                    lambda s: (
+                        s.state == "done" and s.disposition in POSITIVE_DISPOSITIONS
+                    )
                 )
                 label = _("%(state)s • ผ่านแล้ว %(done)s/%(total)s") % {
                     "state": label,
@@ -660,12 +685,15 @@ class SarabunDocument(models.Model):
             active = self.routing_step_ids.filtered(lambda s: s.state == "active")
             active = active.filtered("gating") or active
             waiting = ", ".join(
-                "%s: %s" % (s.verb.name, s.target_name) if s.target_name else s.verb.name
+                "%s: %s" % (s.verb.name, s.target_name)
+                if s.target_name
+                else s.verb.name
                 for s in active
             )
             if waiting:
                 label = _("%(label)s • กำลังรอ %(who)s") % {
-                    "label": label, "who": waiting,
+                    "label": label,
+                    "who": waiting,
                 }
         return label
 
@@ -746,16 +774,18 @@ class SarabunDocument(models.Model):
             ):
                 doc._seed_route_from_template()
             if not doc.routing_step_ids.filtered("gating"):
-                raise UserError(_(
-                    "Add at least one gating step (เห็นชอบ or ลงนาม-อนุมัติ) before sending."
-                ))
+                raise UserError(
+                    _(
+                        "Add at least one gating step (เห็นชอบ or ลงนาม-อนุมัติ) before sending."
+                    )
+                )
             # A หนังสือ already numbered (re-sent after a ตีกลับ past the issuing sign)
             # keeps its number and book — neither check below applies (ADR-0017).
             numbered = bool(doc.register_number_id)
             if not numbered and not doc.routing_step_ids.filtered("verb.issues_number"):
-                raise UserError(_(
-                    "เส้นทางต้องมีขั้นตอนที่ออกเลขที่หนังสือ (เช่น ลงนามในใบปะหน้า) ก่อนส่ง"
-                ))
+                raise UserError(
+                    _("เส้นทางต้องมีขั้นตอนที่ออกเลขที่หนังสือ (เช่น ลงนามในใบปะหน้า) ก่อนส่ง")
+                )
             # P3: fail fast if no register resolves, and PIN the resolved เล่มทะเบียน
             # so a later config change can't move the หนังสือ to another book between
             # ส่ง and ลงทะเบียน (which runs at the issuing sign — ADR-0017/0011).
@@ -780,16 +810,22 @@ class SarabunDocument(models.Model):
         verb = self.env.ref("agx_sarabun.verb_originate", raise_if_not_found=False)
         orders = self.routing_step_ids.mapped("order")
         first_order = (min(orders) - 1) if orders else 1
-        self.routing_step_ids = [(0, 0, {
-            "order": first_order,
-            "verb": (verb or Step._default_verb()).id,
-            "is_originator": True,
-            "target_mode": "person",
-            "employee_id": self.sender_user_id.employee_id.id,
-            "attempt_seq": self.attempt_seq or 1,
-            "created_by_disposition": "seed",
-            "state": "waiting",
-        })]
+        self.routing_step_ids = [
+            (
+                0,
+                0,
+                {
+                    "order": first_order,
+                    "verb": (verb or Step._default_verb()).id,
+                    "is_originator": True,
+                    "target_mode": "person",
+                    "employee_id": self.sender_user_id.employee_id.id,
+                    "attempt_seq": self.attempt_seq or 1,
+                    "created_by_disposition": "seed",
+                    "state": "waiting",
+                },
+            )
+        ]
 
     def _sign_originator_step(self):
         """Auto-sign the originator at send (ส่ง = ลงนามผู้จัดทำ). Idempotent; the
@@ -841,10 +877,12 @@ class SarabunDocument(models.Model):
         ):
             raise UserError(_("Only the sender may withdraw this document."))
         if self.has_signed:
-            raise UserError(_(
-                "This document has been signed; withdrawal now requires issuing a "
-                "cancellation หนังสือ, not ดึงกลับ / ยกเลิกการส่ง."
-            ))
+            raise UserError(
+                _(
+                    "This document has been signed; withdrawal now requires issuing a "
+                    "cancellation หนังสือ, not ดึงกลับ / ยกเลิกการส่ง."
+                )
+            )
 
     def action_pull_back(self, reason=None):
         """ดึงกลับ (recall) — circulating → returned, KEEPING the register number
@@ -872,9 +910,9 @@ class SarabunDocument(models.Model):
         if not reason:
             raise UserError(_("A reason is required to ยกเลิกการส่ง (cancel the send)."))
         self.routing_step_ids._clear_activities()
-        self.routing_step_ids.filtered(lambda s: s.state in ("waiting", "active")).write(
-            {"state": "skipped"}
-        )
+        self.routing_step_ids.filtered(
+            lambda s: s.state in ("waiting", "active")
+        ).write({"state": "skipped"})
         self.state = "cancelled"
         self._void_register("cancelled")
         self.message_post(body=_("Send cancelled (ยกเลิกการส่ง). Reason: %s") % reason)
@@ -946,9 +984,9 @@ class SarabunDocument(models.Model):
         rather than appending to it."""
         self.ensure_one()
         if self.state not in ("draft", "returned"):
-            raise UserError(_(
-                "The route can only be seeded on a draft or returned document."
-            ))
+            raise UserError(
+                _("The route can only be seeded on a draft or returned document.")
+            )
         if not self.route_template_id:
             raise UserError(_("Select a route template (แม่แบบเส้นทาง) first."))
         self._ensure_originator_step()
@@ -996,6 +1034,11 @@ class SarabunDocument(models.Model):
                 pending.write({"state": "skipped"})
         self._complete_document()
 
+    def _activity_subject(self):
+        """Collapsed single-line version of เรื่อง, for use as activity summary."""
+        self.ensure_one()
+        return " ".join((self.subject or "").split())
+
     def _complete_document(self):
         self.ensure_one()
         if self.state != "circulating":
@@ -1016,8 +1059,8 @@ class SarabunDocument(models.Model):
 
         Archive-not-overwrite (ADR-0006): the current attempt is ALWAYS frozen as
         history (``active=False``, ``attempt_seq`` bumped) — never reset in place.
-        The new attempt re-seeds either the full template (restart) or just the
-        chosen resume step onward (resume), leaving the prior chain intact."""
+        The new attempt recreates either the whole live เส้นทาง verbatim (restart) or
+        just the chosen resume step onward (resume), leaving the prior chain intact."""
         self.ensure_one()
         self.routing_step_ids._clear_activities()  # drop to-dos before archive
         if destination == "resume_step" and resume_step_id:
@@ -1035,7 +1078,9 @@ class SarabunDocument(models.Model):
             ]
             self._ensure_originator_step()  # resume tail starts above row 1 — re-add it
         else:
-            self._restart_chain()
+            # Restart on the SAME เส้นทาง — never re-seed from the template, which
+            # would wipe the sender's route edits and runtime insertions.
+            self._recreate_chain_verbatim()
         self.state = "returned"
         self.message_post(body=_("Document returned for revision (ตีกลับ)."))
         self._call_origin("_on_sarabun_returned", self, step)
@@ -1044,9 +1089,9 @@ class SarabunDocument(models.Model):
         """ปฏิเสธ — terminal; void the number, skip remaining steps."""
         self.ensure_one()
         self.routing_step_ids._clear_activities()
-        self.routing_step_ids.filtered(lambda s: s.state in ("waiting", "active")).write(
-            {"state": "skipped"}
-        )
+        self.routing_step_ids.filtered(
+            lambda s: s.state in ("waiting", "active")
+        ).write({"state": "skipped"})
         self.state = "rejected"
         self._void_register("rejected")
         self.message_post(body=_("Document rejected (ปฏิเสธ)."))
@@ -1065,7 +1110,7 @@ class SarabunDocument(models.Model):
 
     def _restart_chain(self):
         """Archive the current chain and re-seed a fresh waiting one for a restart
-        (ตีกลับ→sender_restart or ดึงกลับ). Prefer the route template; if the
+        (origin-driven, e.g. purchase_request_approval). Prefer the route template; if the
         document has no template — the common from_record / ad-hoc case — recreate
         the just-archived chain's steps so the Route is never left empty (which
         would strand the หนังสือ in ``returned``, unable to re-send)."""
@@ -1083,8 +1128,8 @@ class SarabunDocument(models.Model):
         self._ensure_originator_step()
 
     def _recreate_chain_verbatim(self):
-        """Archive the current attempt and recreate the SAME เส้นทาง exactly (ดึงกลับ —
-        ADR-0006, revised per UAT). Unlike ``_restart_chain`` it NEVER re-seeds from the
+        """Archive the current attempt and recreate the SAME เส้นทาง exactly (ดึงกลับ and
+        ตีกลับ→sender_restart — ADR-0006, revised per UAT). Unlike ``_restart_chain`` it NEVER re-seeds from the
         route template: every live step is recreated in order with its exact target /
         verb / for_info / provenance — including runtime เกษียนสั่งการ ('direct')
         insertions and delegated targets — so a pull-back-and-re-send keeps the identical
@@ -1134,22 +1179,27 @@ class SarabunDocument(models.Model):
         origin and are unaffected."""
         for doc in self:
             if doc.type_id and not doc.type_id.allow_manual and not doc.origin_model:
-                raise ValidationError(_(
-                    "ประเภทหนังสือ '%(type)s' ต้องสร้างจากเอกสารต้นทางเท่านั้น "
-                    "ไม่สามารถสร้างด้วยตนเองจากหน้าฟอร์มได้\n"
-                    "Document type '%(type)s' can only be created from a source "
-                    "record, not composed manually."
-                ) % {"type": doc.type_id.display_name})
+                raise ValidationError(
+                    _(
+                        "ประเภทหนังสือ '%(type)s' ต้องสร้างจากเอกสารต้นทางเท่านั้น "
+                        "ไม่สามารถสร้างด้วยตนเองจากหน้าฟอร์มได้\n"
+                        "Document type '%(type)s' can only be created from a source "
+                        "record, not composed manually."
+                    )
+                    % {"type": doc.type_id.display_name}
+                )
 
     # === Numbering / Register (P3 — ADR-0002 §4) ===
     @api.constrains("numbering_mode", "kind")
     def _check_numbering_mode_scope(self):
         for doc in self:
             if doc.kind == "from_record" and doc.numbering_mode != "auto":
-                raise ValidationError(_(
-                    "from_record documents register automatically; "
-                    "reserved numbering is for manual compose only."
-                ))
+                raise ValidationError(
+                    _(
+                        "from_record documents register automatically; "
+                        "reserved numbering is for manual compose only."
+                    )
+                )
 
     def _resolve_sequence(self):
         """Resolve the เล่มทะเบียน this หนังสือ issues from (ADR-0012): the book chosen
@@ -1167,15 +1217,21 @@ class SarabunDocument(models.Model):
         if not seq:
             unit = dept.display_name
             if dept and dept._sarabun_registers():
-                raise UserError(_(
-                    "ส่วนงาน '%(unit)s' มีหลายเล่มทะเบียน — โปรดเลือกเล่มทะเบียนที่จะใช้ส่ง "
-                    "(หรือกำหนดเล่มทะเบียนหลักของหน่วยงาน)."
-                ) % {"unit": unit})
-            raise UserError(_(
-                "ไม่พบทะเบียนหนังสือสำหรับส่วนงาน '%(unit)s'. "
-                "(No register configured for unit '%(unit)s'.) "
-                "Configure a register before sending."
-            ) % {"unit": unit})
+                raise UserError(
+                    _(
+                        "ส่วนงาน '%(unit)s' มีหลายเล่มทะเบียน — โปรดเลือกเล่มทะเบียนที่จะใช้ส่ง "
+                        "(หรือกำหนดเล่มทะเบียนหลักของหน่วยงาน)."
+                    )
+                    % {"unit": unit}
+                )
+            raise UserError(
+                _(
+                    "ไม่พบทะเบียนหนังสือสำหรับส่วนงาน '%(unit)s'. "
+                    "(No register configured for unit '%(unit)s'.) "
+                    "Configure a register before sending."
+                )
+                % {"unit": unit}
+            )
         return seq
 
     def _assign_register_number(self):
@@ -1197,11 +1253,13 @@ class SarabunDocument(models.Model):
             number = self.reserved_number_id
             if not number or number.state != "reserved" or number.sequence_id != seq:
                 raise UserError(_("Select a valid reserved number for this register."))
-            number.write({
-                "state": "used",
-                "document_id": self.id,
-                "used_date": fields.Datetime.now(),
-            })
+            number.write(
+                {
+                    "state": "used",
+                    "document_id": self.id,
+                    "used_date": fields.Datetime.now(),
+                }
+            )
         else:  # auto
             number = seq.allocate(self)
         self.register_number_id = number
@@ -1218,20 +1276,24 @@ class SarabunDocument(models.Model):
         no-op)."""
         self.ensure_one()
         if self.register_number_id:
-            self.register_number_id.write({
-                "state": "voided",
-                "void_reason": reason,
-                "void_date": fields.Datetime.now(),
-            })
+            self.register_number_id.write(
+                {
+                    "state": "voided",
+                    "void_reason": reason,
+                    "void_date": fields.Datetime.now(),
+                }
+            )
 
     # === Signing / official record (P5 — DESIGN §5) ===
     def _signature_steps(self):
         """Completed ลงนาม-อนุมัติ steps — the signature block(s)."""
         self.ensure_one()
         return self.routing_step_ids.filtered(
-            lambda s: s.state == "done"
-            and s.disposition in POSITIVE_DISPOSITIONS
-            and s.verb.is_signature
+            lambda s: (
+                s.state == "done"
+                and s.disposition in POSITIVE_DISPOSITIONS
+                and s.verb.is_signature
+            )
         ).sorted(key=lambda s: (s.order, s.acted_date or s.id))
 
     def _kasian_trail_steps(self):
@@ -1240,9 +1302,11 @@ class SarabunDocument(models.Model):
         _signature_block_steps); kept for UI / audit uses."""
         self.ensure_one()
         return self.routing_step_ids.filtered(
-            lambda s: s.state == "done"
-            and s.disposition in POSITIVE_DISPOSITIONS
-            and s.verb.gating
+            lambda s: (
+                s.state == "done"
+                and s.disposition in POSITIVE_DISPOSITIONS
+                and s.verb.gating
+            )
         ).sorted(key=lambda s: (s.order, s.acted_date or s.id))
 
     def _signature_block_steps(self):
@@ -1253,9 +1317,11 @@ class SarabunDocument(models.Model):
         routing trail is audit-only."""
         self.ensure_one()
         return self.routing_step_ids.filtered(
-            lambda s: s.state == "done"
-            and s.disposition in POSITIVE_DISPOSITIONS
-            and s.verb.show_signature
+            lambda s: (
+                s.state == "done"
+                and s.disposition in POSITIVE_DISPOSITIONS
+                and s.verb.show_signature
+            )
         ).sorted(key=lambda s: (s.order, s.acted_date or s.id))
 
     def _get_delegated_report_action(self):
@@ -1308,8 +1374,10 @@ class SarabunDocument(models.Model):
         template = origin._get_sarabun_body_template()
         if not template:
             return ""
-        return self.env["ir.qweb"].sudo()._render(
-            template, {"o": origin.with_context(lang="th_TH")}
+        return (
+            self.env["ir.qweb"]
+            .sudo()
+            ._render(template, {"o": origin.with_context(lang="th_TH")})
         )
 
     def _get_report_base_filename(self):
@@ -1395,20 +1463,24 @@ class SarabunDocument(models.Model):
         pdf = self._render_official_pdf()
         filename = self._get_report_base_filename() + ".pdf"
         datas = base64.b64encode(pdf)
-        self.write({
-            "signed_pdf": datas,
-            "signed_pdf_filename": filename,
-            "signed_at": fields.Datetime.now(),
-        })
+        self.write(
+            {
+                "signed_pdf": datas,
+                "signed_pdf_filename": filename,
+                "signed_at": fields.Datetime.now(),
+            }
+        )
         # sudo: completion runs in the final approver's env and the freeze is a system
         # act — they may lack ir.attachment create rights for this record.
-        self.env["ir.attachment"].sudo().create({
-            "name": filename,
-            "datas": datas,
-            "res_model": "sarabun.document",
-            "res_id": self.id,
-            "mimetype": "application/pdf",
-        })
+        self.env["ir.attachment"].sudo().create(
+            {
+                "name": filename,
+                "datas": datas,
+                "res_model": "sarabun.document",
+                "res_id": self.id,
+                "mimetype": "application/pdf",
+            }
+        )
 
     def action_print_report(self):
         """Open the official PDF (frozen if completed, else a live preview)."""
@@ -1420,9 +1492,9 @@ class SarabunDocument(models.Model):
         }
 
     def action_open_pdf_preview(self):
-        """Open the official PDF in a preview dialog (ADR-0007) — the draft
-        'ดูตัวอย่างเอกสาร' button, since a draft has no inline preview yet. Sent
-        documents preview inline in the form via the sarabun_pdf_inline widget."""
+        """Open the official PDF in a preview dialog (ADR-0007) — the
+        'ดูตัวอย่างเอกสาร' button, offered in every state (an editable draft /
+        returned หนังสือ has no inline preview; a sent one also previews inline)."""
         self.ensure_one()
         return {
             "type": "ir.actions.client",

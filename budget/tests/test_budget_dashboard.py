@@ -12,6 +12,9 @@ class TestBudgetDashboard(TransactionCase):
     def setUpClass(cls):
         super().setUpClass()
         env = cls.env
+        # These tests reserve without appropriating first; they relied on
+        # kmitl_demo enabling negative budgets, so say so explicitly.
+        env["ir.config_parameter"].sudo().set_param("budget.allow_negative", True)
         cls.fy = env["account.fiscal.year"].search([], limit=1) or env[
             "account.fiscal.year"
         ].create(
@@ -186,7 +189,8 @@ class TestBudgetDashboard(TransactionCase):
         self.assertEqual(parent["remaining"], 40_000)
 
     def test_consume_move_not_counted_as_budget(self):
-        """The auto-created consume budget.move must not inflate current/initial."""
+        """A commitment's event moves (reserve/obligate/consume buckets) never
+        count as budget: current/initial stay the appropriation."""
         self._post_appropriation(self.child, 100_000, "initial")
         commitment = self._reserve(self.child, 50_000)
         self._add_line(commitment, "obligate", 50_000)
@@ -611,10 +615,13 @@ class TestBudgetDashboard(TransactionCase):
                 "account_fiscal_year_id": self.fy.id,
                 "department_analytic_id": fx["dept_main"].id,
                 "line_ids": [
+                    # an entry line does not take ส่วนงาน from the header (only an
+                    # appropriation line does), so name it to hit the pool.
                     Command.create(
                         {
                             "account_id": self.child.id,
                             "balance": -100_000,
+                            "department_analytic_id": fx["dept_main"].id,
                             "analytic_distribution": {
                                 str(fx["act_main"].id): 100.0
                             },
@@ -624,6 +631,7 @@ class TestBudgetDashboard(TransactionCase):
                         {
                             "account_id": self.child.id,
                             "balance": 100_000,
+                            "department_analytic_id": fx["dept_main"].id,
                             "analytic_distribution": {
                                 str(fx["act_sub"].id): 100.0
                             },

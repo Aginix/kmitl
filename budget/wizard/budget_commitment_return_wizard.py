@@ -85,34 +85,21 @@ class BudgetCommitmentReturnWizard(models.TransientModel):
         amount = commitment.available_to_obligate
         if amount <= 0:
             raise UserError(_("No leftover reserved budget to return."))
-        reserve_line = commitment.line_ids.filtered(
-            lambda l: l.move_type == "reserve"
-            and l.state == "posted"
-            and not l.is_return
-        )[:1]
-        if not reserve_line:
-            raise UserError(_("No active reserve line to return against."))
-        vals = {
-            "commitment_id": commitment.id,
-            "move_type": "reserve",
-            "is_return": True,
-            "account_id": reserve_line.account_id.id,
-            "analytic_distribution": reserve_line.analytic_distribution,
-            "amount": -amount,
-            "name": self.name or _("ส่งคืนเงินเหลือจ่าย"),
-            "date": self.date,
-        }
         # Carry the source document through from the opener (e.g. a DR), mirroring
         # the consume flow's res_model/res_id stamping for drill-down traceability.
         ctx = self.env.context
-        if ctx.get("default_res_model"):
-            vals["res_model"] = ctx["default_res_model"]
-        if ctx.get("default_res_id"):
-            vals["res_id"] = ctx["default_res_id"]
+        source = None
+        if ctx.get("default_res_model") and ctx.get("default_res_id"):
+            source = self.env[ctx["default_res_model"]].browse(ctx["default_res_id"])
         # Returning the leftover drives the commitment to ``done`` but must NOT
         # auto-close the owning procurement plan (ADR-0009); the flag is read by
         # procurement_plan's _sync_state override.
-        self.env["budget.commitment.line"].with_context(
-            skip_plan_autoclose=True
-        ).create(vals)
+        commitment.with_context(skip_plan_autoclose=True)._post_budget_event(
+            "reserve",
+            -amount,
+            source=source,
+            name=self.name or _("ส่งคืนเงินเหลือจ่าย"),
+            is_return=True,
+            date=self.date,
+        )
         return {"type": "ir.actions.act_window_close"}

@@ -16,7 +16,7 @@
         <mxCell id="n_draft" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;" value="&lt;b&gt;draft&lt;/b&gt;&lt;br&gt;แบบร่าง&lt;br&gt;(แก้ไขได้)" vertex="1">
           <mxGeometry height="72" width="160" x="140" y="250" as="geometry" />
         </mxCell>
-        <mxCell id="n_verify" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" value="&lt;b&gt;to_verify&lt;/b&gt;&lt;br&gt;รอจัดสรรงบ (ปรับเข้าแผน)&lt;br&gt;และจองงบประมาณ" vertex="1">
+        <mxCell id="n_verify" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" value="&lt;b&gt;to_verify&lt;/b&gt;&lt;br&gt;รอจัดสรรงบ (ปรับเข้าแผน)" vertex="1">
           <mxGeometry height="72" width="160" x="440" y="250" as="geometry" />
         </mxCell>
         <mxCell id="n_tosend" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" value="&lt;b&gt;to_send&lt;/b&gt;&lt;br&gt;รอส่งขออนุมัติ&lt;br&gt;จัดโครงการฯ" vertex="1">
@@ -52,7 +52,7 @@
         <mxCell id="e1" edge="1" parent="1" source="n_draft" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#1565C0;strokeWidth=2;fontColor=#0D3C61;fontSize=11;endArrow=block;endFill=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="n_verify" value="ยืนยัน (ส่งเข้าแผน) · action_confirm&lt;br&gt;► mint เลข+analytic+freeze ปีงบ&lt;br&gt;► เช็ค exception">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e2" edge="1" parent="1" source="n_verify" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#1565C0;strokeWidth=2;fontColor=#0D3C61;fontSize=11;endArrow=block;endFill=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="n_tosend" value="จองงบประมาณ · action_reserve_budget&lt;br&gt;► ต้องมีงบจัดสรร &gt; 0 ก่อน (confirm wizard)&lt;br&gt;► จองงบ + มิติโครงการ">
+        <mxCell id="e2" edge="1" parent="1" source="n_verify" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#1565C0;strokeWidth=2;fontColor=#0D3C61;fontSize=11;endArrow=block;endFill=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="n_tosend" value="ยืนยันงบประมาณ · action_reserve_budget&lt;br&gt;► ต้องมีงบจัดสรร &gt; 0 ก่อน (confirm wizard)&lt;br&gt;► ล็อกรหัสงบ/มิติ (ยังไม่จองงบ · ADR-0010)">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="e3" edge="1" parent="1" source="n_tosend" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#6A1B9A;strokeWidth=2;fontColor=#4A148C;fontSize=11;endArrow=block;endFill=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="n_sent" value="สร้างหนังสือ&lt;br&gt;action_submit_to_sarabun">
@@ -60,7 +60,7 @@
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="e4" edge="1" parent="1" source="n_sent" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#2E7D32;strokeWidth=2;fontColor=#1B5E20;fontSize=11;endArrow=block;endFill=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="n_inprog" value="ลงนามแล้ว (อัตโนมัติ)&lt;br&gt;_on_sarabun_completed&lt;br&gt;[bridge]">
+        <mxCell id="e4" edge="1" parent="1" source="n_sent" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#2E7D32;strokeWidth=2;fontColor=#1B5E20;fontSize=11;endArrow=block;endFill=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="n_inprog" value="ลงนามแล้ว (อัตโนมัติ)&lt;br&gt;_on_sarabun_completed&lt;br&gt;► จองงบ + มิติโครงการ (ADR-0010)&lt;br&gt;[bridge]">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="e5" edge="1" parent="1" source="n_inprog" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#2E7D32;strokeWidth=2;fontColor=#1B5E20;fontSize=11;endArrow=block;endFill=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="n_complete" value="Complete&lt;br&gt;(manual)">

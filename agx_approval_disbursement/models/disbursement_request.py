@@ -14,10 +14,8 @@ class DisbursementRequest(models.Model):
         tracking=True,
     )
 
-    reference = fields.Reference(
-        selection_add=[('approval.request', 'Approval Request')],
-        ondelete={'approval.request': 'set null'},
-    )
+    def _get_source_document(self):
+        return self.approval_request_id or super()._get_source_document()
 
     def _get_return_source(self):
         """An approval-request-linked DR returns to its approval request for

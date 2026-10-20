@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_sarabun_document_form_route_edit" model="ir.ui.view">
+        <field name="name">sarabun.document.form.route.edit</field>
+        <field name="model">sarabun.document</field>
+        <field name="inherit_id" ref="agx_sarabun.view_sarabun_document_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='my_active_step_id']" position="after">
+                <field name="can_edit_route" invisible="1" />
+            </xpath>
+            <!-- Unlock the Route list while circulating for a route editor; the
+                 per-step rules (what may change on a waiting / active / done step) are
+                 enforced server-side in sarabun.routing.step. -->
+            <xpath expr="//field[@name='routing_step_ids']" position="before">
+                <div
+                    class="alert alert-warning"
+                    role="alert"
+                    attrs="{'invisible': [('can_edit_route', '=', False)]}"
+                >
+                    แก้ไขเส้นทางระหว่างเวียน: ขั้นตอนที่รอดำเนินการแก้ไข/ลบได้
+                    ขั้นตอนที่กำลังดำเนินการเปลี่ยนได้เฉพาะเป้าหมาย
+                    ขั้นตอนที่ดำเนินการแล้วแก้ไขไม่ได้ — ผู้ที่ถูกนำออกจากขั้นตอนจะไม่เห็นหนังสือนี้อีก
+                    และทุกการแก้ไขบันทึกในประวัติ
+                </div>
+            </xpath>
+            <xpath expr="//field[@name='routing_step_ids']" position="attributes">
+                <attribute
+                    name="attrs"
+                >{'readonly': [('is_editable', '=', False), ('can_edit_route', '=', False)]}</attribute>
+            </xpath>
+            <!-- Step dialog: only a waiting step's verb / ลำดับ / CC are editable; the
+                 target stays editable on an active step (re-target). position_id is
+                 left alone (agx_sarabun_person_capacity rewrites its attrs) — the
+                 server guard covers it. -->
+            <xpath
+                expr="//field[@name='routing_step_ids']/form/field[@name='is_originator']"
+                position="after"
+            >
+                <field name="state" invisible="1" />
+            </xpath>
+            <xpath
+                expr="//field[@name='routing_step_ids']/form//field[@name='order']"
+                position="attributes"
+            >
+                <attribute
+                    name="attrs"
+                >{'readonly': ['|', ('is_originator', '=', True), ('state', '!=', 'waiting')]}</attribute>
+            </xpath>
+            <xpath
+                expr="//field[@name='routing_step_ids']/form//field[@name='verb']"
+                position="attributes"
+            >
+                <attribute
+                    name="attrs"
+                >{'readonly': [('state', '!=', 'waiting')]}</attribute>
+            </xpath>
+            <xpath
+                expr="//field[@name='routing_step_ids']/form//field[@name='for_info']"
+                position="attributes"
+            >
+                <attribute
+                    name="attrs"
+                >{'readonly': ['|', ('is_originator', '=', True), ('state', '!=', 'waiting')]}</attribute>
+            </xpath>
+            <xpath
+                expr="//field[@name='routing_step_ids']/form/group[@name='step_who']/field[@name='target_mode']"
+                position="attributes"
+            >
+                <attribute
+                    name="attrs"
+                >{'readonly': ['|', ('is_originator', '=', True), ('state', 'in', ('done', 'skipped'))]}</attribute>
+            </xpath>
+            <xpath
+                expr="//field[@name='routing_step_ids']/form/group[@name='step_who']/field[@name='employee_id']"
+                position="attributes"
+            >
+                <attribute
+                    name="attrs"
+                >{'invisible': [('target_mode', '!=', 'person')], 'required': [('target_mode', '=', 'person')], 'readonly': ['|', ('is_originator', '=', True), ('state', 'in', ('done', 'skipped'))]}</attribute>
+            </xpath>
+            <xpath
+                expr="//field[@name='routing_step_ids']/form/group[@name='step_who']/field[@name='department_id']"
+                position="attributes"
+            >
+                <attribute
+                    name="attrs"
+                >{'invisible': [('target_mode', '!=', 'unit')], 'required': [('target_mode', '=', 'unit')], 'readonly': ['|', ('is_originator', '=', True), ('state', 'in', ('done', 'skipped'))]}</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Re-resolve the active Position / unit steps after a holder change (ADR-0018).
+         A rare admin act, so it lives in the form's Action (⚙) menu rather than the
+         header; the menu cannot hide by state, so the method refuses a หนังสือ that
+         is not circulating. -->
+    <record id="action_sarabun_document_refresh_route_holders" model="ir.actions.server">
+        <field name="name">ดึงผู้ดำรงตำแหน่งปัจจุบัน</field>
+        <field name="model_id" ref="agx_sarabun.model_sarabun_document" />
+        <field name="binding_model_id" ref="agx_sarabun.model_sarabun_document" />
+        <field name="binding_view_types">form</field>
+        <field
+            name="groups_id"
+            eval="[(4, ref('agx_sarabun_route_edit.group_sarabun_route_edit'))]"
+        />
+        <field name="state">code</field>
+        <field name="code">action = records.action_refresh_route_holders()</field>
+    </record>
+</odoo>

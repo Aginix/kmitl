@@ -8,9 +8,10 @@ from odoo.http import request
 _logger = logging.getLogger(__name__)
 
 # States whose budget_amount must not be counted in the dashboard: the project
-# either has not reserved anything yet (draft, to_verify) or has released what it
-# reserved (rejected, cancel). Everything from to_send onward holds a live
-# reservation and belongs in the totals (kmitl_project ADR-0005).
+# either has not confirmed its allocation yet (draft, to_verify) or has dropped
+# out (rejected, cancel). Everything from to_send onward carries a confirmed
+# allocation and belongs in the totals — the figure is budget_amount (allocated),
+# not the reservation made at approval (kmitl_project ADR-0005/0010).
 UNBUDGETED_STATES = ["draft", "to_verify", "rejected", "cancel"]
 
 

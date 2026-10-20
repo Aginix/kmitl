@@ -13,7 +13,8 @@ class ApprovalRequest(models.Model):
 
     def _reservation_commitment_mode_domain(self):
         """Only an *approved* project's own slip is drawable. A kmitl.project
-        reserves at ``to_verify`` → ``to_send``, i.e. before its own หนังสือ is
+        now reserves at approval (kmitl_project ADR-0010), but legacy projects
+        reserved at ``to_verify`` → ``to_send``, i.e. before their หนังสือ was
         approved (``in_progress``), so a slip alone is no proof of authorisation
         — and the auto-approve that skips e-Saraban leans entirely on that proof
         (agx_approval docs/adr/0005-project-mode-auto-approve-skips-esaraban).
