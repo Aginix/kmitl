@@ -67,8 +67,17 @@ pressed ตรวจสอบ).
 duty at `to_verify_budget`. They may still correct the code and dimensions, then either
 press Reserve (which checks completeness and availability and creates the ใบจองงบประมาณ)
 or ตีกลับ the PR one step to `to_verify`. This is a separate, independent duty from the
-Verifier. _Avoid_: the generic role จองงบประมาณ, which reserves คำขออนุมัติ but no
-longer a พ.1.
+Verifier. The PR names one of them as its **ผู้ยืนยันงบประมาณ**. _Avoid_: the generic
+role จองงบประมาณ, which reserves คำขออนุมัติ but no longer a พ.1.
+
+**ผู้ยืนยันงบประมาณ (Designated Budget Committer)**: The one **ผู้จองงบประมาณ พ.1** named on
+a PR, from the PR's own Operating Unit. They may be named from `draft` and must be named by
+the time ตรวจสอบ is pressed. They alone receive the PR's reserve Todo while it waits at
+`to_verify_budget`. Naming them routes the work but does not restrict it: any Budget
+Committer may still Reserve or ตีกลับ. See
+[ADR-0012](docs/adr/0012-pr-designated-budget-committer.md). _Avoid_: ผู้อนุมัติงบประมาณ
+(ผู้อนุมัติ is the หัวหน้าส่วนงาน); `budget_committed_by` (who actually reserved);
+agx_approval's ผู้ยืนยันงบประมาณ, which is a whole group there, not one named person.
 
 **God Mode (PA edit while `to_approve` / `approved`)**: An elevated, narrow edit surface
 on the พจ.1 (PA) while the record is in state `to_approve` or `approved` (never
