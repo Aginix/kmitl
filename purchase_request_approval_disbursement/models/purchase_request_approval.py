@@ -229,6 +229,14 @@ class PurchaseRequestApproval(models.Model):
 
     def action_disbursement_request(self):
         self.ensure_one()
+        active = self.disbursement_request_ids.filtered(
+            lambda r: r.state != "cancel"
+        )
+        if active:
+            raise UserError(
+                _("ใบขอเบิกถูกสร้างไว้แล้ว (%s) โปรดยกเลิกใบเดิมก่อนสร้างใหม่")
+                % ", ".join(active.mapped("name"))
+            )
         disbursement_request = self._create_disbursement_request()
         return {
             "type": "ir.actions.act_window",
