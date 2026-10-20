@@ -42,10 +42,10 @@ budget's Department; the issuing ส่วนงาน of the หนังสื
 employee department).
 
 **Assigned Officer**: The procurement officer (เจ้าหน้าที่พัสดุ) responsible for
-handling a document's work. Stored in the `assigned_to` field. A PA has no officer of
-its own — it derives from its parent PR's officer. _Avoid_: Responsible (that's the PR
-creator, `user_id`), Buyer (PO `user_id`), Approver (the PA manager who signs off, a
-different role), Purchase Representative.
+handling a document's work. No longer modelled on the PR: the PR's `assigned_to` is the
+**Designated Verifier** ([ADR-0011](docs/adr/0011-pr-assigned-to-is-designated-verifier.md)).
+_Avoid_: Responsible (that's the PR creator, `user_id`), Buyer (PO `user_id`), Approver
+(the PA manager who signs off, a different role), Purchase Representative.
 
 **ผู้ตรวจสอบ พ.1 (Verifier)**: The ธุรการ who checks a submitted PR at `to_verify`. They
 enter its รหัสงบประมาณ and dimensions, and either press ตรวจสอบ to pass it to the budget
@@ -53,6 +53,15 @@ step or ตีกลับ it to `draft`. After ตรวจสอบ they may �
 to fix a mistake, as long as nothing is reserved yet. They do not reserve money. See
 [ADR-0010](docs/adr/0010-pr-split-verify-and-budget-commit-direct-entry.md). _Avoid_:
 ผู้อนุมัติ (that is the หัวหน้าส่วนงาน signing through Sarabun); Assigned Officer.
+
+**ผู้ยืนยันตรวจสอบ (Designated Verifier)**: The one **ผู้ตรวจสอบ พ.1** the requester names
+on a PR, from the PR's own Operating Unit. They receive the PR's Todo whenever it enters
+`to_verify`. Naming them routes the work but does not restrict it: any Verifier may still
+press ตรวจสอบ or ตีกลับ. The Todo counts as done only when the named person verifies.
+Anyone in the PR's workflow may rename them until the PR ends. See
+[ADR-0011](docs/adr/0011-pr-assigned-to-is-designated-verifier.md). _Avoid_: Assigned
+Officer; ผู้ตรวจสอบ alone (that is the whole group, and `verified_by` is who actually
+pressed ตรวจสอบ).
 
 **ผู้จองงบประมาณ พ.1 (Budget Committer)**: The holder of the PR-specific budget-commit
 duty at `to_verify_budget`. They may still correct the code and dimensions, then either
