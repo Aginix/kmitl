@@ -92,6 +92,18 @@ class TestPurchaseRequestBudgetVerifier(TransactionCase):
         with self.assertRaises(ValidationError):
             self._make_pr(budget_verifier_id=self.verifier.id)
 
+    def test_admin_without_duty_not_candidate(self):
+        # base.group_erp_manager implies the Budget Committer group
+        admin = self._user(
+            "pr_bver_admin",
+            "purchase_request.group_purchase_request_user,base.group_erp_manager",
+        )
+        self.assertNotIn(admin, self._make_pr()._get_budget_verifier_candidates())
+
+    def test_copy_drops_budget_verifier(self):
+        pr = self._make_pr(budget_verifier_id=self.committer.id)
+        self.assertFalse(pr.copy().budget_verifier_id)
+
     def test_verify_schedules_todo_for_budget_verifier(self):
         pr = self._to_budget()
         self.assertEqual(self._todos(pr).user_id, self.committer)

@@ -12,6 +12,7 @@ class PurchaseRequest(models.Model):
     budget_verifier_id = fields.Many2one(
         comodel_name="res.users",
         string="ผู้ยืนยันงบประมาณ",
+        copy=False,
         tracking=True,
         domain="[('id', 'in', budget_verifier_candidate_ids)]",
     )
@@ -29,11 +30,9 @@ class PurchaseRequest(models.Model):
         """Who may be named ผู้ยืนยันงบประมาณ; extension hook (OU layer narrows).
 
         A plain method for the same reason as ``_get_verifier_candidates``."""
-        group = self.env.ref(
+        return self._get_duty_holders(
             "purchase_request_budget.group_purchase_request_budget_commit"
         )
-        # sudo: regular users cannot read group membership
-        return group.sudo().users.filtered(lambda u: not u.share)
 
     @api.constrains("budget_verifier_id", "operating_unit_id")
     def _check_budget_verifier(self):

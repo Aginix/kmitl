@@ -83,6 +83,55 @@ class TestPurchaseRequestVerifier(TransactionCase):
         with self.assertRaises(ValidationError):
             self._make_pr(assigned_to=self.requester.id)
 
+    def test_admin_without_duty_not_candidate(self):
+        # base.group_erp_manager implies the Verifier group
+        admin = self._user(
+            "pr_ver_admin",
+            "purchase_request.group_purchase_request_user,base.group_erp_manager",
+        )
+        self.assertNotIn(admin, self._make_pr()._get_verifier_candidates())
+
+    def test_admin_with_duty_grant_is_candidate(self):
+        role = self.env["res.groups"].create(
+            {
+                "name": "PR Verifier role",
+                "implied_ids": [
+                    Command.link(
+                        self.env.ref(
+                            "purchase_request_kmitl.group_purchase_request_verify"
+                        ).id
+                    )
+                ],
+            }
+        )
+        admin = self._user(
+            "pr_ver_admin_duty",
+            "purchase_request.group_purchase_request_user,base.group_erp_manager",
+        )
+        admin.groups_id = [Command.link(role.id)]
+        self.assertIn(admin, self._make_pr()._get_verifier_candidates())
+
+    def test_admin_role_also_granting_duty_is_candidate(self):
+        # One role carrying both admin and the duty still grants the duty
+        role = self.env["res.groups"].create(
+            {
+                "name": "Admin + PR Verifier role",
+                "implied_ids": [
+                    Command.link(self.env.ref("base.group_erp_manager").id),
+                    Command.link(
+                        self.env.ref(
+                            "purchase_request_kmitl.group_purchase_request_verify"
+                        ).id
+                    ),
+                ],
+            }
+        )
+        admin = self._user(
+            "pr_ver_admin_role", "purchase_request.group_purchase_request_user"
+        )
+        admin.groups_id = [Command.link(role.id)]
+        self.assertIn(admin, self._make_pr()._get_verifier_candidates())
+
     def test_submit_schedules_todo_for_verifier(self):
         pr = self._make_pr(assigned_to=self.verifier.id)
         self._submit(pr)

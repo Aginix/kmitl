@@ -30,9 +30,34 @@ class PurchaseRequest(models.Model):
         A plain method, not a read of ``verifier_candidate_ids``: on a new
         record that x2many reads back as new-record ids, which never
         intersect real users."""
-        group = self.env.ref("purchase_request_kmitl.group_purchase_request_verify")
+        return self._get_duty_holders(
+            "purchase_request_kmitl.group_purchase_request_verify"
+        )
+
+    def _get_duty_holders(self, group_xmlid):
+        """Internal users who hold the PR duty ``group_xmlid``.
+
+        ``base.group_erp_manager`` implies the PR duty groups, so the group's
+        users also list every system/IAM admin. Keep an admin only when another
+        grant (their role) carries the duty too."""
         # sudo: regular users cannot read group membership
-        return group.sudo().users.filtered(lambda u: not u.share)
+        group = self.env.ref(group_xmlid).sudo()
+        admin = self.env.ref("base.group_erp_manager")
+        cache = {}
+
+        def carries(g):
+            # Implies the duty along a path that does not pass through admin
+            if g not in cache:
+                implied = g.implied_ids - admin
+                cache[g] = group in implied or any(carries(h) for h in implied)
+            return cache[g]
+
+        def holds_duty(user):
+            if admin not in user.groups_id:
+                return True
+            return any(carries(g) for g in user.groups_id - admin)
+
+        return group.users.filtered(lambda u: not u.share and holds_duty(u))
 
     @api.constrains("assigned_to", "operating_unit_id")
     def _check_assigned_to_verifier(self):
