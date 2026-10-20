@@ -363,6 +363,18 @@ class BudgetTransfer(models.Model):
             if fiscal_year:
                 self.account_fiscal_year_id = fiscal_year
 
+    @api.onchange("department_analytic_id")
+    def _onchange_department_analytic_id(self):
+        """Carry a header department change onto the lines already added.
+
+        The lines only take the header department as a context default when
+        created; FROM lines hide it (it must equal the header) and TO lines
+        start from it, so both follow a later change of the header.
+        """
+        (
+            self.from_line_ids | self.to_line_ids
+        ).department_analytic_id = self.department_analytic_id
+
     # ------------------------------------------------------------------
     # Workflow
     # ------------------------------------------------------------------
