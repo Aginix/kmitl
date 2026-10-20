@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!--
+        In the Route-Template editable tree, position_id is now also editable in
+        person mode (optional capacity label), filtered to the pinned person's
+        holdings like the Document form, and moved after employee_id so the row
+        fills บุคลากร → ตำแหน่ง (picking the person clears the capacity). Holdings
+        can still change after authoring — the server re-checks at send/signing.
+    -->
+    <record id="view_sarabun_route_template_form_person_capacity" model="ir.ui.view">
+        <field name="name">sarabun.route.template.form.person.capacity</field>
+        <field name="model">sarabun.route.template</field>
+        <field name="inherit_id" ref="agx_sarabun.view_sarabun_route_template_form" />
+        <field name="arch" type="xml">
+            <xpath
+                expr="//field[@name='line_ids']/tree/field[@name='position_id']"
+                position="attributes"
+            >
+                <attribute
+                    name="attrs"
+                >{'required': [('target_mode', '=', 'position')], 'readonly': [('target_mode', 'not in', ('position', 'person'))]}</attribute>
+                <attribute
+                    name="domain"
+                >[('holder_ids', 'in', [employee_id])] if target_mode == 'person' and employee_id else []</attribute>
+            </xpath>
+            <xpath
+                expr="//field[@name='line_ids']/tree/field[@name='employee_id']"
+                position="after"
+            >
+                <xpath
+                    expr="//field[@name='line_ids']/tree/field[@name='position_id']"
+                    position="move"
+                />
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -69,6 +69,13 @@
                         ซ่อนแถวที่ไม่มีความเคลื่อนไหว
                     </label>
                 </div>
+                <div class="o_bd_filter o_bd_refresh">
+                    <button type="button" class="btn btn-sm btn-secondary"
+                            title="โหลดข้อมูลใหม่" t-att-disabled="state.loading"
+                            t-on-click="() => this.load()">
+                        <i class="fa fa-refresh"/> รีเฟรช
+                    </button>
+                </div>
             </div>
 
             <div t-if="state.loading" class="o_bd_loading">กำลังโหลด...</div>

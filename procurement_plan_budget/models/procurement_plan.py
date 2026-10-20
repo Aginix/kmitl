@@ -241,19 +241,6 @@ class ProcurementPlan(models.Model):
             "description": self.description,
             "procurement_plan_id": self.id,
             "user_id": self.env.user.id,
-            "line_ids": [
-                (
-                    0,
-                    0,
-                    {
-                        "move_type": "reserve",
-                        "account_id": self.budget_account_id.id,
-                        "analytic_distribution": dist or False,
-                        "amount": self.total_price,
-                        "name": _("Initial reservation"),
-                    },
-                )
-            ],
         }
 
     def _release_plan_commitment(self):

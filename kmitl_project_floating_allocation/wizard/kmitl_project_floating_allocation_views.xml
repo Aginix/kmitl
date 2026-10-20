@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="view_kmitl_project_floating_allocation_form" model="ir.ui.view">
+        <field name="name">kmitl.project.floating.allocation.form</field>
+        <field name="model">kmitl.project.floating.allocation</field>
+        <field name="arch" type="xml">
+            <form string="จัดสรรงบประมาณ (งบลอย)" class="o_kfa_form">
+                <!-- Read by the kmitl_floating_allocation widget (record.data). -->
+                <field name="project_id" invisible="1" force_save="1" />
+                <field name="step" invisible="1" />
+                <field name="amount" invisible="1" />
+                <field name="pool_found" invisible="1" />
+                <field name="pool_dims" invisible="1" />
+                <field name="posted_pool_dims" invisible="1" />
+                <field name="floating_available" invisible="1" />
+                <field name="project_label" invisible="1" />
+                <field name="project_dims" invisible="1" />
+                <field name="project_received" invisible="1" />
+                <field name="plan_total" invisible="1" />
+                <field name="commitment_status" invisible="1" />
+                <field name="transfer_name" invisible="1" />
+                <field name="transfer_date" invisible="1" />
+                <field name="transfer_user_id" invisible="1" />
+                <widget name="kmitl_floating_allocation" />
+                <!-- Only while there is floating money to move. -->
+                <div
+                    class="o_kfa_note"
+                    attrs="{'invisible': ['|', '|', ('step', '!=', 'input'), ('pool_found', '=', False), ('floating_available', '&lt;=', 0)]}"
+                >
+                    <field name="note" placeholder="บันทึกช่วยจำ (ไม่บังคับ)" />
+                </div>
+                <footer>
+                    <button
+                        name="action_next"
+                        type="object"
+                        string="ถัดไป"
+                        class="btn-primary"
+                        attrs="{'invisible': ['|', '|', ('step', '!=', 'input'), ('pool_found', '=', False), ('floating_available', '&lt;=', 0)]}"
+                    />
+                    <button
+                        name="action_confirm"
+                        type="object"
+                        string="ยืนยันโอน"
+                        class="btn-primary"
+                        attrs="{'invisible': [('step', '!=', 'review')]}"
+                    />
+                    <button
+                        name="action_back"
+                        type="object"
+                        string="ย้อนกลับ"
+                        class="btn-secondary"
+                        attrs="{'invisible': [('step', '!=', 'review')]}"
+                    />
+                    <button
+                        string="เสร็จสิ้น"
+                        special="cancel"
+                        class="btn-primary"
+                        attrs="{'invisible': [('step', '!=', 'done')]}"
+                    />
+                    <button
+                        name="action_open_transfer"
+                        type="object"
+                        string="ดูใบโอน"
+                        class="btn-secondary"
+                        attrs="{'invisible': [('step', '!=', 'done')]}"
+                    />
+                    <!-- No / used-up pool: nothing to do but close. -->
+                    <button
+                        string="ปิด"
+                        special="cancel"
+                        class="btn-primary"
+                        attrs="{'invisible': ['|', ('step', '!=', 'input'), '&amp;', ('pool_found', '=', True), ('floating_available', '>', 0)]}"
+                    />
+                    <button
+                        string="ยกเลิก"
+                        special="cancel"
+                        class="btn-secondary"
+                        attrs="{'invisible': ['|', ('step', '=', 'done'), '&amp;', ('step', '=', 'input'), '|', ('pool_found', '=', False), ('floating_available', '&lt;=', 0)]}"
+                    />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

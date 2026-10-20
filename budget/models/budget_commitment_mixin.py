@@ -517,20 +517,35 @@ class BudgetCommitmentMixin(models.AbstractModel):
         :meth:`apply_reservation_selection`.
         """
         self.ensure_one()
+        context = dict(
+            self._budget_dashboard_context(),
+            res_model=self._name,
+            res_id=self.id,
+            select_only=True,
+            account_domain=self._reservation_account_domain(),
+        )
+        return {
+            "type": "ir.actions.client",
+            "tag": "budget_reservation_picker",
+            "target": "new",
+            "name": _("เลือกงบประมาณ"),
+            "context": context,
+        }
+
+    def _budget_dashboard_context(self):
+        """Scope the budget dashboard to the host's fiscal year, budget
+        category (root of its budget account) and dimensions."""
+        self.ensure_one()
         fiscal_year = getattr(self, "account_fiscal_year_id", False)
         account = self._get_commitment_field_value("account_id")
         root = account
         while root and root.parent_id:
             root = root.parent_id
         context = {
-            "res_model": self._name,
-            "res_id": self.id,
-            "select_only": True,
-            "account_domain": self._reservation_account_domain(),
             "default_fiscal_year_id": fiscal_year.id if fiscal_year else False,
             "default_root_account_id": root.id if root else False,
         }
-        # Pre-fill the picker's dimension filter bar from the host's dimensions.
+        # Pre-fill the dashboard's dimension filter bar from the host's dimensions.
         for fname in (
             "department_analytic_id",
             "source_analytic_id",
@@ -539,12 +554,17 @@ class BudgetCommitmentMixin(models.AbstractModel):
         ):
             value = getattr(self, fname, False)
             context["default_" + fname] = value.id if value else False
+        return context
+
+    def action_view_budget_dashboard(self):
+        """Open ตรวจสอบงบประมาณ for the host's budget code and dimensions."""
+        self.ensure_one()
         return {
             "type": "ir.actions.client",
-            "tag": "budget_reservation_picker",
+            "tag": "budget_dashboard",
             "target": "new",
-            "name": _("เลือกงบประมาณ"),
-            "context": context,
+            "name": _("ตรวจสอบงบประมาณ"),
+            "context": self._budget_dashboard_context(),
         }
 
     def apply_reservation_selection(self, selections, dims=None):
@@ -593,23 +613,13 @@ class BudgetCommitmentMixin(models.AbstractModel):
                 _("Commitment must be in reserved or partial state to obligate.")
             )
 
-        # Get first reserve line for analytic info
-        first_reserve = commitment.line_ids.filtered(
-            lambda l: l.move_type == "reserve" and l.state == "posted"
-        )[:1]
-
-        if not first_reserve:
-            raise UserError(_("No active reserve lines found."))
-
-        self.env["budget.commitment.line"].create(
-            {
-                "commitment_id": commitment.id,
-                "move_type": "obligate",
-                "account_id": first_reserve.account_id.id,
-                "analytic_distribution": first_reserve.analytic_distribution,
-                "amount": commitment.total_reserved,
-                "name": _("Obligation from %s") % self.display_name,
-            }
+        # Only what is still unobligated: total_reserved also counts what has
+        # been obligated or consumed (b + c + d, ADR-0017).
+        commitment._post_budget_event(
+            "obligate",
+            commitment.available_to_obligate,
+            source=self,
+            name=_("Obligation from %s") % self.display_name,
         )
         return True
 
@@ -634,26 +644,17 @@ class BudgetCommitmentMixin(models.AbstractModel):
                 _("Can only consume from reserved or partial commitments")
             )
 
-        first_reserve = commitment.line_ids.filtered(
-            lambda l: l.move_type == "reserve" and l.state == "posted"
-        )[:1]
-
-        if not first_reserve:
-            raise UserError(_("No active reserve lines found"))
-
-        consume_line = self.env["budget.commitment.line"].create(
-            {
-                "commitment_id": commitment.id,
-                "move_type": "consume",
-                "account_id": first_reserve.account_id.id,
-                "analytic_distribution": first_reserve.analytic_distribution,
-                "amount": amount,
-                "name": _("Consumption from %s") % self.display_name,
-            }
+        consume_line = commitment._post_budget_event(
+            "consume",
+            amount,
+            source=self,
+            name=_("Consumption from %s") % self.display_name,
         )
 
-        # Auto-close if fully consumed
-        if commitment.available_to_consume <= 0.01:
+        # Auto-close once nothing is left to draw: neither an open obligation
+        # nor unobligated reserve (a consume without an obligation liquidates
+        # the reserve, so the obligation alone is always 0 there).
+        if commitment.available_to_consume + commitment.available_to_obligate <= 0.01:
             commitment.action_done()
 
         return consume_line

@@ -1,6 +1,6 @@
 import logging
 
-from odoo import _, models
+from odoo import _, api, fields, models
 from odoo.tools import float_compare
 
 _logger = logging.getLogger(__name__)
@@ -20,6 +20,23 @@ class BudgetTransfer(models.Model):
 
     _inherit = "budget.transfer"
 
+    procurement_plan_line_ids = fields.Many2many(
+        "budget.move.line",
+        string="แผนจัดซื้อจัดจ้าง",
+        compute="_compute_procurement_plan_line_ids",
+        help="FROM/TO lines that carry a procurement-plan dimension.",
+    )
+
+    @api.depends(
+        "from_line_ids.procurement_plan_analytic_id",
+        "to_line_ids.procurement_plan_analytic_id",
+    )
+    def _compute_procurement_plan_line_ids(self):
+        for transfer in self:
+            transfer.procurement_plan_line_ids = (
+                transfer.from_line_ids | transfer.to_line_ids
+            ).filtered("procurement_plan_analytic_id")
+
     def _post_transfer(self):
         # Reserve only after super() has posted the delegated move and moved the
         # transfer to ``posted`` — the just-posted lines must be in the ledger
@@ -38,9 +55,11 @@ class BudgetTransfer(models.Model):
         Plan = self.env["procurement.plan"].sudo()
         for transfer in self:
             tags = transfer.line_ids.filtered(
-                lambda line: line.transfer_direction == "to"
-                and line.account_is_procurement
-                and line.procurement_plan_analytic_id
+                lambda line: (
+                    line.transfer_direction == "to"
+                    and line.account_is_procurement
+                    and line.procurement_plan_analytic_id
+                )
             ).mapped("procurement_plan_analytic_id")
             if not tags:
                 continue
@@ -60,7 +79,8 @@ class BudgetTransfer(models.Model):
                     continue  # already reserved
                 rounding = plan.currency_id.rounding or 0.01
                 fully_funded = (
-                    float_compare(plan.total_price, 0.0, precision_rounding=rounding) > 0
+                    float_compare(plan.total_price, 0.0, precision_rounding=rounding)
+                    > 0
                     and float_compare(
                         plan.budget_amount,
                         plan.total_price,

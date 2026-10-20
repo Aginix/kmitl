@@ -35,10 +35,8 @@ class AdvancePaymentUsageLine(models.Model):
             else:
                 line.source_display = "บันทึกการใช้เงิน"
 
-    @api.depends("disbursement_request_id", "disbursement_request_id.partner_id")
+    @api.depends("disbursement_request_id.line_ids.partner_id")
     def _compute_partner_id(self):
+        # Payees live on the request lines; a PO/PA request pays one vendor.
         for line in self:
-            if line.disbursement_request_id:
-                line.partner_id = line.disbursement_request_id.partner_id
-            else:
-                line.partner_id = False
+            line.partner_id = line.disbursement_request_id.line_ids[:1].partner_id

@@ -68,6 +68,7 @@
                     type="object"
                     class="oe_stat_button"
                     icon="fa-bar-chart"
+                    groups="budget.group_budget_viewer"
                 >
                     <div class="o_stat_info">
                         <span class="o_stat_text">สถานะงบ</span>

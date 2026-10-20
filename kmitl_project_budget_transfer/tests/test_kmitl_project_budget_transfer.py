@@ -97,7 +97,8 @@ class TestKmitlProjectBudgetTransfer(TransactionCase):
     # ------------------------------------------------------------------
     def _allowed(self, **vals):
         line = self.env["budget.move.line"].new(dict(vals, transfer_direction="to"))
-        return line.allowed_kmitl_project_analytic_ids
+        # a new record's x2many holds NewIds; compare the real records
+        return line.allowed_kmitl_project_analytic_ids._origin
 
     def test_picker_blank_dimensions_do_not_filter(self):
         self.assertIn(self.proj_tag, self._allowed())
@@ -115,4 +116,69 @@ class TestKmitlProjectBudgetTransfer(TransactionCase):
         self.assertNotIn(self.proj_tag, self._allowed(fund_analytic_id=self.fund2.id))
         self.assertNotIn(
             self.proj_tag, self._allowed(department_analytic_id=self.dept2.id)
+        )
+
+    def test_picker_filters_on_dialog_fiscal_year(self):
+        # A dialog line has no move_id yet — the fiscal year comes from context.
+        other_fy = self.env["account.fiscal.year"].create(
+            {
+                "name": "FY-KPBT-OTHER",
+                "date_from": date(2090, 10, 1),
+                "date_to": date(2091, 9, 30),
+                "company_id": self.env.company.id,
+            }
+        )
+        Line = self.env["budget.move.line"]
+        same = Line.with_context(transfer_fiscal_year_id=self.fy.id).new(
+            {"transfer_direction": "to"}
+        )
+        self.assertIn(self.proj_tag, same.allowed_kmitl_project_analytic_ids._origin)
+        other = Line.with_context(transfer_fiscal_year_id=other_fy.id).new(
+            {"transfer_direction": "to"}
+        )
+        self.assertNotIn(self.proj_tag, other.allowed_kmitl_project_analytic_ids._origin)
+
+    # ------------------------------------------------------------------
+    # โครงการ/กิจกรรม page on the transfer
+    # ------------------------------------------------------------------
+    def test_project_page_lists_line_and_opens_new_tab(self):
+        # The open action looks the project up as superuser: a plain user who
+        # cannot read the project still gets the new-tab URL.
+        user = self.env["res.users"].create(
+            {
+                "name": "KPBT Plain",
+                "login": "kpbt_plain",
+                "groups_id": [(6, 0, self.env.ref("base.group_user").ids)],
+            }
+        )
+        transfer = (
+            self.env["budget.transfer"]
+            .with_user(user)
+            .new(
+                {
+                    "to_line_ids": [
+                        (
+                            0,
+                            0,
+                            {
+                                "transfer_direction": "to",
+                                "account_id": self.proj_ba.id,
+                                "kmitl_project_analytic_id": self.proj_tag.id,
+                                "amount": 1000.0,
+                            },
+                        ),
+                        (0, 0, {"transfer_direction": "to", "amount": 5.0}),
+                    ],
+                }
+            )
+        )
+        line = transfer.kmitl_project_line_ids
+        self.assertEqual(len(line), 1)
+        self.assertEqual(line.kmitl_project_analytic_id, self.proj_tag)
+        action = line.action_open_kmitl_project()
+        self.assertEqual(action["type"], "ir.actions.act_url")
+        self.assertEqual(action["target"], "new")
+        self.assertEqual(
+            action["url"],
+            "/web#id=%s&model=kmitl.project&view_type=form" % self.project.id,
         )

@@ -30,9 +30,11 @@ class DisbursementRequestLine(models.Model):
         domain=["|", ("company_id", "=", False), ("company_id", "=", "company_id")],
     )
 
+    # Not required: the column is hidden on the form and filled from the
+    # product, so a line whose product is still unresolved (a budget code with
+    # no bound product, refused on submit by an exception rule) can be saved.
     name = fields.Text(
         string="Description",
-        required=True,
     )
 
     quantity = fields.Float(
@@ -99,10 +101,13 @@ class DisbursementRequestLine(models.Model):
         store=True,
     )
 
+    # Only payees of the request's type are offered; a mismatch (e.g. the
+    # header type changed afterwards) is caught by an exception rule on submit.
     partner_id = fields.Many2one(
         comodel_name="res.partner",
         string="Partner",
         ondelete="restrict",
+        domain="[('partner_type_id', '=', parent.partner_type_id)]",
     )
 
     partner_bank_id = fields.Many2one(
@@ -176,7 +181,7 @@ class DisbursementRequestLine(models.Model):
         self.ensure_one()
         return self.env["account.tax"]._convert_to_tax_base_line_dict(
             self,
-            partner=self.partner_id or self.request_id.partner_id,
+            partner=self.partner_id,
             currency=self.request_id.currency_id,
             product=self.product_id,
             taxes=self.tax_ids,
@@ -203,15 +208,25 @@ class DisbursementRequestLine(models.Model):
     # -------------------------------------------------------------------------
     # Partner compute methods
     # -------------------------------------------------------------------------
-    @api.depends("partner_id", "request_id.company_id")
+    # bank_ids too: a user who adds the missing account on the partner gets it
+    # filled in here without re-picking the partner.
+    @api.depends("partner_id", "partner_id.bank_ids", "request_id.company_id")
     def _compute_line_partner_bank_id(self):
         for line in self:
-            if line.partner_id:
+            # Only a draft follows the partner's accounts: a submitted or paid
+            # line keeps the account it was checked and paid against even if
+            # the partner's accounts are archived or replaced later.
+            if line.request_id.state not in (False, "draft"):
+                line.partner_bank_id = line.partner_bank_id
+            elif line.partner_id:
                 banks = line.partner_id.bank_ids.filtered(
                     lambda b: not b.company_id
                     or b.company_id == line.request_id.company_id
                 )
-                line.partner_bank_id = banks[0] if banks else False
+                # Keep a still-valid choice: a new account on the partner must
+                # not re-point lines that already have one.
+                current = line.partner_bank_id
+                line.partner_bank_id = current if current in banks else banks[:1]
             else:
                 line.partner_bank_id = False
 
@@ -226,16 +241,10 @@ class DisbursementRequestLine(models.Model):
     # -------------------------------------------------------------------------
     # WHT methods
     # -------------------------------------------------------------------------
-    @api.depends(
-        "partner_id.partner_type_id.wht_tax_id",
-        "request_id.partner_id.partner_type_id.wht_tax_id",
-    )
+    @api.depends("partner_id.partner_type_id.wht_tax_id")
     def _compute_wht_tax_id(self):
         for line in self:
-            partner = line.partner_id or line.request_id.partner_id
-            line.wht_tax_id = (
-                partner.partner_type_id.wht_tax_id if partner else False
-            )
+            line.wht_tax_id = line.partner_id.partner_type_id.wht_tax_id
 
     # -------------------------------------------------------------------------
     # Exception methods

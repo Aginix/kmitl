@@ -1,6 +1,6 @@
 # KMITL Project
 
-Institutional project/activity planning (โครงการ/กิจกรรม) for KMITL. A project is authored against a project-type budget code, is then **allocated budget into its own dimension by งานแผน** (ปรับเข้าแผน), reserves that allocation as a shared `budget.commitment` inside an **e-Saraban-routed approval**, and is finally spent down through purchase requests and disbursements — behaving like a procurement plan from the reserve point onward. See [ADR-0006](./docs/adr/0006-project-allocation-before-reserve.md).
+Institutional project/activity planning (โครงการ/กิจกรรม) for KMITL. A project is authored against a project-type budget code, is then **allocated budget into its own dimension by งานแผน** (ปรับเข้าแผน), confirms that allocation, obtains an **e-Saraban-routed approval**, reserves the allocation as a shared `budget.commitment` the moment it is approved, and is finally spent down through purchase requests and disbursements — behaving like a procurement plan from the reserve point onward. See [ADR-0006](./docs/adr/0006-project-allocation-before-reserve.md) and [ADR-0010](./docs/adr/0010-project-reserves-on-approval.md).
 
 ## Language
 
@@ -13,19 +13,23 @@ A `kmitl.project` with `project_type = strategic_project` — same shape as a Pr
 _Avoid_: strategic plan (that names the `project.strategic.plan` it aligns to, not the project)
 
 **Project Approval (ขออนุมัติจัดโครงการและค่าใช้จ่าย)**:
-The formal authorization a project obtains before it may execute — a หนังสือ (e-Saraban Document) requesting approval to *run the project and incur its expenses*, routed through the endorsement/signing chain. The project reserves its budget first, then raises the หนังสือ; when the หนังสือ is signed the project is authorized and **execution begins immediately** (it may raise purchase requests and disbursements at once — there is no idle "approved, not started" resting state). Carried on `kmitl.project` itself (the project *is* the approvable entity) through the `kmitl_project_sarabun` bridge, mirroring [Approval Request](../agx_approval/CONTEXT.md)'s approval front.
+The formal authorization a project obtains before it may execute — a หนังสือ (e-Saraban Document) requesting approval to *run the project and incur its expenses*, routed through the endorsement/signing chain. The project confirms its allocated budget first, then raises the หนังสือ; when the หนังสือ is signed the project is authorized, its budget is reserved, and **execution begins immediately** (it may raise purchase requests and disbursements at once — there is no idle "approved, not started" resting state). Carried on `kmitl.project` itself (the project *is* the approvable entity) through the `kmitl_project_sarabun` bridge, mirroring [Approval Request](../agx_approval/CONTEXT.md)'s approval front.
 _Avoid_: approval request (that is the separate `agx_approval` เอกสาร; a project carries its **own** approval states — it does not spawn an `approval.request`)
 
 **Project Allocation (ปรับเข้าแผน)**:
-The act by งานแผน of moving budget **into a project's own `kmitl_project` dimension** — a `budget.transfer` whose destination carries the project's analytic dim on top of the four base dimensions, turning pool/floating money into money earmarked at the project. It is what a project waits for in `to_verify` and what makes its (computed) **Project Budget** rise above zero and unlock the จองงบ step. Distinct from budget's **Initial Appropriation** (funding a code at year start) and generic **Budget Transfer** (a move between codes with no project meaning). See [ADR-0006](./docs/adr/0006-project-allocation-before-reserve.md); the transfer's project-dimension support ships in branch `budget-transfer-multi-dimension`.
+The act by งานแผน of moving budget **into a project's own `kmitl_project` dimension** — a `budget.transfer` whose destination carries the project's analytic dim on top of the four base dimensions, turning pool/floating money into money earmarked at the project. It is what a project waits for in `to_verify` and what makes its (computed) **Project Budget** rise above zero and unlock the ยืนยันงบ step. Distinct from budget's **Initial Appropriation** (funding a code at year start) and generic **Budget Transfer** (a move between codes with no project meaning). See [ADR-0006](./docs/adr/0006-project-allocation-before-reserve.md); the transfer's project-dimension support ships in branch `budget-transfer-multi-dimension`.
 _Avoid_: allocation (unqualified — clashes with budget's appropriation sense), funding (clashes with the กองทุน/fund dimension), appropriation
+
+**Direct Floating Allocation (จัดสรรงบประมาณ (งบลอย))**:
+A **Project Allocation** a Budget User makes from the project itself, drawing the **Floating Budget** pool that already covers the project's own coordinate (its รหัสงบ + four dimensions, or the coarser pool above them) and taking effect at once — no หนังสือขออนุมัติโอนงบประมาณ, no approval step. In the ledger it is still an ordinary Budget Transfer (FROM the pool, TO the project's dimension), so it shows as รับโอนเข้า among the **Project Budget Movements**. Available from ส่งเข้าแผน until the project closes and may be repeated to top up. See [ADR-0009](./docs/adr/0009-direct-floating-allocation-skips-transfer-approval.md).
+_Avoid_: quick transfer, งบลอย as the name of the pool (the pool is the Floating Budget / เงินลอย; "งบลอย" only labels this action)
 
 **Supported Project (โครงการที่มีการสนับสนุนจากหน่วยงานอื่น)**:
 A project flagged as receiving budget from **another unit**. Its project dimension is opened to every unit (not just the owning one), so a supporting unit can raise a **Project Allocation** into it — always onto the project's **own** coordinate (the owning unit's ส่วนงาน/กิจกรรม/กองทุน + the project's dimension), never the supporter's. The flag only widens who may *pick* the project; it never moves where the money sits. See [ADR-0008](./docs/adr/0008-supported-project-opens-analytic-ou.md).
 _Avoid_: shared / co-owned project (the project still belongs to one unit and its money sits at that unit's coordinate)
 
 **Project Budget (`budget_amount`)**:
-The amount a project actually **received via Project Allocation** — a *computed* mirror of Current Budget (a) at the project's own dimension (the net of every posted budget move carrying its `kmitl_project` dim), so it always reads the current, real figure and is never typed by hand. Reserved as one shared `budget.commitment` at the **จองงบ step** (state `to_verify → to_send`, *before* the ขออนุมัติ หนังสือ is sent) and **released if the approval is rejected**; drawn down by the project's purchase requests and disbursements. Reads 0 (shown as "ยังไม่ได้รับการจัดสรรงบประมาณ") until งานแผน allocates. See [budget » Reserve / Floating Budget](../budget/CONTEXT.md).
+The amount a project actually **received via Project Allocation** — a *computed* mirror of Current Budget (a) at the project's own dimension (the net of every posted budget move carrying its `kmitl_project` dim), so it always reads the current, real figure and is never typed by hand. Confirmed at the **ยืนยันงบ step** (state `to_verify → to_send`, *before* the ขออนุมัติ หนังสือ is sent) and reserved as one shared `budget.commitment` **when the project is approved** (หนังสือ signed → `in_progress`; a failed reservation is noted in the chatter and retried from the project, [ADR-0010](./docs/adr/0010-project-reserves-on-approval.md)); drawn down by the project's purchase requests and disbursements. Reads 0 (shown as "ยังไม่ได้รับการจัดสรรงบประมาณ") until งานแผน allocates. See [budget » Reserve / Floating Budget](../budget/CONTEXT.md).
 _Avoid_: allocation, cost; the **Project Budget Plan** total (`budget_expense_total`, the project's *ask*, a different quantity — the two are never reconciled automatically)
 
 **Project Coordinator (ผู้ประสานงาน)**:
@@ -35,6 +39,26 @@ _Avoid_: Project Manager / หัวหน้าโครงการ (`manager_
 **Project Owner (เจ้าของโครงการ)**:
 Any of a project's หัวหน้าโครงการ, **Project Coordinator** or creator. A Project Owner has the project as **Own Project**: they read and edit it and all its tabs (still subject to each state's field locks), see it whatever their operating unit, and may raise its **Project Approval** หนังสือ. Project officers (Officer/Manager) may do all of this for every project in their own operating units. See [ADR-0008](./docs/adr/0008-project-owner-coordinator-extension.md).
 _Avoid_: "Responsible" (the label of the creator field `creating_user_id`) as a synonym for owner
+
+**Project Budget Estimate (งบประมาณโครงการ, `budget_estimate`)**:
+The amount the project's author **sets out to raise** ("ตั้งเงินไว้ 1 ล้าน") — a hand-typed target, the yardstick against which the money actually received from Funding Units is tracked. Never moves money and is never reserved.
+_Avoid_: Project Budget (that is the received, computed `budget_amount`); budget plan total
+
+**Funding Unit (ส่วนงานต้นทาง)**:
+The ส่วนงาน (`departments` dimension) on the **FROM side** of a transfer that moves money into a project's dimension — i.e. who the money came from. Each Funding Unit sends its support in **its own transfer**, so one transfer has exactly one Funding Unit. The transfer's OU (who keyed it, e.g. งานแผน on a unit's behalf) and the TO side's ส่วนงาน (always the project's own) never identify it.
+_Avoid_: OU / operating unit (the operator, not the funder); beneficiary unit (budget's reservation term, ADR-0011)
+
+**Project Budget Movements (การเคลื่อนไหวงบประมาณโครงการ)**:
+The project's read-only list of every budget movement on its dimension, one row per movement line, each with a **Movement Kind**, a **Movement Status**, a signed amount (in positive, out negative), the **Funding Unit** on transfer rows and the source document on ตัดงบ rows. Reservations (จองงบ/ผูกพัน) are not movements and are not listed. Posted allocation, transfer and budget-entry rows net to the **Project Budget**. Readable without any budget rights by every **Project Owner** (from any operating unit) and by project officers. See [ADR-0007](./docs/adr/0007-project-budget-movements-instead-of-ledger-access.md).
+_Avoid_: Funding Summary / เงินสนับสนุนที่ได้รับ (the earlier, inflow-only version of this list); budget move / ledger (this is a project-level view, not access to `budget.move`)
+
+**Movement Kind (ประเภทการเคลื่อนไหว)**:
+What a movement did to the project's money: **จัดสรร** (an appropriation), **รับโอนเข้า** / **โอนออก** (the TO / FROM side of a transfer), **บันทึกงบประมาณ** (a budget entry keyed directly by budget staff, not via a transfer) or **ตัดงบ** (consumption by a purchase request, disbursement or other spending document).
+_Avoid_: ปรับปรุงงบ / adjustment for a budget entry (budget's Adjustment also covers transfers)
+
+**Movement Status (สถานะการเคลื่อนไหว)**:
+Whether a movement has taken effect: **ผ่านแล้ว** (posted), **อยู่ระหว่างดำเนินการ** (a transfer submitted, in e-Saraban or returned — not yet counted in the Project Budget; only transfers have this status), **ต่างปีงบประมาณ** (it carries the project's dimension in another fiscal year, e.g. carried-over เงินกันเหลื่อมปี and its spending — legitimate, but outside the project's year) or **พิกัดไม่ตรงกับโครงการ** (off-target: in the project's year, but its รหัสงบ or a base dimension misses the project's coordinate — likely mis-keyed). The last two count in no total yet stay visible. Draft, rejected and cancelled movements are not listed.
+_Avoid_: received (only inflows are "received"; ตัดงบ rows are posted, not received)
 
 **Project Number (เลขที่รันโครงการ, `key`)**:
 A sequential running number that identifies a Project. Minted once, when the project is **submitted to งานแผน** (`draft→to_verify`, ส่งเข้าแผน — the moment its analytic account is created and its budget target is locked, ahead of the allocation), and stable for the project's life — a later reset-to-draft never re-issues or clears it. Stamped with the project's **fiscal year** (`account_fiscal_year_id`), which stays freely editable while the project is a first draft and is frozen once a Project Number exists. Reused as the `code` of the project's analytic account.

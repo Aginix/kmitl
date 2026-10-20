@@ -57,9 +57,11 @@
             <form string="KMITL Project">
                 <header>
                     <button string="ส่งเข้าแผน / รอจัดสรรงบประมาณ" name="action_confirm" states="draft" type="object" class="oe_highlight"
-                        confirm="เมื่อส่งเข้าแผน ระบบจะออกเลขที่โครงการ + ล็อกเฉพาะปีงบประมาณ (รหัสงบ/มิติงบ และรายละเอียดโครงการยังแก้ได้จนกว่าจะจองงบประมาณ) ต้องการยืนยันหรือไม่?" />
-                    <button string="จองงบประมาณ" name="action_reserve_budget" type="object" class="oe_highlight"
+                        confirm="เมื่อส่งเข้าแผน ระบบจะออกเลขที่โครงการ + ล็อกเฉพาะปีงบประมาณ (รหัสงบ/มิติงบ และรายละเอียดโครงการยังแก้ได้จนกว่าจะยืนยันงบประมาณ) ต้องการยืนยันหรือไม่?" />
+                    <button string="ยืนยันงบประมาณ" name="action_reserve_budget" type="object" class="oe_highlight"
                         attrs="{'invisible': [('state', '!=', 'to_verify')]}" />
+                    <button string="จองงบประมาณ" name="action_retry_reserve_budget" type="object" class="oe_highlight"
+                        attrs="{'invisible': ['|', ('state', '!=', 'in_progress'), ('budget_reserved', '>', 0)]}" />
                     <button string="อนุมัติ" name="action_approve" states="to_send,sent" type="object" class="oe_highlight"
                         groups="kmitl_project.group_kmitl_project_manager" />
                     <button string="ปิดโครงการ" name="action_complete" states="in_progress" type="object" class="oe_highlight" />
@@ -97,7 +99,8 @@
                             name="action_open_budget_move_lines"
                             type="object"
                             class="oe_stat_button"
-                            icon="fa-exchange">
+                            icon="fa-exchange"
+                            groups="budget.group_budget_viewer">
                             <field name="budget_move_line_count" widget="statinfo" string="Budget Move" />
                         </button>
                     </div>
@@ -150,7 +153,7 @@
                                 <div attrs="{'invisible': ['|', ('state', '!=', 'to_verify'), ('budget_amount', '>', 0)]}"
                                      class="alert alert-warning" role="alert" colspan="2">
                                     <strong>ยังไม่ได้รับการจัดสรรงบประมาณ</strong>
-                                    — โปรดรอให้งานแผนโอนงบเข้าโครงการ (ปรับเข้าแผน) ก่อนจึงจะจองงบประมาณได้
+                                    — โปรดรอให้งานแผนโอนงบเข้าโครงการ (ปรับเข้าแผน) ก่อนจึงจะยืนยันงบประมาณได้
                                 </div>
                                 <field name="source_analytic_id" attrs="{'readonly': [('state', 'not in', ('draft', 'to_verify', 'returned'))]}" options="{'no_create_edit': True, 'no_create': True, 'no_open': True}" />
                                 <field name="budget_account_id" attrs="{'readonly': [('state', 'not in', ('draft', 'to_verify', 'returned'))]}" options="{'no_create_edit': True, 'no_create': True, 'no_open': True}" />
@@ -159,8 +162,8 @@
                                 <field name="department_analytic_id" attrs="{'readonly': [('state', 'not in', ('draft', 'to_verify', 'returned'))]}" options="{'no_create_edit': True, 'no_create': True, 'no_open': True}" />
                                 <field name="budget_estimate" />
                                 <field name="budget_amount" />
-                                <field name="budget_reserved" attrs="{'invisible': [('state', 'in', ('draft', 'to_verify'))]}"/>
-                                <field name="budget_remaining" attrs="{'invisible': [('state', 'in', ('draft', 'to_verify'))]}"/>
+                                <field name="budget_reserved" attrs="{'invisible': ['|', ('state', 'in', ('draft', 'to_verify')), '&amp;', ('budget_reserved', '=', 0), ('state', 'not in', ('in_progress', 'complete'))]}"/>
+                                <field name="budget_remaining" attrs="{'invisible': ['|', ('state', 'in', ('draft', 'to_verify')), '&amp;', ('budget_reserved', '=', 0), ('state', 'not in', ('in_progress', 'complete'))]}"/>
                                 <field name="analytic_account_id" invisible="1" />
                                 <field name="analytic_distribution" invisible="1" />
                             </group>

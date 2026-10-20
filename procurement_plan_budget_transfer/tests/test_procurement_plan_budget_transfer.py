@@ -180,7 +180,8 @@ class TestProcurementPlanBudgetTransfer(TransactionCase):
 
         def allowed(**vals):
             line = Line.new(dict(vals, transfer_direction="to"))
-            return line.allowed_procurement_plan_analytic_ids
+            # a new record's x2many holds NewIds; compare the real records
+            return line.allowed_procurement_plan_analytic_ids._origin
 
         self.assertIn(tag, allowed())  # blank dimensions do not filter
         self.assertIn(
@@ -193,3 +194,38 @@ class TestProcurementPlanBudgetTransfer(TransactionCase):
             ),
         )
         self.assertNotIn(tag, allowed(account_id=self.src.id))
+
+    def test_picker_filters_on_dialog_fiscal_year(self):
+        # A dialog line has no move_id yet — the fiscal year comes from context.
+        tag = self._make_plan(5000).analytic_account_id
+        other_fy = self.env["account.fiscal.year"].create(
+            {
+                "name": "FY-PPBT-OTHER",
+                "date_from": date(2090, 10, 1),
+                "date_to": date(2091, 9, 30),
+                "company_id": self.env.company.id,
+            }
+        )
+        Line = self.env["budget.move.line"]
+        same = Line.with_context(transfer_fiscal_year_id=self.fy.id).new(
+            {"transfer_direction": "to"}
+        )
+        self.assertIn(tag, same.allowed_procurement_plan_analytic_ids._origin)
+        other = Line.with_context(transfer_fiscal_year_id=other_fy.id).new(
+            {"transfer_direction": "to"}
+        )
+        self.assertNotIn(tag, other.allowed_procurement_plan_analytic_ids._origin)
+
+    def test_plan_page_lists_line_and_opens_new_tab(self):
+        plan = self._make_plan(5000)
+        transfer = self._fund_plan_transfer(plan, 5000)
+        line = transfer.procurement_plan_line_ids
+        # Only the TO line carries the plan; the FROM line is left out.
+        self.assertEqual(len(line), 1)
+        self.assertEqual(line.transfer_direction, "to")
+        action = line.action_open_procurement_plan()
+        self.assertEqual(action["target"], "new")
+        self.assertEqual(
+            action["url"],
+            "/web#id=%s&model=procurement.plan&view_type=form" % plan.id,
+        )

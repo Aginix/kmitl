@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="view_procurement_plan_form" model="ir.ui.view">
+        <field name="name">procurement.plan.form.attachment</field>
+        <field name="model">procurement.plan</field>
+        <field name="inherit_id" ref="procurement_plan.view_procurement_plan_form" />
+        <field name="arch" type="xml">
+            <notebook position="before">
+                <group name="attachments" string="เอกสารแนบ">
+                    <field
+                        name="attachment_ids"
+                        nolabel="1"
+                        colspan="2"
+                        widget="many2many_binary"
+                        context="{'default_res_model': 'procurement.plan'}"
+                        attrs="{'readonly': [('state', 'in', ['done', 'cancel'])]}"
+                    />
+                </group>
+            </notebook>
+        </field>
+    </record>
+
+</odoo>

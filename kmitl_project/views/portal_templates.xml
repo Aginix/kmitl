@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <!-- Home Page: Projects Counter -->
     <template
@@ -112,7 +112,9 @@
                                         <span t-else="" class="text-muted">—</span>
                                     </td>
                                     <td class="text-end">
-                                        <t t-call="kmitl_project.kmitl_project_status_badge">
+                                        <t
+                                            t-call="kmitl_project.kmitl_project_status_badge"
+                                        >
                                             <t t-set="state" t-value="project.state" />
                                         </t>
                                     </td>
@@ -196,10 +198,14 @@
                 <h2 class="fw-bold mb-1" t-field="kmitl_project.name" />
                 <div class="opacity-75">
                     <i class="fa fa-calendar me-1" />
-                    ปีงบประมาณ <t t-out="kmitl_project.account_fiscal_year_id.name or '—'" />
+                    ปีงบประมาณ <t
+                        t-out="kmitl_project.account_fiscal_year_id.name or '—'"
+                    />
                     <span class="mx-2">·</span>
                     <i class="fa fa-building-o me-1" />
-                    <t t-out="kmitl_project.department_analytic_id.name or 'ไม่ระบุหน่วยงาน'" />
+                    <t
+                        t-out="kmitl_project.department_analytic_id.name or 'ไม่ระบุหน่วยงาน'"
+                    />
                 </div>
             </div>
         </div>
@@ -211,7 +217,9 @@
                     <!-- Quick facts -->
                     <div class="card border-0 shadow-sm mb-4">
                         <div class="card-header bg-white fw-bold">
-                            <i class="fa fa-info-circle me-2 text-primary" />ข้อมูลโครงการ
+                            <i
+                                class="fa fa-info-circle me-2 text-primary"
+                            />ข้อมูลโครงการ
                         </div>
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item d-flex justify-content-between">
@@ -254,7 +262,9 @@
                             <li class="list-group-item d-flex justify-content-between">
                                 <span class="text-muted">ระยะเวลา</span>
                                 <span class="fw-semibold text-end">
-                                    <t t-if="kmitl_project.date_start or kmitl_project.date_end">
+                                    <t
+                                        t-if="kmitl_project.date_start or kmitl_project.date_end"
+                                    >
                                         <span t-field="kmitl_project.date_start" />
                                         <span> - </span>
                                         <span t-field="kmitl_project.date_end" />
@@ -329,7 +339,9 @@
                 <!-- Strategic alignment -->
                 <div class="card border-0 shadow-sm mb-4">
                     <div class="card-header bg-white fw-bold">
-                        <i class="fa fa-sitemap me-2 text-primary" />ความสอดคล้องเชิงนโยบายและยุทธศาสตร์
+                        <i
+                            class="fa fa-sitemap me-2 text-primary"
+                        />ความสอดคล้องเชิงนโยบายและยุทธศาสตร์
                     </div>
                     <div class="card-body">
                         <div class="row">
@@ -337,14 +349,20 @@
                                 <h6 class="text-muted">นโยบายสถาบัน</h6>
                                 <dl class="row mb-0">
                                     <dt class="col-sm-5">Impact</dt>
-                                    <dd class="col-sm-7" t-out="kmitl_project.impact_id.name or '—'" />
+                                    <dd
+                                        class="col-sm-7"
+                                        t-out="kmitl_project.impact_id.name or '—'"
+                                    />
                                     <dt class="col-sm-5">Global Index</dt>
                                     <dd
                                         class="col-sm-7"
                                         t-out="kmitl_project.global_index_id.name or '—'"
                                     />
                                     <dt class="col-sm-5">FIGHT</dt>
-                                    <dd class="col-sm-7" t-out="kmitl_project.fight_id.name or '—'" />
+                                    <dd
+                                        class="col-sm-7"
+                                        t-out="kmitl_project.fight_id.name or '—'"
+                                    />
                                 </dl>
                             </div>
                             <div class="col-12 col-md-6">
@@ -379,20 +397,43 @@
                 <!-- Budget disbursement plan -->
                 <div class="card border-0 shadow-sm mb-4">
                     <div class="card-header bg-white fw-bold">
-                        <i class="fa fa-calendar-check-o me-2 text-primary" />แผนการดำเนินงานและแผนการใช้จ่ายงบประมาณ
+                        <i
+                            class="fa fa-calendar-check-o me-2 text-primary"
+                        />แผนการดำเนินงานและแผนการใช้จ่ายงบประมาณ
                     </div>
                     <div class="card-body">
                         <t t-if="kmitl_project.plan_ids">
                             <div class="table-responsive">
-                                <table class="table table-sm table-bordered align-middle mb-0">
+                                <table
+                                    class="table table-sm table-bordered align-middle mb-0"
+                                >
                                     <thead class="table-light">
                                         <tr>
-                                            <th rowspan="2" style="min-width: 160px">ชื่อรายการ</th>
-                                            <th rowspan="2" class="text-end" style="min-width: 110px">งบประมาณ</th>
-                                            <th colspan="3" class="text-center">ไตรมาสที่ 1</th>
-                                            <th colspan="3" class="text-center">ไตรมาสที่ 2</th>
-                                            <th colspan="3" class="text-center">ไตรมาสที่ 3</th>
-                                            <th colspan="3" class="text-center">ไตรมาสที่ 4</th>
+                                            <th
+                                                rowspan="2"
+                                                style="min-width: 160px"
+                                            >ชื่อรายการ</th>
+                                            <th
+                                                rowspan="2"
+                                                class="text-end"
+                                                style="min-width: 110px"
+                                            >งบประมาณ</th>
+                                            <th
+                                                colspan="3"
+                                                class="text-center"
+                                            >ไตรมาสที่ 1</th>
+                                            <th
+                                                colspan="3"
+                                                class="text-center"
+                                            >ไตรมาสที่ 2</th>
+                                            <th
+                                                colspan="3"
+                                                class="text-center"
+                                            >ไตรมาสที่ 3</th>
+                                            <th
+                                                colspan="3"
+                                                class="text-center"
+                                            >ไตรมาสที่ 4</th>
                                         </tr>
                                         <tr>
                                             <th class="text-center">ต.ค.</th>
@@ -410,7 +451,10 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <t t-foreach="kmitl_project.plan_ids" t-as="plan">
+                                        <t
+                                            t-foreach="kmitl_project.plan_ids"
+                                            t-as="plan"
+                                        >
                                             <tr>
                                                 <td t-out="plan.name" />
                                                 <td
@@ -451,7 +495,9 @@
                 <!-- Income / Expense -->
                 <div class="card border-0 shadow-sm mb-4">
                     <div class="card-header bg-white fw-bold">
-                        <i class="fa fa-exchange me-2 text-primary" />รายรับ-รายจ่ายโครงการ
+                        <i
+                            class="fa fa-exchange me-2 text-primary"
+                        />รายรับ-รายจ่ายโครงการ
                     </div>
                     <div class="card-body">
                         <t
@@ -461,17 +507,24 @@
                                 {'label': 'รายจ่าย', 'type': 'expense', 'lines': kmitl_project.expense_line_ids, 'total': kmitl_project.budget_expense_total},
                             ]"
                         />
-                        <t t-if="kmitl_project.income_line_ids or kmitl_project.expense_line_ids">
+                        <t
+                            t-if="kmitl_project.income_line_ids or kmitl_project.expense_line_ids"
+                        >
                             <t t-foreach="budget_sections" t-as="section">
                                 <t t-if="section['lines']">
                                     <h6 class="fw-bold mt-2" t-out="section['label']" />
                                     <div class="table-responsive">
-                                        <table class="table table-sm table-bordered align-middle">
+                                        <table
+                                            class="table table-sm table-bordered align-middle"
+                                        >
                                             <thead class="table-light">
                                                 <tr>
                                                     <th>รายการ</th>
                                                     <th>คำอธิบาย</th>
-                                                    <th class="text-end" style="min-width: 120px">จำนวนเงิน</th>
+                                                    <th
+                                                        class="text-end"
+                                                        style="min-width: 120px"
+                                                    >จำนวนเงิน</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -485,7 +538,10 @@
                                                                 colspan="2"
                                                                 t-attf-style="padding-left: #{0.5 + row['level'] * 1.5}rem"
                                                             >
-                                                                <span class="fw-semibold" t-out="row['name']" />
+                                                                <span
+                                                                    class="fw-semibold"
+                                                                    t-out="row['name']"
+                                                                />
                                                             </td>
                                                             <td
                                                                 class="text-end fw-semibold"
@@ -511,7 +567,10 @@
                                                     </t>
                                                 </t>
                                                 <tr class="table-light">
-                                                    <td colspan="2" class="text-end fw-bold">รวม</td>
+                                                    <td
+                                                        colspan="2"
+                                                        class="text-end fw-bold"
+                                                    >รวม</td>
                                                     <td
                                                         class="text-end fw-bold"
                                                         t-out="'{:,.2f}'.format(section['total'])"
@@ -532,25 +591,44 @@
                 <!-- Project details -->
                 <div class="card border-0 shadow-sm mb-4">
                     <div class="card-header bg-white fw-bold">
-                        <i class="fa fa-file-text-o me-2 text-primary" />รายละเอียดโครงการ/กิจกรรม
+                        <i
+                            class="fa fa-file-text-o me-2 text-primary"
+                        />รายละเอียดโครงการ/กิจกรรม
                     </div>
                     <div class="card-body">
                         <div class="mb-3">
-                            <label class="form-label fw-semibold text-muted">หลักการและเหตุผล</label>
-                            <div style="white-space: pre-wrap" t-out="kmitl_project.introduction or '—'" />
+                            <label
+                                class="form-label fw-semibold text-muted"
+                            >หลักการและเหตุผล</label>
+                            <div t-out="kmitl_project.introduction or '—'" />
                         </div>
                         <div class="mb-3">
-                            <label class="form-label fw-semibold text-muted">วัตถุประสงค์</label>
-                            <div style="white-space: pre-wrap" t-out="kmitl_project.objective or '—'" />
+                            <label
+                                class="form-label fw-semibold text-muted"
+                            >วัตถุประสงค์</label>
+                            <div
+                                style="white-space: pre-wrap"
+                                t-out="kmitl_project.objective or '—'"
+                            />
                         </div>
                         <div class="mb-3">
-                            <label class="form-label fw-semibold text-muted">สถานที่/พื้นที่ดำเนินโครงการ</label>
-                            <div style="white-space: pre-wrap" t-out="kmitl_project.location or '—'" />
+                            <label
+                                class="form-label fw-semibold text-muted"
+                            >สถานที่/พื้นที่ดำเนินโครงการ</label>
+                            <div
+                                style="white-space: pre-wrap"
+                                t-out="kmitl_project.location or '—'"
+                            />
                         </div>
                         <div class="mb-0">
-                            <label class="form-label fw-semibold text-muted">วิธีดำเนินการ</label>
+                            <label
+                                class="form-label fw-semibold text-muted"
+                            >วิธีดำเนินการ</label>
                             <ul t-if="kmitl_project.methodology_ids" class="mb-1">
-                                <li t-foreach="kmitl_project.methodology_ids" t-as="method">
+                                <li
+                                    t-foreach="kmitl_project.methodology_ids"
+                                    t-as="method"
+                                >
                                     <span t-field="method.name" />
                                 </li>
                             </ul>
@@ -566,7 +644,9 @@
                 <!-- People (targets / participants / organizers) -->
                 <div class="card border-0 shadow-sm mb-4">
                     <div class="card-header bg-white fw-bold">
-                        <i class="fa fa-users me-2 text-primary" />กลุ่มเป้าหมายและผู้เกี่ยวข้อง
+                        <i
+                            class="fa fa-users me-2 text-primary"
+                        />กลุ่มเป้าหมายและผู้เกี่ยวข้อง
                     </div>
                     <div class="card-body">
                         <div class="row">
@@ -590,7 +670,10 @@
                                         </thead>
                                         <tbody>
                                             <t t-if="people['lines']">
-                                                <tr t-foreach="people['lines']" t-as="row">
+                                                <tr
+                                                    t-foreach="people['lines']"
+                                                    t-as="row"
+                                                >
                                                     <td t-out="row.name" />
                                                     <td
                                                         class="text-end"
@@ -600,7 +683,10 @@
                                             </t>
                                             <t t-else="">
                                                 <tr>
-                                                    <td colspan="2" class="text-muted">ไม่มีข้อมูล</td>
+                                                    <td
+                                                        colspan="2"
+                                                        class="text-muted"
+                                                    >ไม่มีข้อมูล</td>
                                                 </tr>
                                             </t>
                                         </tbody>
@@ -614,14 +700,19 @@
                 <!-- Outputs / Outcomes / Expected outcomes -->
                 <div class="card border-0 shadow-sm mb-4">
                     <div class="card-header bg-white fw-bold">
-                        <i class="fa fa-bullseye me-2 text-primary" />ผลผลิต ผลลัพธ์ และผลที่คาดว่าจะได้รับ
+                        <i
+                            class="fa fa-bullseye me-2 text-primary"
+                        />ผลผลิต ผลลัพธ์ และผลที่คาดว่าจะได้รับ
                     </div>
                     <div class="card-body">
                         <div class="row">
                             <div class="col-12 col-md-6 mb-3">
                                 <h6 class="fw-bold">ผลผลิต</h6>
                                 <ul t-if="kmitl_project.output_ids" class="mb-0">
-                                    <li t-foreach="kmitl_project.output_ids" t-as="output_id">
+                                    <li
+                                        t-foreach="kmitl_project.output_ids"
+                                        t-as="output_id"
+                                    >
                                         <span t-field="output_id.name" />
                                         <span class="text-muted">
                                             (<span t-field="output_id.target" />
@@ -634,7 +725,10 @@
                             <div class="col-12 col-md-6 mb-3">
                                 <h6 class="fw-bold">ผลลัพธ์</h6>
                                 <ul t-if="kmitl_project.outcome_ids" class="mb-0">
-                                    <li t-foreach="kmitl_project.outcome_ids" t-as="outcome_id">
+                                    <li
+                                        t-foreach="kmitl_project.outcome_ids"
+                                        t-as="outcome_id"
+                                    >
                                         <span t-field="outcome_id.name" />
                                         <span class="text-muted">
                                             (<span t-field="outcome_id.target" />
@@ -663,7 +757,9 @@
                 <!-- Evaluation -->
                 <div class="card border-0 shadow-sm mb-4">
                     <div class="card-header bg-white fw-bold">
-                        <i class="fa fa-check-square-o me-2 text-primary" />วิธีการ/เครื่องมือติดตามและประเมินผล
+                        <i
+                            class="fa fa-check-square-o me-2 text-primary"
+                        />วิธีการ/เครื่องมือติดตามและประเมินผล
                     </div>
                     <div class="card-body">
                         <ul t-if="kmitl_project.evaluation_ids" class="mb-1">

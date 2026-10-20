@@ -11,7 +11,7 @@
     "regenerate it on demand.",
     "depends": [
         "kmitl_demo",
-        "disbursement",
+        "disbursement_budget",
         "purchase_request_approval_work_acceptance",
         "agx_approval_disbursement",
         "disbursement_accounting_kmitl",

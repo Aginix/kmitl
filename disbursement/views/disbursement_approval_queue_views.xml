@@ -62,8 +62,10 @@
         <field name="priority">99</field>
         <field name="arch" type="xml">
             <search string="Approved">
-                <field name="name" string="Number"
-                       filter_domain="['|', ('name', 'ilike', self), ('ref', 'ilike', self)]"/>
+                <field name="name" string="Number"/>
+                <field name="line_ids" string="Payee"
+                       filter_domain="[('line_ids.partner_id', 'ilike', self)]"/>
+                <field name="partner_type_id"/>
                 <field name="user_id"/>
                 <field name="finance_approver_id"/>
                 <field name="rector_approver_id"/>

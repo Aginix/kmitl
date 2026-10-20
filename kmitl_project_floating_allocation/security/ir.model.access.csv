@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_kmitl_project_floating_allocation_budget_user,kmitl.project.floating.allocation budget user,model_kmitl_project_floating_allocation,budget.group_budget_user,1,1,1,1

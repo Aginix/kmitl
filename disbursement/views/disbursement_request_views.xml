@@ -7,12 +7,11 @@
         <field name="arch" type="xml">
             <tree string="Disbursement Requests">
                 <field name="name" />
-                <field name="partner_type" optional="hide" />
-                <field name="partner_id" />
+                <field name="partner_type_id" optional="show" />
+                <field name="payee_display" />
                 <field name="user_id" optional="show" />
                 <field name="date" />
                 <field name="account_fiscal_year_id" options="{'no_open': True}" />
-                <field name="ref" />
                 <field name="amount_total" />
                 <field name="display_status" widget="badge"
                     decoration-info="display_status == 'draft'"
@@ -23,7 +22,6 @@
                 <field name="state" invisible="1" />
                 <field name="pipeline_status" invisible="1" />
                 <field name="main_exception_id" />
-                <field name="budget_commitment_id" optional="hide" />
                 <field name="department_analytic_id" optional="show" />
                 <field name="source_analytic_id" optional="show" />
             </tree>
@@ -41,13 +39,11 @@
                     <button name="action_sign" string="Sign" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'submitted')]}" groups="disbursement.group_disbursement_head" />
                     <button name="action_validate" string="Validate" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'signed')]}" confirm="Are you sure you want to validate this request?" groups="disbursement.group_disbursement_officer" />
                     <button name="action_approve_finance" string="Approve (Finance Director)" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'verified'), ('approval_state', '!=', 'pending_finance')]}" groups="disbursement.group_disbursement_finance_director" />
-                    <button name="action_approve" string="Approve (Rector Delegate)" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'verified'), ('approval_state', '!=', 'pending_rector')]}" confirm="Are you sure you want to approve? This will obligate and consume the budget." groups="disbursement.group_disbursement_rector_delegate" />
+                    <button name="action_approve" string="Approve (Rector Delegate)" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'verified'), ('approval_state', '!=', 'pending_rector')]}" confirm="Are you sure you want to approve this request?" groups="disbursement.group_disbursement_rector_delegate" />
                     <button name="action_open_reject_wizard" string="Reject" type="object" attrs="{'invisible': [('approval_state', '!=', 'pending_finance')]}" groups="disbursement.group_disbursement_finance_director" />
                     <button name="action_open_reject_wizard" string="Reject" type="object" attrs="{'invisible': [('approval_state', '!=', 'pending_rector')]}" groups="disbursement.group_disbursement_rector_delegate" />
                     <button name="action_request_approval" string="Request Approval Again" type="object" class="oe_highlight" attrs="{'invisible': [('approval_state', '!=', 'rejected')]}" groups="disbursement.group_disbursement_officer" />
-                    <button name="action_return_leftover_budget" string="ส่งคืนเงินเหลือจ่าย" type="object" attrs="{'invisible': ['|', ('budget_consumed_amount', '&lt;=', 0), ('budget_available_to_obligate', '&lt;=', 0)]}" groups="disbursement.group_disbursement_manager" />
-                    <field name="budget_available_to_obligate" invisible="1"/>
-                    <button name="action_draft" string="Reset to draft" type="object" class="btn btn-secondary" attrs="{'invisible': [('state', 'not in', ('submitted', 'signed', 'cancel'))]}" groups="disbursement.group_disbursement_manager" />
+                    <button name="action_draft" string="Reset to draft" type="object" class="btn btn-secondary" attrs="{'invisible': [('state', 'not in', ('submitted', 'signed', 'verified', 'cancel'))]}" groups="disbursement.group_disbursement_manager" />
                     <button name="action_cancel" string="Cancel" type="object" attrs="{'invisible': ['|', ('state', 'in', ('draft', 'cancel')), ('pipeline_status', 'in', ('bill_posted', 'payment_draft', 'payment_posted', 'done'))]}" groups="disbursement.group_disbursement_officer" />
                     <field name="state" invisible="1"/>
                     <field name="pipeline_status" invisible="1"/>
@@ -55,13 +51,6 @@
                     <!-- Two-approver sub-status, shown only during the approval window -->
                     <field name="approval_state" widget="statusbar" statusbar_visible="pending_finance,pending_rector" attrs="{'invisible': [('state', '!=', 'verified')]}"/>
                 </header>
-                <!-- Budget Consumed Banner -->
-                <div class="alert alert-success" role="alert" style="margin-bottom:0px;" attrs="{'invisible': [('budget_consumed_amount', '=', 0)]}">
-                    <strong>ตัดงบประมาณแล้ว:</strong>
-                    <field name="budget_consumed_amount" widget="monetary" class="oe_inline" nolabel="1"/>
-                    <span> เมื่อ </span>
-                    <field name="budget_consumed_date" class="oe_inline" nolabel="1"/>
-                </div>
                 <!-- Returned to source for correction -->
                 <div class="alert alert-warning" role="alert" style="margin-bottom:0px;" attrs="{'invisible': [('returned_to_source', '=', False)]}">
                     <field name="returned_to_source" invisible="1"/>
@@ -104,36 +93,18 @@
                         <group id="header_right_group" name="disbursement_information" string="Disbursement Information">
                             <field name="date" />
                             <field name="payment_type" widget="radio" options="{'horizontal': true}" required="1" />
-                            <field name="reference_model_name" readonly="1"
-                                attrs="{'invisible': ['|', ('id', '=', False), ('reference_model_name', '=', False)]}" />
-                            <field name="reference"
-                                attrs="{'readonly': ['|', '|', ('id', '!=', False), ('state', '!=', 'draft'), ('reference_model', '!=', False)]}"
-                                force_save="1" />
-                            <field name="reference_model" invisible="1" />
-                            <field name="ref" />
+                            <!-- Payees live on the lines (pay-by-name); the header
+                                 only fixes which type they must all be. -->
+                            <field name="partner_type_id" options="{'no_create': True, 'no_open': True}" />
                             <field name="note" />
-                            <!-- Recipients live on the request lines (pay-by-name);
-                                 keep the header partner fields hidden. -->
-                            <field name="partner_type" invisible="1" />
-                            <field name="partner_id" invisible="1" />
-                            <field name="partner_bank_id" invisible="1" />
-                            <field name="is_company" invisible="1" />
                         </group>
                         <group id="budget" name="budget_information" string="Budget Information">
-                            <field name="account_fiscal_year_id" readonly="1" options="{'no_open': True}" />
-                            <field name="budget_commitment_id" />
-                            <field name="source_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '!=', 'draft')]}" />
-                            <field name="department_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '!=', 'draft')]}" />
-                            <field name="fund_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '!=', 'draft')]}" />
-                            <field name="activity_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '!=', 'draft')]}" />
-                            <field name="budget_account_id" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '!=', 'draft')]}" />
-                            <field name="budget_account_id" invisible="1" />
-                            <!-- Loaded (hidden) so the line list can hide the
-                                 product column via parent. -->
-                            <field name="is_budget_account_product_expense" invisible="1" />
+                            <field name="account_fiscal_year_id" required="1" options="{'no_create': True, 'no_open': True}" />
+                            <field name="source_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': [('state', '!=', 'draft')]}" />
+                            <field name="department_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': [('state', '!=', 'draft')]}" />
+                            <field name="fund_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': [('state', '!=', 'draft')]}" />
+                            <field name="activity_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': [('state', '!=', 'draft')]}" />
                             <field name="analytic_distribution" invisible="1"/>
-                            <field name="budget_consumed_amount" attrs="{'invisible': [('budget_consumed_amount', '=', 0)]}" />
-                            <field name="budget_consumed_date" attrs="{'invisible': [('budget_consumed_amount', '=', 0)]}" />
                             <field name="currency_id" invisible="1"/>
                         </group>
                         <group id="other_information" name="other_information" string="Other Information">
@@ -162,14 +133,15 @@
                             <field name="line_ids" widget="one2many" context="{'default_request_id': active_id}">
                                 <tree editable="bottom">
                                     <field name="sequence" widget="handle" />
+                                    <!-- No no_open: the user opens the partner from here
+                                         to add a missing bank account. -->
                                     <field name="partner_id" required="1" />
                                     <field name="partner_bank_id" optional="show" />
-                                    <!-- Budget codes that carry their own product stamp it
-                                         automatically, so the whole column is hidden and only
-                                         ordinary disbursements pick a product by hand. -->
-                                    <field name="product_id" attrs="{'column_invisible': [('parent.is_budget_account_product_expense', '=', True)], 'required': [('parent.is_budget_account_product_expense', '=', False)]}" />
-                                    <field name="name" optional="show" />
-                                    <field name="quantity" />
+                                    <field name="product_id" />
+                                    <!-- Kept loaded: the product onchange fills the
+                                         description and the quantity defaults to 1. -->
+                                    <field name="name" invisible="1" />
+                                    <field name="quantity" invisible="1" />
                                     <field name="price_unit" />
                                     <field name="tax_ids" widget="many2many_tags" />
                                     <field name="wht_tax_id" />
@@ -243,8 +215,9 @@
         <field name="model">disbursement.request</field>
         <field name="arch" type="xml">
             <search string="Disbursement Requests">
-                <field name="name" string="Name" filter_domain="['|', ('name', 'ilike', self), ('ref', 'ilike', self)]" />
-                <field name="partner_id" />
+                <field name="name" string="Name" />
+                <field name="line_ids" string="Payee" filter_domain="[('line_ids.partner_id', 'ilike', self)]" />
+                <field name="partner_type_id" />
                 <field name="account_fiscal_year_id" />
                 <field name="source_analytic_id" domain="[('root_plan_id.code', '=', 'sources')]" />
                 <separator />
@@ -264,7 +237,7 @@
                 <separator />
                 <filter name="date" string="Date" date="date" />
                 <group expand="0" name="group_by" string="Group By">
-                    <filter string="Partner" name="partner" context="{'group_by': 'partner_id'}" />
+                    <filter string="Payee Type" name="group_partner_type" context="{'group_by': 'partner_type_id'}" />
                     <filter string="Department" name="group_department" context="{'group_by': 'department_analytic_id'}" />
                     <filter string="Source" name="group_source" context="{'group_by': 'source_analytic_id'}" />
                     <filter string="Date" name="date" context="{'group_by': 'date'}" />
@@ -275,6 +248,7 @@
                      so it is a click rather than something to type. -->
                 <searchpanel>
                     <field name="source_analytic_id" icon="fa-money" select="multi" enable_counters="1" />
+                    <field name="partner_type_id" icon="fa-users" select="multi" enable_counters="1" />
                 </searchpanel>
             </search>
         </field>
