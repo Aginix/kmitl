@@ -76,6 +76,33 @@ class TestEmployeeNameTitle(TransactionCase):
         emp.academic_standing_id = self.asst_prof
         self.assertEqual(emp.name, "Untitled")
 
+    def test_phd_education_toggles_dr_in_name(self):
+        phd = self.env.ref("hr_employee_education_history.Q01")  # ปริญญาเอก
+        EduHist = self.env["hr.employee.education.history"]
+        emp = self.Employee.create(
+            {
+                "firstname": "สมชาย",
+                "lastname": "ใจดี",
+                "role": "academic",
+                "academic_standing_id": self.asst_prof.id,
+            }
+        )
+        self.assertEqual(emp.name, "ผู้ช่วยศาสตราจารย์สมชาย ใจดี")
+        # Add a PhD education line -> "ดร." must appear in the name.
+        edu = EduHist.create({"employee_id": emp.id, "education_level_id": phd.id})
+        self.assertEqual(emp.academic_standing_title, "ผู้ช่วยศาสตราจารย์ ดร.")
+        self.assertEqual(emp.name, "ผู้ช่วยศาสตราจารย์ ดร.สมชาย ใจดี")
+        # Downgrade the line in place -> "ดร." must disappear.
+        master = self.env.ref("hr_employee_education_history.Q02")  # ปริญญาโท
+        edu.education_level_id = master
+        self.assertEqual(emp.name, "ผู้ช่วยศาสตราจารย์สมชาย ใจดี")
+        # Upgrade back to PhD -> "ดร." reappears.
+        edu.education_level_id = phd
+        self.assertEqual(emp.name, "ผู้ช่วยศาสตราจารย์ ดร.สมชาย ใจดี")
+        # Remove it -> "ดร." must disappear.
+        edu.unlink()
+        self.assertEqual(emp.name, "ผู้ช่วยศาสตราจารย์สมชาย ใจดี")
+
     def test_onchange_live_preview(self):
         # Picking the academic standing updates the name live in the form,
         # not only on save.

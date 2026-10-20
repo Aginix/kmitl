@@ -85,9 +85,11 @@ class HrEmployee(models.Model):
         "rank_id",
         "rank_nobility_id",
         "profession_id",
+        "education_history_ids",
     )
     def _onchange_name_title_preview(self):
-        # Live preview of the derived name when the title inputs change.
+        # Live preview of the derived name when the title inputs change
+        # (education_history_ids feeds education_level_id -> the "ดร." prefix).
         self.name = self._build_name_with_title()
 
     @api.model_create_multi

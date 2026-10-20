@@ -8,6 +8,7 @@
     "depends": [
         "kmitl_hr_employee_full_name",
         "hr_employee_academic_standing_thailand",
+        "hr_employee_education_history",
     ],
     "data": [],
     "installable": True,
