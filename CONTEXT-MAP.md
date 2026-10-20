@@ -139,6 +139,11 @@ upfront.
     automatically from the employee's highest education level (ปริญญาเอก → ดร.) and
     re-coupling to `hr_employee_education_history`; the flag becomes read-only while it
     is installed (base ADR-0001).
+- [HR Employee Name Title KMITL](./hr_employee_name_title_kmitl/CONTEXT.md) — composes
+  the stored, locked `hr.employee.name` as "work-track title prefix + name parts":
+  academic staff get their [[hr-employee-academic-standing-thailand]] title, everyone
+  else their personal honorific (`prefix_id`), glued to the
+  [[kmitl-hr-employee-full-name]] first/middle/last name.
 
 ## Relationships
 
