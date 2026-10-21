@@ -1,9 +1,18 @@
 from dateutil.relativedelta import relativedelta
 
-from odoo import _, api, fields, models
+from odoo import _, _lt, api, fields, models
 from odoo.exceptions import ValidationError
 from odoo.osv import expression
 from odoo.tools.safe_eval import datetime, safe_eval, time
+
+_OPERATOR_LABELS = {
+    "=": _lt("is"),
+    "!=": _lt("is not"),
+    "in": _lt("is in"),
+    "not in": _lt("is not in"),
+    "child_of": _lt("is under"),
+    "parent_of": _lt("is above"),
+}
 
 
 class PurchaseBuddy(models.Model):
@@ -17,6 +26,7 @@ class PurchaseBuddy(models.Model):
     _name = "purchase.buddy"
     _description = "Purchase Buddy Coverage"
     _order = "sequence, id"
+    _rec_name = "user_id"
 
     sequence = fields.Integer(default=10)
     active = fields.Boolean(default=True)
@@ -41,11 +51,52 @@ class PurchaseBuddy(models.Model):
     )
     model_name = fields.Char(related="model_id.model")
     domain = fields.Char(default="[]", required=True)
+    coverage = fields.Char(compute="_compute_coverage")
     company_id = fields.Many2one(
         comodel_name="res.company",
         required=True,
         default=lambda self: self.env.company,
     )
+
+    @api.depends("model_id", "domain")
+    def _compute_coverage(self):
+        for row in self:
+            row.coverage = row.model_id and row._describe_domain()
+
+    def _describe_domain(self):
+        """Readable condition: field labels and record names instead of the
+        domain's technical names and ids. Only AND-ed leaves are rewritten;
+        anything else (``|``, ``!``) falls back to the raw domain."""
+        self.ensure_one()
+        try:
+            domain = self._get_domain()
+            if not domain:
+                return _("All documents")
+            parts = []
+            for leaf in domain:
+                if leaf == "&":
+                    continue
+                path, operator, value = leaf
+                comodel = self.env[self.model_id.model]
+                for fname in path.split("."):
+                    field = comodel._fields[fname]
+                    if field.relational:
+                        comodel = self.env[field.comodel_name]
+                if (field.relational or field.name == "id") and isinstance(
+                    value, (int, list, tuple)
+                ):
+                    value = ", ".join(comodel.browse(value).mapped("display_name"))
+                parts.append(
+                    "%s %s %s"
+                    % (
+                        field._description_string(self.env),
+                        _OPERATOR_LABELS.get(operator, operator),
+                        value,
+                    )
+                )
+            return _(" and ").join(parts)
+        except Exception:
+            return self.domain
 
     @api.onchange("model_id")
     def _onchange_model_id(self):

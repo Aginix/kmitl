@@ -5,11 +5,12 @@
         <field name="name">purchase.buddy.tree</field>
         <field name="model">purchase.buddy</field>
         <field name="arch" type="xml">
-            <tree string="Buddy ดูแลหน่วยงาน">
+            <tree>
                 <field name="sequence" widget="handle" />
                 <field name="user_id" options="{'no_create': True}" />
                 <field name="model_id" />
-                <field name="domain" optional="show" />
+                <field name="coverage" />
+                <field name="domain" optional="hide" />
                 <field name="company_id" groups="base.group_multi_company" />
                 <field name="active" widget="boolean_toggle" />
             </tree>
@@ -26,6 +27,10 @@
                         <field name="user_id" options="{'no_create': True}" />
                         <field name="model_id" options="{'no_create': True}" />
                         <field name="model_name" invisible="1" />
+                        <field
+                            name="coverage"
+                            attrs="{'invisible': [('model_name', '=', False)]}"
+                        />
                         <field name="sequence" />
                         <field name="company_id" groups="base.group_multi_company" />
                         <field name="active" />

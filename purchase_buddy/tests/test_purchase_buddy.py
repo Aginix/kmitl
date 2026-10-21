@@ -72,3 +72,15 @@ class TestPurchaseBuddy(TransactionCase):
         )
         self.assertFalse(self.Buddy._get_buddy_users(PR.new({"state": "approved"})))
         self.assertFalse(self.Buddy._get_buddy_users(self.parent))
+
+    def test_coverage_shows_names_not_ids(self):
+        row = self._row(self.buddy_parent, "[('id', 'child_of', %d)]" % self.parent.id)
+        self.assertEqual(row.display_name, self.buddy_parent.display_name)
+        self.assertIn("Faculty", row.coverage)
+        self.assertNotIn(str(self.parent.id), row.coverage)
+        self.assertEqual(self._row(self.buddy_parent, "[]").coverage, "All documents")
+        raw = "['|', ('id', '=', %d), ('id', '=', %d)]" % (
+            self.parent.id,
+            self.other.id,
+        )
+        self.assertEqual(self._row(self.buddy_parent, raw).coverage, raw)
