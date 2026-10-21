@@ -38,8 +38,17 @@ the **Assigned Officer** has had no home.
   would stop the compute. On a ตีกลับ/แก้ไข resync this also keeps the officer.
 - **The field is optional.** Anyone in the Buddy group may be picked, while
   `is_editable` allows. God Mode leaves it locked.
-- **Scope**: the field, an "ที่ฉันรับผิดชอบ" filter, a list column and a group-by.
-  There is no Todo and no record-rule change; access stays with the OU rules.
+- **The officer gets the "จัดทำรายงานขอซื้อ/จ้าง (พจ.1)" Todo.** The bridge depends on
+  `purchase_request_approval_todo` and reuses its activity type, so that module's rules
+  still close the Todo on submit and drop it on ตีกลับ/แก้ไข:
+  - a draft PA with an officer gets the Todo assigned to that person, instead of the
+    unit role เจ้าหน้าที่พัสดุ (หน่วยงาน); the role's create rule skips a PA that
+    already has one;
+  - when the officer changes, the open Todo moves to the new officer;
+  - when a ตีกลับ/แก้ไข brings the PA back to draft, the officer gets the Todo again;
+  - a PA with no officer keeps the role-based Todo.
+- **Scope**: the field, the Todo, an "ที่ฉันรับผิดชอบ" filter, a list column and a
+  group-by. There is no record-rule change; access stays with the OU rules.
 
 ## Considered options
 
@@ -59,6 +68,10 @@ the **Assigned Officer** has had no home.
 - PAs that exist before installation keep `False`. Nothing re-computes them unless one
   of the dependent fields changes while the PA is still open.
 - A central Buddy outside the PA's OU may be named yet unable to open the PA. Access
-  still comes from Allowed OUs / access-all.
+  still comes from Allowed OUs / access-all. The Todo does not grant access either.
+- Unit procurement officers no longer see the "จัดทำ พจ.1" Todo for a PA that has an
+  officer.
+- If a PA's officer becomes empty while it is still draft, the Todo stays with the
+  previous officer.
 - On an existing database, deploy with `-i purchase_buddy,purchase_request_approval_buddy`.
   `-u` does not install a new auto-install module.

@@ -107,3 +107,45 @@ class TestPurchaseRequestApprovalBuddy(TransactionCase):
         pa.state = "to_approve"
         pa.requesting_department_id = self.other
         self.assertEqual(pa.assigned_to, self.buddy_a)
+
+    def _prepare_todos(self, pa):
+        act_type = self.env.ref(
+            "purchase_request_approval_todo.mail_activity_pa_notify_procurement"
+        )
+        return pa.activity_ids.filtered(lambda a: a.activity_type_id == act_type)
+
+    def test_prepare_todo_goes_to_officer(self):
+        """The officer gets the "จัดทำ พจ.1" Todo instead of the unit role."""
+        todo = self._prepare_todos(self._make_pa(self.faculty))
+        self.assertEqual(len(todo), 1)
+        self.assertEqual(todo.user_id, self.buddy_a)
+        self.assertFalse(todo.responsible_role_id)
+
+    def test_prepare_todo_follows_officer_change(self):
+        pa = self._make_pa(self.faculty)
+        pa.assigned_to = self.buddy_b
+        todo = self._prepare_todos(pa)
+        self.assertEqual(len(todo), 1)
+        self.assertEqual(todo.user_id, self.buddy_b)
+
+    def test_no_officer_no_personal_todo(self):
+        todos = self._prepare_todos(self._make_pa(False))
+        self.assertFalse(todos.user_id)
+
+    def test_prepare_todo_back_after_return(self):
+        """ตีกลับ/แก้ไข drops the Todo; the พจ.1's return to draft brings it
+        back to the officer."""
+        pa = self._make_pa(self.faculty)
+        pa.state = "pending_pr"
+        self.assertFalse(self._prepare_todos(pa))
+        vals = pa.request_id._prepare_approval_sync_vals()
+        vals["state"] = "draft"
+        pa.write(vals)
+        todo = self._prepare_todos(pa)
+        self.assertEqual(len(todo), 1)
+        self.assertEqual(todo.user_id, self.buddy_a)
+
+    def test_prepare_todo_closed_on_submit(self):
+        pa = self._make_pa(self.faculty)
+        pa.state = "to_approve"
+        self.assertFalse(self._prepare_todos(pa))

@@ -10,19 +10,24 @@
         />
         <field name="arch" type="xml">
             <xpath
-                expr="//page[@name='other_info']//field[@name='assigned_to']"
-                position="replace"
-            />
-            <xpath
                 expr="//group[@name='main_info']/field[@name='requesting_department_id']"
                 position="after"
             >
-                <field
-                    name="assigned_to"
-                    widget="many2one_avatar_user"
-                    options="{'no_create': True}"
-                    attrs="{'readonly': [('is_editable', '=', False)]}"
+                <xpath
+                    expr="//page[@name='other_info']//field[@name='assigned_to']"
+                    position="move"
                 />
+            </xpath>
+            <xpath
+                expr="//group[@name='main_info']/field[@name='assigned_to']"
+                position="attributes"
+            >
+                <attribute name="readonly">0</attribute>
+                <attribute name="widget">many2one_avatar_user</attribute>
+                <attribute name="options">{'no_create': True}</attribute>
+                <attribute
+                    name="attrs"
+                >{'readonly': [('is_editable', '=', False)]}</attribute>
             </xpath>
         </field>
     </record>

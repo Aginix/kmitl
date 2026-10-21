@@ -47,7 +47,9 @@ responsible for handling a document's work. Lives on the **PA**. Its default com
 covers the PA. Nothing is carried over from the PR. While the PA is still open, a pick
 that the settings no longer cover is replaced, and a covered pick is kept. Anyone in
 the Purchase Buddy group may be picked by hand. It may stay empty when no row covers the
-PA. Naming the officer routes nothing and grants nothing: no Todo, no extra access. See
+PA. The officer receives the PA's "จัดทำรายงานขอซื้อ/จ้าง (พจ.1)" Todo while it is in
+draft, instead of the unit's procurement role; a PA with no officer keeps the role Todo.
+Naming the officer grants no extra access. See
 [ADR-0013](docs/adr/0013-pa-assigned-to-is-assigned-officer-from-purchase-buddy.md).
 Not on the PR: the PR's `assigned_to` is the **Designated Verifier**
 ([ADR-0011](docs/adr/0011-pr-assigned-to-is-designated-verifier.md)). _Avoid_:
