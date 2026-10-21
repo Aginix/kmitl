@@ -38,9 +38,7 @@
                 </div>
             </header>
             <field name="account_fiscal_year_id" position="after">
-                <!-- Optional on a direct claim (ADR-0005). -->
                 <field name="budget_commitment_id" />
-                <field name="budget_direct_move_id" attrs="{'invisible': [('budget_direct_move_id', '=', False)]}" />
             </field>
             <!-- The linked commitment carries the dimensions: lock them once set. -->
             <field name="source_analytic_id" position="attributes">
@@ -57,7 +55,7 @@
             </field>
             <field name="activity_analytic_id" position="after">
                 <!-- force_save: filled by the commitment onchange while readonly. -->
-                <field name="budget_account_id" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '!=', 'draft')], 'required': [('is_direct_claim', '=', True), ('budget_commitment_id', '=', False)]}" force_save="1" />
+                <field name="budget_account_id" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '!=', 'draft')]}" force_save="1" />
                 <!-- Loaded (hidden) so the line list can hide the
                      product column via parent. -->
                 <field name="is_budget_account_product_expense" invisible="1" />

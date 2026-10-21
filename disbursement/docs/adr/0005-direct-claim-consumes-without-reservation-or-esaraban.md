@@ -9,7 +9,7 @@ would be collected twice.
 
 ## Decision
 
-A request ticked **ตั้งเบิกตรง** (`is_direct_claim`, core) is a **direct claim**:
+A request ticked **ตั้งเบิกตรง** (`is_direct_claim`) is a **direct claim**:
 
 - **No e-Saraban.** It cannot be submitted to Sarabun; Submit requires the
   **memo number** and at least one attachment (the memo itself) and moves the
@@ -18,7 +18,7 @@ A request ticked **ตั้งเบิกตรง** (`is_direct_claim`, core)
 - **Reservation optional.** A direct claim may still draw a reservation, and
   is then consumed through it like any request. Without one it carries its own
   dimensions and budget code, and on the Rector-delegated approval
-  `disbursement_budget` posts a **Direct Consumption** (ตัดงบตรง, budget
+  `disbursement_direct_claim_budget` posts a **Direct Consumption** (ตัดงบตรง, budget
   ADR-0019) for the request's amount; cancelling the request cancels it.
   Availability is pre-checked on Submit and enforced again when posting.
 - **Anyone may tick it.** The request's own approval chain — officer, Finance
@@ -30,6 +30,15 @@ A request ticked **ตั้งเบิกตรง** (`is_direct_claim`, core)
 The **memo number** (`memo_number`) lives in core so both paths share it: typed by
 hand on a direct claim, stamped by `disbursement_sarabun` the instant e-Saraban
 issues the number otherwise (new `_on_sarabun_numbered` origin hook).
+
+The feature is an opt-in extension, not core: **`disbursement_direct_claim`**
+(the flag, the memo checks, submit → `signed`; installed with `-i`) and the
+auto-installed bridge **`disbursement_direct_claim_budget`** (direct consumption,
+its two submit rules). Core keeps only what the regular flow also uses: the
+memo number, the head-signed date (`sign_date`, stamped on sign unless already
+set) and the dates group. `disbursement_sarabun` needs no glue: a direct claim
+moves from draft to `signed` in one call and never waits at `submitted`, the
+only state its submit button and guard act on.
 
 ## Considered options
 

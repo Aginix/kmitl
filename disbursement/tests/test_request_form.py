@@ -12,9 +12,8 @@ from .test_two_approver import TwoApproverCommon
 
 
 @tagged("post_install", "-at_install")
-class TestDirectClaim(TwoApproverCommon):
-    """ตั้งเบิกตรง (ADR-0005): the external memo stands in for the head's
-    signature, so submit lands on ``signed`` once the memo is recorded."""
+class TestRequestForm(TwoApproverCommon):
+    """วันที่หน่วยงานลงนาม and the dimensions typed on the form."""
 
     def _draft(self, **vals):
         dr = self.DR.create(
@@ -47,32 +46,8 @@ class TestDirectClaim(TwoApproverCommon):
         return dr
 
     def _no_exceptions(self):
-        # Budget bridges add their own submit rules; this is about the memo.
+        # Budget bridges add their own submit rules; not under test here.
         return patch.object(type(self.DR), "detect_exceptions", return_value=[])
-
-    def test_direct_claim_needs_memo_number_and_attachment(self):
-        dr = self._draft(is_direct_claim=True)
-        with self._no_exceptions():
-            with self.assertRaises(UserError):
-                dr.action_submit()
-            dr.memo_number = "อว 7201/123"
-            with self.assertRaises(UserError):
-                dr.action_submit()
-            dr.sign_date = date(2026, 10, 1)
-            with self.assertRaises(UserError):
-                dr.action_submit()
-            self.env["ir.attachment"].create(
-                {
-                    "name": "memo.pdf",
-                    "res_model": dr._name,
-                    "res_id": dr.id,
-                    "raw": b"%PDF-1.4",
-                }
-            )
-            dr.action_submit()
-        self.assertEqual(dr.state, "signed")
-        # the memo's own date, not the day it was submitted
-        self.assertEqual(dr.sign_date, date(2026, 10, 1))
 
     def test_regular_request_stops_at_submitted(self):
         dr = self._draft()

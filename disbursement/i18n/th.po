@@ -1926,12 +1926,6 @@ msgid "Set a payee type on %s before raising a disbursement request."
 msgstr "กรุณาระบุประเภทผู้รับเงินของ %s ก่อนสร้างใบขอเบิก"
 
 #. module: disbursement
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__is_direct_claim
-#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
-msgid "Direct Claim"
-msgstr "ตั้งเบิกตรง"
-
-#. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__memo_number
 msgid "Memo Number"
 msgstr "เลขที่หนังสือ"
@@ -1967,16 +1961,6 @@ msgstr "ผู้รับเงินทุกรายมีบัญชีธ
 #: model_terms:ir.ui.view,arch_db:disbursement.disbursement_partner_bank_wizard_form
 msgid "Add Bank Accounts"
 msgstr "เพิ่มบัญชีธนาคาร"
-
-#. module: disbursement
-#: code:addons/disbursement/models/disbursement_request.py:0
-msgid "A direct claim needs the memo number."
-msgstr "ใบขอเบิกตั้งเบิกตรงต้องระบุเลขที่หนังสือ"
-
-#. module: disbursement
-#: code:addons/disbursement/models/disbursement_request.py:0
-msgid "A direct claim needs the memo attached to the request."
-msgstr "ใบขอเบิกตั้งเบิกตรงต้องแนบไฟล์หนังสือบันทึกข้อความ"
 
 #. module: disbursement
 #: code:addons/disbursement/wizards/disbursement_partner_bank_wizard.py:0
@@ -2049,8 +2033,3 @@ msgstr "วันที่ตรวจสอบ"
 #: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
 msgid "Request Approved On"
 msgstr "วันที่อนุมัติใบขอเบิก"
-
-#. module: disbursement
-#: code:addons/disbursement/models/disbursement_request.py:0
-msgid "A direct claim needs the date the memo was signed."
-msgstr "ใบขอเบิกตั้งเบิกตรงต้องระบุวันที่หน่วยงานลงนามในหนังสือ"

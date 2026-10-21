@@ -19,8 +19,7 @@ class DisbursementRequest(models.Model):
         return vals
 
     def _sarabun_submit_guard(self):
-        # A direct claim's memo was signed outside the system (ADR-0005).
-        return self.state == "submitted" and not self.is_direct_claim
+        return self.state == "submitted"
 
     def _on_sarabun_numbered(self, document):
         """เลขที่หนังสือ follows the number e-Saraban just issued."""

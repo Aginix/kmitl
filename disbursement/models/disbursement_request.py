@@ -109,18 +109,9 @@ class DisbursementRequest(models.Model):
         states=READONLY_STATES,
     )
 
-    # ตั้งเบิกตรง (ADR-0005): raised on an external memo, no reservation and no
-    # e-Saraban — submit goes straight to ``signed``. Independent of
-    # ``payment_type`` (จ่ายตรง is how the payee is paid, not this).
-    is_direct_claim = fields.Boolean(
-        string="Direct Claim",
-        tracking=True,
-        copy=False,
-        states=READONLY_STATES,
-    )
-
-    # เลขที่หนังสือ: typed on a direct claim, otherwise stamped by
-    # disbursement_sarabun when e-Saraban issues the หนังสือ's number.
+    # เลขที่หนังสือ: stamped by disbursement_sarabun when e-Saraban issues the
+    # หนังสือ's number; typed from the memo on a direct claim
+    # (disbursement_direct_claim).
     memo_number = fields.Char(
         string="Memo Number",
         tracking=True,
@@ -130,8 +121,8 @@ class DisbursementRequest(models.Model):
     )
 
     # วันที่หน่วยงานลงนาม: stamped when the request turns ``signed`` (the head's
-    # e-Saraban signature); a direct claim carries the date of its external
-    # memo instead, typed by hand.
+    # e-Saraban signature) unless already set — a direct claim types the date
+    # of its external memo (disbursement_direct_claim).
     sign_date = fields.Date(
         string="Head Signed On",
         tracking=True,
@@ -822,26 +813,10 @@ class DisbursementRequest(models.Model):
                     _("Cannot submit a disbursement request with no lines. "
                       "Please add at least one line.")
                 )
-            if record.is_direct_claim:
-                record._check_direct_claim_memo()
             if record.detect_exceptions() and not record.ignore_exception:
                 return record._popup_exceptions()
             record.state = "submitted"
-            # The external memo already carries the head's signature (ADR-0005).
-            if record.is_direct_claim:
-                record.action_sign()
         return True
-
-    def _check_direct_claim_memo(self):
-        self.ensure_one()
-        if not self.memo_number:
-            raise UserError(_("A direct claim needs the memo number."))
-        if not self.sign_date:
-            raise UserError(_("A direct claim needs the date the memo was signed."))
-        if not self.attachment_ids:
-            raise UserError(
-                _("A direct claim needs the memo attached to the request.")
-            )
 
     def action_sign(self):
         """Head of department signs and sends to inspector"""
@@ -849,8 +824,7 @@ class DisbursementRequest(models.Model):
             if record.state != "submitted":
                 raise UserError(_("Only submitted requests can be signed."))
             record.state = "signed"
-            # A direct claim keeps the date of its external memo.
-            if not (record.is_direct_claim and record.sign_date):
+            if not record.sign_date:
                 record.sign_date = fields.Date.context_today(record)
         return True
 
@@ -1158,10 +1132,8 @@ class DisbursementRequest(models.Model):
                     _("Only submitted, signed, verified, or cancelled requests can be reset to draft.")
                 )
             record.state = "draft"
-            # Signed again on the next round, unless typed from a direct
-            # claim's external memo.
-            if not record.is_direct_claim:
-                record.sign_date = False
+            # Signed again on the next round.
+            record.sign_date = False
             record.exception_ids = False
             record.main_exception_id = False
             record.ignore_exception = False

@@ -8,7 +8,6 @@
             <tree string="Disbursement Requests">
                 <field name="name" />
                 <field name="memo_number" optional="hide" />
-                <field name="is_direct_claim" optional="hide" />
                 <field name="partner_type_id" optional="show" />
                 <field name="payee_display" />
                 <field name="user_id" optional="show" />
@@ -247,13 +246,9 @@
                                 name="partner_type_id"
                                 options="{'no_create': True, 'no_open': True}"
                             />
-                            <!-- ตั้งเบิกตรง (ADR-0005): the external memo's number is
-                                 typed here; otherwise e-Saraban stamps it. -->
-                            <field name="is_direct_claim" />
-                            <field
-                                name="memo_number"
-                                attrs="{'readonly': ['|', ('is_direct_claim', '=', False), ('state', '!=', 'draft')], 'required': [('is_direct_claim', '=', True), ('state', '=', 'draft')]}"
-                            />
+                            <!-- Stamped by e-Saraban (disbursement_sarabun); a
+                                 direct claim types it (disbursement_direct_claim). -->
+                            <field name="memo_number" readonly="1" />
                             <field name="partner_type_company_type" invisible="1" />
                             <field
                                 name="has_tax"
@@ -345,13 +340,9 @@
                                 groups='base.group_no_one'
                             />
                         </group>
-                        <!-- One date per step; a direct claim types the date of
-                             its external memo (ADR-0005). -->
+                        <!-- One date per step. -->
                         <group id="dates" name="dates" string="Dates">
-                            <field
-                                name="sign_date"
-                                attrs="{'readonly': ['|', ('is_direct_claim', '=', False), ('state', '!=', 'draft')], 'required': [('is_direct_claim', '=', True), ('state', '=', 'draft')]}"
-                            />
+                            <field name="sign_date" readonly="1" />
                             <field
                                 name="verify_date"
                                 string="Verification Date"
@@ -585,12 +576,6 @@
                     string="Done"
                     name="done"
                     domain="[('pipeline_status', '=', 'done')]"
-                />
-                <separator />
-                <filter
-                    string="Direct Claim"
-                    name="direct_claim"
-                    domain="[('is_direct_claim', '=', True)]"
                 />
                 <separator />
                 <filter
