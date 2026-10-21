@@ -8,10 +8,6 @@
             <field name="budget_commitment_id" position="after">
                 <field name="budget_direct_move_id" attrs="{'invisible': [('budget_direct_move_id', '=', False)]}" />
             </field>
-            <!-- Without a reservation the budget code is what gets consumed. -->
-            <xpath expr="//group[@name='budget_information']/field[@name='budget_account_id']" position="attributes">
-                <attribute name="attrs">{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '!=', 'draft')], 'required': [('is_direct_claim', '=', True), ('budget_commitment_id', '=', False)]}</attribute>
-            </xpath>
         </field>
     </record>
 </odoo>

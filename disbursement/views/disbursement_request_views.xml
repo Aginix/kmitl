@@ -293,6 +293,15 @@
                             <field name="analytic_distribution" invisible="1" />
                             <field name="currency_id" invisible="1" />
                         </group>
+                    </group>
+
+                    <!-- The request's content, before its metadata; rich text,
+                         so full width rather than squeezed into a column. -->
+                    <group name="description" string="Description">
+                        <field name="note" nolabel="1" colspan="2" />
+                    </group>
+
+                    <group>
                         <group
                             id="other_information"
                             name="other_information"
@@ -353,11 +362,6 @@
                                 widget="date"
                             />
                         </group>
-                    </group>
-
-                    <!-- Rich text: full width, not squeezed into a column. -->
-                    <group name="description" string="Description">
-                        <field name="note" nolabel="1" colspan="2" />
                     </group>
 
                     <group
