@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-17 10:06+0000\n"
-"PO-Revision-Date: 2026-08-17 10:06+0000\n"
+"POT-Creation-Date: 2026-10-20 03:47+0000\n"
+"PO-Revision-Date: 2026-10-20 03:47+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -336,8 +336,10 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
 msgid ""
 "<strong>ยังไม่ได้รับการจัดสรรงบประมาณ</strong>\n"
-"                                    — โปรดรอให้งานแผนโอนงบเข้าโครงการ (ปรับเข้าแผน) ก่อนจึงจะจองงบประมาณได้"
+"                                    — โปรดรอให้งานแผนโอนงบเข้าโครงการ (ปรับเข้าแผน) ก่อนจึงจะยืนยันงบประมาณได้"
 msgstr ""
+"<strong>ยังไม่ได้รับการจัดสรรงบประมาณ</strong>\n"
+"                                    — โปรดรอให้งานแผนโอนงบเข้าโครงการ (ปรับเข้าแผน) ก่อนจึงจะจองงบประมาณได้"
 
 #. module: kmitl_project
 #: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__access_warning
@@ -384,14 +386,14 @@ msgstr ""
 #. module: kmitl_project
 #: model:ir.model.fields,field_description:kmitl_project.field_project_target__amount
 msgid "Amount"
-msgstr "จำนวนเงิน"
+msgstr "จำนวน"
 
 #. module: kmitl_project
 #. odoo-python
 #: code:addons/kmitl_project/models/project_target.py:0
 #, python-format
 msgid "Amount must be greather than zero"
-msgstr "จำนวนเงินต้องมากกว่า 0"
+msgstr "จำนวนต้องมากกว่า 0"
 
 #. module: kmitl_project
 #: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__analytic_distribution
@@ -415,7 +417,6 @@ msgstr ""
 
 #. module: kmitl_project
 #: model:ir.model.fields,help:kmitl_project.field_kmitl_project__analytic_account_id
-#: model:ir.model.fields,help:kmitl_project.field_kmitl_project_reserve_confirm__analytic_account_id
 msgid ""
 "Analytic account to which this procurement plan. \n"
 "Track the costs and revenues of your procurement plan by setting this analytic account on your related documents (e.g. budgetings, purchase requests, purchase orders etc.)."
@@ -457,6 +458,7 @@ msgstr "รหัสงบประมาณ"
 
 #. module: kmitl_project
 #: model:ir.model,name:kmitl_project.model_budget_commitment
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
 msgid "Budget Commitment"
 msgstr "จองงบประมาณ"
 
@@ -467,6 +469,7 @@ msgstr ""
 
 #. module: kmitl_project
 #: model:ir.model,name:kmitl_project.model_budget_move
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
 msgid "Budget Move"
 msgstr "บัญชีงบประมาณ"
 
@@ -486,6 +489,15 @@ msgstr "ยกเลิก"
 #: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_search
 msgid "Cancelled"
 msgstr "ยกเลิกแล้ว"
+
+#. module: kmitl_project
+#. odoo-python
+#: code:addons/kmitl_project/models/budget_move.py:0
+#, python-format
+msgid ""
+"Cannot undo this budget allocation: reservation %(name)s has already "
+"obligated or spent part of the %(amount)s it received from it."
+msgstr ""
 
 #. module: kmitl_project
 #: model_terms:ir.ui.view,arch_db:kmitl_project.view_project_strategic_plan_search
@@ -759,13 +771,6 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_search
 msgid "In Progress"
 msgstr "กำลังดำเนินการ"
-
-#. module: kmitl_project
-#. odoo-python
-#: code:addons/kmitl_project/models/kmitl_project.py:0
-#, python-format
-msgid "Initial reservation"
-msgstr ""
 
 #. module: kmitl_project
 #: model:ir.model.fields,field_description:kmitl_project.field_project_strategic_plan__note
@@ -1188,6 +1193,8 @@ msgid "Projects"
 msgstr "โครงการ/กิจกรรม"
 
 #. module: kmitl_project
+#: model:ir.model.fields.selection,name:kmitl_project.selection__kmitl_project__state__rejected
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
 #: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_search
 msgid "Rejected"
 msgstr "ถูกปฏิเสธ"
@@ -1209,6 +1216,8 @@ msgid "Responsible User"
 msgstr "ผู้รับผิดชอบ"
 
 #. module: kmitl_project
+#: model:ir.model.fields.selection,name:kmitl_project.selection__kmitl_project__state__returned
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
 #: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_search
 msgid "Returned"
 msgstr "ถูกตีกลับ"
@@ -1232,6 +1241,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__access_token
 msgid "Security Token"
 msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields.selection,name:kmitl_project.selection__kmitl_project__state__sent
+msgid "Sent"
+msgstr "ส่งขออนุมัติแล้ว"
 
 #. module: kmitl_project
 #: model:ir.model.fields,field_description:kmitl_project.field_project_budget_category__sequence
@@ -1344,9 +1358,19 @@ msgid "There is no examples click here to add new Project Strategic Plan."
 msgstr ""
 
 #. module: kmitl_project
+#: model:ir.model.fields.selection,name:kmitl_project.selection__kmitl_project__state__to_send
+msgid "To Send"
+msgstr "รอส่งขออนุมัติ"
+
+#. module: kmitl_project
 #: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_search
 msgid "To Submit"
 msgstr "รอส่งขออนุมัติ"
+
+#. module: kmitl_project
+#: model:ir.model.fields.selection,name:kmitl_project.selection__kmitl_project__state__to_verify
+msgid "To Verify"
+msgstr "ยืนยัน (รอจัดสรรงบประมาณ)"
 
 #. module: kmitl_project
 #: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_search
@@ -1500,7 +1524,6 @@ msgstr ""
 
 #. module: kmitl_project
 #: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__fund_analytic_id
-#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project_reserve_confirm__fund_analytic_id
 msgid "กองทุน"
 msgstr ""
 
@@ -1511,7 +1534,6 @@ msgstr ""
 
 #. module: kmitl_project
 #: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__activity_analytic_id
-#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project_reserve_confirm__activity_analytic_id
 msgid "กิจกรรม"
 msgstr ""
 
@@ -1628,16 +1650,11 @@ msgid "งบประมาณที่ได้รับการจัดส�
 msgstr ""
 
 #. module: kmitl_project
-#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project_reserve_confirm__budget_amount
-msgid "งบประมาณที่ได้รับจัดสรร"
-msgstr ""
-
-#. module: kmitl_project
 #: model:ir.model.fields,help:kmitl_project.field_kmitl_project__budget_amount
-#: model:ir.model.fields,help:kmitl_project.field_kmitl_project_reserve_confirm__budget_amount
 msgid ""
 "งบประมาณที่ได้รับจัดสรรจริง คำนวณจากยอดโอนเข้า-ออก (budget.move.line) "
-"ที่ติดมิติโครงการ (kmitl_project)"
+"ที่ตรงกับรหัสงบและมิติทั้งหมดของโครงการ (รวมมิติโครงการ) — จะ re-sync "
+"อัตโนมัติเมื่อแก้รหัสงบ/มิติ"
 msgstr ""
 
 #. module: kmitl_project
@@ -1652,11 +1669,7 @@ msgid "งบประมาณโครงการโดยประมาณ 
 msgstr ""
 
 #. module: kmitl_project
-#. odoo-python
-#: code:addons/kmitl_project/models/kmitl_project.py:0
 #: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
-#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_reserve_confirm_form
-#, python-format
 msgid "จองงบประมาณ"
 msgstr ""
 
@@ -1668,16 +1681,10 @@ msgid "จองงบประมาณ %s จำนวน %s บาท"
 msgstr ""
 
 #. module: kmitl_project
-#: model:ir.model,name:kmitl_project.model_kmitl_project_reserve_confirm
-msgid "จองงบประมาณ — ยืนยัน"
-msgstr ""
-
-#. module: kmitl_project
 #. odoo-python
 #: code:addons/kmitl_project/models/kmitl_project.py:0
-#: code:addons/kmitl_project/wizard/kmitl_project_reserve_confirm.py:0
 #, python-format
-msgid "จองงบประมาณได้เฉพาะสถานะรอตรวจสอบ"
+msgid "จองงบประมาณได้เฉพาะโครงการที่กำลังดำเนินการ"
 msgstr ""
 
 #. module: kmitl_project
@@ -1782,18 +1789,6 @@ msgid "ถึง"
 msgstr ""
 
 #. module: kmitl_project
-#: model:ir.model.fields.selection,name:kmitl_project.selection__kmitl_project__state__returned
-#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
-msgid "ถูกตีกลับ"
-msgstr ""
-
-#. module: kmitl_project
-#: model:ir.model.fields.selection,name:kmitl_project.selection__kmitl_project__state__rejected
-#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
-msgid "ถูกปฏิเสธ"
-msgstr ""
-
-#. module: kmitl_project
 #: model:ir.model.fields,field_description:kmitl_project.field_project_plan__m12
 #: model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content
 #: model_terms:ir.ui.view,arch_db:kmitl_project.report_kmitl_project
@@ -1862,7 +1857,6 @@ msgid "ปิดโครงการได้เฉพาะที่กำล�
 msgstr ""
 
 #. module: kmitl_project
-#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project_reserve_confirm__account_fiscal_year_id
 #: model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_list_body
 msgid "ปีงบประมาณ"
 msgstr ""
@@ -1902,9 +1896,8 @@ msgstr ""
 #. odoo-python
 #: code:addons/kmitl_project/models/kmitl_project.py:0
 #: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__budget_commitment_ids
-#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
 #, python-format
-msgid "Budget Commitment"
+msgid "ผูกพันงบประมาณ"
 msgstr "ใบจองงบประมาณ"
 
 #. module: kmitl_project
@@ -1958,11 +1951,6 @@ msgid "มิ.ย."
 msgstr ""
 
 #. module: kmitl_project
-#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project_reserve_confirm__analytic_account_id
-msgid "มิติโครงการ"
-msgstr ""
-
-#. module: kmitl_project
 #: model:ir.model.fields,field_description:kmitl_project.field_project_plan__m3
 #: model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content
 #: model_terms:ir.ui.view,arch_db:kmitl_project.report_kmitl_project
@@ -1982,11 +1970,6 @@ msgid "ยกเลิกการจองงบประมาณ %s"
 msgstr ""
 
 #. module: kmitl_project
-#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_reserve_confirm_form
-msgid "ยอดจัดสรร"
-msgstr ""
-
-#. module: kmitl_project
 #: model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content
 msgid "ยังไม่มีข้อมูลแผนการใช้จ่าย"
 msgstr ""
@@ -2002,12 +1985,34 @@ msgstr ""
 #, python-format
 msgid ""
 "ยังไม่ได้รับการจัดสรรงบประมาณ "
-"กรุณารอให้งานแผนโอนงบเข้าโครงการก่อนจึงจะจองงบประมาณได้"
+"กรุณาโอนเงิน/เปลี่ยนแปลง/ปรับเพิ่ม-ลดงบประมาณให้เพียงพอก่อน"
+msgstr ""
+
+#. module: kmitl_project
+#. odoo-python
+#: code:addons/kmitl_project/models/kmitl_project.py:0
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_reserve_confirm_form
+#, python-format
+msgid "ยืนยันงบประมาณ"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model,name:kmitl_project.model_kmitl_project_reserve_confirm
+msgid "ยืนยันงบประมาณที่ได้รับจัดสรร"
 msgstr ""
 
 #. module: kmitl_project
 #: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_reserve_confirm_form
-msgid "ยืนยันจองงบประมาณ"
+msgid "ยืนยันงบประมาณที่ได้รับจัดสรรสำหรับโครงการนี้ใช่หรือไม่?"
+msgstr ""
+
+#. module: kmitl_project
+#. odoo-python
+#: code:addons/kmitl_project/models/kmitl_project.py:0
+#: code:addons/kmitl_project/wizard/kmitl_project_reserve_confirm.py:0
+#, python-format
+msgid "ยืนยันงบประมาณได้เฉพาะสถานะรอจัดสรรงบประมาณ"
 msgstr ""
 
 #. module: kmitl_project
@@ -2042,13 +2047,7 @@ msgid "รวมรายรับ"
 msgstr ""
 
 #. module: kmitl_project
-#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_reserve_confirm_form
-msgid "รหัสงบ / มิติ"
-msgstr ""
-
-#. module: kmitl_project
 #: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__budget_account_id
-#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project_reserve_confirm__budget_account_id
 msgid "รหัสงบประมาณ"
 msgstr ""
 
@@ -2068,17 +2067,8 @@ msgstr ""
 
 #. module: kmitl_project
 #: model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_list_body
+#: model_terms:ir.ui.view,arch_db:kmitl_project.report_kmitl_project
 msgid "รหัสโครงการ"
-msgstr ""
-
-#. module: kmitl_project
-#: model:ir.model.fields.selection,name:kmitl_project.selection__kmitl_project__state__to_verify
-msgid "รอจัดสรรงบประมาณ (ปรับเข้าแผน) และจองงบประมาณ"
-msgstr ""
-
-#. module: kmitl_project
-#: model:ir.model.fields.selection,name:kmitl_project.selection__kmitl_project__state__to_send
-msgid "รอส่งขออนุมัติ"
 msgstr ""
 
 #. module: kmitl_project
@@ -2089,6 +2079,11 @@ msgstr ""
 #. module: kmitl_project
 #: model:ir.model.fields,field_description:kmitl_project.field_project_strategic_plan__level
 msgid "ระดับแผน"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_reserve_confirm_form
+msgid "ระบบจะจองงบประมาณเมื่อโครงการได้รับอนุมัติ"
 msgstr ""
 
 #. module: kmitl_project
@@ -2257,18 +2252,12 @@ msgid "สำหรับอธิบายการแตกตัวคูณ 
 msgstr ""
 
 #. module: kmitl_project
-#: model:ir.model.fields.selection,name:kmitl_project.selection__kmitl_project__state__sent
-msgid "ส่งขออนุมัติแล้ว"
-msgstr ""
-
-#. module: kmitl_project
 #: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
-msgid "ส่งเข้าแผน / ขอจัดสรรงบประมาณ"
+msgid "ส่งเข้าแผน / รอจัดสรรงบประมาณ"
 msgstr ""
 
 #. module: kmitl_project
 #: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__department_analytic_id
-#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project_reserve_confirm__department_analytic_id
 msgid "ส่วนงาน"
 msgstr ""
 
@@ -2348,6 +2337,13 @@ msgstr ""
 #. odoo-python
 #: code:addons/kmitl_project/models/kmitl_project.py:0
 #, python-format
+msgid "อนุมัติโครงการแล้ว แต่ยังจองงบประมาณไม่ได้: %s"
+msgstr ""
+
+#. module: kmitl_project
+#. odoo-python
+#: code:addons/kmitl_project/models/kmitl_project.py:0
+#, python-format
 msgid "อนุมัติได้เฉพาะคำขอที่ส่งขออนุมัติแล้ว"
 msgstr ""
 
@@ -2365,11 +2361,6 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:kmitl_project.view_project_budget_category_search
 #: model_terms:ir.ui.view,arch_db:kmitl_project.view_project_budget_item_search
 msgid "เก็บถาวร"
-msgstr ""
-
-#. module: kmitl_project
-#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
-msgid "เคลื่อนไหวงบ"
 msgstr ""
 
 #. module: kmitl_project
@@ -2396,6 +2387,13 @@ msgid "เป้าหมาย ผลผลิต และผลลัพธ�
 msgstr ""
 
 #. module: kmitl_project
+#. odoo-python
+#: code:addons/kmitl_project/models/budget_move.py:0
+#, python-format
+msgid "เพิ่มจองจากการจัดสรรงบ %s"
+msgstr ""
+
+#. module: kmitl_project
 #. odoo-javascript
 #: code:addons/kmitl_project/static/src/components/project_budget_table/project_budget_table.xml:0
 #, python-format
@@ -2419,9 +2417,11 @@ msgstr ""
 #. module: kmitl_project
 #: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
 msgid ""
-"เมื่อส่งเข้าแผน ระบบจะออกเลขที่รันโครงการ + ล็อกปีงบและรหัสงบ "
-"(รายละเอียดโครงการยังแก้ได้ตลอด) ต้องการยืนยันหรือไม่?"
+"เมื่อส่งเข้าแผน ระบบจะออกเลขที่โครงการ + ล็อกเฉพาะปีงบประมาณ (รหัสงบ/มิติงบ "
+"และรายละเอียดโครงการยังแก้ได้จนกว่าจะยืนยันงบประมาณ) ต้องการยืนยันหรือไม่?"
 msgstr ""
+"เมื่อส่งเข้าแผน ระบบจะออกเลขที่โครงการ + ล็อกเฉพาะปีงบประมาณ (รหัสงบ/มิติงบ "
+"และรายละเอียดโครงการยังแก้ได้จนกว่าจะจองงบประมาณ) ต้องการยืนยันหรือไม่?"
 
 #. module: kmitl_project
 #: model_terms:ir.ui.view,arch_db:kmitl_project.view_project_budget_item_form
@@ -2528,7 +2528,6 @@ msgstr ""
 
 #. module: kmitl_project
 #: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__source_analytic_id
-#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project_reserve_confirm__source_analytic_id
 msgid "แหล่งเงิน"
 msgstr ""
 
@@ -2554,6 +2553,13 @@ msgstr ""
 #. module: kmitl_project
 #: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__has_income
 msgid "โครงการนี้มีรายรับ"
+msgstr ""
+
+#. module: kmitl_project
+#. odoo-python
+#: code:addons/kmitl_project/models/kmitl_project.py:0
+#, python-format
+msgid "โครงการมีใบจองงบประมาณอยู่แล้ว"
 msgstr ""
 
 #. module: kmitl_project
@@ -2731,19 +2737,12 @@ msgstr ""
 #. odoo-python
 #: code:addons/kmitl_project/models/kmitl_project.py:0
 #, python-format
-msgid "ไม่สามารถเปลี่ยนมิติงบประมาณได้ เนื่องจากโครงการมีเลขที่รันแล้ว (%s)"
+msgid "ไม่สามารถเปลี่ยนมิติงบประมาณได้ เนื่องจากโครงการจองงบประมาณแล้ว (%s)"
 msgstr ""
 
 #. module: kmitl_project
 #. odoo-python
 #: code:addons/kmitl_project/models/kmitl_project.py:0
 #, python-format
-msgid "ไม่สามารถเปลี่ยนมิติส่วนงานได้ เนื่องจากโครงการมีเลขที่รันแล้ว (%s)"
-msgstr ""
-
-#. module: kmitl_project
-#. odoo-python
-#: code:addons/kmitl_project/models/kmitl_project.py:0
-#, python-format
-msgid "ไม่สามารถเปลี่ยนรหัสงบประมาณได้ เนื่องจากโครงการมีเลขที่รันแล้ว (%s)"
+msgid "ไม่สามารถเปลี่ยนรหัสงบประมาณได้ เนื่องจากโครงการจองงบประมาณแล้ว (%s)"
 msgstr ""

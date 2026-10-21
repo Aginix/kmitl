@@ -158,11 +158,11 @@ class KmitlProject(models.Model):
     state = fields.Selection(
         [
             ("draft", "Draft"),
-            ("to_verify", "รอจัดสรรงบประมาณ (ปรับเข้าแผน)"),
-            ("to_send", "รอส่งขออนุมัติ"),
-            ("sent", "ส่งขออนุมัติแล้ว"),
-            ("returned", "ถูกตีกลับ"),
-            ("rejected", "ถูกปฏิเสธ"),
+            ("to_verify", "To Verify"),
+            ("to_send", "To Send"),
+            ("sent", "Sent"),
+            ("returned", "Returned"),
+            ("rejected", "Rejected"),
             ("in_progress", "In Progress"),
             ("complete", "Completed"),
             ("cancel", "Cancelled"),
