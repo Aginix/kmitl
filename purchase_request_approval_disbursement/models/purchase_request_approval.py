@@ -102,6 +102,11 @@ class PurchaseRequestApproval(models.Model):
         compute="_compute_disbursement_request",
     )
 
+    active_disbursement_request_count = fields.Integer(
+        string="Active Disbursement Request Count",
+        compute="_compute_disbursement_request",
+    )
+
     disbursement_request_total = fields.Monetary(
         string="Total Disbursement Request",
         compute="_compute_disbursement_request",
@@ -132,13 +137,22 @@ class PurchaseRequestApproval(models.Model):
     def action_view_purchase_order(self):
         return self.request_id.action_view_purchase_order()
 
-    @api.depends("disbursement_request_ids", "disbursement_request_ids.amount_total")
+    @api.depends(
+        "disbursement_request_ids",
+        "disbursement_request_ids.amount_total",
+        "disbursement_request_ids.state",
+    )
     def _compute_disbursement_request(self):
         for approval in self:
             approval.disbursement_request_total = sum(
                 approval.disbursement_request_ids.mapped("amount_total")
             )
             approval.disbursement_request_count = len(approval.disbursement_request_ids)
+            approval.active_disbursement_request_count = len(
+                approval.disbursement_request_ids.filtered(
+                    lambda r: r.state != "cancel"
+                )
+            )
 
     # Vocabulary read off disbursement.request.state — never pipeline_status,
     # which lives on a different field and was never reachable from here.
@@ -209,16 +223,34 @@ class PurchaseRequestApproval(models.Model):
 
     def action_view_disbursement_request(self):
         self.ensure_one()
-        return {
+        action = {
+            "name": _("Disbursement Requests"),
             "type": "ir.actions.act_window",
             "res_model": "disbursement.request",
-            "view_mode": "form,tree",
-            "res_id": self.disbursement_request_ids.id,
             "target": "current",
         }
+        if len(self.disbursement_request_ids) == 1:
+            action.update({
+                "view_mode": "form",
+                "res_id": self.disbursement_request_ids.id,
+            })
+        else:
+            action.update({
+                "view_mode": "tree,form",
+                "domain": [("id", "in", self.disbursement_request_ids.ids)],
+            })
+        return action
 
     def action_disbursement_request(self):
         self.ensure_one()
+        active = self.disbursement_request_ids.filtered(
+            lambda r: r.state != "cancel"
+        )
+        if active:
+            raise UserError(
+                _("ใบขอเบิกถูกสร้างไว้แล้ว (%s) โปรดยกเลิกใบเดิมก่อนสร้างใหม่")
+                % ", ".join(active.mapped("name"))
+            )
         disbursement_request = self._create_disbursement_request()
         return {
             "type": "ir.actions.act_window",
