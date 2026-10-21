@@ -42,3 +42,11 @@ class PurchaseRequestApproval(models.Model):
                     approval.assigned_to = buddies[:1]
             else:
                 approval.assigned_to = approval.assigned_to
+
+    def write(self, vals):
+        # The compute reads ``state``, which is not a dependency: settle a
+        # pending default under the state that triggered it, or a พจ.1 that
+        # leaves draft before a flush freezes an empty officer.
+        if "state" in vals:
+            self.flush_recordset(["assigned_to"])
+        return super().write(vals)
