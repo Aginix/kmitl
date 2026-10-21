@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <data noupdate="0">
+    <data noupdate="1">
 
         <!-- Add Sarabun User group to the ผู้ใช้งานทั่วไป KMITL role -->
         <record id="base_user_role_kmitl.role_general_user" model="res.users.role">
