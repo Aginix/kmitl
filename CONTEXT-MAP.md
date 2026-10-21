@@ -72,6 +72,13 @@ upfront.
   field; consumers turn classification on for a model by shipping data XML
   (`ir.attachment.document.type.config` + `ir.attachment.document.type.rel`), no
   Python/JS per consumer.
+- [Web Attachment Link](./web_attachment_link/CONTEXT.md) — attach a **Link Attachment**
+  (YouTube, Google Drive, an **Odoo Link** to a record/action in this database, or any
+  web page) wherever files are attached on a `many2many_binary`; the **Link Kind** is
+  read from the URL, never stored (ADR-0001).
+  - **`agx_photoviewer_links`** (no own glossary — part of this context): opens Link
+    Attachments in the photo viewer beside the files — YouTube and Drive embedded, Odoo
+    and other web links as a **Link Card**.
 - [e-Saraban](./agx_sarabun/CONTEXT.md) — electronic official-correspondence
   (งานสารบรรณ); a registered, numbered หนังสือ routed through an approval/endorsement
   chain. Other modules attach as origin records that spawn a Document.
@@ -146,6 +153,11 @@ upfront.
   [[kmitl-hr-employee-full-name]] first/middle/last name.
 
 ## Relationships
+
+- **Web Attachment Link ↔ Attachment Document Type**: both patch the same
+  `many2many_binary` widget independently; a Link Attachment is an `ir.attachment` like a
+  file, so it takes a Document Type afterwards through the same badge — neither module
+  depends on the other.
 
 - **Budget → Procurement Plan**: posting a `budget.appropriation` line creates a
   `procurement.plan` and reserves its `budget.commitment` for the full amount

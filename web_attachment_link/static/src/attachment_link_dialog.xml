@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+    <t t-name="web_attachment_link.AttachmentLinkDialog" owl="1">
+        <Dialog title="env._t('Attach Link')" size="'md'">
+            <div class="mb-3">
+                <label class="o_form_label" for="o_attachment_link_url">Link</label>
+                <input
+                    id="o_attachment_link_url"
+                    type="text"
+                    class="form-control"
+                    placeholder="https://… — YouTube, Google Drive, a web page or a document in Odoo"
+                    t-model="state.url"
+                    t-on-change="onUrlChange"
+                    t-att-class="{'is-invalid': state.error}"
+                />
+                <div t-if="state.error" class="invalid-feedback" t-esc="state.error" />
+            </div>
+            <div class="mb-3">
+                <label class="o_form_label" for="o_attachment_link_name">Name</label>
+                <input
+                    id="o_attachment_link_name"
+                    type="text"
+                    class="form-control"
+                    t-model="state.name"
+                />
+            </div>
+            <t t-set-slot="footer">
+                <button
+                    class="btn btn-primary"
+                    t-on-click="onSave"
+                    t-att-disabled="state.saving"
+                >
+                    <i t-if="state.saving" class="fa fa-spin fa-spinner me-1" />Attach
+                </button>
+                <button
+                    class="btn btn-secondary"
+                    t-on-click="props.close"
+                    t-att-disabled="state.saving"
+                >Cancel</button>
+            </t>
+        </Dialog>
+    </t>
+
+</templates>
