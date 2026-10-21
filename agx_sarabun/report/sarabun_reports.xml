@@ -152,6 +152,17 @@
                 .doc-content table td p, .doc-content table th p {
                     margin-bottom: 0;
                 }
+                /* Thai distributed justify, see
+                   sarabun.document._report_thai_distribute: the negative
+                   word-spacing cancels the inserted word-boundary spaces
+                   (THSarabunNew space = 0.216em); real spaces sit in .rs. */
+                .distribute {
+                    text-align: justify;
+                    word-spacing: -0.216em;
+                }
+                .distribute .rs {
+                    word-spacing: normal;
+                }
             </style>
             <div class="page">
                 <div
@@ -277,7 +288,10 @@
                     style="margin:8px 0;"
                     class="doc-content"
                 >
-                    <div t-field="doc.content" />
+                    <div
+                        class="distribute"
+                        t-out="doc._report_thai_distribute(doc.content)"
+                    />
                 </div>
 
                 <!-- เนื้อจากต้นเรื่อง (origin body fragment) — ADR-0015: a
