@@ -26,11 +26,13 @@
                 >
                     <div
                         t-if="sig.note"
-                        style="min-width: 300px; max-width: 480px; width: -webkit-fit-content; width: fit-content; margin-left:auto;"
+                        style="min-width: 300px; max-width: 750px; width: -webkit-fit-content; width: fit-content; margin-left:auto; white-space: pre-line;"
                     >
                         <div t-out="sig.note" />
                     </div>
-                    <div style="text-align:center; width:300px; margin-left:auto;">
+                    <div
+                        style="text-align:center; min-width: 340px; max-width: 640px; width: -webkit-fit-content; width: fit-content; margin-left:auto;"
+                    >
                       <t
                             t-set="sig_image"
                             t-value="sig.signed_signature or sig.acted_by_id.employee_id.signature"
