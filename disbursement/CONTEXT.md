@@ -17,6 +17,8 @@ _Avoid_: Payment (that is the downstream document), Voucher.
 The partner a request line pays. Payees exist only on the lines — the request
 itself has no partner — and each needs a bank account before the request is
 submitted, unless it is paid in cash (an exception manager then lets it through).
+A requester whose payee has no account adds one from the draft request itself;
+they may only add an account, never change or remove an existing one.
 _Avoid_: Partner of the request, Vendor (only some payees are vendors).
 
 **Payee type** (ประเภทผู้รับเงิน):
@@ -39,10 +41,36 @@ the linked commitment.
 _Avoid_: Date range (the year is no longer derived from the date).
 
 **Budget control** (การควบคุมงบประมาณ):
-A request linked to a reserved budget commitment (ใบจองงบประมาณ) and a budget
-code (รหัสงบประมาณค่าใช้จ่าย), consumed on the Rector-delegated approval and
-reversed on cancel. Optional — provided by `disbursement_budget` (see ADR 0003).
+A request charged to a budget code (รหัสงบประมาณค่าใช้จ่าย) and consumed on the
+Rector-delegated approval, reversed on cancel — either through a linked reserved
+budget commitment (ใบจองงบประมาณ) or, for a **direct claim**, straight from the
+budget pool. Optional — provided by `disbursement_budget` (see ADR 0003).
 _Avoid_: Budget check (that is the availability check inside the budget module).
+
+**Direct claim** (ตั้งเบิกตรง):
+A request raised on the strength of a memo (หนังสือบันทึกข้อความ) produced outside
+the system, with no budget reservation behind it. It carries its own dimensions
+and budget code, skips e-Saraban — the external memo already holds the head of
+department's signature — and goes straight from submit to `signed`. Under
+budget control its amount is consumed directly from the pool on the
+Rector-delegated approval (see ADR 0005). Any payment type may be a direct claim.
+_Avoid_: จ่ายตรง / Direct paid (that is the **payment type** — paid straight to
+the payee rather than as an advance or a prepayment), Stand-alone request (a
+request without budget control at all).
+
+**Memo number** (เลขที่หนังสือ):
+The number of the official memo (หนังสือบันทึกข้อความ) authorising the request.
+Typed in by hand on a direct claim; on any other request it is the number
+e-Saraban issues to the request's หนังสือ, filled in the moment it is issued.
+_Avoid_: Ref / Reference (the retired free-text field, ADR 0004), Number (that
+is the request's own `DR/<yy>/…`).
+
+**Taxable** (มีภาษี):
+Whether the request's lines carry taxes at all — VAT and withholding tax alike.
+A request paid to a company (บริษัท) is always taxable; an advance or a
+prepayment starts out not taxable. A request that is not taxable has no taxes
+on any line.
+_Avoid_: VAT flag (it covers withholding tax too).
 
 **Stand-alone request** (ใบขอเบิกแบบอิสระ):
 A DR raised without budget control and without a source document — only the

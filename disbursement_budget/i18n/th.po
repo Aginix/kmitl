@@ -79,3 +79,25 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:disbursement_budget.view_disbursement_request_form
 msgid "Are you sure you want to approve? This will obligate and consume the budget."
 msgstr "ยืนยันการอนุมัติ? จะทำการผูกพันและตัดงบประมาณตามยอดรวมของใบขอเบิกนี้"
+
+#. module: disbursement_budget
+#: model:ir.model.fields,field_description:disbursement_budget.field_disbursement_request__budget_direct_move_id
+msgid "Direct Consumption"
+msgstr "ตัดงบตรง"
+
+#. module: disbursement_budget
+#: code:addons/disbursement_budget/models/disbursement_request.py:0
+msgid "A direct claim needs a budget code before approval."
+msgstr "ใบขอเบิกตั้งเบิกตรงต้องระบุรหัสงบประมาณก่อนอนุมัติ"
+
+#. module: disbursement_budget
+#: code:addons/disbursement_budget/models/disbursement_request.py:0
+#, python-format
+msgid "Budget consumed directly: %(amount)s (%(move)s)"
+msgstr "ตัดงบประมาณตรงแล้ว: %(amount)s (%(move)s)"
+
+#. module: disbursement_budget
+#: code:addons/disbursement_budget/models/disbursement_request.py:0
+#, python-format
+msgid "Direct consumption %s cancelled."
+msgstr "ยกเลิกการตัดงบตรง %s แล้ว"

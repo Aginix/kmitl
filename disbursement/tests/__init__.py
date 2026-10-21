@@ -4,3 +4,4 @@ from . import test_return_verification
 from . import test_two_approver
 from . import test_signature_block
 from . import test_payee_type
+from . import test_direct_claim

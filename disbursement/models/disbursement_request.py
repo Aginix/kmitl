@@ -78,6 +78,12 @@ class DisbursementRequest(models.Model):
         states=READONLY_STATES,
     )
 
+    # Loaded on the form so มีภาษี can be locked for a company payee type.
+    partner_type_company_type = fields.Selection(
+        related="partner_type_id.company_type",
+        string="Payee Company Type",
+    )
+
     payee_display = fields.Char(
         string="Payees",
         compute="_compute_payee_display",
@@ -99,6 +105,34 @@ class DisbursementRequest(models.Model):
         ],
         string="Payment Type",
         default="direct",
+        tracking=True,
+        states=READONLY_STATES,
+    )
+
+    # ตั้งเบิกตรง (ADR-0005): raised on an external memo, no reservation and no
+    # e-Saraban — submit goes straight to ``signed``. Independent of
+    # ``payment_type`` (จ่ายตรง is how the payee is paid, not this).
+    is_direct_claim = fields.Boolean(
+        string="Direct Claim",
+        tracking=True,
+        copy=False,
+        states=READONLY_STATES,
+    )
+
+    # เลขที่หนังสือ: typed on a direct claim, otherwise stamped by
+    # disbursement_sarabun when e-Saraban issues the หนังสือ's number.
+    memo_number = fields.Char(
+        string="Memo Number",
+        tracking=True,
+        copy=False,
+        index=True,
+        states=READONLY_STATES,
+    )
+
+    # มีภาษี: off clears VAT and WHT from every line and hides the tax columns.
+    has_tax = fields.Boolean(
+        string="Taxable",
+        default=True,
         tracking=True,
         states=READONLY_STATES,
     )
@@ -503,6 +537,70 @@ class DisbursementRequest(models.Model):
                 }
             }
 
+    # -------------------------------------------------------------------------
+    # Taxable (มีภาษี)
+    # -------------------------------------------------------------------------
+    @api.onchange("payment_type", "partner_type_id")
+    def _onchange_has_tax_default(self):
+        """A company is always taxed; an advance or a prepayment starts out
+        untaxed (the user may tick it back)."""
+        if self.partner_type_id.company_type == "company":
+            self.has_tax = True
+        elif self.payment_type in ("advance", "prepaid"):
+            self.has_tax = False
+
+    @api.constrains("has_tax", "partner_type_id")
+    def _check_has_tax_company(self):
+        for rec in self:
+            if not rec.has_tax and rec.partner_type_id.company_type == "company":
+                raise ValidationError(
+                    _("A request paid to a company must be taxable.")
+                )
+
+    @api.onchange("has_tax")
+    def _onchange_has_tax(self):
+        if not self.has_tax:
+            self.line_ids.update({"tax_ids": [(5, 0, 0)], "wht_tax_id": False})
+
+    def _clear_untaxed_lines(self):
+        """Keep programmatic creates/writes consistent with ``has_tax``."""
+        lines = self.filtered(lambda r: not r.has_tax).line_ids.filtered(
+            lambda l: l.tax_ids or l.wht_tax_id
+        )
+        if lines:
+            lines.write({"tax_ids": [(5, 0, 0)], "wht_tax_id": False})
+
+    # -------------------------------------------------------------------------
+    # Payee bank accounts
+    # -------------------------------------------------------------------------
+    def action_open_partner_bank_wizard(self, lines=None):
+        """Add the missing bank accounts of this draft request's payees."""
+        self.ensure_one()
+        if self.state != "draft":
+            raise UserError(_("Bank accounts can only be added to a draft request."))
+        lines = (lines or self.line_ids).filtered(
+            lambda l: l.partner_id and not l.partner_bank_id
+        )
+        if not lines:
+            raise UserError(_("Every payee already has a bank account."))
+        # One row per payee: the account is added to the partner, and every
+        # line of that payee picks it up. Prefilled through defaults — the rows'
+        # bank and number are required, so they cannot be created empty.
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("Add Bank Accounts"),
+            "res_model": "disbursement.partner.bank.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {
+                "default_request_id": self.id,
+                "default_line_ids": [
+                    (0, 0, {"partner_id": partner.id})
+                    for partner in lines.partner_id
+                ],
+            },
+        }
+
     @api.model
     def _get_payee_type(self, partner):
         """The type a request paying ``partner`` must carry — for bridges that
@@ -585,10 +683,14 @@ class DisbursementRequest(models.Model):
                 date,
             )
 
-        return super().create(vals_list)
+        records = super().create(vals_list)
+        records._clear_untaxed_lines()
+        return records
 
     def write(self, vals):
         res = super().write(vals)
+        if "has_tax" in vals or "line_ids" in vals:
+            self._clear_untaxed_lines()
         if vals.get("account_fiscal_year_id"):
             # The number follows the year: a draft moved to another year gets
             # that year's next number.
@@ -701,10 +803,24 @@ class DisbursementRequest(models.Model):
                     _("Cannot submit a disbursement request with no lines. "
                       "Please add at least one line.")
                 )
+            if record.is_direct_claim:
+                record._check_direct_claim_memo()
             if record.detect_exceptions() and not record.ignore_exception:
                 return record._popup_exceptions()
             record.state = "submitted"
+            # The external memo already carries the head's signature (ADR-0005).
+            if record.is_direct_claim:
+                record.action_sign()
         return True
+
+    def _check_direct_claim_memo(self):
+        self.ensure_one()
+        if not self.memo_number:
+            raise UserError(_("A direct claim needs the memo number."))
+        if not self.attachment_ids:
+            raise UserError(
+                _("A direct claim needs the memo attached to the request.")
+            )
 
     def action_sign(self):
         """Head of department signs and sends to inspector"""

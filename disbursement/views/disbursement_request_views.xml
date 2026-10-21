@@ -7,6 +7,8 @@
         <field name="arch" type="xml">
             <tree string="Disbursement Requests">
                 <field name="name" />
+                <field name="memo_number" optional="hide" />
+                <field name="is_direct_claim" optional="hide" />
                 <field name="partner_type_id" optional="show" />
                 <field name="payee_display" />
                 <field name="user_id" optional="show" />
@@ -191,6 +193,13 @@
                     </p>
                     <field name="exceptions_summary" />
                     <button
+                        name="action_open_partner_bank_wizard"
+                        type="object"
+                        class="btn-secondary me-2"
+                        string="Add Payee Bank Accounts"
+                        attrs="{'invisible': [('state', '!=', 'draft')]}"
+                    />
+                    <button
                         name="action_ignore_exceptions"
                         type="object"
                         class="btn-danger"
@@ -235,6 +244,19 @@
                             <field
                                 name="partner_type_id"
                                 options="{'no_create': True, 'no_open': True}"
+                            />
+                            <!-- ตั้งเบิกตรง (ADR-0005): the external memo's number is
+                                 typed here; otherwise e-Saraban stamps it. -->
+                            <field name="is_direct_claim" />
+                            <field
+                                name="memo_number"
+                                attrs="{'readonly': ['|', ('is_direct_claim', '=', False), ('state', '!=', 'draft')], 'required': [('is_direct_claim', '=', True), ('state', '=', 'draft')]}"
+                            />
+                            <field name="partner_type_company_type" invisible="1" />
+                            <field
+                                name="has_tax"
+                                attrs="{'readonly': ['|', ('partner_type_company_type', '=', 'company'), ('state', '!=', 'draft')]}"
+                                force_save="1"
                             />
                             <field name="note" />
                         </group>
@@ -352,14 +374,28 @@
                                          to add a missing bank account. -->
                                     <field name="partner_id" required="1" />
                                     <field name="partner_bank_id" optional="show" />
+                                    <button
+                                        name="action_add_partner_bank"
+                                        type="object"
+                                        icon="fa-university"
+                                        title="Add Bank Account"
+                                        attrs="{'invisible': ['|', ('partner_bank_id', '!=', False), ('parent.state', '!=', 'draft')]}"
+                                    />
                                     <field name="product_id" />
                                     <!-- Kept loaded: the product onchange fills the
                                          description and the quantity defaults to 1. -->
                                     <field name="name" invisible="1" />
                                     <field name="quantity" invisible="1" />
                                     <field name="price_unit" />
-                                    <field name="tax_ids" widget="many2many_tags" />
-                                    <field name="wht_tax_id" />
+                                    <field
+                                        name="tax_ids"
+                                        widget="many2many_tags"
+                                        attrs="{'column_invisible': [('parent.has_tax', '=', False)]}"
+                                    />
+                                    <field
+                                        name="wht_tax_id"
+                                        attrs="{'column_invisible': [('parent.has_tax', '=', False)]}"
+                                    />
                                     <field name="account_id" optional="hide" />
                                     <field
                                         name="analytic_distribution"
@@ -369,8 +405,16 @@
                                         optional="hide"
                                     />
                                     <field name="price_subtotal" />
-                                    <field name="price_tax" optional="show" />
-                                    <field name="amount_wht" optional="show" />
+                                    <field
+                                        name="price_tax"
+                                        optional="show"
+                                        attrs="{'column_invisible': [('parent.has_tax', '=', False)]}"
+                                    />
+                                    <field
+                                        name="amount_wht"
+                                        optional="show"
+                                        attrs="{'column_invisible': [('parent.has_tax', '=', False)]}"
+                                    />
                                     <field name="price_total" />
                                     <field name="company_id" invisible="1" />
                                     <field name="currency_id" invisible="1" />
@@ -386,7 +430,10 @@
                                     attrs="{'invisible': [('amount_tax', '=', 0)]}"
                                 />
                                 <field name="amount_total" />
-                                <field name="amount_wht" />
+                                <field
+                                    name="amount_wht"
+                                    attrs="{'invisible': [('has_tax', '=', False)]}"
+                                />
                                 <field
                                     name="amount_net"
                                     class="oe_subtotal_footer_separator"
@@ -394,7 +441,11 @@
                             </group>
                             <div class="oe_clear" />
                         </page>
-                        <page string="WHT" name="wht">
+                        <page
+                            string="WHT"
+                            name="wht"
+                            attrs="{'invisible': [('has_tax', '=', False)]}"
+                        >
                             <field name="wht_line_ids" nolabel="1">
                                 <tree create="0" delete="0" edit="0">
                                     <field name="partner_id" string="Disburser" />
@@ -455,6 +506,7 @@
         <field name="arch" type="xml">
             <search string="Disbursement Requests">
                 <field name="name" string="Name" />
+                <field name="memo_number" />
                 <field
                     name="line_ids"
                     string="Payee"
@@ -521,6 +573,12 @@
                     string="Done"
                     name="done"
                     domain="[('pipeline_status', '=', 'done')]"
+                />
+                <separator />
+                <filter
+                    string="Direct Claim"
+                    name="direct_claim"
+                    domain="[('is_direct_claim', '=', True)]"
                 />
                 <separator />
                 <filter

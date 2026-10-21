@@ -59,6 +59,11 @@
                                 อ้างอิง                                <span class="ms-2" t-out="source_document.display_name"/>
                             </div>
                         </div>
+                        <div class="row" t-if="o.memo_number">
+                            <div class="col">
+                                เลขที่หนังสือ                                <span class="ms-2" t-out="o.memo_number"/>
+                            </div>
+                        </div>
 
                         <div class="row">
                             <div class="col">

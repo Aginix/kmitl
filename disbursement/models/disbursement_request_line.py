@@ -241,10 +241,19 @@ class DisbursementRequestLine(models.Model):
     # -------------------------------------------------------------------------
     # WHT methods
     # -------------------------------------------------------------------------
-    @api.depends("partner_id.partner_type_id.wht_tax_id")
+    @api.depends("partner_id.partner_type_id.wht_tax_id", "request_id.has_tax")
     def _compute_wht_tax_id(self):
         for line in self:
-            line.wht_tax_id = line.partner_id.partner_type_id.wht_tax_id
+            line.wht_tax_id = (
+                line.request_id.has_tax and line.partner_id.partner_type_id.wht_tax_id
+            )
+
+    # -------------------------------------------------------------------------
+    # Bank account
+    # -------------------------------------------------------------------------
+    def action_add_partner_bank(self):
+        self.ensure_one()
+        return self.request_id.action_open_partner_bank_wizard(self)
 
     # -------------------------------------------------------------------------
     # Exception methods

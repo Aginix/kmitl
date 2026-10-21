@@ -19,7 +19,13 @@ class DisbursementRequest(models.Model):
         return vals
 
     def _sarabun_submit_guard(self):
-        return self.state == "submitted"
+        # A direct claim's memo was signed outside the system (ADR-0005).
+        return self.state == "submitted" and not self.is_direct_claim
+
+    def _on_sarabun_numbered(self, document):
+        """เลขที่หนังสือ follows the number e-Saraban just issued."""
+        self.memo_number = document.name
+        return super()._on_sarabun_numbered(document)
 
     # -- Sarabun outcome → disbursement state (mirrors kmitl_project_sarabun) --
     def _on_sarabun_circulating(self, document):
@@ -51,9 +57,14 @@ class DisbursementRequest(models.Model):
             self.action_cancel()
         return super()._on_sarabun_rejected(document, step)
 
-    # ยกเลิกการส่ง: หนังสือฉบับนั้นถูกยกเลิก แต่คำขอยังอยู่ที่ ``submitted`` พร้อม
-    # สร้างหนังสือใหม่ (ปุ่ม "Submit to Sarabun" กลับมาเพราะ sarabun_has_live_document
-    # เป็น False) — mixin default โพสต์โน้ตผู้ยกเลิก+เหตุผลพอ ไม่ต้อง override.
+    def _on_sarabun_cancelled(self, document):
+        # ยกเลิกการส่ง: หนังสือฉบับนั้นถูกยกเลิก (เลขถูก void) แต่คำขอยังอยู่ที่
+        # ``submitted`` พร้อมสร้างหนังสือใหม่ (ปุ่ม "Submit to Sarabun" กลับมาเพราะ
+        # sarabun_has_live_document เป็น False) — ล้างเลขที่หนังสือที่ถูก void ออก
+        # หนังสือฉบับใหม่จะ stamp เลขใหม่ให้เอง.
+        if self.memo_number == document.name:
+            self.memo_number = False
+        return super()._on_sarabun_cancelled(document)
 
     def _get_sarabun_document_type(self):
         return self.env.ref(

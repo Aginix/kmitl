@@ -543,6 +543,11 @@ class BudgetMove(models.Model):
         direct._check_direct_consume()
 
     def _check_direct_consume_right(self):
+        # An approved ตั้งเบิกตรง disbursement request posts / cancels its own
+        # direct consumption: its approval chain is the gate (disbursement
+        # ADR-0005). Only the right is waived — the pool check still runs.
+        if self.env.context.get("budget_direct_consume_by_document"):
+            return
         if not self.env.user.has_group("budget.group_budget_manager"):
             raise ValidationError(
                 _(
