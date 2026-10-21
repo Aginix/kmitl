@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- noupdate: switching a rule off (active) or making it non-blocking must
+         survive a module upgrade. -->
+    <data noupdate="1">
+        <record
+            id="purchase_request_approval_excep_partner_required"
+            model="exception.rule"
+        >
+            <field name="name">ยังไม่ได้ระบุผู้ขาย (Vendor)</field>
+            <field
+                name="description"
+            >กรุณาระบุผู้ขาย (Vendor) ก่อนส่งเข้าสารบรรณ</field>
+            <field name="sequence">1</field>
+            <field name="model">purchase.request.approval</field>
+            <field name="exception_type">by_method</field>
+            <field
+                name="method"
+            >purchase_request_approval_check_partner_required</field>
+            <field name="is_blocking" eval="True" />
+            <field name="active" eval="True" />
+        </record>
+    </data>
+</odoo>
