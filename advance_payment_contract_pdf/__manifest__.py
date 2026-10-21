@@ -1,0 +1,25 @@
+{
+    "name": "Advance Payment Contract PDF (สัญญาการยืมเงิน แบบ สค.001)",
+    "version": "16.0.1.0.0",
+    "summary": "Print the paper loan contract (แบบ สค.001) from an advance payment",
+    "author": "Aginix Technologies",
+    "website": "https://github.com/aginix/kmitl",
+    "category": "KMITL",
+    "depends": [
+        "advance_payment",
+        "thai_date_utils",
+        "l10n_th_fonts",
+        "l10n_th_amount_to_text",
+        "kmitl_hr_employee_full_name",
+        "hr_employee_academic_standing_thailand",
+    ],
+    "data": [
+        "report/paperformat.xml",
+        "report/advance_payment_contract_report.xml",
+        "report/report_advance_payment_contract.xml",
+        "views/advance_payment_views.xml",
+    ],
+    "installable": True,
+    "application": False,
+    "license": "LGPL-3",
+}
