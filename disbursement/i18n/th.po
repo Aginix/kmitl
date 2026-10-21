@@ -547,7 +547,7 @@ msgstr ""
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__main_exception_id
 msgid "Main Exception"
-msgstr ""
+msgstr "ข้อยกเว้นหลัก"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__message_has_error
@@ -666,6 +666,7 @@ msgstr "จำนวน"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__partner_bank_id
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request_line__partner_bank_id
 msgid "Recipient Bank"
 msgstr "บัญชีธนาคารผู้รับ"
 
@@ -2049,3 +2050,13 @@ msgstr "ลบได้เฉพาะใบขอเบิกที่ยกเ
 #: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
 msgid "Cancel this disbursement request?"
 msgstr "ยืนยันการยกเลิกใบขอเบิกนี้?"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request_line__partner_id
+msgid "Partner"
+msgstr "ผู้รับเงิน"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+msgid "<span class=\"o_stat_text\">Preview</span>"
+msgstr "<span class=\"o_stat_text\">ตัวอย่าง</span>"

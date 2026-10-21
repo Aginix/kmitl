@@ -2,7 +2,7 @@
 
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
-import { _t } from "@web/core/l10n/translation";
+import { _lt, _t } from "@web/core/l10n/translation";
 import { Component, markup, useState, onWillStart } from "@odoo/owl";
 import { MultiRecordSelect } from "./multi_record_select";
 
@@ -31,16 +31,17 @@ const FILTER_FIELDS = {
 };
 
 // The two approver stages, keyed by the client action's context.approval_stage.
+// _lt: this runs at module load, before the translations are fetched.
 const STAGES = {
     finance: {
         state: "pending_finance",
         method: "action_approve_finance",
-        title: _t("Awaiting Finance Director approval"),
+        title: _lt("Awaiting Finance Director approval"),
     },
     rector: {
         state: "pending_rector",
         method: "action_approve",
-        title: _t("Awaiting Rector-delegated approval"),
+        title: _lt("Awaiting Rector-delegated approval"),
     },
 };
 
