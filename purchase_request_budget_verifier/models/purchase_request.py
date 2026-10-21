@@ -59,7 +59,10 @@ class PurchaseRequest(models.Model):
             self.budget_verifier_id = candidates
 
     def button_to_approve(self):
-        if any(r.state == "to_verify" and not r.budget_verifier_id for r in self):
+        # Superuser mode passes, as in purchase_request_verifier.button_to_verify.
+        if not self.env.su and any(
+            r.state == "to_verify" and not r.budget_verifier_id for r in self
+        ):
             raise UserError(_("กรุณาระบุผู้ยืนยันงบประมาณก่อนกดตรวจสอบ"))
         return super().button_to_approve()
 

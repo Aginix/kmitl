@@ -43,19 +43,14 @@ class PurchaseRequest(models.Model):
         # sudo: regular users cannot read group membership
         group = self.env.ref(group_xmlid).sudo()
         admin = self.env.ref("base.group_erp_manager")
-        cache = {}
-
-        def carries(g):
-            # Implies the duty along a path that does not pass through admin
-            if g not in cache:
-                implied = g.implied_ids - admin
-                cache[g] = group in implied or any(carries(h) for h in implied)
-            return cache[g]
 
         def holds_duty(user):
             if admin not in user.groups_id:
                 return True
-            return any(carries(g) for g in user.groups_id - admin)
+            # A user's groups already hold every implied group, so another
+            # grant carries the duty iff one of them implies it directly. No
+            # walk over implied_ids, which may contain cycles.
+            return any(group in g.implied_ids for g in user.groups_id - admin)
 
         return group.users.filtered(lambda u: not u.share and holds_duty(u))
 
@@ -84,7 +79,9 @@ class PurchaseRequest(models.Model):
             self.assigned_to = candidates
 
     def button_to_verify(self):
-        if not self.assigned_to:
+        # Superuser mode (demo data, hooks, sudo'ed programmatic flows) passes,
+        # like purchase_request_kmitl's _check_step_group.
+        if not self.env.su and not self.assigned_to:
             raise UserError(_("กรุณาระบุผู้ยืนยันตรวจสอบก่อนส่งคำขอ"))
         return super().button_to_verify()
 

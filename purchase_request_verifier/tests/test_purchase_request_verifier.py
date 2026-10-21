@@ -65,8 +65,16 @@ class TestPurchaseRequestVerifier(TransactionCase):
         return pr.sudo().activity_ids.filtered(lambda a: a.activity_type_id == act_type)
 
     def _submit(self, pr, user=None):
+        # button_draft (ตีกลับ) clears ignore_exception; the rules aren't under test
+        pr.ignore_exception = True
         pr.with_user(user or self.requester).button_to_verify()
         self.assertEqual(pr.state, "to_verify")
+
+    def _verify(self, pr, user):
+        # sudo keeps the presser as env.user but passes the
+        # purchase_request_budget_verifier gate when it is installed too
+        pr.with_user(user).sudo().button_to_approve()
+        self.assertNotEqual(pr.state, "to_verify")
 
     def _return(self, pr, user=None):
         self.env["purchase.request.return.wizard"].with_user(
@@ -78,6 +86,12 @@ class TestPurchaseRequestVerifier(TransactionCase):
         pr = self._make_pr()
         with self.assertRaises(UserError):
             pr.with_user(self.requester).button_to_verify()
+
+    def test_superuser_submit_without_verifier(self):
+        # Demo data and hooks submit in superuser mode (kmitl_demo)
+        pr = self._make_pr().sudo()
+        pr.button_to_verify()
+        self.assertEqual(pr.state, "to_verify")
 
     def test_non_verifier_rejected(self):
         with self.assertRaises(ValidationError):
@@ -141,8 +155,7 @@ class TestPurchaseRequestVerifier(TransactionCase):
     def test_designated_verifier_verifies_todo_done(self):
         pr = self._make_pr(assigned_to=self.verifier.id)
         self._submit(pr)
-        pr.with_user(self.verifier).button_to_approve()
-        self.assertNotEqual(pr.state, "to_verify")
+        self._verify(pr, self.verifier)
         self.assertFalse(self._todos(pr, self.verify_type))
         done = self.env["mail.message"].search(
             [
@@ -156,8 +169,7 @@ class TestPurchaseRequestVerifier(TransactionCase):
     def test_other_verifier_verifies_todo_withdrawn(self):
         pr = self._make_pr(assigned_to=self.verifier.id)
         self._submit(pr)
-        pr.with_user(self.verifier_b).button_to_approve()
-        self.assertNotEqual(pr.state, "to_verify")
+        self._verify(pr, self.verifier_b)
         self.assertFalse(self._todos(pr, self.verify_type))
         self.assertFalse(
             self.env["mail.message"].search(

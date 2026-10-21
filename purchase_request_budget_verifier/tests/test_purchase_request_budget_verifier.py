@@ -88,6 +88,13 @@ class TestPurchaseRequestBudgetVerifier(TransactionCase):
         with self.assertRaises(UserError):
             pr.with_user(self.verifier).button_to_approve()
 
+    def test_superuser_verify_without_budget_verifier(self):
+        # Demo data and hooks verify in superuser mode (kmitl_demo)
+        pr = self._make_pr()
+        pr.with_user(self.requester).button_to_verify()
+        pr.sudo().button_to_approve()
+        self.assertEqual(pr.state, "to_verify_budget")
+
     def test_non_committer_rejected(self):
         with self.assertRaises(ValidationError):
             self._make_pr(budget_verifier_id=self.verifier.id)
