@@ -2034,3 +2034,18 @@ msgstr "วันที่ตรวจสอบ"
 #: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
 msgid "Request Approved On"
 msgstr "วันที่อนุมัติใบขอเบิก"
+
+#. module: disbursement
+#: code:addons/disbursement/models/disbursement_request.py:0
+msgid "Only a disbursement officer can cancel an approved request."
+msgstr "ใบขอเบิกที่อนุมัติแล้วยกเลิกได้เฉพาะเจ้าหน้าที่การเงินเท่านั้น"
+
+#. module: disbursement
+#: code:addons/disbursement/models/disbursement_request.py:0
+msgid "Only cancelled requests can be deleted."
+msgstr "ลบได้เฉพาะใบขอเบิกที่ยกเลิกแล้วเท่านั้น"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+msgid "Cancel this disbursement request?"
+msgstr "ยืนยันการยกเลิกใบขอเบิกนี้?"

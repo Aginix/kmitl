@@ -235,3 +235,49 @@ class TestPayeeBankWizard(TwoApproverCommon):
         dr.state = "submitted"
         with self.assertRaises(UserError):
             dr.action_open_partner_bank_wizard()
+
+
+@tagged("post_install", "-at_install")
+class TestRequesterActions(TwoApproverCommon):
+    """A requester resets or cancels a request up to its approval; past it
+    only a finance officer cancels. Only a cancelled request is deleted."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.requester = cls.env["res.users"].with_context(no_reset_password=True).create(
+            {
+                "name": "Requester",
+                "login": "ra_requester",
+                "email": "ra_requester@example.com",
+                "groups_id": [(4, cls.env.ref("disbursement.group_disbursement_user").id)],
+            }
+        )
+
+    def test_requester_resets_and_cancels_before_approval(self):
+        dr = self._make_verified_dr().with_user(self.requester)
+        dr.action_draft()
+        self.assertEqual(dr.state, "draft")
+        dr.action_cancel()
+        self.assertEqual(dr.state, "cancel")
+        dr.action_draft()
+        self.assertEqual(dr.state, "draft")
+
+    def test_only_officer_cancels_an_approved_request(self):
+        dr = self._make_verified_dr()
+        with self._patch_final_approval():
+            dr.with_user(self.finance).action_approve_finance()
+            dr.with_user(self.rector).action_approve()
+        self.assertEqual(dr.state, "approved")
+        with self.assertRaises(UserError):
+            dr.with_user(self.requester).action_cancel()
+        dr.with_user(self.officer).action_cancel()
+        self.assertEqual(dr.state, "cancel")
+
+    def test_only_a_cancelled_request_is_deleted(self):
+        dr = self._make_verified_dr().with_user(self.requester)
+        with self.assertRaises(UserError):
+            dr.unlink()
+        dr.action_cancel()
+        dr.unlink()
+        self.assertFalse(dr.exists())

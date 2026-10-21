@@ -1,6 +1,7 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 
-from odoo import models
+from odoo import _, models
+from odoo.exceptions import UserError
 
 
 class DisbursementRequest(models.Model):
@@ -20,6 +21,35 @@ class DisbursementRequest(models.Model):
 
     def _sarabun_submit_guard(self):
         return self.state == "submitted"
+
+    # A requester may now reset or cancel before approval: not while its
+    # หนังสือ is still in e-Saraban, which would leave it routing for nothing.
+    # Every e-Saraban callback moves the หนังสือ off ``circulating`` before it
+    # calls back, so this only stops the manual action.
+    def _check_no_circulating_sarabun(self):
+        documents = self.env["sarabun.document"].sudo().search(
+            [
+                ("origin_model", "=", self._name),
+                ("origin_res_id", "in", self.ids),
+                ("state", "=", "circulating"),
+            ]
+        )
+        if documents:
+            # Not named: a หนังสือ has no number until its issuing sign.
+            raise UserError(
+                _(
+                    "This request's memo is still circulating in e-Saraban: "
+                    "pull it back or cancel sending it there first."
+                )
+            )
+
+    def action_draft(self):
+        self._check_no_circulating_sarabun()
+        return super().action_draft()
+
+    def action_cancel(self):
+        self._check_no_circulating_sarabun()
+        return super().action_cancel()
 
     def _on_sarabun_numbered(self, document):
         """เลขที่หนังสือ follows the number e-Saraban just issued."""

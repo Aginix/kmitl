@@ -18,6 +18,10 @@ DR_APPROVE_FINANCE_ACTIVITY = "disbursement.mail_activity_dr_approve_finance"
 DR_APPROVE_RECTOR_ACTIVITY = "disbursement.mail_activity_dr_approve_rector"
 # Pushed to the requester when an approver rejects the request.
 DR_REJECTED_ACTIVITY = "disbursement.mail_activity_dr_rejected"
+# Up to the final approval a request may still be reset to draft or cancelled
+# by its requester, and its description edited; past it only the finance
+# officers may cancel it.
+PRE_APPROVAL_STATES = ("draft", "submitted", "signed", "verified")
 
 
 class DisbursementRequest(models.Model):
@@ -138,9 +142,14 @@ class DisbursementRequest(models.Model):
         states=READONLY_STATES,
     )
 
+    # Still editable until the request is approved.
     note = fields.Html(
         string="Description",
-        states=READONLY_STATES,
+        states={
+            state: modifier
+            for state, modifier in READONLY_STATES.items()
+            if state not in PRE_APPROVAL_STATES
+        },
     )
 
     company_id = fields.Many2one(
@@ -1112,10 +1121,17 @@ class DisbursementRequest(models.Model):
         Bridge modules override this to add bill/payment-specific guards
         and cleanup (cancel draft bills, block on posted bills/payments).
         """
+        officer = self.env.su or self.env.user.has_group(
+            "disbursement.group_disbursement_officer"
+        )
         for record in self:
             if record.state == "cancel":
                 raise UserError(
                     _("Cannot cancel an already cancelled request.")
+                )
+            if record.state not in PRE_APPROVAL_STATES and not officer:
+                raise UserError(
+                    _("Only a disbursement officer can cancel an approved request.")
                 )
             record._on_cancel()
             record.state = "cancel"
@@ -1138,6 +1154,11 @@ class DisbursementRequest(models.Model):
         self._reset_verification()
         self._reset_approval()
         return True
+
+    def unlink(self):
+        if self.filtered(lambda r: r.state != "cancel"):
+            raise UserError(_("Only cancelled requests can be deleted."))
+        return super().unlink()
 
     def _compute_access_url(self):
         """Compute the portal URL for the disbursement request."""

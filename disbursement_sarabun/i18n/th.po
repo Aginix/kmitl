@@ -70,3 +70,8 @@ msgstr "อนุมัติใบขอเบิกโดยหัวหน้
 #: model:sarabun.route.template,description:disbursement_sarabun.route_template_disbursement_request
 msgid "Route disbursement request to head of department for approval"
 msgstr "ส่งใบขอเบิกไปยังหัวหน้าหน่วยงานเพื่ออนุมัติ"
+
+#. module: disbursement_sarabun
+#: code:addons/disbursement_sarabun/models/disbursement_request.py:0
+msgid "This request's memo is still circulating in e-Saraban: pull it back or cancel sending it there first."
+msgstr "หนังสือของใบขอเบิกนี้ยังเดินอยู่ใน e-Saraban กรุณาดึงกลับหรือยกเลิกการส่งก่อน"
