@@ -15,10 +15,11 @@ A request ticked **ตั้งเบิกตรง** (`is_direct_claim`, core)
   **memo number** and at least one attachment (the memo itself) and moves the
   request straight to `signed`. Every later step — the officer's Validate and
   the two-approver step (ADR 0001) — is unchanged.
-- **No reservation.** It carries its own dimensions and budget code; a
-  commitment is never linked. On the Rector-delegated approval
+- **Reservation optional.** A direct claim may still draw a reservation, and
+  is then consumed through it like any request. Without one it carries its own
+  dimensions and budget code, and on the Rector-delegated approval
   `disbursement_budget` posts a **Direct Consumption** (ตัดงบตรง, budget
-  ADR-0019) for the request's amount, and cancelling the request cancels it.
+  ADR-0019) for the request's amount; cancelling the request cancels it.
   Availability is pre-checked on Submit and enforced again when posting.
 - **Anyone may tick it.** The request's own approval chain — officer, Finance
   Director, Rector-delegated approver — is the control, so the Budget-Manager

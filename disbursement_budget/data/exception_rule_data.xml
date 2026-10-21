@@ -17,22 +17,9 @@ if commitment and commitment.account_fiscal_year_id != self.account_fiscal_year_
         <field name="is_blocking" eval="True" />
         <field name="active" eval="True" />
     </record>
-    <!-- ตั้งเบิกตรง (ADR-0005): no reservation, consumed directly from the
-         pool on the final approval. Blocking, checked on submit; the posting
-         re-checks availability on approval. -->
-    <record id="excep_disbursement_direct_claim_commitment" model="exception.rule">
-        <field name="name">ใบขอเบิกตั้งเบิกตรงต้องไม่อ้างอิงใบจองงบประมาณ</field>
-        <field name="description">ใบขอเบิกแบบตั้งเบิกตรงจะตัดงบประมาณโดยตรง กรุณานำใบจองงบประมาณออก หรือยกเลิกการตั้งเบิกตรง</field>
-        <field name="sequence">21</field>
-        <field name="model">disbursement.request</field>
-        <field name="exception_type">by_py_code</field>
-        <field name="code">
-if self.is_direct_claim and self.budget_commitment_id:
-    failed = True
-        </field>
-        <field name="is_blocking" eval="True" />
-        <field name="active" eval="True" />
-    </record>
+    <!-- ตั้งเบิกตรง (ADR-0005): a reservation is optional; without one the
+         claim is consumed directly from the pool on the final approval.
+         Blocking, checked on submit; the posting re-checks availability. -->
     <record id="excep_disbursement_direct_claim_budget_account" model="exception.rule">
         <field name="name">ใบขอเบิกตั้งเบิกตรงยังไม่ระบุรหัสงบประมาณ</field>
         <field name="description">ใบขอเบิกแบบตั้งเบิกตรงต้องระบุรหัสงบประมาณค่าใช้จ่ายเพื่อใช้ตัดงบประมาณ</field>
@@ -40,7 +27,7 @@ if self.is_direct_claim and self.budget_commitment_id:
         <field name="model">disbursement.request</field>
         <field name="exception_type">by_py_code</field>
         <field name="code">
-if self.is_direct_claim and not self.budget_account_id:
+if self.is_direct_claim and not self.budget_commitment_id and not self.budget_account_id:
     failed = True
         </field>
         <field name="is_blocking" eval="True" />

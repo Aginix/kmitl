@@ -88,7 +88,7 @@ export class ApprovalQueue extends Component {
             source: _t("Source"),
             fund: _t("Fund"),
             activity: _t("Activity"),
-            note: _t("Note"),
+            note: _t("Details"),
             open: _t("Open"),
             fiscalYear: _t("Fiscal Year"),
             dateFrom: _t("Date From"),

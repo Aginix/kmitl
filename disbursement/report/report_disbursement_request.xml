@@ -183,7 +183,7 @@
 
                         <div class="row" t-if="not is_html_empty(o.note)">
                             <div class="col">
-                                <strong>หมายเหตุ:</strong>
+                                <strong>รายละเอียด:</strong>
                                 <div t-out="o.note"/>
                             </div>
                         </div>

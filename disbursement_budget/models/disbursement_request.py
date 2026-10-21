@@ -121,12 +121,6 @@ class DisbursementRequest(models.Model):
             subtype_xmlid="mail.mt_comment",
         )
 
-    @api.onchange("is_direct_claim")
-    def _onchange_direct_claim_clear_commitment(self):
-        """A direct claim has no reservation (ADR-0005)."""
-        if self.is_direct_claim:
-            self.budget_commitment_id = False
-
     @api.onchange("account_fiscal_year_id")
     def _onchange_fiscal_year_clear_commitment(self):
         """The fiscal year leads: a new year drops the commitment, which must
@@ -236,7 +230,9 @@ class DisbursementRequest(models.Model):
         would be cancelled out by the consume in the same instant anyway.
         """
         self.ensure_one()
-        if self.is_direct_claim:
+        # A direct claim may still draw a reservation; only without one does
+        # it consume the pool directly (ADR-0005).
+        if self.is_direct_claim and not self.budget_commitment_id:
             return self._consume_direct()
         # Idempotent: a request returned to verification (approved -> signed)
         # keeps its consumption, so re-approving must not double-cut the budget.
@@ -325,10 +321,11 @@ class DisbursementRequest(models.Model):
         )
 
     def _direct_claim_budget_shortfall(self):
-        """Whether the pool cannot cover this direct claim — the Submit
-        pre-check; the posting re-checks it on the final approval."""
+        """Whether the pool cannot cover this direct claim without a
+        reservation — the Submit pre-check; the posting re-checks it on the
+        final approval. A linked reservation is checked on approval instead."""
         self.ensure_one()
-        if not self.budget_account_id or (
+        if self.budget_commitment_id or not self.budget_account_id or (
             self.env["ir.config_parameter"]
             .sudo()
             .get_param("budget.allow_negative", False)

@@ -101,3 +101,8 @@ msgstr "ตัดงบประมาณตรงแล้ว: %(amount)s (%(mo
 #, python-format
 msgid "Direct consumption %s cancelled."
 msgstr "ยกเลิกการตัดงบตรง %s แล้ว"
+
+#. module: disbursement_budget
+#: model_terms:ir.ui.view,arch_db:disbursement_budget.view_disbursement_request_form
+msgid "Budget Consumed / Disbursed On"
+msgstr "วันที่ตัดงบประมาณ/เบิกจ่าย"

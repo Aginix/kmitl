@@ -1,7 +1,9 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 
+from datetime import date
 from unittest.mock import patch
 
+from odoo import fields
 from odoo.exceptions import UserError, ValidationError
 from odoo.tests import Form
 from odoo.tests.common import tagged
@@ -56,6 +58,9 @@ class TestDirectClaim(TwoApproverCommon):
             dr.memo_number = "อว 7201/123"
             with self.assertRaises(UserError):
                 dr.action_submit()
+            dr.sign_date = date(2026, 10, 1)
+            with self.assertRaises(UserError):
+                dr.action_submit()
             self.env["ir.attachment"].create(
                 {
                     "name": "memo.pdf",
@@ -66,12 +71,45 @@ class TestDirectClaim(TwoApproverCommon):
             )
             dr.action_submit()
         self.assertEqual(dr.state, "signed")
+        # the memo's own date, not the day it was submitted
+        self.assertEqual(dr.sign_date, date(2026, 10, 1))
 
     def test_regular_request_stops_at_submitted(self):
         dr = self._draft()
         with self._no_exceptions():
             dr.action_submit()
         self.assertEqual(dr.state, "submitted")
+        self.assertFalse(dr.sign_date)
+        dr.action_sign()
+        self.assertEqual(dr.sign_date, fields.Date.context_today(dr))
+        dr.action_draft()
+        self.assertFalse(dr.sign_date)
+
+    def test_dimensions_typed_on_the_form_are_saved(self):
+        """The form sends the hidden analytic_distribution with the
+        dimensions: it must follow them, or saving drops what was typed."""
+        fiscal_year = self.env["account.fiscal.year"].search([], limit=1) or self.env[
+            "account.fiscal.year"
+        ].create(
+            {
+                "name": "FY-DIM",
+                "date_from": date(2025, 10, 1),
+                "date_to": date(2026, 9, 30),
+            }
+        )
+        form = Form(self.DR)
+        form.partner_type_id = self.partner.partner_type_id
+        form.account_fiscal_year_id = fiscal_year
+        form.source_analytic_id = self.source
+        form.department_analytic_id = self.dept
+        form.fund_analytic_id = self.fund
+        form.activity_analytic_id = self.activity
+        dr = form.save()
+        self.assertEqual(
+            set(dr.analytic_distribution),
+            {str(a.id) for a in (self.source, self.dept, self.fund, self.activity)},
+        )
+        self.assertEqual(dr.fund_analytic_id, self.fund)
 
 
 @tagged("post_install", "-at_install")

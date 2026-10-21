@@ -129,6 +129,16 @@ class DisbursementRequest(models.Model):
         states=READONLY_STATES,
     )
 
+    # วันที่หน่วยงานลงนาม: stamped when the request turns ``signed`` (the head's
+    # e-Saraban signature); a direct claim carries the date of its external
+    # memo instead, typed by hand.
+    sign_date = fields.Date(
+        string="Head Signed On",
+        tracking=True,
+        copy=False,
+        states=READONLY_STATES,
+    )
+
     # มีภาษี: off clears VAT and WHT from every line and hides the tax columns.
     has_tax = fields.Boolean(
         string="Taxable",
@@ -138,7 +148,7 @@ class DisbursementRequest(models.Model):
     )
 
     note = fields.Html(
-        string="Note",
+        string="Description",
         states=READONLY_STATES,
     )
 
@@ -425,21 +435,30 @@ class DisbursementRequest(models.Model):
                     % ", ".join(sorted(missing))
                 )
 
+    # Also onchange handlers (as in receipt_kmitl): the form sends the hidden
+    # analytic_distribution with the dimensions on save, so it must already
+    # hold them — else its stale value wins over these inverses and the
+    # dimensions typed by hand are lost. One field per handler: reassigning
+    # the distribution recomputes every dimension field.
+    @api.onchange("activity_analytic_id")
     def _inverse_activity_analytic(self):
         """Update distribution when activity changes"""
         for line in self:
             line._update_analytic_distribution("activities")
 
+    @api.onchange("department_analytic_id")
     def _inverse_department_analytic(self):
         """Update distribution when department changes"""
         for line in self:
             line._update_analytic_distribution("departments")
 
+    @api.onchange("fund_analytic_id")
     def _inverse_fund_analytic(self):
         """Update distribution when fund changes"""
         for line in self:
             line._update_analytic_distribution("funds")
 
+    @api.onchange("source_analytic_id")
     def _inverse_source_analytic(self):
         """Update distribution when source changes"""
         for line in self:
@@ -817,6 +836,8 @@ class DisbursementRequest(models.Model):
         self.ensure_one()
         if not self.memo_number:
             raise UserError(_("A direct claim needs the memo number."))
+        if not self.sign_date:
+            raise UserError(_("A direct claim needs the date the memo was signed."))
         if not self.attachment_ids:
             raise UserError(
                 _("A direct claim needs the memo attached to the request.")
@@ -828,6 +849,9 @@ class DisbursementRequest(models.Model):
             if record.state != "submitted":
                 raise UserError(_("Only submitted requests can be signed."))
             record.state = "signed"
+            # A direct claim keeps the date of its external memo.
+            if not (record.is_direct_claim and record.sign_date):
+                record.sign_date = fields.Date.context_today(record)
         return True
 
     def action_validate(self):
@@ -1134,6 +1158,10 @@ class DisbursementRequest(models.Model):
                     _("Only submitted, signed, verified, or cancelled requests can be reset to draft.")
                 )
             record.state = "draft"
+            # Signed again on the next round, unless typed from a direct
+            # claim's external memo.
+            if not record.is_direct_claim:
+                record.sign_date = False
             record.exception_ids = False
             record.main_exception_id = False
             record.ignore_exception = False

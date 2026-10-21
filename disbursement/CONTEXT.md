@@ -49,11 +49,12 @@ _Avoid_: Budget check (that is the availability check inside the budget module).
 
 **Direct claim** (ตั้งเบิกตรง):
 A request raised on the strength of a memo (หนังสือบันทึกข้อความ) produced outside
-the system, with no budget reservation behind it. It carries its own dimensions
-and budget code, skips e-Saraban — the external memo already holds the head of
-department's signature — and goes straight from submit to `signed`. Under
-budget control its amount is consumed directly from the pool on the
-Rector-delegated approval (see ADR 0005). Any payment type may be a direct claim.
+the system. It skips e-Saraban — the external memo already holds the head of
+department's signature — and goes straight from submit to `signed`. A budget
+reservation is optional: with one it is consumed like any request; without one
+it carries its own dimensions and budget code and, under budget control, is
+consumed directly from the pool on the Rector-delegated approval (see ADR 0005).
+Any payment type may be a direct claim.
 _Avoid_: จ่ายตรง / Direct paid (that is the **payment type** — paid straight to
 the payee rather than as an advance or a prepayment), Stand-alone request (a
 request without budget control at all).

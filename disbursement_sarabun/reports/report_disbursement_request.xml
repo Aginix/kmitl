@@ -133,7 +133,7 @@
         <!-- Notes -->
         <div class="row" t-if="o.note">
             <div class="col">
-                <strong>หมายเหตุ:</strong>
+                <strong>รายละเอียด:</strong>
                 <div t-out="o.note"/>
             </div>
         </div>

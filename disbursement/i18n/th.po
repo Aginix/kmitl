@@ -1275,8 +1275,14 @@ msgstr "สำรองจ่าย"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__note
-msgid "Note"
-msgstr "หมายเหตุ"
+msgid "Description"
+msgstr "รายละเอียด"
+
+#. module: disbursement
+#. odoo-javascript
+#: code:addons/disbursement/static/src/approval_queue/approval_queue.js:0
+msgid "Details"
+msgstr "รายละเอียด"
 
 #. module: disbursement
 #. odoo-python
@@ -2023,3 +2029,28 @@ msgstr "เลขที่บัญชี"
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_partner_bank_wizard_line__acc_holder_name
 msgid "Account Holder Name"
 msgstr "ชื่อบัญชี"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__sign_date
+msgid "Head Signed On"
+msgstr "วันที่หน่วยงานลงนาม"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+msgid "Dates"
+msgstr "วันที่"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+msgid "Verification Date"
+msgstr "วันที่ตรวจสอบ"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+msgid "Request Approved On"
+msgstr "วันที่อนุมัติใบขอเบิก"
+
+#. module: disbursement
+#: code:addons/disbursement/models/disbursement_request.py:0
+msgid "A direct claim needs the date the memo was signed."
+msgstr "ใบขอเบิกตั้งเบิกตรงต้องระบุวันที่หน่วยงานลงนามในหนังสือ"

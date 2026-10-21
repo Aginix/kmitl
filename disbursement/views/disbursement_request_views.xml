@@ -12,7 +12,8 @@
                 <field name="partner_type_id" optional="show" />
                 <field name="payee_display" />
                 <field name="user_id" optional="show" />
-                <field name="date" />
+                <field name="date" optional="hide" />
+                <field name="sign_date" optional="show" />
                 <field name="account_fiscal_year_id" options="{'no_open': True}" />
                 <field name="amount_total" />
                 <field
@@ -232,7 +233,8 @@
                             name="disbursement_information"
                             string="Disbursement Information"
                         >
-                            <field name="date" />
+                            <!-- Not used: the dates that matter are in the Dates group. -->
+                            <field name="date" invisible="1" />
                             <field
                                 name="payment_type"
                                 widget="radio"
@@ -320,10 +322,6 @@
                                 attrs="{'invisible': [('verifier_id', '=', False)]}"
                             />
                             <field
-                                name="verify_date"
-                                attrs="{'invisible': [('verifier_id', '=', False)]}"
-                            />
-                            <field
                                 name="finance_approver_id"
                                 attrs="{'invisible': [('finance_approver_id', '=', False)]}"
                             />
@@ -336,10 +334,6 @@
                                 attrs="{'invisible': [('rector_approver_id', '=', False)]}"
                             />
                             <field
-                                name="rector_approve_date"
-                                attrs="{'invisible': [('rector_approver_id', '=', False)]}"
-                            />
-                            <field
                                 name="ignore_exception"
                                 states="to_approve"
                                 groups='base_exception.group_exception_rule_manager'
@@ -349,6 +343,24 @@
                                 widget="many2many_tags"
                                 readonly="True"
                                 groups='base.group_no_one'
+                            />
+                        </group>
+                        <!-- One date per step; a direct claim types the date of
+                             its external memo (ADR-0005). -->
+                        <group id="dates" name="dates" string="Dates">
+                            <field
+                                name="sign_date"
+                                attrs="{'readonly': ['|', ('is_direct_claim', '=', False), ('state', '!=', 'draft')], 'required': [('is_direct_claim', '=', True), ('state', '=', 'draft')]}"
+                            />
+                            <field
+                                name="verify_date"
+                                string="Verification Date"
+                                widget="date"
+                            />
+                            <field
+                                name="rector_approve_date"
+                                string="Request Approved On"
+                                widget="date"
                             />
                         </group>
                     </group>

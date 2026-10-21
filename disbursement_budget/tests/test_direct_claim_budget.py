@@ -56,6 +56,7 @@ class TestDirectClaimBudget(BudgetLedgerCommon):
                 "partner_type_id": self.partner.partner_type_id.id,
                 "is_direct_claim": True,
                 "memo_number": "อว 7201/1",
+                "sign_date": "2026-10-01",
                 "account_fiscal_year_id": self.fy.id,
                 "budget_account_id": self.account.id,
                 "line_ids": [
@@ -113,6 +114,21 @@ class TestDirectClaimBudget(BudgetLedgerCommon):
         self.assertEqual(move.state, "cancel")
         self.assertEqual(dr.budget_consumed_amount, 0.0)
         self.assertEqual(self._available(), 100_000)
+
+    def test_direct_claim_may_draw_a_reservation(self):
+        """A reservation is optional on a direct claim: linked, it is
+        consumed through it like any request, not directly."""
+        self._appropriate(100_000)
+        commitment = self._reserve(50_000)
+        dr = self._claim(30_000)
+        dr.budget_commitment_id = commitment
+        self._to_rector(dr)
+        # Which path consumes is the point here, not the approver's rights
+        # (the reservation path reads the commitment under the OU rules).
+        dr.action_approve()
+        self.assertFalse(dr.budget_direct_move_id)
+        self.assertTrue(commitment._has_budget_event(dr, "consume"))
+        self.assertEqual(commitment.available_to_obligate, 20_000)
 
     def test_submit_blocked_when_pool_short(self):
         self._appropriate(10_000)
