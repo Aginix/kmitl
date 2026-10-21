@@ -7,7 +7,7 @@
     "maintainers": ["nopparuts"],
     "license": "LGPL-3",
     "category": "",
-    "depends": ["base", "mail", "hr"],
+    "depends": ["mail", "hr"],
     "data": [
         "views/office_order_views.xml",
         "views/ir_attachment.xml",
