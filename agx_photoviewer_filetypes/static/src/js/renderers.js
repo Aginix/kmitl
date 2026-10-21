@@ -13,9 +13,11 @@ const PDFJS_VIEWER = "/web/static/lib/pdfjs/web/viewer.html?file=";
 const MAX_SHEET_ROWS = 5000;
 const SLIDE_WIDTH = 960;
 
+// A link's mimetype is guessed from its name, it has no file to render.
 const matchFile = (mimetypes, extensions) => (attachment) =>
-    mimetypes.includes(attachment.mimetype) ||
-    extensions.includes(getExtension(attachment));
+    attachment.type !== "url" &&
+    (mimetypes.includes(attachment.mimetype) ||
+        extensions.includes(getExtension(attachment)));
 
 async function fetchArrayBuffer(attachment) {
     const response = await fetch(getUrl(attachment));

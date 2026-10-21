@@ -6,15 +6,16 @@ import {registerPatch} from "@mail/model/model_core";
 
 /**
  * Whether the photo viewer takes over `attachment` from the native mail
- * viewer: every stored file, except links, files of a channel (which
- * needs a route we do not use) and files the native viewer previews but
- * no renderer handles (e.g. text, or PDF without agx_photoviewer_filetypes).
+ * viewer: every stored file, except links no renderer handles (see
+ * agx_photoviewer_links), files of a channel (which needs a route we do not
+ * use) and files the native viewer previews but no renderer handles (e.g.
+ * text, or PDF without agx_photoviewer_filetypes).
  */
 function isOpenable(attachment) {
     return Boolean(
         attachment &&
             !attachment.isUploading &&
-            attachment.type !== "url" &&
+            (attachment.type !== "url" || getRenderer(attachment)) &&
             (attachment.accessToken ||
                 attachment.originThread?.model !== "mail.channel") &&
             (isImage(attachment) ||
@@ -23,7 +24,7 @@ function isOpenable(attachment) {
     );
 }
 
-function openInPhotoViewer(attachmentList, attachment) {
+function openInPhotoViewer(attachmentList, attachment, env) {
     if (!isOpenable(attachment)) {
         return false;
     }
@@ -32,10 +33,13 @@ function openInPhotoViewer(attachmentList, attachment) {
         name: record.displayName || "",
         mimetype: record.mimetype,
         accessToken: record.accessToken,
+        type: record.type,
+        url: record.url,
     });
     openPhotoViewer(
         attachmentList.attachments.filter(isOpenable).map(toPlain),
-        toPlain(attachment)
+        toPlain(attachment),
+        env
     );
     return true;
 }
@@ -61,7 +65,7 @@ registerPatch({
                 isEventHandled(ev, "AttachmentImage.onClickUnlink");
             if (
                 !isActionClick &&
-                openInPhotoViewer(this.attachmentList, this.attachment)
+                openInPhotoViewer(this.attachmentList, this.attachment, this.env)
             ) {
                 return;
             }
@@ -74,7 +78,7 @@ registerPatch({
     name: "AttachmentCard",
     recordMethods: {
         onClickImage() {
-            if (openInPhotoViewer(this.attachmentList, this.attachment)) {
+            if (openInPhotoViewer(this.attachmentList, this.attachment, this.env)) {
                 return;
             }
             this._super(...arguments);
