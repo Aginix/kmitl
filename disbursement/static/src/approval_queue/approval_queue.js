@@ -3,7 +3,7 @@
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
-import { Component, useState, onWillStart } from "@odoo/owl";
+import { Component, markup, useState, onWillStart } from "@odoo/owl";
 import { MultiRecordSelect } from "./multi_record_select";
 
 const DR_FIELDS = [
@@ -140,6 +140,10 @@ export class ApprovalQueue extends Component {
             DR_FIELDS,
             { order: "date desc, id desc" }
         );
+        // note is an Html field: render it, don't escape it.
+        for (const dr of this.state.requests) {
+            dr.note = dr.note && markup(dr.note);
+        }
         const ids = this.state.requests.map((dr) => dr.id);
         this.state.selectedIds = this.state.selectedIds.filter((id) =>
             ids.includes(id)

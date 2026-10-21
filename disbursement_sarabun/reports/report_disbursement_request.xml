@@ -134,7 +134,7 @@
         <div class="row" t-if="o.note">
             <div class="col">
                 <strong>หมายเหตุ:</strong>
-                <span class="ms-2" t-out="o.note"/>
+                <div t-out="o.note"/>
             </div>
         </div>
     </template>

@@ -137,7 +137,7 @@ class DisbursementRequest(models.Model):
         states=READONLY_STATES,
     )
 
-    note = fields.Text(
+    note = fields.Html(
         string="Note",
         states=READONLY_STATES,
     )
