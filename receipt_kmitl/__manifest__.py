@@ -2,7 +2,7 @@
 
 {
     "name": "Receipt KMITL",
-    "version": "16.0.1.2.1",
+    "version": "16.0.1.3.0",
     "category": "KMITL/Accounting",
     "license": "AGPL-3",
     "author": "KMITL",
@@ -11,6 +11,7 @@
         "account",
         "mail",
         "account_analytic_kmitl",
+        "account_kmitl",
         "accounting_kmitl",
         "l10n_th_amount_to_text",
     ],
@@ -19,6 +20,8 @@
         "security/ir.model.access.csv",
         "data/partner_walkin_data.xml",
         "data/mail_activity_data.xml",
+        "data/product_category.xml",
+        "data/product_template_revenue.xml",
         "wizard/receipt_remittance_reject_view.xml",
         "views/payment_method_views.xml",
         "views/receipt_kmitl_views.xml",
