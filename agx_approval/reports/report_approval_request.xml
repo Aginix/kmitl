@@ -69,13 +69,15 @@
 
     <template id="report_approval_request_budget">
         <table class="table table-bordered border table-sm budget">
-            <tbody>
+            <thead>
                 <tr class="o_field_budget_commitment_id">
-                    <td>เลขที่ใบจองงบประมาณ</td>
-                    <td>
+                    <th class="fw-normal text-start align-top">เลขที่ใบจองงบประมาณ</th>
+                    <th class="fw-normal text-start align-top">
                         <span t-field="o.budget_commitment_id" />
-                    </td>
+                    </th>
                 </tr>
+            </thead>
+            <tbody>
                 <tr class="o_field_budget_account_id">
                     <td>รหัสงบประมาณค่าใช้จ่าย</td>
                     <td>
@@ -152,6 +154,18 @@
          numbers always match the reserved commitment / disbursement. Expects `o`
          (an approval.request) in context. -->
     <template id="report_approval_request_body">
+        <!-- Bootstrap's `.table > :not(:first-child)` paints a 2px solid
+             separator between thead and tbody, which reads heavier than the
+             surrounding 1px cell borders. Flatten it so every line in both
+             tables renders at the same intensity. Scope the rule to
+             `.table-bordered` so the Sarabun header layout's unbordered
+             tables aren't picked up. Lives inside the body so it travels
+             with the fragment under the Sarabun layout too. -->
+        <style>
+            .table-bordered > :not(:first-child) {
+                border-top-width: 1px !important;
+            }
+        </style>
         <!-- Budget Details -->
         <div class="my-4" />
         <p>รายละเอียดงบประมาณ</p>
@@ -178,7 +192,7 @@
                     <tr>
                         <td class="text-center" t-out="row_no" />
                         <td t-out="line.product_id.name" />
-                        <td t-out="line.description" />
+                        <td t-out="line.description or '-'" />
                         <td class="text-end" t-out="'{0:,.2f}'.format(line.total_amount)" />
                     </tr>
                     <t t-set="row_no" t-value="row_no + 1" />
@@ -214,7 +228,7 @@
                         <tr>
                             <td class="text-center" t-out="p_no" />
                             <td t-out="participant.partner_id.name" />
-                            <td t-out="participant.description" />
+                            <td t-out="participant.description or '-'" />
                         </tr>
                         <t t-set="p_no" t-value="p_no + 1" />
                     </t>
@@ -254,7 +268,7 @@
                             <tr>
                                 <td class="text-center" t-out="global_no" />
                                 <td t-out="alloc.product_id.name" />
-                                <td t-out="alloc.description" />
+                                <td t-out="alloc.description or '-'" />
                                 <td class="text-center" t-out="alloc.payment_type_label()" />
                                 <td class="text-end" t-out="'{0:,.2f}'.format(alloc.amount)" />
                             </tr>
