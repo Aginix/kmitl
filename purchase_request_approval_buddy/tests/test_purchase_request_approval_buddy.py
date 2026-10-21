@@ -1,3 +1,5 @@
+from datetime import date
+
 from odoo.tests.common import TransactionCase, new_test_user, tagged
 
 
@@ -7,6 +9,17 @@ class TestPurchaseRequestApprovalBuddy(TransactionCase):
     def setUpClass(cls):
         super().setUpClass()
         env = cls.env
+        # Leaving draft mints the พจ.1 number, which needs a fiscal year.
+        cls.fiscal_year = env["account.fiscal.year"].search([], limit=1) or env[
+            "account.fiscal.year"
+        ].create(
+            {
+                "name": "FY-TEST-PA-BUDDY",
+                "date_from": date(2025, 10, 1),
+                "date_to": date(2026, 9, 30),
+                "company_id": env.company.id,
+            }
+        )
         Plan = env["account.analytic.plan"]
         plan = Plan.search([("code", "=", "departments")], limit=1) or Plan.create(
             {"name": "Departments", "code": "departments"}
@@ -51,6 +64,7 @@ class TestPurchaseRequestApprovalBuddy(TransactionCase):
                 "title": "Test PR",
                 "requested_by": self.env.ref("base.user_admin").id,
                 "requesting_department_id": unit.id if unit else False,
+                "account_fiscal_year_id": self.fiscal_year.id,
             }
         )
 

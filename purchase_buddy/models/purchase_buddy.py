@@ -76,14 +76,21 @@ class PurchaseBuddy(models.Model):
     @api.model
     def _get_buddy_users(self, record):
         """Return the active buddies whose rows match ``record``, ordered by
-        ``sequence`` (primary first)."""
-        rows = self.sudo().search(
-            [
-                ("active", "=", True),
-                ("user_id.active", "=", True),
-                ("model_id.model", "=", record._name),
-            ]
-        )
+        ``sequence`` (primary first). Rows of another company, and users
+        who have since left the Buddy group, are ignored."""
+        domain = [
+            ("active", "=", True),
+            ("user_id.active", "=", True),
+            (
+                "user_id.groups_id",
+                "in",
+                self.env.ref("purchase_buddy.group_purchase_buddy").ids,
+            ),
+            ("model_id.model", "=", record._name),
+        ]
+        if "company_id" in record._fields and record.company_id:
+            domain.append(("company_id", "=", record.company_id.id))
+        rows = self.sudo().search(domain)
         record = record.sudo()
         rows = rows.filtered(
             lambda r: record.filtered_domain(r._resolve_hierarchy(r._get_domain()))
