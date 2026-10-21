@@ -42,10 +42,10 @@ budget's Department; the issuing ส่วนงาน of the หนังสื
 employee department).
 
 **Assigned Officer**: The procurement officer (เจ้าหน้าที่พัสดุ) responsible for
-handling a document's work. Stored in the `assigned_to` field. A PA has no officer of
-its own — it derives from its parent PR's officer. _Avoid_: Responsible (that's the PR
-creator, `user_id`), Buyer (PO `user_id`), Approver (the PA manager who signs off, a
-different role), Purchase Representative.
+handling a document's work. No longer modelled on the PR: the PR's `assigned_to` is the
+**Designated Verifier** ([ADR-0011](docs/adr/0011-pr-assigned-to-is-designated-verifier.md)).
+_Avoid_: Responsible (that's the PR creator, `user_id`), Buyer (PO `user_id`), Approver
+(the PA manager who signs off, a different role), Purchase Representative.
 
 **ผู้ตรวจสอบ พ.1 (Verifier)**: The ธุรการ who checks a submitted PR at `to_verify`. They
 enter its รหัสงบประมาณ and dimensions, and either press ตรวจสอบ to pass it to the budget
@@ -54,12 +54,30 @@ to fix a mistake, as long as nothing is reserved yet. They do not reserve money.
 [ADR-0010](docs/adr/0010-pr-split-verify-and-budget-commit-direct-entry.md). _Avoid_:
 ผู้อนุมัติ (that is the หัวหน้าส่วนงาน signing through Sarabun); Assigned Officer.
 
+**ผู้ยืนยันตรวจสอบ (Designated Verifier)**: The one **ผู้ตรวจสอบ พ.1** the requester names
+on a PR, from the PR's own Operating Unit. They receive the PR's Todo whenever it enters
+`to_verify`. Naming them routes the work but does not restrict it: any Verifier may still
+press ตรวจสอบ or ตีกลับ. The Todo counts as done only when the named person verifies.
+Anyone in the PR's workflow may rename them until the PR ends. See
+[ADR-0011](docs/adr/0011-pr-assigned-to-is-designated-verifier.md). _Avoid_: Assigned
+Officer; ผู้ตรวจสอบ alone (that is the whole group, and `verified_by` is who actually
+pressed ตรวจสอบ).
+
 **ผู้จองงบประมาณ พ.1 (Budget Committer)**: The holder of the PR-specific budget-commit
 duty at `to_verify_budget`. They may still correct the code and dimensions, then either
 press Reserve (which checks completeness and availability and creates the ใบจองงบประมาณ)
 or ตีกลับ the PR one step to `to_verify`. This is a separate, independent duty from the
-Verifier. _Avoid_: the generic role จองงบประมาณ, which reserves คำขออนุมัติ but no
-longer a พ.1.
+Verifier. The PR names one of them as its **ผู้ยืนยันงบประมาณ**. _Avoid_: the generic
+role จองงบประมาณ, which reserves คำขออนุมัติ but no longer a พ.1.
+
+**ผู้ยืนยันงบประมาณ (Designated Budget Committer)**: The one **ผู้จองงบประมาณ พ.1** named on
+a PR, from the PR's own Operating Unit. They may be named from `draft` and must be named by
+the time ตรวจสอบ is pressed. They alone receive the PR's reserve Todo while it waits at
+`to_verify_budget`. Naming them routes the work but does not restrict it: any Budget
+Committer may still Reserve or ตีกลับ. See
+[ADR-0012](docs/adr/0012-pr-designated-budget-committer.md). _Avoid_: ผู้อนุมัติงบประมาณ
+(ผู้อนุมัติ is the หัวหน้าส่วนงาน); `budget_committed_by` (who actually reserved);
+agx_approval's ผู้ยืนยันงบประมาณ, which is a whole group there, not one named person.
 
 **God Mode (PA edit while `to_approve` / `approved`)**: An elevated, narrow edit surface
 on the พจ.1 (PA) while the record is in state `to_approve` or `approved` (never
