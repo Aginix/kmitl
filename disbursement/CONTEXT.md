@@ -17,8 +17,9 @@ _Avoid_: Payment (that is the downstream document), Voucher.
 The partner a request line pays. Payees exist only on the lines — the request
 itself has no partner — and each needs a bank account before the request is
 submitted, unless it is paid in cash (an exception manager then lets it through).
-A requester whose payee has no account adds one from the draft request itself;
-they may only add an account, never change or remove an existing one.
+A requester manages a payee's accounts from the draft request itself — adds
+one or corrects one, never removes one (`disbursement_partner_bank`); every
+change is logged on the payee's chatter with its old and new values.
 _Avoid_: Partner of the request, Vendor (only some payees are vendors).
 
 **Payee type** (ประเภทผู้รับเงิน):

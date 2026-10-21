@@ -1,0 +1,117 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* disbursement_partner_bank
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: disbursement_partner_bank
+#: code:addons/disbursement_partner_bank/models/disbursement_request.py:0
+#: code:addons/disbursement_partner_bank/wizards/disbursement_partner_bank_wizard.py:0
+msgid "Bank accounts can only be managed on a draft request."
+msgstr "จัดการบัญชีธนาคารได้เฉพาะใบขอเบิกสถานะร่างเท่านั้น"
+
+#. module: disbursement_partner_bank
+#: code:addons/disbursement_partner_bank/models/disbursement_request.py:0
+#: model_terms:ir.ui.view,arch_db:disbursement_partner_bank.view_disbursement_request_form
+#: model_terms:ir.ui.view,arch_db:disbursement_partner_bank.disbursement_partner_bank_wizard_form
+#: model:ir.model,name:disbursement_partner_bank.model_disbursement_partner_bank_wizard
+msgid "Payee Bank Accounts"
+msgstr "บัญชีธนาคารผู้รับเงิน"
+
+#. module: disbursement_partner_bank
+#: model:ir.model,name:disbursement_partner_bank.model_disbursement_partner_bank_wizard_line
+msgid "Payee Bank Account"
+msgstr "บัญชีธนาคารผู้รับเงิน"
+
+#. module: disbursement_partner_bank
+#: code:addons/disbursement_partner_bank/wizards/disbursement_partner_bank_wizard.py:0
+#, python-format
+msgid "%s is not a payee of this request."
+msgstr "%s ไม่ใช่ผู้รับเงินของใบขอเบิกนี้"
+
+#. module: disbursement_partner_bank
+#: code:addons/disbursement_partner_bank/wizards/disbursement_partner_bank_wizard.py:0
+#, python-format
+msgid "Choose the bank of the new account %s."
+msgstr "กรุณาเลือกธนาคารของบัญชีใหม่ %s"
+
+#. module: disbursement_partner_bank
+#: code:addons/disbursement_partner_bank/wizards/disbursement_partner_bank_wizard.py:0
+#, python-format
+msgid "edited %s"
+msgstr "แก้ไข %s"
+
+#. module: disbursement_partner_bank
+#: code:addons/disbursement_partner_bank/wizards/disbursement_partner_bank_wizard.py:0
+#, python-format
+msgid "added %s"
+msgstr "เพิ่ม %s"
+
+#. module: disbursement_partner_bank
+#: code:addons/disbursement_partner_bank/wizards/disbursement_partner_bank_wizard.py:0
+msgid "Payee bank accounts changed:"
+msgstr "เปลี่ยนแปลงบัญชีธนาคารผู้รับเงิน:"
+
+#. module: disbursement_partner_bank
+#: model_terms:ir.ui.view,arch_db:disbursement_partner_bank.disbursement_partner_bank_wizard_form
+msgid "Correct an account in place or add a new one; accounts are never deleted here."
+msgstr "แก้ไขบัญชีเดิมหรือเพิ่มบัญชีใหม่ได้ทันที (ลบบัญชีจากหน้านี้ไม่ได้)"
+
+#. module: disbursement_partner_bank
+#: model_terms:ir.ui.view,arch_db:disbursement_partner_bank.disbursement_partner_bank_wizard_form
+msgid "Save"
+msgstr "บันทึก"
+
+#. module: disbursement_partner_bank
+#: model_terms:ir.ui.view,arch_db:disbursement_partner_bank.disbursement_partner_bank_wizard_form
+msgid "Cancel"
+msgstr "ยกเลิก"
+
+#. module: disbursement_partner_bank
+#: model_terms:ir.ui.view,arch_db:disbursement_partner_bank.view_disbursement_request_form
+#: model:ir.model.fields,field_description:disbursement_partner_bank.field_disbursement_partner_bank_wizard__line_ids
+msgid "Bank Accounts"
+msgstr "บัญชีธนาคาร"
+
+#. module: disbursement_partner_bank
+#: model:ir.model.fields,field_description:disbursement_partner_bank.field_disbursement_partner_bank_wizard__request_id
+msgid "Disbursement Request"
+msgstr "ใบขอเบิก"
+
+#. module: disbursement_partner_bank
+#: model:ir.model.fields,field_description:disbursement_partner_bank.field_disbursement_partner_bank_wizard__payee_ids
+msgid "Payees"
+msgstr "ผู้รับเงิน"
+
+#. module: disbursement_partner_bank
+#: model:ir.model.fields,field_description:disbursement_partner_bank.field_disbursement_partner_bank_wizard_line__partner_id
+msgid "Payee"
+msgstr "ผู้รับเงิน"
+
+#. module: disbursement_partner_bank
+#: model:ir.model.fields,field_description:disbursement_partner_bank.field_disbursement_partner_bank_wizard_line__bank_account_id
+msgid "Bank Account"
+msgstr "บัญชีธนาคาร"
+
+#. module: disbursement_partner_bank
+#: model:ir.model.fields,field_description:disbursement_partner_bank.field_disbursement_partner_bank_wizard_line__bank_id
+msgid "Bank"
+msgstr "ธนาคาร"
+
+#. module: disbursement_partner_bank
+#: model:ir.model.fields,field_description:disbursement_partner_bank.field_disbursement_partner_bank_wizard_line__acc_number
+msgid "Account Number"
+msgstr "เลขที่บัญชี"
+
+#. module: disbursement_partner_bank
+#: model:ir.model.fields,field_description:disbursement_partner_bank.field_disbursement_partner_bank_wizard_line__acc_holder_name
+msgid "Account Holder Name"
+msgstr "ชื่อบัญชี"

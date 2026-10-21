@@ -201,13 +201,6 @@
                     </p>
                     <field name="exceptions_summary" />
                     <button
-                        name="action_open_partner_bank_wizard"
-                        type="object"
-                        class="btn-secondary me-2"
-                        string="Add Payee Bank Accounts"
-                        attrs="{'invisible': [('state', '!=', 'draft')]}"
-                    />
-                    <button
                         name="action_ignore_exceptions"
                         type="object"
                         class="btn-danger"
@@ -393,13 +386,6 @@
                                          to add a missing bank account. -->
                                     <field name="partner_id" required="1" />
                                     <field name="partner_bank_id" optional="show" />
-                                    <button
-                                        name="action_add_partner_bank"
-                                        type="object"
-                                        icon="fa-university"
-                                        title="Add Bank Account"
-                                        attrs="{'invisible': ['|', ('partner_bank_id', '!=', False), ('parent.state', '!=', 'draft')]}"
-                                    />
                                     <field name="product_id" />
                                     <!-- Kept loaded: the product onchange fills the
                                          description and the quantity defaults to 1. -->

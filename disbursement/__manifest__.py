@@ -30,7 +30,6 @@
         "wizards/disbursement_exception_confirm.xml",
         "wizards/return_request_wizard_views.xml",
         "wizards/disbursement_reject_wizard_views.xml",
-        "wizards/disbursement_partner_bank_wizard_views.xml",
         "views/disbursement_request_views.xml",
         "views/disbursement_approval_queue_views.xml",
         "views/disbursement_return_views.xml",

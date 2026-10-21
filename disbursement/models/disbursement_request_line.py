@@ -249,13 +249,6 @@ class DisbursementRequestLine(models.Model):
             )
 
     # -------------------------------------------------------------------------
-    # Bank account
-    # -------------------------------------------------------------------------
-    def action_add_partner_bank(self):
-        self.ensure_one()
-        return self.request_id.action_open_partner_bank_wizard(self)
-
-    # -------------------------------------------------------------------------
     # Exception methods
     # -------------------------------------------------------------------------
     def _get_main_records(self):

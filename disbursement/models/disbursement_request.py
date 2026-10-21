@@ -589,37 +589,6 @@ class DisbursementRequest(models.Model):
         if lines:
             lines.write({"tax_ids": [(5, 0, 0)], "wht_tax_id": False})
 
-    # -------------------------------------------------------------------------
-    # Payee bank accounts
-    # -------------------------------------------------------------------------
-    def action_open_partner_bank_wizard(self, lines=None):
-        """Add the missing bank accounts of this draft request's payees."""
-        self.ensure_one()
-        if self.state != "draft":
-            raise UserError(_("Bank accounts can only be added to a draft request."))
-        lines = (lines or self.line_ids).filtered(
-            lambda l: l.partner_id and not l.partner_bank_id
-        )
-        if not lines:
-            raise UserError(_("Every payee already has a bank account."))
-        # One row per payee: the account is added to the partner, and every
-        # line of that payee picks it up. Prefilled through defaults — the rows'
-        # bank and number are required, so they cannot be created empty.
-        return {
-            "type": "ir.actions.act_window",
-            "name": _("Add Bank Accounts"),
-            "res_model": "disbursement.partner.bank.wizard",
-            "view_mode": "form",
-            "target": "new",
-            "context": {
-                "default_request_id": self.id,
-                "default_line_ids": [
-                    (0, 0, {"partner_id": partner.id})
-                    for partner in lines.partner_id
-                ],
-            },
-        }
-
     @api.model
     def _get_payee_type(self, partner):
         """The type a request paying ``partner`` must carry — for bridges that

@@ -220,7 +220,6 @@ msgstr "วันที่ตัดงบ"
 
 #. module: disbursement
 #: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
-#: model_terms:ir.ui.view,arch_db:disbursement.disbursement_partner_bank_wizard_form
 msgid "Cancel"
 msgstr "ยกเลิก"
 
@@ -1759,7 +1758,6 @@ msgstr "เปิด"
 #. module: disbursement
 #. odoo-javascript
 #: code:addons/disbursement/static/src/approval_queue/approval_queue.js:0
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_partner_bank_wizard_line__partner_id
 msgid "Payee"
 msgstr "ผู้รับเงิน"
 
@@ -1900,7 +1898,6 @@ msgstr "ประเภทผู้รับเงิน"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__payee_display
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_partner_bank_wizard__line_ids
 msgid "Payees"
 msgstr "ผู้รับเงิน"
 
@@ -1946,75 +1943,6 @@ msgstr "ลักษณะประเภทผู้รับเงิน"
 #: code:addons/disbursement/models/disbursement_request.py:0
 msgid "A request paid to a company must be taxable."
 msgstr "ใบขอเบิกที่จ่ายให้บริษัทต้องมีภาษี"
-
-#. module: disbursement
-#: code:addons/disbursement/models/disbursement_request.py:0
-#: code:addons/disbursement/wizards/disbursement_partner_bank_wizard.py:0
-msgid "Bank accounts can only be added to a draft request."
-msgstr "เพิ่มบัญชีธนาคารได้เฉพาะใบขอเบิกสถานะร่างเท่านั้น"
-
-#. module: disbursement
-#: code:addons/disbursement/models/disbursement_request.py:0
-msgid "Every payee already has a bank account."
-msgstr "ผู้รับเงินทุกรายมีบัญชีธนาคารแล้ว"
-
-#. module: disbursement
-#: code:addons/disbursement/models/disbursement_request.py:0
-#: model_terms:ir.ui.view,arch_db:disbursement.disbursement_partner_bank_wizard_form
-msgid "Add Bank Accounts"
-msgstr "เพิ่มบัญชีธนาคาร"
-
-#. module: disbursement
-#: code:addons/disbursement/wizards/disbursement_partner_bank_wizard.py:0
-#, python-format
-msgid "%s is not a payee of this request."
-msgstr "%s ไม่ใช่ผู้รับเงินของใบขอเบิกนี้"
-
-#. module: disbursement
-#: code:addons/disbursement/wizards/disbursement_partner_bank_wizard.py:0
-msgid "Bank accounts added for payees:"
-msgstr "เพิ่มบัญชีธนาคารให้ผู้รับเงิน:"
-
-#. module: disbursement
-#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
-#: model:ir.model,name:disbursement.model_disbursement_partner_bank_wizard
-msgid "Add Payee Bank Accounts"
-msgstr "เพิ่มบัญชีธนาคารผู้รับเงิน"
-
-#. module: disbursement
-#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
-msgid "Add Bank Account"
-msgstr "เพิ่มบัญชีธนาคาร"
-
-#. module: disbursement
-#: model:ir.model,name:disbursement.model_disbursement_partner_bank_wizard_line
-msgid "Add Payee Bank Account"
-msgstr "เพิ่มบัญชีธนาคารผู้รับเงิน"
-
-#. module: disbursement
-#: model_terms:ir.ui.view,arch_db:disbursement.disbursement_partner_bank_wizard_form
-msgid "The account is added to the payee and filled in on the request's lines. Existing accounts are not changed."
-msgstr "บัญชีจะถูกเพิ่มให้ผู้รับเงินและเติมลงในรายการของใบขอเบิกนี้ โดยไม่แก้ไขบัญชีเดิม"
-
-#. module: disbursement
-#: model_terms:ir.ui.view,arch_db:disbursement.disbursement_partner_bank_wizard_form
-msgid "Add"
-msgstr "เพิ่ม"
-
-#. module: disbursement
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_partner_bank_wizard_line__bank_id
-msgid "Bank"
-msgstr "ธนาคาร"
-
-#. module: disbursement
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_partner_bank_wizard_line__acc_number
-msgid "Account Number"
-msgstr "เลขที่บัญชี"
-
-#. module: disbursement
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_partner_bank_wizard_line__acc_holder_name
-msgid "Account Holder Name"
-msgstr "ชื่อบัญชี"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__sign_date
