@@ -71,11 +71,6 @@
                     <field name="state" widget="statusbar" statusbar_visible="draft,to_verify,to_send,sent,in_progress,complete" />
                 </header>
                 <sheet>
-                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}" />
-                    <widget name="web_ribbon" title="Cancelled" bg_color="bg-black" attrs="{'invisible': [('state', '!=', 'cancel')]}" />
-                    <widget name="web_ribbon" title="ถูกตีกลับ" bg_color="bg-warning" attrs="{'invisible': [('state', '!=', 'returned')]}" />
-                    <widget name="web_ribbon" title="ถูกปฏิเสธ" bg_color="bg-danger" attrs="{'invisible': [('state', '!=', 'rejected')]}" />
-                    <widget name="web_ribbon" title="Completed" bg_color="bg-success" attrs="{'invisible': [('state', '!=', 'complete')]}" />
                     <field name="is_editable" invisible="1" />
                     <field name="budget_target_locked" invisible="1" />
                     <div class="oe_button_box" name="button_box" groups="base.group_user">
@@ -104,6 +99,11 @@
                             <field name="budget_move_line_count" widget="statinfo" string="Budget Move" />
                         </button>
                     </div>
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}" />
+                    <widget name="web_ribbon" title="Cancelled" bg_color="bg-black" attrs="{'invisible': [('state', '!=', 'cancel')]}" />
+                    <widget name="web_ribbon" title="ถูกตีกลับ" bg_color="bg-warning" attrs="{'invisible': [('state', '!=', 'returned')]}" />
+                    <widget name="web_ribbon" title="ถูกปฏิเสธ" bg_color="bg-danger" attrs="{'invisible': [('state', '!=', 'rejected')]}" />
+                    <widget name="web_ribbon" title="Completed" bg_color="bg-success" attrs="{'invisible': [('state', '!=', 'complete')]}" />
                     <div class="oe_title">
                         <label for="name"/>
                         <h2>
