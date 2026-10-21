@@ -255,7 +255,6 @@
                                 attrs="{'readonly': ['|', ('partner_type_company_type', '=', 'company'), ('state', '!=', 'draft')]}"
                                 force_save="1"
                             />
-                            <field name="note" />
                         </group>
                         <group
                             id="budget"
@@ -356,6 +355,11 @@
                         </group>
                     </group>
 
+                    <!-- Rich text: full width, not squeezed into a column. -->
+                    <group name="description" string="Description">
+                        <field name="note" nolabel="1" colspan="2" />
+                    </group>
+
                     <group
                         name="attachment"
                         string="Attachment for Disbursement Request"
@@ -407,7 +411,10 @@
                                         readonly="1"
                                         optional="hide"
                                     />
-                                    <field name="price_subtotal" />
+                                    <field
+                                        name="price_subtotal"
+                                        attrs="{'column_invisible': [('parent.has_tax', '=', False)]}"
+                                    />
                                     <field
                                         name="price_tax"
                                         optional="show"

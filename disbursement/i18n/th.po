@@ -1275,6 +1275,7 @@ msgstr "สำรองจ่าย"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__note
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
 msgid "Description"
 msgstr "รายละเอียด"
 

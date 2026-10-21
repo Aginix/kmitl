@@ -668,12 +668,9 @@ class DisbursementRequest(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
-        """Override create to generate the sequence number.
-
-        The DR name follows the pattern DR/<fy>/<padding> (e.g. DR/69/0001),
-        mirroring the per-fiscal-year scheme that purchase_request_sequence_kmitl
-        uses. A dedicated ir.sequence is created on first use per fiscal year.
-        """
+        """Default the fiscal year. The number is not drawn here but on submit
+        (``_assign_number``): a draft stays "/" so abandoned drafts leave no
+        gaps in the DR/<fy>/ sequence."""
         Company = self.env["res.company"]
         for vals in vals_list:
             date = fields.Date.to_date(
@@ -685,13 +682,6 @@ class DisbursementRequest(models.Model):
             if not vals.get("account_fiscal_year_id"):
                 fy = self._default_fiscal_year(date, company)
                 vals["account_fiscal_year_id"] = fy.id if fy else False
-            if vals.get("name") and vals["name"] != "/":
-                continue
-
-            vals["name"] = self._next_number(
-                self.env["account.fiscal.year"].browse(vals["account_fiscal_year_id"]),
-                date,
-            )
 
         records = super().create(vals_list)
         records._clear_untaxed_lines()
@@ -709,6 +699,13 @@ class DisbursementRequest(models.Model):
                 if rec.name.startswith("DR/") and not rec.name.startswith(prefix):
                     rec.name = rec._next_number(rec.account_fiscal_year_id, rec.date)
         return res
+
+    def _assign_number(self):
+        """Draw the DR/<fy>/<nnnn> number on first submit, mirroring the
+        per-fiscal-year scheme of purchase_request_sequence_kmitl. A request
+        reset to draft keeps its number."""
+        for rec in self.filtered(lambda r: not r.name or r.name == "/"):
+            rec.name = rec._next_number(rec.account_fiscal_year_id, rec.date)
 
     @api.model
     def _number_prefix(self, fiscal_year, date):
@@ -815,6 +812,7 @@ class DisbursementRequest(models.Model):
                 )
             if record.detect_exceptions() and not record.ignore_exception:
                 return record._popup_exceptions()
+            record._assign_number()
             record.state = "submitted"
         return True
 
