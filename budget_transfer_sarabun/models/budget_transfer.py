@@ -163,11 +163,13 @@ class BudgetTransfer(models.Model):
             # before the letter goes back out (the line policies are checked
             # at ยืนยัน, not as constraints).
             self._validate_transfer_data()
-            # ...and refresh the enclosed แบบ งปม.303 so it reflects the
-            # revision (a render failure blocks the send rather than letting a
-            # stale form go out).
-            self._attach_transfer_pdf_enclosure(document)
         if self.state in ("submitted", "returned"):
+            # Refresh the enclosed แบบ งปม.303 so it reflects any revision —
+            # also from ``submitted``, which a returned transfer reaches again
+            # via Reset to Draft + ยืนยัน while its old หนังสือ stays live (a
+            # render failure blocks the send rather than letting a stale form
+            # go out).
+            self._attach_transfer_pdf_enclosure(document)
             self.state = "sent"
         return super()._on_sarabun_circulating(document)
 
