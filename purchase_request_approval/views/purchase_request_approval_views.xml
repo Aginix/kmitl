@@ -217,7 +217,7 @@
                             <field name="procurement_mode" widget="radio" readonly="1"/>
                             <field
                                 name="partner_id"
-                                attrs="{'readonly': [('is_editable', '=', False)]}"
+                                attrs="{'readonly': [('is_editable', '=', False)], 'invisible': [('payment_type', '!=', 'direct')]}"
                                 options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"
                             />
                             <field
