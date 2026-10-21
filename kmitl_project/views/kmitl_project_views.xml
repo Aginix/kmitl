@@ -472,12 +472,25 @@
         </field>
     </record>
 
+    <record id="view_kmitl_project_pivot" model="ir.ui.view">
+        <field name="name">kmitl.project.pivot</field>
+        <field name="model">kmitl.project</field>
+        <field name="arch" type="xml">
+            <pivot string="KMITL Project" sample="1">
+                <field name="department_analytic_id" type="row"/>
+                <field name="account_fiscal_year_id" type="col"/>
+                <field name="budget_estimate" type="measure"/>
+                <field name="budget_amount" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
     <!-- Action kmitl.project -->
     <record id="action_kmitl_project_all" model="ir.actions.act_window">
         <field name="name">KMITL Project</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">kmitl.project</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">tree,form,pivot</field>
         <field name="domain">[]</field>
         <field name="context">{}</field>
         <field name="help" type="html">
