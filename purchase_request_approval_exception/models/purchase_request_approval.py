@@ -47,4 +47,7 @@ class PurchaseRequestApproval(models.Model):
 
     def purchase_request_approval_check_partner_required(self):
         # base.exception (by_method): return the records that FAIL the rule.
-        return self.filtered(lambda r: not r.partner_id)
+        # Advance / Prepaid จ่ายล่วงหน้า ยังไม่ต้องมี Vendor ตอนส่งเข้าสารบรรณ.
+        return self.filtered(
+            lambda r: not r.partner_id and r.payment_type not in ("advance", "prepaid")
+        )
