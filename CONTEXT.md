@@ -41,11 +41,25 @@ the Operating Unit); a bare "department"; assuming it must equal or sit under th
 budget's Department; the issuing ส่วนงาน of the หนังสือ (that is the requester's own
 employee department).
 
-**Assigned Officer**: The procurement officer (เจ้าหน้าที่พัสดุ) responsible for
-handling a document's work. No longer modelled on the PR: the PR's `assigned_to` is the
-**Designated Verifier** ([ADR-0011](docs/adr/0011-pr-assigned-to-is-designated-verifier.md)).
-_Avoid_: Responsible (that's the PR creator, `user_id`), Buyer (PO `user_id`), Approver
-(the PA manager who signs off, a different role), Purchase Representative.
+**Assigned Officer (เจ้าหน้าที่ผู้รับผิดชอบ)**: The procurement officer (เจ้าหน้าที่พัสดุ)
+responsible for handling a document's work. Lives on the **PA**. Its default comes
+**only** from the **Purchase Buddy** settings: the first Buddy, by order, whose row
+covers the PA. Nothing is carried over from the PR. While the PA is still open, a pick
+that the settings no longer cover is replaced, and a covered pick is kept. Anyone in
+the Purchase Buddy group may be picked by hand. It may stay empty when no row covers the
+PA. Naming the officer routes nothing and grants nothing: no Todo, no extra access. See
+[ADR-0013](docs/adr/0013-pa-assigned-to-is-assigned-officer-from-purchase-buddy.md).
+Not on the PR: the PR's `assigned_to` is the **Designated Verifier**
+([ADR-0011](docs/adr/0011-pr-assigned-to-is-designated-verifier.md)). _Avoid_:
+Responsible (that's the PR creator, `user_id`), Buyer (PO `user_id`), Approver (the
+หัวหน้าส่วนงาน signing through Sarabun), Purchase Representative.
+
+**Purchase Buddy (เจ้าหน้าที่ Buddy พัสดุ)**: A central procurement officer and the
+documents they look after. Each coverage row names one Buddy, one document type and a
+condition, usually "ส่วนงานผู้ขอ is under ส่วนงาน X". One document may be covered by
+several Buddies, and one Buddy may hold several rows. Coverage only supplies the
+**Assigned Officer** default. It is not authority and not access. _Avoid_: Budget Buddy
+(budget's own group and list, kept separate on purpose); Designated Verifier.
 
 **ผู้ตรวจสอบ พ.1 (Verifier)**: The ธุรการ who checks a submitted PR at `to_verify`. They
 enter its รหัสงบประมาณ and dimensions, and either press ตรวจสอบ to pass it to the budget
@@ -86,9 +100,9 @@ on the พจ.1 (PA) while the record is in state `to_approve` or `approved` (ne
 (`partner_id`, `procurement_type_id`, `procurement_method_id`, `payment_type`,
 `vat_included`, `tax_id`) and three line fields (`product_qty`, `price_unit`, `name`) on
 `purchase.request.approval.line` **without transitioning the PA state**. Adding/removing
-lines is not allowed; `product_id`, `product_uom_id`, `title`, `description`, and audit
-columns (`verified_by`, `approved_by`, `date_verified`, `date_approved`, `assigned_to`)
-stay locked. An `@api.constrains` rail enforces
+lines is not allowed; `product_id`, `product_uom_id`, `title`, `description`, the
+Assigned Officer (`assigned_to`) and audit columns (`verified_by`, `approved_by`,
+`date_verified`, `date_approved`) stay locked. An `@api.constrains` rail enforces
 `sum(open PAs.amount_total) ≤ budget_commitment.amount` at the elevated states —
 covering the KMITL Project shared-commitment case — paired with a mirror rail in the
 base module that owns `draft` state for all users (see **Budget-cap rail (พจ.1)** below

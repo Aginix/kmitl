@@ -1,6 +1,8 @@
 # Assigned Officer is modeled on `assigned_to`; PA derives it from its parent PR
 
 > **Superseded for `purchase.request`** by [ADR-0011](0011-pr-assigned-to-is-designated-verifier.md): the PR's `assigned_to` is now the Designated Verifier (ผู้ยืนยันตรวจสอบ). The assignment module this ADR describes (`procurement_assignment_kmitl`) was removed.
+>
+> **Superseded for `purchase.request.approval`** by [ADR-0013](0013-pa-assigned-to-is-assigned-officer-from-purchase-buddy.md): the PA's `assigned_to` is no longer the Approver; it is the Assigned Officer (เจ้าหน้าที่ผู้รับผิดชอบ), defaulted from the Purchase Buddy settings.
 
 We give each procurement document one **Assigned Officer** (เจ้าหน้าที่ผู้รับผิดชอบ) so officers can
 find their own work. We store it on the existing `assigned_to` field — repurposing PR's hidden OCA

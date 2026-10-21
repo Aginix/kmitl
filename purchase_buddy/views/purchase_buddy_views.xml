@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="view_purchase_buddy_tree" model="ir.ui.view">
+        <field name="name">purchase.buddy.tree</field>
+        <field name="model">purchase.buddy</field>
+        <field name="arch" type="xml">
+            <tree string="Buddy ดูแลหน่วยงาน">
+                <field name="sequence" widget="handle" />
+                <field name="user_id" options="{'no_create': True}" />
+                <field name="model_id" />
+                <field name="domain" optional="show" />
+                <field name="company_id" groups="base.group_multi_company" />
+                <field name="active" widget="boolean_toggle" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_purchase_buddy_form" model="ir.ui.view">
+        <field name="name">purchase.buddy.form</field>
+        <field name="model">purchase.buddy</field>
+        <field name="arch" type="xml">
+            <form string="Buddy ดูแลหน่วยงาน">
+                <sheet>
+                    <group>
+                        <field name="user_id" options="{'no_create': True}" />
+                        <field name="model_id" options="{'no_create': True}" />
+                        <field name="model_name" invisible="1" />
+                        <field name="sequence" />
+                        <field name="company_id" groups="base.group_multi_company" />
+                        <field name="active" />
+                    </group>
+                    <field
+                        name="domain"
+                        widget="domain"
+                        options="{'model': 'model_name', 'in_dialog': True}"
+                        attrs="{'invisible': [('model_name', '=', False)]}"
+                    />
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_purchase_buddy_search" model="ir.ui.view">
+        <field name="name">purchase.buddy.search</field>
+        <field name="model">purchase.buddy</field>
+        <field name="arch" type="xml">
+            <search string="Buddy ดูแลหน่วยงาน">
+                <field name="user_id" />
+                <field name="model_id" />
+                <separator />
+                <filter
+                    name="inactive"
+                    string="Archived"
+                    domain="[('active', '=', False)]"
+                />
+                <group expand="0" string="Group By">
+                    <filter
+                        name="group_by_user"
+                        string="Buddy"
+                        context="{'group_by': 'user_id'}"
+                    />
+                    <filter
+                        name="group_by_model"
+                        string="Document Model"
+                        context="{'group_by': 'model_id'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_purchase_buddy" model="ir.actions.act_window">
+        <field name="name">Buddy ดูแลหน่วยงาน</field>
+        <field name="res_model">purchase.buddy</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p
+                class="o_view_nocontent_smiling_face"
+            >กำหนดเจ้าหน้าที่ Buddy ที่ดูแลแต่ละส่วนงาน</p>
+            <p>ระบุเอกสารและเงื่อนไข Buddy จะดูแลเฉพาะเอกสารที่ตรงเงื่อนไขนั้น
+                เช่น ส่วนงานผู้ขอ "อยู่ภายใต้" (child_of) ส่วนงานหลัก เพื่อดูแลส่วนงานย่อยทั้งหมดด้วย
+                Buddy คนแรกตามลำดับที่ตรงเงื่อนไข จะเป็นค่าเริ่มต้นของเจ้าหน้าที่ผู้รับผิดชอบบนเอกสาร</p>
+        </field>
+    </record>
+
+    <menuitem
+        id="menu_purchase_buddy"
+        name="Buddy ดูแลหน่วยงาน"
+        parent="purchase.menu_purchase_config"
+        action="action_purchase_buddy"
+        sequence="60"
+    />
+
+</odoo>
