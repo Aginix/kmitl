@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- Category-less on purpose: shown as an independent checkbox on the
+         user form, orthogonal to the Purchase Request role dropdown. -->
+    <record id="group_purchase_buddy" model="res.groups">
+        <field name="name">เจ้าหน้าที่ Buddy (พัสดุ)</field>
+        <field
+            name="implied_ids"
+            eval="[(4, ref('purchase_request.group_purchase_request_user'))]"
+        />
+        <field
+            name="comment"
+        >Central procurement officer (เจ้าหน้าที่พัสดุ) who looks after the procurement documents of the units (ส่วนงาน) they cover.</field>
+    </record>
+
+</odoo>
