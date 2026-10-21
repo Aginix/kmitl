@@ -180,14 +180,23 @@ class TestPayeeBankWizard(TwoApproverCommon):
         )
         self.assertFalse(dr.line_ids.partner_bank_id)
         action = dr.action_open_partner_bank_wizard()
+        # The form opens prefilled with one row per payee; the user then types
+        # the bank and number before saving.
+        rows = [vals for _cmd, _id, vals in action["context"]["default_line_ids"]]
+        self.assertEqual(rows, [{"partner_id": self.no_bank.id}])
         wizard = (
             self.env[action["res_model"]]
             .with_user(self.requester)
-            .with_context(action["context"])
-            .create({})
+            .create(
+                {
+                    "request_id": dr.id,
+                    "line_ids": [
+                        (0, 0, dict(row, bank_id=self.bank.id, acc_number="9876543210"))
+                        for row in rows
+                    ],
+                }
+            )
         )
-        self.assertEqual(wizard.line_ids.partner_id, self.no_bank)
-        wizard.line_ids.write({"bank_id": self.bank.id, "acc_number": "9876543210"})
         wizard.action_apply()
         self.assertEqual(dr.line_ids.partner_bank_id.acc_number, "9876543210")
         self.assertEqual(self.no_bank.bank_ids, dr.line_ids.partner_bank_id)
