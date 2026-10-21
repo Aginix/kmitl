@@ -20,7 +20,6 @@ msgstr "จัดการบัญชีธนาคารได้เฉพา
 
 #. module: disbursement_partner_bank
 #: code:addons/disbursement_partner_bank/models/disbursement_request.py:0
-#: model_terms:ir.ui.view,arch_db:disbursement_partner_bank.view_disbursement_request_form
 #: model_terms:ir.ui.view,arch_db:disbursement_partner_bank.disbursement_partner_bank_wizard_form
 #: model:ir.model,name:disbursement_partner_bank.model_disbursement_partner_bank_wizard
 msgid "Payee Bank Accounts"
