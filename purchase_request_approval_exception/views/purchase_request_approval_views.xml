@@ -17,12 +17,17 @@
             name="context"
         >{'active_test': False, 'default_model': 'purchase.request.approval'}</field>
     </record>
+    <!-- The sibling OCA menus (purchase_exception.menu_purchase_test,
+         purchase_request_exception.menu_purchase_request_test) ship without an
+         explicit sequence, so they take Odoo's default (10). Place this one at
+         11 to sit right after that cluster — well before Guarantee (20),
+         procurement type (51), etc. -->
     <menuitem
         id="menu_purchase_request_approval_exception_rule"
-        name="Purchase Request Approval Exceptions"
+        name="Purchase Request Approval Exception Rules"
         action="action_purchase_request_approval_exception_rule_tree"
         parent="purchase.menu_purchase_config"
-        sequence="50"
+        sequence="11"
         groups="base_exception.group_exception_rule_manager"
     />
 
