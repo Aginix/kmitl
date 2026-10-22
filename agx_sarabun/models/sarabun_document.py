@@ -551,10 +551,10 @@ class SarabunDocument(models.Model):
     def _compute_can_withdraw(self):
         is_manager = self.env.user.has_group("agx_sarabun.group_sarabun_manager")
         for record in self:
-            record.can_withdraw = (
-                record.state == "circulating"
-                and not record.has_signed
-                and (record.sender_user_id == self.env.user or is_manager)
+            is_sender = record.sender_user_id == self.env.user or is_manager
+            record.can_withdraw = is_sender and (
+                (record.state == "circulating" and not record.has_signed)
+                or record.state == "completed"
             )
 
     @api.depends(
@@ -867,16 +867,18 @@ class SarabunDocument(models.Model):
 
     def _check_sender_withdraw_allowed(self):
         """Shared guard for the sender's ดึงกลับ / ยกเลิกการส่ง (ADR-0006): only
-        while circulating, by the sender (or a manager), and before any
-        ลงนาม-อนุมัติ step has occurred."""
+        while circulating (before any ลงนาม-อนุมัติ) or completed, by the sender
+        (or a manager)."""
         self.ensure_one()
-        if self.state != "circulating":
-            raise UserError(_("Only a circulating document can be withdrawn."))
+        if self.state not in ("circulating", "completed"):
+            raise UserError(
+                _("Only a circulating or completed document can be withdrawn.")
+            )
         if self.sender_user_id != self.env.user and not self.env.user.has_group(
             "agx_sarabun.group_sarabun_manager"
         ):
             raise UserError(_("Only the sender may withdraw this document."))
-        if self.has_signed:
+        if self.state == "circulating" and self.has_signed:
             raise UserError(
                 _(
                     "This document has been signed; withdrawal now requires issuing a "
@@ -885,11 +887,12 @@ class SarabunDocument(models.Model):
             )
 
     def action_pull_back(self, reason=None):
-        """ดึงกลับ (recall) — circulating → returned, KEEPING the register number
-        (ADR-0006). Archives the current attempt as history, then recreates the SAME
-        เส้นทาง verbatim (see ``_recreate_chain_verbatim``): the sender only wants to
-        pull back and re-send on the identical route, so the approval path must not be
-        wiped or re-seeded from the template. Fires ``_on_sarabun_recalled``."""
+        """ดึงกลับ (recall) — circulating/completed → returned, KEEPING the register
+        number (ADR-0006). Archives the current attempt as history, then recreates
+        the SAME เส้นทาง verbatim (see ``_recreate_chain_verbatim``): the sender only
+        wants to pull back and re-send on the identical route, so the approval path
+        must not be wiped or re-seeded from the template.
+        Fires ``_on_sarabun_recalled``."""
         self.ensure_one()
         self._check_sender_withdraw_allowed()
         if not reason:
@@ -902,9 +905,9 @@ class SarabunDocument(models.Model):
         return True
 
     def action_recall(self, reason=None):
-        """ยกเลิกการส่ง (cancel-send) — circulating → cancelled (terminal); the
-        register number is VOIDED as a permanent gap (ADR-0006). Sender-only,
-        before any ลงนาม-อนุมัติ step."""
+        """ยกเลิกการส่ง (cancel-send) — circulating/completed → cancelled (terminal);
+        the register number is VOIDED as a permanent gap (ADR-0006). Sender-only
+        (before any ลงนาม-อนุมัติ when circulating)."""
         self.ensure_one()
         self._check_sender_withdraw_allowed()
         if not reason:
