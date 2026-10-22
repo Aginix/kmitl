@@ -2,6 +2,7 @@
     "name": "HR Employee Role",
     "version": "16.0.1.1.0",
     "summary": "HR Employee Role",
+    "description": "HR Employee Role",
     "author": "Aginix Technologies",
     "website": "",
     "license": "LGPL-3",

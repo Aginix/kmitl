@@ -9,6 +9,7 @@
     "installable": True,
     "application": False,
     "summary": "Allows storing information about employee decoration in KMITL",
+    "description": "Allows storing information about employee decoration in KMITL",
     "depends": ["hr", "office_order", "hr_employee_security_role"],
     "assets": {
         "web.assets_backend": [
