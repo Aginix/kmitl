@@ -1,0 +1,2 @@
+id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
+access_purchase_invoice_plan_viewer,purchase invoice plan viewer,purchase_invoice_plan.model_purchase_invoice_plan,purchase_viewer.group_purchase_viewer,1,0,0,0
