@@ -20,26 +20,10 @@ class ApprovalRequestParticipant(models.Model):
         ondelete="cascade",
     )
 
-    participant_type = fields.Selection(
-        [("internal", "บุคลากรภายใน"), ("external", "บุคคลภายนอก")],
-        required=True,
-        default="external",
-    )
-
     partner_id = fields.Many2one(
         "res.partner",
         string="ชื่อ",
         required=True,
-        domain="[('partner_type_id', 'in', allowed_partner_type_ids),"
-        " ('partner_type_id.is_internal', '=', participant_type == 'internal')]"
-        " if allowed_partner_type_ids else"
-        " [('partner_type_id.is_internal', '=', participant_type == 'internal')]",
-    )
-
-    allowed_partner_type_ids = fields.Many2many(
-        "res.partner.type",
-        string="Allowed Partner Types",
-        related="request_id.category_id.allowed_partner_type_ids",
     )
 
     partner_type_id = fields.Many2one(
@@ -47,6 +31,42 @@ class ApprovalRequestParticipant(models.Model):
         string="ประเภท",
         related="partner_id.partner_type_id",
     )
+
+    _PARTNER_TYPE_XMLIDS = {
+        "partner_type_kmitl.partner_type_employee": "employee",
+        "partner_type_kmitl.partner_type_student": "student",
+        "partner_type_kmitl.partner_type_company": "company",
+        "partner_type_kmitl.partner_type_other": "other",
+    }
+
+    participant_type = fields.Selection(
+        [
+            ("employee", "บุคลากรภายใน"),
+            ("student", "นักศึกษา"),
+            ("company", "บริษัท"),
+            ("other", "อื่น ๆ"),
+        ],
+        compute="_compute_participant_type",
+        store=True,
+    )
+
+    @api.model
+    def _get_partner_type_code_map(self):
+        """Map res.partner.type id → participant_type code."""
+        result = {}
+        for xmlid, code in self._PARTNER_TYPE_XMLIDS.items():
+            rec = self.env.ref(xmlid, raise_if_not_found=False)
+            if rec:
+                result[rec.id] = code
+        return result
+
+    @api.depends("partner_id.partner_type_id")
+    def _compute_participant_type(self):
+        type_map = self._get_partner_type_code_map()
+        for rec in self:
+            rec.participant_type = type_map.get(
+                rec.partner_id.partner_type_id.id, False
+            )
 
     phone = fields.Char(string="โทรศัพท์", related="partner_id.phone")
 
