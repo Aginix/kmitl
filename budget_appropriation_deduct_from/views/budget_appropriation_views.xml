@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- Inherit budget.appropriation form: add field in deduct_line_ids tree -->
+    <record id="view_budget_appropriation_form_deduct_from" model="ir.ui.view">
+        <field name="name">view.budget.appropriation.form.deduct.from</field>
+        <field name="model">budget.appropriation</field>
+        <field name="inherit_id" ref="budget_appropriation.view_budget_appropriation_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='deduct_line_ids']/tree/field[@name='deduct_analytic_id']" position="after">
+                <field name="deduct_from_account_id"
+                    options='{"no_create": True, "no_create_edit": True, "no_open": True}'
+                    required="1" />
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Inherit budget.appropriation.line form -->
+    <record id="view_budget_appropriation_line_form_deduct_from" model="ir.ui.view">
+        <field name="name">view.budget.appropriation.line.form.deduct.from</field>
+        <field name="model">budget.appropriation.line</field>
+        <field name="inherit_id" ref="budget_appropriation.view_budget_appropriation_line_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='deduct_analytic_id']" position="after">
+                <field name="deduct_from_account_id"
+                    options='{"no_create": True, "no_create_edit": True, "no_open": True}'
+                    attrs="{'invisible': [('deduct', '!=', True)], 'required': [('deduct', '=', True)]}" />
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Inherit deduct overview tree -->
+    <record id="view_budget_appropriation_line_deduct_tree_deduct_from" model="ir.ui.view">
+        <field name="name">view.budget.appropriation.line.deduct.tree.deduct.from</field>
+        <field name="model">budget.appropriation.line</field>
+        <field name="inherit_id" ref="budget_appropriation.view_budget_appropriation_line_deduct_tree" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='deduct_analytic_id']" position="after">
+                <field name="deduct_from_account_id" string="หักจากรหัสงบประมาณ" />
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
