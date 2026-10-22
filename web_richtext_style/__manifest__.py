@@ -11,8 +11,10 @@
     "auto_install": False,
     "installable": True,
     "assets": {
-        "web.assets_backend": [
+        "web_editor.assets_wysiwyg": [
             "web_richtext_style/static/src/xml/font_size_pt.xml",
+        ],
+        "web.assets_backend": [
             "web_richtext_style/static/src/js/wysiwyg_patch.js",
             "web_richtext_style/static/src/js/html_field_patch.js",
             "web_richtext_style/static/src/js/font_size_pt_patch.esm.js",
