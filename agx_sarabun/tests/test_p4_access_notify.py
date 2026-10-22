@@ -26,6 +26,17 @@ class TestP4Access(SarabunCommon):
         doc = self._make_doc(sender=self.user_a)
         self.assertFalse(self._can_read(doc, self.user_b))
 
+    def test_follower_can_read_but_not_write(self):
+        """A follower reads the หนังสือ and its Route, but cannot edit it."""
+        doc = self._make_doc(sender=self.user_a)
+        self._add_step(doc, order=10, verb="sign_approve", user=self.user_a)
+        doc.message_subscribe(partner_ids=self.user_b.partner_id.ids)
+        self.assertTrue(self._can_read(doc, self.user_b))
+        as_b = doc.with_user(self.user_b)
+        self.assertTrue(as_b.routing_step_ids)
+        with self.assertRaises(AccessError):
+            as_b.write({"subject": "x"})
+
     def test_waiting_step_grants_no_visibility(self):
         """A pre-seeded but still-waiting step grants NO read."""
         doc = self._make_doc(sender=self.user_a)
