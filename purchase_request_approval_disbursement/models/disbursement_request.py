@@ -1,33 +1,23 @@
 # -*- coding: utf-8 -*-
-from odoo import _, api, fields, models
+from odoo import _, fields, models
 from odoo.exceptions import UserError
 
 
 class DisbursementRequest(models.Model):
     _inherit = "disbursement.request"
 
-    reference = fields.Reference(
-        selection_add=[("purchase.request.approval", "Purchase Request Approval")],
-        ondelete={"purchase.request.approval": "set null"},
-    )
-
     purchase_request_approval_id = fields.Many2one(
         comodel_name="purchase.request.approval",
         string="Purchase Request Approval",
-        compute="_compute_reference_fields",
-        store=True,
+        readonly=True,
+        copy=False,
         index=True,
         tracking=True,
+        ondelete="set null",
     )
 
-    @api.depends("reference")
-    def _compute_reference_fields(self):
-        super()._compute_reference_fields()
-        for rec in self:
-            if rec.reference and rec.reference._name == "purchase.request.approval":
-                rec.purchase_request_approval_id = rec.reference
-            else:
-                rec.purchase_request_approval_id = False
+    def _get_source_document(self):
+        return self.purchase_request_approval_id or super()._get_source_document()
 
     def _get_return_source(self):
         """A PRA-linked DR returns to its purchase request approval for

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_sarabun_document_form_signed_capacity" model="ir.ui.view">
+        <field name="name">sarabun.document.form.signed.capacity</field>
+        <field name="model">sarabun.document</field>
+        <field name="inherit_id" ref="agx_sarabun.view_sarabun_document_form" />
+        <field name="arch" type="xml">
+            <!-- Row button: correct the ตำแหน่ง a signed บุคลากร step was signed in
+                 (ADR-0019) — works on a read-only Route too (circulating or
+                 completed). -->
+            <xpath
+                expr="//field[@name='routing_step_ids']/tree/field[@name='position_id']"
+                position="after"
+            >
+                <field name="can_edit_signed_capacity" invisible="1" />
+                <button
+                    name="action_open_signed_capacity_wizard"
+                    type="object"
+                    icon="fa-pencil"
+                    title="แก้ไขตำแหน่งที่ลงนาม"
+                    groups="agx_sarabun_route_edit.group_sarabun_route_edit"
+                    attrs="{'invisible': [('can_edit_signed_capacity', '=', False)]}"
+                />
+            </xpath>
+            <!-- Both modules installed: lock the capacity of an acted step in the
+                 step dialog too (agx_sarabun_route_edit leaves position_id to the
+                 attrs agx_sarabun_person_capacity owns — repeated here with the
+                 route-edit readonly rule; a signed step's capacity is corrected via
+                 the row button). -->
+            <xpath
+                expr="//field[@name='routing_step_ids']/form/group[@name='step_who']/field[@name='position_id']"
+                position="attributes"
+            >
+                <attribute
+                    name="attrs"
+                >{'invisible': ['|', '|', ('target_mode', 'not in', ('position', 'person')), ('is_originator', '=', True), '&amp;', ('target_mode', '=', 'person'), ('employee_id', '=', False)], 'required': [('target_mode', '=', 'position')], 'readonly': ['|', ('is_originator', '=', True), ('state', 'in', ('done', 'skipped'))]}</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>

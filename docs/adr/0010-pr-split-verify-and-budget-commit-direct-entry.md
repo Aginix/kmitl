@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted
+Accepted. Reserve-Todo routing changed by [ADR-0012](0012-pr-designated-budget-committer.md).
 
 ## Context
 

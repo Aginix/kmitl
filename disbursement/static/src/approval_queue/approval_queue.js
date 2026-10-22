@@ -113,6 +113,10 @@ export class ApprovalQueue extends Component {
 
     get domain() {
         const domain = [["approval_state", "=", this.stage.state]];
+        // The fiscal year is chosen on the request, not derived from its date.
+        if (this.state.fiscalYearId) {
+            domain.push(["account_fiscal_year_id", "=", this.state.fiscalYearId]);
+        }
         if (this.state.dateFrom) {
             domain.push(["date", ">=", this.state.dateFrom]);
         }
@@ -150,9 +154,6 @@ export class ApprovalQueue extends Component {
     onFiscalYearChange(ev) {
         const id = parseInt(ev.target.value) || false;
         this.state.fiscalYearId = id;
-        const fy = this.fiscalYears.find((f) => f.id === id);
-        this.state.dateFrom = fy ? fy.date_from : false;
-        this.state.dateTo = fy ? fy.date_to : false;
         this.loadRequests();
     }
 

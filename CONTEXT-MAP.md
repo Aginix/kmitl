@@ -128,11 +128,22 @@ upfront.
   deposit account, alongside the 6D dimensions on every line.
 - [HR Employee Academic Standing Thailand](./hr_employee_academic_standing_thailand/CONTEXT.md)
   — the Thai academic **คำนำหน้าชื่อทางวิชาการ** (title prefix) computed onto every
-  employee from academic standing, rank, profession, rank nobility and education level.
+  employee from academic standing, rank, profession, rank nobility and a hand-set **ดร.
+  flag** (`title_dr`).
   - **`hr_employee_name_search`** ([glossary](./hr_employee_name_search/CONTEXT.md)) —
     add-on that makes an employee findable by that title prefix or by full name (title +
     name), via a hidden search index, in both the employee picker and the Employees
     list.
+  - **`hr_employee_academic_standing_thailand_dr_auto`** (no own glossary — part of this
+    context): add-on that overrides the ดร. flag with a stored compute, deriving it
+    automatically from the employee's highest education level (ปริญญาเอก → ดร.) and
+    re-coupling to `hr_employee_education_history`; the flag becomes read-only while it
+    is installed (base ADR-0001).
+- [HR Employee Name Title KMITL](./hr_employee_name_title_kmitl/CONTEXT.md) — composes
+  the stored, locked `hr.employee.name` as "work-track title prefix + name parts":
+  academic staff get their [[hr-employee-academic-standing-thailand]] title, everyone
+  else their personal honorific (`prefix_id`), glued to the
+  [[kmitl-hr-employee-full-name]] first/middle/last name.
 
 ## Relationships
 

@@ -21,15 +21,39 @@ class DisbursementRequest(models.Model):
     def _sarabun_submit_guard(self):
         return self.state == "submitted"
 
+    # -- Sarabun outcome → disbursement state (mirrors kmitl_project_sarabun) --
+    def _on_sarabun_circulating(self, document):
+        # ส่งใหม่หลังตีกลับ/ดึงกลับ: resync กลับเป็น ``submitted`` ให้สอดคล้องกับ
+        # หนังสือที่กลับมาเดินใหม่ (เผื่อ user re-send จากหนังสือโดยไม่ได้กด Submit
+        # เอง) เพื่อให้ ``_on_sarabun_completed → action_sign`` เจอ state ที่ถูกต้อง.
+        if self.state == "draft":
+            self.state = "submitted"
+        return super()._on_sarabun_circulating(document)
+
     def _on_sarabun_completed(self, document):
         """Head approved in Sarabun → advance to signed."""
         if self.state == "submitted":
             self.action_sign()
         return super()._on_sarabun_completed(document)
 
-    # ตีกลับ / ปฏิเสธ / ยกเลิกการส่ง are audit-only for a disbursement (it stays
-    # ``submitted`` and a resubmission spawns a new document) — the mixin's default
-    # callbacks post the actor + reason note, so no override is needed.
+    def _on_sarabun_returned(self, document, step):
+        # ตีกลับ / ดึงกลับ: เปิดคำขอให้แก้ไข (กลับ ``draft``) — งบคงอยู่ (action_draft
+        # ไม่คืน commitment) แก้แล้วเปิดหนังสือ (returned) กด ส่งใหม่ หนังสือจะพาคำขอ
+        # กลับเข้า ``submitted`` ผ่าน ``_on_sarabun_circulating``.
+        if self.state == "submitted":
+            self.action_draft()
+        return super()._on_sarabun_returned(document, step)
+
+    def _on_sarabun_rejected(self, document, step):
+        # ปฏิเสธ (terminal): ยกเลิกคำขอ — budget commitment จะถูกคืนผ่าน ``_on_cancel``
+        # ของ disbursement_budget.
+        if self.state != "cancel":
+            self.action_cancel()
+        return super()._on_sarabun_rejected(document, step)
+
+    # ยกเลิกการส่ง: หนังสือฉบับนั้นถูกยกเลิก แต่คำขอยังอยู่ที่ ``submitted`` พร้อม
+    # สร้างหนังสือใหม่ (ปุ่ม "Submit to Sarabun" กลับมาเพราะ sarabun_has_live_document
+    # เป็น False) — mixin default โพสต์โน้ตผู้ยกเลิก+เหตุผลพอ ไม่ต้อง override.
 
     def _get_sarabun_document_type(self):
         return self.env.ref(

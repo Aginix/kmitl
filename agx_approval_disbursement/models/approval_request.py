@@ -144,23 +144,31 @@ class ApprovalRequest(models.Model):
         borrower's สัญญายืม instead of being disbursed again (ADR-0002)."""
         return self.allocation_ids.filtered(lambda a: a.payment_type != "advance")
 
-    def _prepare_disbursement_request_vals(self):
-        """Build a single multi-partner DR from the billable actual-expense
-        allocation — one DR line per direct/prepaid row (recipient × product ×
-        actual × bank); `advance` rows are excluded. The header carries
+    def _billable_allocations_by_payee_type(self):
+        """The billable allocation rows grouped by their recipient's payee
+        type: a DR pays a single payee type, so each group becomes its own DR."""
+        DR = self.env["disbursement.request"]
+        groups = {}
+        for alloc in self._billable_allocations():
+            payee_type = DR._get_payee_type(alloc.partner_id)
+            groups[payee_type] = groups.get(payee_type, alloc.browse()) | alloc
+        return groups
+
+    def _prepare_disbursement_request_vals(self, payee_type, allocations):
+        """Build one multi-partner DR from the billable actual-expense rows of
+        a single payee type — one DR line per direct/prepaid row (recipient ×
+        product × actual × bank); `advance` rows are excluded. The header carries
         `payment_type='direct'` as an interim: the DR module does not yet support
         mixed/per-line payment types, so direct and prepaid share one DR
         (ADR-0002)."""
         return {
-            "reference": "approval.request,%d" % self.id,
             "approval_request_id": self.id,
-            "partner_type": "multi",
+            "partner_type_id": payee_type.id,
             "payment_type": "direct",
             "line_ids": [
                 Command.create(alloc._prepare_disbursement_request_line_vals())
-                for alloc in self._billable_allocations()
+                for alloc in allocations
             ],
-            "ref": self.name,
             "note": self.description,
             "budget_commitment_id": self.budget_commitment_id.id,
             "budget_account_id": self.budget_account_id.id,
@@ -195,35 +203,28 @@ class ApprovalRequest(models.Model):
             )
             return True
 
-        vals = self._prepare_disbursement_request_vals()
-        disbursement = self.env["disbursement.request"].create(vals)
-        self._copy_attachments_to_disbursement(disbursement)
-
         link = self._get_record_url()
-        disbursement.message_post(
-            body=_(
-                'This record has been created from: '
-                '<a href="%(link)s" target="_blank">%(name)s</a>',
-                link=link,
-                name=self.name,
-            ),
-            message_type="comment",
-        )
-        self.message_post(
-            body=_(
-                "Disbursement %(dr_name)s created successfully.",
-                dr_name=disbursement.name,
-            ),
-            message_type="comment",
-        )
-
-        return {
-            "type": "ir.actions.act_window",
-            "res_model": "disbursement.request",
-            "view_mode": "form",
-            "res_id": disbursement.id,
-            "target": "current",
-        }
+        for payee_type, allocations in self._billable_allocations_by_payee_type().items():
+            vals = self._prepare_disbursement_request_vals(payee_type, allocations)
+            disbursement = self.env["disbursement.request"].create(vals)
+            self._copy_attachments_to_disbursement(disbursement)
+            disbursement.message_post(
+                body=_(
+                    'This record has been created from: '
+                    '<a href="%(link)s" target="_blank">%(name)s</a>',
+                    link=link,
+                    name=self.name,
+                ),
+                message_type="comment",
+            )
+            self.message_post(
+                body=_(
+                    "Disbursement %(dr_name)s created successfully.",
+                    dr_name=disbursement.name,
+                ),
+                message_type="comment",
+            )
+        return self.action_view_disbursement_request()
 
     def action_view_disbursement_request(self):
         self.ensure_one()

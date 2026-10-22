@@ -1,6 +1,6 @@
 {
     "name": "KMITL Budget Transfer",
-    "version": "16.0.1.0.3",
+    "version": "16.0.1.1.2",
     "summary": """ Budget transfer split out of the budget core """,
     "category": "KMITL/Budgeting",
     "author": "Aginix Technologies",

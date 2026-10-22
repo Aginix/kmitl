@@ -1,22 +1,29 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <!-- Tree -->
     <record id="view_sarabun_document_tree" model="ir.ui.view">
         <field name="name">sarabun.document.tree</field>
         <field name="model">sarabun.document</field>
         <field name="arch" type="xml">
-            <tree decoration-muted="state in ('cancelled','rejected')" decoration-success="state == 'completed'">
-                <field name="name" string="เลขที่เอกสาร"/>
-                <field name="subject" string="เรื่อง"/>
-                <field name="addressee" string="เรียน/ส่งถึง"/>
-                <field name="create_date" string="วันที่สร้างเอกสาร"/>
-                <field name="date" string="วันที่เอกสาร"/>
-                <field name="type_id" optional="hide"/>
-                <field name="sender_department_id" optional="hide"/>
-                <field name="state" string="สถานะ" widget="badge"
-                       decoration-info="state == 'circulating'"
-                       decoration-success="state == 'completed'"
-                       decoration-danger="state in ('rejected','cancelled')"/>
+            <tree
+                decoration-muted="state in ('cancelled','rejected')"
+                decoration-success="state == 'completed'"
+            >
+                <field name="name" string="เลขที่เอกสาร" />
+                <field name="subject" string="เรื่อง" />
+                <field name="addressee" string="เรียน/ส่งถึง" />
+                <field name="create_date" string="วันที่สร้างเอกสาร" />
+                <field name="date" string="วันที่เอกสาร" />
+                <field name="type_id" optional="hide" />
+                <field name="sender_department_id" optional="hide" />
+                <field
+                    name="state"
+                    string="สถานะ"
+                    widget="badge"
+                    decoration-info="state == 'circulating'"
+                    decoration-success="state == 'completed'"
+                    decoration-danger="state in ('rejected','cancelled')"
+                />
             </tree>
         </field>
     </record>
@@ -28,39 +35,70 @@
         <field name="arch" type="xml">
             <form js_class="sarabun_document_form">
                 <header>
-                    <button name="action_open_send_wizard" type="object" string="Send"
-                            class="oe_highlight"
-                            attrs="{'invisible': [('state', 'not in', ('draft', 'returned'))]}"/>
-                    <button name="action_act_on_my_step" type="object"
-                            string="Act on My Step" class="oe_highlight"
-                            attrs="{'invisible': [('my_active_step_id', '=', False)]}"/>
-                    <button name="action_open_recall_wizard" type="object"
-                            string="ดึงกลับ / ยกเลิกการส่ง"
-                            attrs="{'invisible': [('can_withdraw', '=', False)]}"/>
-                    <button name="action_duplicate_to_draft" type="object"
-                            string="Duplicate to New Draft"
-                            attrs="{'invisible': [('state', '!=', 'rejected')]}"/>
-                    <!-- A draft has no inline preview → this button opens the preview
-                         dialog. Once sent, the preview is embedded inline (below the
-                         header) and Print opens the raw PDF in a new tab. -->
-                    <button name="action_open_pdf_preview" type="object"
-                            string="ดูตัวอย่างเอกสาร"
-                            attrs="{'invisible': [('state', '!=', 'draft')]}"/>
-                    <button name="action_print_report" type="object" string="พิมพ์ (Print)"
-                            attrs="{'invisible': [('state', '=', 'draft')]}"/>
-                    <field name="state" widget="statusbar"
-                           statusbar_visible="draft,circulating,completed"/>
+                    <button
+                        name="action_open_send_wizard"
+                        type="object"
+                        string="Send"
+                        class="oe_highlight"
+                        attrs="{'invisible': [('state', 'not in', ('draft', 'returned'))]}"
+                    />
+                    <button
+                        name="action_act_on_my_step"
+                        type="object"
+                        string="Act on My Step"
+                        class="oe_highlight"
+                        attrs="{'invisible': [('my_active_step_id', '=', False)]}"
+                    />
+                    <button
+                        name="action_open_recall_wizard"
+                        type="object"
+                        string="ดึงกลับ / ยกเลิกการส่ง"
+                        attrs="{'invisible': [('can_withdraw', '=', False)]}"
+                    />
+                    <button
+                        name="action_duplicate_to_draft"
+                        type="object"
+                        string="Duplicate to New Draft"
+                        attrs="{'invisible': [('state', '!=', 'rejected')]}"
+                    />
+                    <!-- Preview dialog in every state (user feedback) — an editable
+                         (draft / returned) หนังสือ has no inline preview, and even a sent
+                         one is easier to check in the dialog than via the PDF download. -->
+                    <button
+                        name="action_open_pdf_preview"
+                        type="object"
+                        string="ดูตัวอย่างเอกสาร"
+                    />
+                    <button
+                        name="action_print_report"
+                        type="object"
+                        string="พิมพ์ (Print)"
+                        attrs="{'invisible': [('state', '=', 'draft')]}"
+                    />
+                    <field
+                        name="state"
+                        widget="statusbar"
+                        statusbar_visible="draft,circulating,completed"
+                    />
                 </header>
                 <sheet>
                     <!-- ยกเลิก / ปฏิเสธ are terminal states the statusbar does not show
                          (statusbar_visible = draft,circulating,completed) — the ribbon
                          is what tells the reader the หนังสือ is dead. -->
-                    <widget name="web_ribbon" title="ยกเลิกการส่ง" bg_color="bg-danger"
-                            attrs="{'invisible': [('state', '!=', 'cancelled')]}"/>
+                    <widget
+                        name="web_ribbon"
+                        title="ยกเลิกการส่ง"
+                        bg_color="bg-danger"
+                        attrs="{'invisible': [('state', '!=', 'cancelled')]}"
+                    />
                     <div class="oe_button_box" name="button_box">
-                        <button name="action_view_origin" type="object"
-                                class="oe_stat_button" icon="fa-external-link"
-                                attrs="{'invisible': [('origin_model', '=', False)]}">
+                        <button
+                            name="action_view_origin"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-external-link"
+                            attrs="{'invisible': [('origin_model', '=', False)]}"
+                        >
                             <div class="o_stat_info">
                                 <span class="o_stat_text">Origin</span>
                             </div>
@@ -69,16 +107,21 @@
                     <!-- Document Type — topmost classification (drives register + route).
                          The first three groups (classification / ทะเบียน / header) are
                          hidden once approved (completed) so the inline PDF is the focus. -->
-                    <group name="classification"
-                           attrs="{'invisible': [('state', '=', 'completed')]}">
+                    <group
+                        name="classification"
+                        attrs="{'invisible': [('state', '=', 'completed')]}"
+                    >
                       <group>
                         <!-- Locked once set to an origin-only type: such a หนังสือ is
                              spawned with its classification and must keep it. -->
-                        <field name="type_id" widget="selection"
-                               attrs="{'readonly': ['|', ('is_editable', '=', False),
+                        <field
+                                name="type_id"
+                                widget="selection"
+                                attrs="{'readonly': ['|', ('is_editable', '=', False),
                                                     '&amp;', ('type_id', '!=', False),
                                                              ('type_allow_manual', '=', False)]}"
-                               domain="['|', ('allow_manual', '=', True), ('id', '=', type_id)]"/>
+                                domain="['|', ('allow_manual', '=', True), ('id', '=', type_id)]"
+                            />
                       </group>
                     </group>
                     <!-- Header laid out to mirror the หนังสือ (cf. report/sarabun_reports):
@@ -86,156 +129,293 @@
                          No banner headline: ที่ (name) is '/' until numbered at
                          completion (final ลงนาม/อนุมัติ — ADR-0010), so it lives as a
                          small register field like on the real document. -->
-                    <group name="registry_block"
-                           attrs="{'invisible': [('state', '=', 'completed')]}">
+                    <group
+                        name="registry_block"
+                        attrs="{'invisible': [('state', '=', 'completed')]}"
+                    >
                         <!-- readonly is set per-field: a `readonly` attrs on the <group>
                              is NOT propagated to child fields by Odoo 16 (each node's
                              modifiers are computed from its own attrs only). -->
                         <group name="unit" string="หน่วยงาน">
-                            <field name="sender_department_id" string="หน่วยงาน"
-                                   attrs="{'readonly': [('is_editable', '=', False)]}"
-                                   options="{'no_create': True, 'no_edit': True, 'no_open': True}"/>
-                            <field name="sender_suffix" string="ต่อท้ายส่วนราชการ"
-                                   attrs="{'readonly': [('is_editable', '=', False)]}"
-                                   placeholder="พิมพ์ชื่อหน่วยงานหรือเบอร์ต่อ (ถ้ามี) แล้วระบบจะแสดงข้อความต่อท้ายส่วนราชการ"/>
+                            <field
+                                name="sender_department_id"
+                                string="หน่วยงาน"
+                                attrs="{'readonly': [('is_editable', '=', False)]}"
+                                options="{'no_create': True, 'no_edit': True, 'no_open': True}"
+                            />
+                            <field
+                                name="sender_suffix"
+                                string="ต่อท้ายส่วนราชการ"
+                                attrs="{'readonly': [('is_editable', '=', False)]}"
+                                placeholder="พิมพ์ชื่อหน่วยงานหรือเบอร์ต่อ (ถ้ามี) แล้วระบบจะแสดงข้อความต่อท้ายส่วนราชการ"
+                            />
                         </group>
                         <group name="doc_meta" string="ทะเบียนหนังสือ">
-                            <field name="name" string="ที่" readonly="1"/>
-                            <field name="date" string="วันที่" readonly="1"/>
+                            <field name="name" string="ที่" readonly="1" />
+                            <field name="date" string="วันที่" readonly="1" />
                             <!-- เล่มทะเบียน — which of the unit's registers issues the
                                  number (ADR-0012). Prefilled from the unit's default;
                                  pinned at send, so read-only afterwards. -->
-                            <field name="sequence_department_ids" invisible="1"/>
-                            <field name="sequence_id" string="เล่มทะเบียน"
-                                   attrs="{'readonly': [('is_editable', '=', False)]}"
-                                   options="{'no_create': True, 'no_open': True}"/>
+                            <field name="sequence_department_ids" invisible="1" />
+                            <field
+                                name="sequence_id"
+                                string="เล่มทะเบียน"
+                                attrs="{'readonly': [('is_editable', '=', False)]}"
+                                options="{'no_create': True, 'no_open': True}"
+                            />
                             <!-- เลขที่หนังสือ sits with ที่ (same concern) — manual compose only. -->
-                            <field name="numbering_mode"
-                                   attrs="{'invisible': ['|', ('kind', '=', 'from_record'), ('state', 'not in', ('draft', 'returned'))]}"/>
-                            <field name="reserved_number_id"
-                                   attrs="{'invisible': ['|', '|', ('kind', '=', 'from_record'), ('state', 'not in', ('draft', 'returned')), ('numbering_mode', '!=', 'reserved')]}"/>
+                            <field
+                                name="numbering_mode"
+                                attrs="{'invisible': ['|', ('kind', '=', 'from_record'), ('state', 'not in', ('draft', 'returned'))]}"
+                            />
+                            <field
+                                name="reserved_number_id"
+                                attrs="{'invisible': ['|', '|', ('kind', '=', 'from_record'), ('state', 'not in', ('draft', 'returned')), ('numbering_mode', '!=', 'reserved')]}"
+                            />
                         </group>
                     </group>
-                    <group name="header"
-                           attrs="{'invisible': [('is_editable', '=', False)]}">
-                        <field name="subject" placeholder="เรื่อง..."
-                               attrs="{'readonly': [('is_editable', '=', False)]}"/>
-                        <field name="addressee_prefix_id" nolabel="1" widget="selection" required="1"
-                               attrs="{'readonly': [('is_editable', '=', False)]}"/>
+                    <group
+                        name="header"
+                        attrs="{'invisible': [('is_editable', '=', False)]}"
+                    >
+                        <field
+                            name="subject"
+                            placeholder="เรื่อง..."
+                            attrs="{'readonly': [('is_editable', '=', False)]}"
+                        />
+                        <field
+                            name="addressee_prefix_id"
+                            nolabel="1"
+                            widget="selection"
+                            required="1"
+                            attrs="{'readonly': [('is_editable', '=', False)]}"
+                        />
                         <div class="o_row">
-                            <field name="addressee" nolabel="1" placeholder="ผู้รับ / ตำแหน่ง..."
-                                   attrs="{'readonly': [('is_editable', '=', False)]}"/>
+                            <field
+                                name="addressee"
+                                nolabel="1"
+                                placeholder="ผู้รับ / ตำแหน่ง..."
+                                attrs="{'readonly': [('is_editable', '=', False)]}"
+                            />
                         </div>
                     </group>
                     <!-- ตัวอย่างเอกสาร — the official PDF embedded inline, shown once
                          the หนังสือ has been sent (a draft previews via the header
                          button instead). Placed before the เนื้อหา section. -->
-                    <widget name="sarabun_pdf_inline"
-                            attrs="{'invisible': [('is_editable', '=', True)]}"/>
+                    <widget
+                        name="sarabun_pdf_inline"
+                        attrs="{'invisible': [('is_editable', '=', True)]}"
+                    />
                     <!-- เนื้อหา — the composed body. A no-source Document always shows
                          it; a from_record one is OFF by default (its origin report is
                          the body) but the drafter can tick แนบเนื้อหา to add a covering
                          note above the origin's report. -->
-                    <label string="มีเนื้อหา" for="include_content"
-                           attrs="{'invisible': ['|', ('origin_model', '=', False), ('is_editable', '=', False)]}"/>
-                    <field name="include_content"
-                           attrs="{'invisible': ['|', ('origin_model', '=', False), ('is_editable', '=', False)], 'readonly': [('is_editable', '=', False)]}"/>
-                    <separator string="เนื้อหา (Content)"
-                               attrs="{'invisible': ['|', ('include_content', '=', False), ('is_editable', '=', False)]}"/>
-                    <field name="content" nolabel="1" class="o_sarabun_content"
-                           placeholder="พิมพ์เนื้อหาหนังสือ..."
-                           attrs="{'invisible': ['|', ('include_content', '=', False), ('is_editable', '=', False)], 'readonly': [('is_editable', '=', False)]}"/>
+                    <label
+                        string="มีเนื้อหา"
+                        for="include_content"
+                        attrs="{'invisible': ['|', ('origin_model', '=', False), ('is_editable', '=', False)]}"
+                    />
+                    <field
+                        name="include_content"
+                        attrs="{'invisible': ['|', ('origin_model', '=', False), ('is_editable', '=', False)], 'readonly': [('is_editable', '=', False)]}"
+                    />
+                    <separator
+                        string="เนื้อหา (Content)"
+                        attrs="{'invisible': ['|', ('include_content', '=', False), ('is_editable', '=', False)]}"
+                    />
+                    <field
+                        name="content"
+                        nolabel="1"
+                        class="o_sarabun_content"
+                        placeholder="พิมพ์เนื้อหาหนังสือ..."
+                        attrs="{'invisible': ['|', ('include_content', '=', False), ('is_editable', '=', False)], 'readonly': [('is_editable', '=', False)]}"
+                    />
                     <group>
-                      <field name="remark" placeholder="หมายเหตุภายใน (ไม่บังคับ)..." attrs="{'readonly': [('is_editable', '=', False)]}"/>
+                      <field
+                            name="remark"
+                            placeholder="หมายเหตุภายใน (ไม่บังคับ)..."
+                            attrs="{'readonly': [('is_editable', '=', False)]}"
+                        />
                     </group>
                     <group>
-                        <separator string="สิ่งที่ส่งมาด้วย (Enclosures)" name="enclosures"/>
-                        <field name="enclosure_attachment_ids" widget="many2many_binary" nolabel="1" colspan="2"
-                                attrs="{'readonly': [('is_editable', '=', False)]}"/>
+                        <separator
+                            string="สิ่งที่ส่งมาด้วย (Enclosures)"
+                            name="enclosures"
+                        />
+                        <field
+                            name="enclosure_attachment_ids"
+                            widget="many2many_binary"
+                            nolabel="1"
+                            colspan="2"
+                            attrs="{'readonly': [('is_editable', '=', False)]}"
+                        />
                     </group>
                     <!-- helper flags used by attrs -->
-                    <field name="kind" invisible="1"/>
-                    <field name="type_allow_manual" invisible="1"/>
-                    <field name="is_editable" invisible="1"/>
-                    <field name="has_signed" invisible="1"/>
-                    <field name="can_withdraw" invisible="1"/>
-                    <field name="my_active_step_id" invisible="1"/>
+                    <field name="kind" invisible="1" />
+                    <field name="type_allow_manual" invisible="1" />
+                    <field name="is_editable" invisible="1" />
+                    <field name="has_signed" invisible="1" />
+                    <field name="can_withdraw" invisible="1" />
+                    <field name="my_active_step_id" invisible="1" />
                     <notebook>
                         <page string="การเดินเรื่อง (Routing)" name="routing">
                             <group>
                                 <group>
-                                    <field name="route_template_id"
-                                           attrs="{'readonly': [('is_editable', '=', False)]}"/>
-                                    <button name="action_seed_route_from_template"
-                                            type="object"
-                                            string="โหลดเส้นทางจากแม่แบบ"
-                                            icon="fa-refresh"
-                                            class="btn-link"
-                                            confirm="แทนที่เส้นทางปัจจุบันทั้งหมดด้วยแม่แบบที่เลือก? (ขั้นตอนที่มีอยู่จะถูกลบ)"
-                                            colspan="2"
-                                            attrs="{'invisible': ['|', ('is_editable', '=', False), ('route_template_id', '=', False)]}" />
+                                    <field
+                                        name="route_template_id"
+                                        attrs="{'readonly': [('is_editable', '=', False)]}"
+                                    />
+                                    <button
+                                        name="action_seed_route_from_template"
+                                        type="object"
+                                        string="โหลดเส้นทางจากแม่แบบ"
+                                        icon="fa-refresh"
+                                        class="btn-link"
+                                        confirm="แทนที่เส้นทางปัจจุบันทั้งหมดด้วยแม่แบบที่เลือก? (ขั้นตอนที่มีอยู่จะถูกลบ)"
+                                        colspan="2"
+                                        attrs="{'invisible': ['|', ('is_editable', '=', False), ('route_template_id', '=', False)]}"
+                                    />
                                 </group>
                                 <group>
-                                    <field name="routing_progress" widget="progressbar"/>
-                                    <field name="pending_ack_count"/>
+                                    <field
+                                        name="routing_progress"
+                                        widget="progressbar"
+                                    />
+                                    <field name="pending_ack_count" />
                                 </group>
                             </group>
                             <!-- Add เส้นทางเอกสาร via a modal form (non-editable tree).
                                  A new step's ลำดับ auto-increments to the next free Stage
                                  via _onchange_document_default_order (survives Save & New,
                                  which strips context default_*). -->
-                            <field name="routing_step_ids"
-                                   attrs="{'readonly': [('is_editable', '=', False)]}">
-                                <tree decoration-muted="state == 'skipped'"
-                                      decoration-success="state == 'done' and disposition in ('complete','direct')"
-                                      decoration-info="state == 'active'">
-                                    <field name="is_originator" string="ผู้จัดทำ" optional="show"/>
-                                    <field name="order" string="ลำดับ"/>
-                                    <field name="verb"/>
-                                    <field name="for_info" string="CC"/>
-                                    <field name="target_mode"/>
-                                    <field name="target_name" string="เป้าหมาย"/>
-                                    <field name="state" readonly="1" widget="badge"/>
-                                    <field name="acted_by_id" readonly="1" optional="show"/>
-                                    <field name="disposition" readonly="1" optional="show"/>
+                            <field
+                                name="routing_step_ids"
+                                attrs="{'readonly': [('is_editable', '=', False)]}"
+                            >
+                                <tree
+                                    decoration-muted="state == 'skipped'"
+                                    decoration-success="state == 'done' and disposition in ('complete','direct')"
+                                    decoration-info="state == 'active'"
+                                >
+                                    <field
+                                        name="is_originator"
+                                        string="ผู้จัดทำ"
+                                        optional="show"
+                                    />
+                                    <field name="order" string="ลำดับ" />
+                                    <field name="verb" />
+                                    <field name="for_info" string="CC" />
+                                    <field name="target_mode" />
+                                    <field name="target_name" string="เป้าหมาย" />
+                                    <field name="state" readonly="1" widget="badge" />
+                                    <field
+                                        name="acted_by_id"
+                                        readonly="1"
+                                        optional="show"
+                                    />
+                                    <field
+                                        name="disposition"
+                                        readonly="1"
+                                        optional="show"
+                                    />
                                     <!-- Timeline: received / read / sent / signed / duration -->
-                                    <field name="activated_date" readonly="1" optional="show"/>
-                                    <field name="read_date" readonly="1" optional="hide"/>
-                                    <field name="sent_date" readonly="1" optional="hide"/>
-                                    <field name="acted_date" readonly="1" optional="show"/>
-                                    <field name="processing_duration" widget="float_time" readonly="1" optional="show"/>
-                                    <field name="signed_as_position_id" readonly="1" optional="hide"/>
-                                    <field name="note" readonly="1" optional="hide"/>
+                                    <field
+                                        name="activated_date"
+                                        readonly="1"
+                                        optional="show"
+                                    />
+                                    <field
+                                        name="read_date"
+                                        readonly="1"
+                                        optional="hide"
+                                    />
+                                    <field
+                                        name="sent_date"
+                                        readonly="1"
+                                        optional="hide"
+                                    />
+                                    <field
+                                        name="acted_date"
+                                        readonly="1"
+                                        optional="show"
+                                    />
+                                    <field
+                                        name="processing_duration"
+                                        widget="float_time"
+                                        readonly="1"
+                                        optional="show"
+                                    />
+                                    <field
+                                        name="signed_as_position_id"
+                                        readonly="1"
+                                        optional="hide"
+                                    />
+                                    <field name="note" readonly="1" optional="hide" />
                                 </tree>
                                 <form string="เส้นทางเอกสาร (Routing Step)">
                                     <!-- Originator (ผู้จัดทำ/ผู้ส่ง) row is locked: only the
                                          verb (การดำเนินการ) may be changed; it cannot be
                                          deleted (enforced in the model). -->
-                                    <field name="is_originator" invisible="1"/>
+                                    <field name="is_originator" invisible="1" />
                                     <group>
                                         <group name="step_what">
-                                            <field name="order" string="ลำดับ"
-                                                   attrs="{'readonly': [('is_originator', '=', True)]}"/>
+                                            <field
+                                                name="order"
+                                                string="ลำดับ"
+                                                attrs="{'readonly': [('is_originator', '=', True)]}"
+                                            />
                                             <field name="verb" widget="selection" />
                                         </group>
                                         <group>
-                                            <field name="for_info" string="สำเนาเรียน (CC)"
-                                                   attrs="{'readonly': [('is_originator', '=', True)]}"/>
+                                            <field
+                                                name="for_info"
+                                                string="สำเนาเรียน (CC)"
+                                                attrs="{'readonly': [('is_originator', '=', True)]}"
+                                            />
                                         </group>
                                     </group>
                                     <group name="step_who" col="2">
-                                        <field name="target_mode" colspan="1" widget="radio" attrs="{'readonly': [('is_originator', '=', True)]}"/>
-                                        <field name="position_id" colspan="2" attrs="{'invisible': [('target_mode', '!=', 'position')], 'required': [('target_mode', '=', 'position')], 'readonly': [('is_originator', '=', True)]}" options="{'no_create': True, 'no_edit': True, 'no_open': True}"/>
-                                        <field name="employee_id" colspan="2" attrs="{'invisible': [('target_mode', '!=', 'person')], 'required': [('target_mode', '=', 'person')], 'readonly': [('is_originator', '=', True)]}" options="{'no_create': True, 'no_edit': True, 'no_open': True}"/>
-                                        <field name="department_id" colspan="2" attrs="{'invisible': [('target_mode', '!=', 'unit')], 'required': [('target_mode', '=', 'unit')], 'readonly': [('is_originator', '=', True)]}" options="{'no_create': True, 'no_edit': True, 'no_open': True}"/>
+                                        <field
+                                            name="target_mode"
+                                            colspan="1"
+                                            widget="radio"
+                                            attrs="{'readonly': [('is_originator', '=', True)]}"
+                                        />
+                                        <field
+                                            name="position_id"
+                                            colspan="2"
+                                            attrs="{'invisible': [('target_mode', '!=', 'position')], 'required': [('target_mode', '=', 'position')], 'readonly': [('is_originator', '=', True)]}"
+                                            options="{'no_create': True, 'no_edit': True, 'no_open': True}"
+                                        />
+                                        <field
+                                            name="employee_id"
+                                            colspan="2"
+                                            attrs="{'invisible': [('target_mode', '!=', 'person')], 'required': [('target_mode', '=', 'person')], 'readonly': [('is_originator', '=', True)]}"
+                                            options="{'no_create': True, 'no_edit': True, 'no_open': True}"
+                                        />
+                                        <field
+                                            name="department_id"
+                                            colspan="2"
+                                            attrs="{'invisible': [('target_mode', '!=', 'unit')], 'required': [('target_mode', '=', 'unit')], 'readonly': [('is_originator', '=', True)]}"
+                                            options="{'no_create': True, 'no_edit': True, 'no_open': True}"
+                                        />
                                     </group>
 
-                                    <group string="ผู้ดำเนินการปัจจุบัน (Current Holders)" attrs="{'invisible': [('target_mode', '=', 'person')]}" col="4">
-                                        <field name="preview_holder_ids" nolabel="1" readonly="1" colspan="4">
+                                    <group
+                                        string="ผู้ดำเนินการปัจจุบัน (Current Holders)"
+                                        attrs="{'invisible': [('target_mode', '=', 'person')]}"
+                                        col="4"
+                                    >
+                                        <field
+                                            name="preview_holder_ids"
+                                            nolabel="1"
+                                            readonly="1"
+                                            colspan="4"
+                                        >
                                             <tree>
-                                                <field name="name"/>
-                                                <field name="work_email"/>
-                                                <field name="department_id"/>
+                                                <field name="name" />
+                                                <field name="work_email" />
+                                                <field name="department_id" />
                                             </tree>
                                         </field>
                                     </group>
@@ -244,13 +424,21 @@
                                          (all its dates are empty at compose time), so it
                                          shows only once the step has been activated —
                                          i.e. after the หนังสือ is sent. -->
-                                    <group string="ไทม์ไลน์ (Timeline)" col="2" name="timeline"
-                                           attrs="{'invisible': [('activated_date', '=', False)]}">
-                                        <field name="activated_date" readonly="1"/>
-                                        <field name="read_date" readonly="1"/>
-                                        <field name="sent_date" readonly="1"/>
-                                        <field name="acted_date" readonly="1"/>
-                                        <field name="processing_duration" widget="float_time" readonly="1"/>
+                                    <group
+                                        string="ไทม์ไลน์ (Timeline)"
+                                        col="2"
+                                        name="timeline"
+                                        attrs="{'invisible': [('activated_date', '=', False)]}"
+                                    >
+                                        <field name="activated_date" readonly="1" />
+                                        <field name="read_date" readonly="1" />
+                                        <field name="sent_date" readonly="1" />
+                                        <field name="acted_date" readonly="1" />
+                                        <field
+                                            name="processing_duration"
+                                            widget="float_time"
+                                            readonly="1"
+                                        />
                                     </group>
                                 </form>
                             </field>
@@ -260,43 +448,53 @@
                                  still archived (audit / archived_step_ids), just not
                                  shown beside the live Route. -->
                         </page>
-                        <page string="Origin" name="origin"
-                              attrs="{'invisible': [('origin_model', '=', False)]}">
+                        <page
+                            string="Origin"
+                            name="origin"
+                            attrs="{'invisible': [('origin_model', '=', False)]}"
+                        >
                             <group>
-                                <field name="origin_reference"/>
-                                <field name="origin_model" readonly="1"/>
-                                <field name="origin_res_id" readonly="1"/>
+                                <field name="origin_reference" />
+                                <field name="origin_model" readonly="1" />
+                                <field name="origin_res_id" readonly="1" />
                             </group>
                         </page>
                         <page string="ข้อมูลอื่นๆ (Other)" name="other">
                             <group>
-                                <field name="sender_user_id"/>
-                                <field name="company_id" groups="base.group_multi_company"
-                                       attrs="{'readonly': [('is_editable', '=', False)]}"/>
+                                <field name="sender_user_id" />
+                                <field
+                                    name="company_id"
+                                    groups="base.group_multi_company"
+                                    attrs="{'readonly': [('is_editable', '=', False)]}"
+                                />
                             </group>
                         </page>
                         <!-- อ้างถึง / สิ่งที่ส่งมาด้วย are shown last, after the other
                              notebook pages (feedback). -->
                         <page string="อ้างถึง (References)" name="references">
-                            <separator string="อ้างถึง — ในระบบ (prior หนังสือ)"/>
-                            <field name="reference_document_ids"
-                                   attrs="{'readonly': [('is_editable', '=', False)]}"
-                                   widget="many2many_tags"/>
-                            <separator string="อ้างถึง — นอกระบบ (free text)"/>
-                            <field name="reference_line_ids"
-                                   attrs="{'readonly': [('is_editable', '=', False)]}">
+                            <separator string="อ้างถึง — ในระบบ (prior หนังสือ)" />
+                            <field
+                                name="reference_document_ids"
+                                attrs="{'readonly': [('is_editable', '=', False)]}"
+                                widget="many2many_tags"
+                            />
+                            <separator string="อ้างถึง — นอกระบบ (free text)" />
+                            <field
+                                name="reference_line_ids"
+                                attrs="{'readonly': [('is_editable', '=', False)]}"
+                            >
                                 <tree editable="bottom">
-                                    <field name="sequence" widget="handle"/>
-                                    <field name="text"/>
+                                    <field name="sequence" widget="handle" />
+                                    <field name="text" />
                                 </tree>
                             </field>
                         </page>
                     </notebook>
                 </sheet>
                 <div class="oe_chatter">
-                    <field name="message_follower_ids"/>
-                    <field name="activity_ids"/>
-                    <field name="message_ids"/>
+                    <field name="message_follower_ids" />
+                    <field name="activity_ids" />
+                    <field name="message_ids" />
                 </div>
             </form>
         </field>
@@ -308,21 +506,49 @@
         <field name="model">sarabun.document</field>
         <field name="arch" type="xml">
             <search>
-                <field name="name"/>
-                <field name="subject"/>
-                <field name="addressee"/>
-                <field name="sender_department_id"/>
-                <field name="type_id"/>
-                <separator/>
-                <filter name="draft" string="Draft" domain="[('state', '=', 'draft')]"/>
-                <filter name="circulating" string="Circulating" domain="[('state', '=', 'circulating')]"/>
-                <filter name="completed" string="Completed" domain="[('state', '=', 'completed')]"/>
-                <separator/>
-                <filter name="my_documents" string="My Documents" domain="[('sender_user_id', '=', uid)]"/>
+                <field name="name" />
+                <field name="subject" />
+                <field name="addressee" />
+                <field name="sender_department_id" />
+                <field name="type_id" />
+                <separator />
+                <filter
+                    name="draft"
+                    string="Draft"
+                    domain="[('state', '=', 'draft')]"
+                />
+                <filter
+                    name="circulating"
+                    string="Circulating"
+                    domain="[('state', '=', 'circulating')]"
+                />
+                <filter
+                    name="completed"
+                    string="Completed"
+                    domain="[('state', '=', 'completed')]"
+                />
+                <separator />
+                <filter
+                    name="my_documents"
+                    string="My Documents"
+                    domain="[('sender_user_id', '=', uid)]"
+                />
                 <group expand="0" string="Group By">
-                    <filter name="group_state" string="Status" context="{'group_by': 'state'}"/>
-                    <filter name="group_type" string="Type" context="{'group_by': 'type_id'}"/>
-                    <filter name="group_dept" string="ส่วนงาน" context="{'group_by': 'sender_department_id'}"/>
+                    <filter
+                        name="group_state"
+                        string="Status"
+                        context="{'group_by': 'state'}"
+                    />
+                    <filter
+                        name="group_type"
+                        string="Type"
+                        context="{'group_by': 'type_id'}"
+                    />
+                    <filter
+                        name="group_dept"
+                        string="ส่วนงาน"
+                        context="{'group_by': 'sender_department_id'}"
+                    />
                 </group>
             </search>
         </field>
@@ -332,19 +558,22 @@
         <field name="name">Documents</field>
         <field name="res_model">sarabun.document</field>
         <field name="view_mode">tree,form</field>
-        <field name="search_view_id" ref="view_sarabun_document_search"/>
+        <field name="search_view_id" ref="view_sarabun_document_search" />
         <!-- Pin the standard tree explicitly. Without this, default_view() orders by
              priority,name,id and 'sarabun.document.inbox.tree' sorts before
              'sarabun.document.tree' — so the create-less inbox tree was picked here
              and the Documents list showed no Create button. -->
-        <field name="view_ids"
-               eval="[(5, 0, 0),
+        <field
+            name="view_ids"
+            eval="[(5, 0, 0),
                       (0, 0, {'view_mode': 'tree', 'view_id': ref('view_sarabun_document_tree')}),
-                      (0, 0, {'view_mode': 'form', 'view_id': ref('view_sarabun_document_form')})]"/>
+                      (0, 0, {'view_mode': 'form', 'view_id': ref('view_sarabun_document_form')})]"
+        />
         <field name="context">{'search_default_my_documents': 1}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">Create your first หนังสือ</p>
-            <p>Compose a document, then route it through the approval chain (routing engine arrives in P2).</p>
+            <p
+            >Compose a document, then route it through the approval chain (routing engine arrives in P2).</p>
         </field>
     </record>
 
@@ -353,21 +582,32 @@
         <field name="name">sarabun.document.inbox.tree</field>
         <field name="model">sarabun.document</field>
         <field name="arch" type="xml">
-            <tree create="false" decoration-bf="my_read_state == 'unread'"
-                  decoration-muted="state in ('cancelled','rejected')">
-                <field name="my_read_state" string="สถานะการอ่าน" widget="badge"
-                       decoration-danger="my_read_state == 'unread'"
-                       decoration-success="my_read_state == 'read'"
-                       decoration-warning="my_read_state == 'forwarded'"/>
-                <field name="sender_user_id" string="ผู้ส่งเอกสาร"/>
-                <field name="name" string="เลขที่เอกสาร"/>
-                <field name="subject" string="เรื่อง"/>
-                <field name="my_received_date" string="วันที่ได้รับ"/>
-                <field name="my_action_verb_id" string="เพื่อดำเนินการ"/>
-                <field name="state" string="สถานะ" widget="badge"
-                       decoration-info="state == 'circulating'"
-                       decoration-success="state == 'completed'"
-                       decoration-danger="state in ('rejected','cancelled')"/>
+            <tree
+                create="false"
+                decoration-bf="my_read_state == 'unread'"
+                decoration-muted="state in ('cancelled','rejected')"
+            >
+                <field
+                    name="my_read_state"
+                    string="สถานะการอ่าน"
+                    widget="badge"
+                    decoration-danger="my_read_state == 'unread'"
+                    decoration-success="my_read_state == 'read'"
+                    decoration-warning="my_read_state == 'forwarded'"
+                />
+                <field name="sender_user_id" string="ผู้ส่งเอกสาร" />
+                <field name="name" string="เลขที่เอกสาร" />
+                <field name="subject" string="เรื่อง" />
+                <field name="my_received_date" string="วันที่ได้รับ" />
+                <field name="my_action_verb_id" string="เพื่อดำเนินการ" />
+                <field
+                    name="state"
+                    string="สถานะ"
+                    widget="badge"
+                    decoration-info="state == 'circulating'"
+                    decoration-success="state == 'completed'"
+                    decoration-danger="state in ('rejected','cancelled')"
+                />
             </tree>
         </field>
     </record>
@@ -383,18 +623,42 @@
          only enters once it actually reaches the user; it survives delegate / recall /
          reject because the recipient row persists (unlike the actor_user_ids snapshot). -->
     <record id="action_sarabun_document_inbox" model="ir.actions.act_window">
-        <field name="name">กล่องหนังสือเข้า (Incoming)</field>
+        <field name="name">Inbox</field>
         <field name="res_model">sarabun.document</field>
         <field name="view_mode">tree,form</field>
-        <field name="search_view_id" ref="view_sarabun_document_search"/>
-        <field name="view_ids"
-               eval="[(5, 0, 0),
+        <field name="search_view_id" ref="view_sarabun_document_search" />
+        <field
+            name="view_ids"
+            eval="[(5, 0, 0),
                       (0, 0, {'view_mode': 'tree', 'view_id': ref('view_sarabun_document_inbox_tree')}),
-                      (0, 0, {'view_mode': 'form', 'view_id': ref('view_sarabun_document_form')})]"/>
-        <field name="domain">[('routing_step_ids.recipient_ids.user_id', '=', uid)]</field>
+                      (0, 0, {'view_mode': 'form', 'view_id': ref('view_sarabun_document_form')})]"
+        />
+        <field
+            name="domain"
+        >[('routing_step_ids.recipient_ids.user_id', '=', uid)]</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">No หนังสือ has reached you yet</p>
-            <p>Every หนังสือ routed to you appears here once its step reaches you, and stays after you act.</p>
+            <p
+            >Every หนังสือ routed to you appears here once its step reaches you, and stays after you act.</p>
+        </field>
+    </record>
+
+    <record id="action_sarabun_document_outgoing" model="ir.actions.act_window">
+        <field name="name">Outgoing Documents</field>
+        <field name="res_model">sarabun.document</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_sarabun_document_search" />
+        <field
+            name="view_ids"
+            eval="[(5, 0, 0),
+                      (0, 0, {'view_mode': 'tree', 'view_id': ref('view_sarabun_document_tree')}),
+                      (0, 0, {'view_mode': 'form', 'view_id': ref('view_sarabun_document_form')})]"
+        />
+        <field name="context">{'search_default_my_documents': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No outgoing documents found</p>
+            <p
+            >This list shows every documents you have sent, including those that have been recalled or rejected.</p>
         </field>
     </record>
 </odoo>

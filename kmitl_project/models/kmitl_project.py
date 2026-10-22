@@ -1,5 +1,8 @@
-# -*- coding: utf-8 -*-
 import logging
+import re
+
+from lxml import etree, html as lxml_html
+from markupsafe import Markup, escape
 
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
@@ -48,9 +51,10 @@ class KmitlProject(models.Model):
         readonly=True,
         states=EDITABLE_STATES,
     )
-    introduction = fields.Text(
+    # Html so authors can lay out paragraphs (Tab = .oe-tabs indent). Odoo 16
+    # cannot track Html fields, hence no tracking=True.
+    introduction = fields.Html(
         string="หลักการและเหตุผล",
-        tracking=True,
         readonly=False,
         states=EDITABLE_STATES,
     )
@@ -154,11 +158,11 @@ class KmitlProject(models.Model):
     state = fields.Selection(
         [
             ("draft", "Draft"),
-            ("to_verify", "รอจัดสรรงบประมาณ (ปรับเข้าแผน) และจองงบประมาณ"),
-            ("to_send", "รอส่งขออนุมัติ"),
-            ("sent", "ส่งขออนุมัติแล้ว"),
-            ("returned", "ถูกตีกลับ"),
-            ("rejected", "ถูกปฏิเสธ"),
+            ("to_verify", "To Verify"),
+            ("to_send", "To Send"),
+            ("sent", "Sent"),
+            ("returned", "Returned"),
+            ("rejected", "Rejected"),
             ("in_progress", "In Progress"),
             ("complete", "Completed"),
             ("cancel", "Cancelled"),
@@ -602,13 +606,13 @@ class KmitlProject(models.Model):
         self.write({"state": "to_verify"})
 
     def action_reserve_budget(self):
-        """``to_verify`` → open the จองงบ confirm wizard. The wizard shows the
-        รหัสงบ, 4 มิติ + มิติโครงการ, and the actual allocated amount; on confirm
-        it reserves the commitment (with the project dimension in the check) and
-        advances to ``to_send``. Gated: raises if no allocation exists yet."""
+        """``to_verify`` → open the ยืนยันงบ confirm wizard. On confirm the
+        allocated budget is accepted and the project advances to ``to_send``; the
+        commitment itself is reserved only when the project is approved
+        (``_approve_project``, ADR-0010). Gated: raises if no allocation exists yet."""
         self.ensure_one()
         if self.state != "to_verify":
-            raise UserError(_("จองงบประมาณได้เฉพาะสถานะรอตรวจสอบ"))
+            raise UserError(_("ยืนยันงบประมาณได้เฉพาะสถานะรอจัดสรรงบประมาณ"))
         if self.budget_amount <= 0:
             raise UserError(
                 _(
@@ -618,7 +622,7 @@ class KmitlProject(models.Model):
             )
         return {
             "type": "ir.actions.act_window",
-            "name": _("จองงบประมาณ"),
+            "name": _("ยืนยันงบประมาณ"),
             "res_model": "kmitl.project.reserve.confirm",
             "view_mode": "form",
             "target": "new",
@@ -633,7 +637,33 @@ class KmitlProject(models.Model):
         self.ensure_one()
         if self.state not in ("to_send", "sent"):
             raise UserError(_("อนุมัติได้เฉพาะคำขอที่ส่งขออนุมัติแล้ว"))
+        self._approve_project()
+
+    def _approve_project(self):
+        """Approval → ``in_progress``, reserving the project's budget now that it
+        may spend (ADR-0010). A failed reservation never blocks the approval: it
+        is rolled back, noted in the chatter, and retried later from
+        ``action_retry_reserve_budget``. Legacy projects reserved before approval
+        are skipped by the idempotent ``_reserve_project_commitment``."""
+        self.ensure_one()
+        try:
+            with self.env.cr.savepoint():
+                self._reserve_project_commitment()
+        except UserError as e:
+            self.message_post(
+                body=_("อนุมัติโครงการแล้ว แต่ยังจองงบประมาณไม่ได้: %s") % e.args[0]
+            )
         self.write({"state": "in_progress"})
+
+    def action_retry_reserve_budget(self):
+        """``in_progress`` without a reservation (the approval-time reserve
+        failed) → reserve again; errors surface to the user this time."""
+        self.ensure_one()
+        if self.state != "in_progress":
+            raise UserError(_("จองงบประมาณได้เฉพาะโครงการที่กำลังดำเนินการ"))
+        if self.budget_commitment_ids.filtered(lambda c: c.state != "cancel"):
+            raise UserError(_("โครงการมีใบจองงบประมาณอยู่แล้ว"))
+        self._reserve_project_commitment()
 
     def action_complete(self):
         """``in_progress`` → ``complete`` (manual; leftover reserved budget is
@@ -662,10 +692,7 @@ class KmitlProject(models.Model):
         and from ``complete`` (a finished project is not cancellable)."""
         if self.filtered(lambda p: p.state == "sent"):
             raise UserError(
-                _(
-                    "ไม่สามารถยกเลิกโครงการขณะหนังสือกำลังเวียนลงนาม "
-                    "กรุณาดึงกลับหรือยกเลิกการส่งก่อน"
-                )
+                _("ไม่สามารถยกเลิกโครงการขณะหนังสือกำลังเวียนลงนาม กรุณาดึงกลับหรือยกเลิกการส่งก่อน")
             )
         if self.filtered(lambda p: p.state == "complete"):
             raise UserError(_("ไม่สามารถยกเลิกโครงการที่ปิดแล้ว"))
@@ -684,8 +711,8 @@ class KmitlProject(models.Model):
     def _check_budget_plan_lines(self):
         """Validate the Project Budget Plan before the budget is reserved. Amounts
         may be left blank/zero while drafting, but every line must carry a positive
-        amount before the project reserves its budget (called from
-        ``action_reserve_budget``, and again from ``_resync_project_commitment``
+        amount before the project confirms its budget (called from the ยืนยันงบ
+        wizard, and again from ``_resync_project_commitment``
         because ``returned`` reopens the plan for editing)."""
         self.ensure_one()
         lines = self.expense_line_ids
@@ -698,9 +725,7 @@ class KmitlProject(models.Model):
                     "ไม่สามารถยืนยันโครงการได้ "
                     "เนื่องจากมีรายการงบประมาณที่ยังไม่ได้ระบุจำนวนเงิน (ต้องมากกว่า 0):\n%s"
                 )
-                % "\n".join(
-                    "- %s" % (line.name or _("(ไม่ระบุรายการ)")) for line in bad
-                )
+                % "\n".join("- %s" % (line.name or _("(ไม่ระบุรายการ)")) for line in bad)
             )
 
     def _compute_is_editable(self):
@@ -737,7 +762,11 @@ class KmitlProject(models.Model):
                 rec.budget_move_line_count = 0
                 continue
             rec.budget_move_line_count = BML.search_count(
-                ['&', ("kmitl_project_analytic_id", "=", self.analytic_account_id.id), ("account_fiscal_year_id", "=", self.account_fiscal_year_id.id)]
+                [
+                    "&",
+                    ("kmitl_project_analytic_id", "=", self.analytic_account_id.id),
+                    ("account_fiscal_year_id", "=", self.account_fiscal_year_id.id),
+                ]
             )
 
     def action_open_budget_move_lines(self):
@@ -747,7 +776,11 @@ class KmitlProject(models.Model):
             "type": "ir.actions.act_window",
             "res_model": "budget.move.line",
             "view_mode": "tree,form",
-            "domain": ['&', ("kmitl_project_analytic_id", "=", self.analytic_account_id.id), ("account_fiscal_year_id", "=", self.account_fiscal_year_id.id)],
+            "domain": [
+                "&",
+                ("kmitl_project_analytic_id", "=", self.analytic_account_id.id),
+                ("account_fiscal_year_id", "=", self.account_fiscal_year_id.id),
+            ],
         }
 
     @api.depends(
@@ -863,24 +896,119 @@ class KmitlProject(models.Model):
         return rows
 
     @api.model
+    def _report_thai_distribute(self, text):
+        """Markup for a ``.distribute`` block in the project proposal PDF.
+
+        wkhtmltopdf only stretches justified text at spaces and ignores
+        ``text-justify: distribute``, while Thai has no spaces between words.
+        So put a space at every Thai word boundary (the CSS cancels its width
+        with a negative ``word-spacing``) and wrap the real spaces in
+        ``span.rs`` to keep their normal width: justify then spreads each line
+        across all its words, and lines wrap between words, never inside one.
+
+        ``text`` is plain text (Text/Char) or Markup (an Html field), in which
+        case every text node is segmented and the markup kept as is.
+        """
+        if not text:
+            return ""
+        try:
+            from pythainlp.tokenize import word_tokenize
+
+            def tokenize(line):
+                return word_tokenize(line, engine="newmm", keep_whitespace=True)
+
+        except ImportError:
+            _logger.warning("pythainlp is not installed; Thai text not segmented")
+
+            def tokenize(line):
+                return [token for token in re.split(r"(\s+)", line) if token]
+
+        def is_thai(char):
+            return "\u0e00" <= char <= "\u0e7f" and char not in "ๆฯ"
+
+        def runs(line):
+            """Alternating [text, space, text, ...] runs of ``line``, with a
+            space inserted at every Thai word boundary inside the text runs."""
+            out, prev = [""], ""
+            for token in tokenize(line) if line else []:
+                if token.isspace():
+                    out += [token, ""]
+                    prev = ""
+                    continue
+                if prev and is_thai(prev[-1]) and is_thai(token[0]):
+                    out[-1] += " "
+                out[-1] += token
+                prev = token
+            return out
+
+        def real_space(space, tail):
+            span = etree.Element("span", {"class": "rs"})
+            span.text, span.tail = space, tail
+            return span
+
+        if isinstance(text, Markup):
+            # The editor puts a zero-width space after each Tab; THSarabunNew
+            # has no glyph for it.
+            root = lxml_html.fragment_fromstring(
+                text.replace("\u200b", ""), create_parent="div"
+            )
+            for el in list(root.iter(etree.Element)):
+                parts = runs(el.text)
+                el.text = parts[0]
+                for i in range(1, len(parts), 2):
+                    el.insert(i // 2, real_space(parts[i], parts[i + 1]))
+                if el is not root and el.tail:
+                    parts = runs(el.tail)
+                    el.tail = parts[0]
+                    parent, index = el.getparent(), el.getparent().index(el)
+                    for i in range(1, len(parts), 2):
+                        parent.insert(
+                            index + 1 + i // 2, real_space(parts[i], parts[i + 1])
+                        )
+            return Markup(lxml_html.tostring(root, encoding="unicode")[5:-6])
+
+        lines = []
+        for line in text.split("\n"):
+            body = line.lstrip(" \t")
+            # The CSS white-space: pre-line collapses leading spaces: keep the
+            # line's indent as non-breaking spaces.
+            indent = line[: len(line) - len(body)].replace("\t", "    ")
+            parts = (
+                ["", indent.replace(" ", "\xa0")] + runs(body) if indent else runs(body)
+            )
+            lines.append(
+                Markup("").join(
+                    Markup('<span class="rs">%s</span>') % part
+                    if i % 2
+                    else escape(part)
+                    for i, part in enumerate(parts)
+                )
+            )
+        return Markup("\n").join(lines)
+
+    @api.model
     def _create_analytic_account_from_values(self, values):
         # System-minted dimension: project users have no create ACL on analytic
         # accounts, so mint it as superuser (company/OU context is kept).
-        return self.env["account.analytic.account"].sudo().create(
-            {
-                "name": values.get("name", _("Unknown Analytic Account")),
-                "code": values.get("code"),
-                "company_id": self.env.company.id,
-                "plan_id": self.env.ref(
-                    "kmitl_project.analytic_plan_project",
-                    raise_if_not_found=True,
-                ).id,
-                # Scope the project's dimension to the project's operating unit so
-                # it stays visible only to the owning unit (analytic OU access rule).
-                "operating_unit_ids": [(6, 0, self.operating_unit_id.ids)]
-                if self.operating_unit_id
-                else False,
-            }
+        return (
+            self.env["account.analytic.account"]
+            .sudo()
+            .create(
+                {
+                    "name": values.get("name", _("Unknown Analytic Account")),
+                    "code": values.get("code"),
+                    "company_id": self.env.company.id,
+                    "plan_id": self.env.ref(
+                        "kmitl_project.analytic_plan_project",
+                        raise_if_not_found=True,
+                    ).id,
+                    # Scope the project's dimension to the project's operating unit so
+                    # it stays visible only to the owning unit (analytic OU access rule).
+                    "operating_unit_ids": [(6, 0, self.operating_unit_id.ids)]
+                    if self.operating_unit_id
+                    else False,
+                }
+            )
         )
 
     def _ensure_project_number(self):
@@ -900,16 +1028,19 @@ class KmitlProject(models.Model):
         # Gregorian year + 543 is the BE fiscal-year number (e.g. FY 2570 ends
         # 2027 → 2570).
         fiscal_date = self.account_fiscal_year_id.date_to
-        self.key = self.env["ir.sequence"].with_context(
-            ir_sequence_date=fiscal_date
-        ).next_by_code(
-            "kmitl.project",
-            sequence_date=fiscal_date,
+        self.key = (
+            self.env["ir.sequence"]
+            .with_context(ir_sequence_date=fiscal_date)
+            .next_by_code(
+                "kmitl.project",
+                sequence_date=fiscal_date,
+            )
         )
 
     # States in which the accounting target (budget code + budget dimensions)
     # may still be edited: while authoring/revising and BEFORE the budget is
-    # reserved (reservation at จองงบ, to_verify→to_send, pins it). Only the
+    # confirmed (ยืนยันงบ, to_verify→to_send, pins it — the หนังสือ quotes it;
+    # the reservation follows at approval, ADR-0010). Only the
     # fiscal year is frozen for good once the running number is minted, because
     # the number encodes the ปีงบ.
     _BUDGET_TARGET_EDITABLE_STATES = ("draft", "to_verify", "returned")
@@ -920,9 +1051,9 @@ class KmitlProject(models.Model):
 
         The rest of the budget target (``budget_account_id`` + the four budget
         dimensions in ``analytic_distribution``) stays editable while the project
-        is authored or revised but before its budget is reserved
-        (``_BUDGET_TARGET_EDITABLE_STATES``); once reserved/sent it is pinned so
-        the live commitment is never left pointing at a stale target."""
+        is authored or revised but before its budget is confirmed
+        (``_BUDGET_TARGET_EDITABLE_STATES``); once confirmed/sent it is pinned so
+        the หนังสือ and the commitment are never left pointing at a stale target."""
         if "account_fiscal_year_id" in vals:
             for rec in self:
                 if (
@@ -930,9 +1061,7 @@ class KmitlProject(models.Model):
                     and rec.account_fiscal_year_id.id != vals["account_fiscal_year_id"]
                 ):
                     raise UserError(
-                        _(
-                            "ไม่สามารถเปลี่ยนปีงบประมาณได้ เนื่องจากโครงการมีเลขที่รันแล้ว (%s)"
-                        )
+                        _("ไม่สามารถเปลี่ยนปีงบประมาณได้ เนื่องจากโครงการมีเลขที่รันแล้ว (%s)")
                         % rec.key
                     )
         if "budget_account_id" in vals:
@@ -1014,7 +1143,7 @@ class KmitlProject(models.Model):
 
     def _reserve_project_commitment(self):
         """Reserve one shared budget.commitment for the project's full
-        ``budget_amount`` when its budget is reserved (``to_verify``->``to_send``), drawing from the
+        ``budget_amount`` when the project is approved (``_approve_project``, ADR-0010), drawing from the
         floating project-code pool (ADR-0007). Idempotent: skips when an active
         (non-cancelled) commitment already exists. Blocks on insufficient budget
         unless ``budget.allow_negative`` is set. The project's purchase requests and
@@ -1047,37 +1176,29 @@ class KmitlProject(models.Model):
                 self.company_id.id,
             )
         dist = dict(self.analytic_distribution or {})
-        commitment = self.env["budget.commitment"].create(
-            {
-                "account_id": self.budget_account_id.id,
-                "amount": self.budget_amount,
-                "analytic_distribution": dist or False,
-                "account_fiscal_year_id": self.account_fiscal_year_id.id,
-                "company_id": self.company_id.id,
-                "operating_unit_id": self.operating_unit_id.id or False,
-                "date": fields.Date.context_today(self),
-                "ref": self.key or self.name,
-                # ชื่อโครงการ = ชื่อใบจอง (shown next to the number wherever a
-                # reservation is offered, so it can be told apart from others).
-                "title": "[%s] %s" % (self.key, self.name) if self.key else self.name,
-                "description": self.name,
-                "kmitl_project_id": self.id,
-                "user_id": self.env.user.id,
-                "line_ids": [
-                    (
-                        0,
-                        0,
-                        {
-                            "move_type": "reserve",
-                            "account_id": self.budget_account_id.id,
-                            "analytic_distribution": dist or False,
-                            "amount": self.budget_amount,
-                            "name": _("Initial reservation"),
-                        },
-                    )
-                ],
-            }
-        )
+        Commitment = self.env["budget.commitment"]
+        vals = {
+            "account_id": self.budget_account_id.id,
+            "amount": self.budget_amount,
+            "analytic_distribution": dist or False,
+            "account_fiscal_year_id": self.account_fiscal_year_id.id,
+            "company_id": self.company_id.id,
+            "date": fields.Date.context_today(self),
+            "ref": self.key or self.name,
+            # ชื่อโครงการ = ชื่อใบจอง (shown next to the number wherever a
+            # reservation is offered, so it can be told apart from others).
+            "title": "[%s] %s" % (self.key, self.name) if self.key else self.name,
+            "description": self.name,
+            "kmitl_project_id": self.id,
+            # Under the หนังสือ callback env.user is the last signer (sudo);
+            # the reservation belongs to whoever authored the project.
+            "user_id": (self.creating_user_id or self.env.user).id,
+        }
+        # The reservation's operating unit comes from budget_operating_unit,
+        # which this module does not depend on.
+        if "operating_unit_id" in Commitment._fields:
+            vals["operating_unit_id"] = self.operating_unit_id.id or False
+        commitment = Commitment.create(vals)
         commitment.action_reserve()
         self.message_post(
             body=_("จองงบประมาณ %s จำนวน %s บาท")
@@ -1097,16 +1218,12 @@ class KmitlProject(models.Model):
             ):
                 if in_use or commitment.total_obligated or commitment.total_consumed:
                     project.message_post(
-                        body=_(
-                            "งบประมาณที่จองไว้ (%s) มีการใช้งานแล้ว จึงไม่ยกเลิกการจอง"
-                        )
+                        body=_("งบประมาณที่จองไว้ (%s) มีการใช้งานแล้ว จึงไม่ยกเลิกการจอง")
                         % commitment.name
                     )
                     continue
                 commitment.action_cancel()
-                project.message_post(
-                    body=_("ยกเลิกการจองงบประมาณ %s") % commitment.name
-                )
+                project.message_post(body=_("ยกเลิกการจองงบประมาณ %s") % commitment.name)
 
     def _resync_project_commitment(self):
         """Re-align the reservation with the current ``budget_amount`` / dimensions
@@ -1128,21 +1245,6 @@ class KmitlProject(models.Model):
             or (active.analytic_distribution or {}) != dist
         ):
             self._release_project_commitment()
-            self._reserve_project_commitment()
-
-    def _auto_resync_commitment(self):
-        """Realign the reservation after the allocated amount changed (budget.move
-        post/cancel hook). Safe only while no obligate or consume exists; once
-        spending has started the commitment is left alone to avoid stranding
-        in-flight draws (ADR-0007)."""
-        self.ensure_one()
-        active = self.budget_commitment_ids.filtered(lambda c: c.state != "cancel")[:1]
-        if not active or active.amount == self.budget_amount:
-            return
-        if active.total_obligated or active.total_consumed:
-            return
-        self._release_project_commitment()
-        if self.budget_amount > 0:
             self._reserve_project_commitment()
 
     @api.depends("key")

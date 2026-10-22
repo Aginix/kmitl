@@ -1,0 +1,151 @@
+from datetime import date
+
+from odoo.tests.common import TransactionCase, new_test_user, tagged
+
+
+@tagged("post_install", "-at_install")
+class TestPurchaseRequestApprovalBuddy(TransactionCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        env = cls.env
+        # Leaving draft mints the พจ.1 number, which needs a fiscal year.
+        cls.fiscal_year = env["account.fiscal.year"].search([], limit=1) or env[
+            "account.fiscal.year"
+        ].create(
+            {
+                "name": "FY-TEST-PA-BUDDY",
+                "date_from": date(2025, 10, 1),
+                "date_to": date(2026, 9, 30),
+                "company_id": env.company.id,
+            }
+        )
+        Plan = env["account.analytic.plan"]
+        plan = Plan.search([("code", "=", "departments")], limit=1) or Plan.create(
+            {"name": "Departments", "code": "departments"}
+        )
+        AA = env["account.analytic.account"]
+        cls.faculty = AA.create(
+            {"name": "Faculty", "code": "PRAB_F", "plan_id": plan.id}
+        )
+        cls.sub_unit = AA.create(
+            {
+                "name": "Faculty Sub",
+                "code": "PRAB_S",
+                "plan_id": plan.id,
+                "parent_id": cls.faculty.id,
+            }
+        )
+        cls.other = AA.create({"name": "Other", "code": "PRAB_O", "plan_id": plan.id})
+        groups = "base.group_user,purchase_buddy.group_purchase_buddy"
+        cls.buddy_a = new_test_user(env, login="prab_a", groups=groups)
+        cls.buddy_b = new_test_user(env, login="prab_b", groups=groups)
+        cls.buddy_other = new_test_user(env, login="prab_o", groups=groups)
+        model = env["ir.model"]._get("purchase.request.approval")
+        Buddy = env["purchase.buddy"]
+        for user, unit, sequence in (
+            (cls.buddy_a, cls.faculty, 1),
+            (cls.buddy_b, cls.faculty, 2),
+            (cls.buddy_other, cls.other, 1),
+        ):
+            Buddy.create(
+                {
+                    "user_id": user.id,
+                    "model_id": model.id,
+                    "domain": "[('requesting_department_id', 'child_of', %d)]"
+                    % unit.id,
+                    "sequence": sequence,
+                }
+            )
+
+    def _make_pr(self, unit):
+        return self.env["purchase.request"].create(
+            {
+                "title": "Test PR",
+                "requested_by": self.env.ref("base.user_admin").id,
+                "requesting_department_id": unit.id if unit else False,
+                "account_fiscal_year_id": self.fiscal_year.id,
+            }
+        )
+
+    def _make_pa(self, unit):
+        return self.env["purchase.request.approval"].create(
+            self._make_pr(unit)._prepare_approval_vals()
+        )
+
+    def test_default_is_first_covering_buddy(self):
+        """A sub-unit is covered by the faculty's rows; sequence picks A."""
+        self.assertEqual(self._make_pa(self.sub_unit).assigned_to, self.buddy_a)
+
+    def test_prepare_vals_leaves_officer_to_compute(self):
+        vals = self._make_pr(self.faculty)._prepare_approval_vals()
+        self.assertNotIn("assigned_to", vals)
+
+    def test_manual_pick_kept_while_still_covering(self):
+        pa = self._make_pa(self.faculty)
+        pa.assigned_to = self.buddy_b
+        pa.requesting_department_id = self.sub_unit
+        self.assertEqual(pa.assigned_to, self.buddy_b)
+
+    def test_officer_replaced_when_no_longer_covering(self):
+        pa = self._make_pa(self.faculty)
+        pa.requesting_department_id = self.other
+        self.assertEqual(pa.assigned_to, self.buddy_other)
+
+    def test_no_matching_row_leaves_officer_empty(self):
+        self.assertFalse(self._make_pa(False).assigned_to)
+
+    def test_any_buddy_may_be_picked(self):
+        """Coverage only sets the default: a Buddy covering another unit may
+        stand in."""
+        pa = self._make_pa(self.faculty)
+        pa.assigned_to = self.buddy_other
+        self.assertEqual(pa.assigned_to, self.buddy_other)
+
+    def test_officer_frozen_once_submitted(self):
+        pa = self._make_pa(self.faculty)
+        pa.state = "to_approve"
+        pa.requesting_department_id = self.other
+        self.assertEqual(pa.assigned_to, self.buddy_a)
+
+    def _prepare_todos(self, pa):
+        act_type = self.env.ref(
+            "purchase_request_approval_todo.mail_activity_pa_notify_procurement"
+        )
+        return pa.activity_ids.filtered(lambda a: a.activity_type_id == act_type)
+
+    def test_prepare_todo_goes_to_officer(self):
+        """The officer gets the "จัดทำ พจ.1" Todo instead of the unit role."""
+        todo = self._prepare_todos(self._make_pa(self.faculty))
+        self.assertEqual(len(todo), 1)
+        self.assertEqual(todo.user_id, self.buddy_a)
+        self.assertFalse(todo.responsible_role_id)
+
+    def test_prepare_todo_follows_officer_change(self):
+        pa = self._make_pa(self.faculty)
+        pa.assigned_to = self.buddy_b
+        todo = self._prepare_todos(pa)
+        self.assertEqual(len(todo), 1)
+        self.assertEqual(todo.user_id, self.buddy_b)
+
+    def test_no_officer_no_personal_todo(self):
+        todos = self._prepare_todos(self._make_pa(False))
+        self.assertFalse(todos.user_id)
+
+    def test_prepare_todo_back_after_return(self):
+        """ตีกลับ/แก้ไข drops the Todo; the พจ.1's return to draft brings it
+        back to the officer."""
+        pa = self._make_pa(self.faculty)
+        pa.state = "pending_pr"
+        self.assertFalse(self._prepare_todos(pa))
+        vals = pa.request_id._prepare_approval_sync_vals()
+        vals["state"] = "draft"
+        pa.write(vals)
+        todo = self._prepare_todos(pa)
+        self.assertEqual(len(todo), 1)
+        self.assertEqual(todo.user_id, self.buddy_a)
+
+    def test_prepare_todo_closed_on_submit(self):
+        pa = self._make_pa(self.faculty)
+        pa.state = "to_approve"
+        self.assertFalse(self._prepare_todos(pa))

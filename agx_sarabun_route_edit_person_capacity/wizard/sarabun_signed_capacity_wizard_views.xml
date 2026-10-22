@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_sarabun_signed_capacity_wizard_form" model="ir.ui.view">
+        <field name="name">sarabun.signed.capacity.wizard.form</field>
+        <field name="model">sarabun.signed.capacity.wizard</field>
+        <field name="arch" type="xml">
+            <form string="แก้ไขตำแหน่งที่ลงนาม">
+                <field name="step_id" invisible="1" />
+                <group>
+                    <field name="employee_id" readonly="1" />
+                    <field name="current_position_name" readonly="1" />
+                    <field
+                        name="position_id"
+                        options="{'no_create': True, 'no_open': True}"
+                    />
+                </group>
+                <p class="text-muted">
+                    เปลี่ยนเฉพาะตำแหน่งที่แสดงใต้ลายเซ็น — ชื่อ ลายเซ็น และวันที่ลงนามคงเดิม
+                </p>
+                <footer>
+                    <button
+                        name="action_apply"
+                        type="object"
+                        string="บันทึก"
+                        class="btn-primary"
+                    />
+                    <button string="ยกเลิก" special="cancel" class="btn-secondary" />
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

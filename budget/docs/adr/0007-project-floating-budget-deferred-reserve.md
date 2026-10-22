@@ -1,8 +1,12 @@
 # Project budget floats until its project reserves it
 
+> **Amended by [ADR-0017](./0017-commitment-events-posted-to-budget-ledger.md):** a transfer into a reserved project's coordinate now tops its reservation up automatically (and a transfer out releases it), replacing `_auto_resync_commitment`; the reserve-time tag strip is dropped.
+
 For a *project-type* budget code (`budget.account.is_project`), posting the source `budget.appropriation` does **not** reserve and does **not** auto-create any downstream record. The money sits as **floating budget (เงินลอย)** — appropriated pool carrying the four dimensions but no `kmitl_project` dimension. The reservation (`budget.commitment`, the full `budget_amount`) fires later, when a `kmitl.project` drawing on that pool reserves it. From the reserve point onward the project is spent like a procurement plan: one shared commitment drawn down by its purchase requests and disbursements.
 
 > **Reserve trigger revised** by [kmitl_project ADR-0005](../../../kmitl_project/docs/adr/0005-approval-gated-lifecycle-esaraban.md): reservation moved from the old `draft→new` Confirm to the `to_verify→to_send` "จองงบประมาณ" step of the project's e-Saraban approval. The floating-budget model in this ADR is otherwise unchanged.
+
+> **Reserve trigger revised again** by [kmitl_project ADR-0010](../../../kmitl_project/docs/adr/0010-project-reserves-on-approval.md): the project now reserves when it is approved (หนังสือ signed → `in_progress`), not at `to_verify→to_send`.
 
 > **Model revised** by [ADR-0012](./0012-tagged-sub-pool-allocation-via-transfer.md): the floating (untagged, four-dimension) pool described here is now the **pre-allocation** stage. Once a project exists, its floating envelope may be tagged into a five-dimension **tagged sub-pool** by a `budget.transfer` (ปรับเข้าแผน), and — going forward — the project reserves against that sub-pool rather than the floating pool (the tag-strip in `_availability_distribution` is dropped). Year-start appropriation still floats; what changes is that the `kmitl_project` dimension may now ride the *appropriation* side (via transfer), converging the project model with the tagged procurement_plan model. That reservation migration is deferred to its own phase.
 

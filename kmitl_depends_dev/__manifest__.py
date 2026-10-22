@@ -74,6 +74,7 @@
         "purchase_order_disbursement_budget",
         "web_responsive",
         "advance_payment_disbursement",
+        "advance_payment_contract_pdf",
         "agx_approval_disbursement",
         "disbursement_accounting_kmitl",
         "disbursement_finance_kmitl",

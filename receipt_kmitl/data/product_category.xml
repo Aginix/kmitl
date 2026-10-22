@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+
+    <record id="product_category_4000000000" model="product.category">
+        <field name="name">รายได้</field>
+    </record>
+
+    <record id="product_category_4100000000" model="product.category">
+        <field name="name">รายได้จากการดำเนินงาน</field>
+        <field name="parent_id" ref="product_category_4000000000"/>
+    </record>
+
+    <record id="product_category_4110000000" model="product.category">
+        <field name="name">รายได้จากรัฐบาล</field>
+        <field name="parent_id" ref="product_category_4100000000"/>
+    </record>
+
+    <record id="product_category_4111000000" model="product.category">
+        <field name="name">รายได้จากเงินงบประมาณ ปีปัจจุบัน</field>
+        <field name="parent_id" ref="product_category_4110000000"/>
+    </record>
+
+    <record id="product_category_4112000000" model="product.category">
+        <field name="name">รายได้จากเงินงบประมาณ ปี ก่อนปัจจุบัน</field>
+        <field name="parent_id" ref="product_category_4110000000"/>
+    </record>
+
+    <record id="product_category_4113000000" model="product.category">
+        <field name="name">รายได้จากเงินงบประมาณ ปี 2543 - 2546</field>
+        <field name="parent_id" ref="product_category_4110000000"/>
+    </record>
+
+    <record id="product_category_4114000000" model="product.category">
+        <field name="name">รายได้ระหว่างหน่วยงานอื่น</field>
+        <field name="parent_id" ref="product_category_4110000000"/>
+    </record>
+
+    <record id="product_category_4115000000" model="product.category">
+        <field name="name">รายได้ดอกเบี้ย-ของแผ่นดิน</field>
+        <field name="parent_id" ref="product_category_4110000000"/>
+    </record>
+
+    <record id="product_category_4120000000" model="product.category">
+        <field name="name">รายได้จากแหล่งอื่น</field>
+        <field name="parent_id" ref="product_category_4100000000"/>
+    </record>
+
+    <record id="product_category_4121000000" model="product.category">
+        <field name="name">รายได้อื่น</field>
+        <field name="parent_id" ref="product_category_4120000000"/>
+    </record>
+
+    <record id="product_category_4121010000" model="product.category">
+        <field name="name">รายได้ค่าธรรมเนียมการศึกษา</field>
+        <field name="parent_id" ref="product_category_4121000000"/>
+    </record>
+
+    <record id="product_category_4121020000" model="product.category">
+        <field name="name">รายได้ค่าธรรมเนียมอื่นๆ</field>
+        <field name="parent_id" ref="product_category_4121000000"/>
+    </record>
+
+    <record id="product_category_4121030000" model="product.category">
+        <field name="name">รายได้จากงานบริการ</field>
+        <field name="parent_id" ref="product_category_4121000000"/>
+    </record>
+
+    <record id="product_category_4121040000" model="product.category">
+        <field name="name">รายได้จากเงินผลประโยชน์</field>
+        <field name="parent_id" ref="product_category_4121000000"/>
+    </record>
+
+    <record id="product_category_4121050000" model="product.category">
+        <field name="name">รายได้อื่นๆ</field>
+        <field name="parent_id" ref="product_category_4121000000"/>
+    </record>
+
+    <record id="product_category_4122000000" model="product.category">
+        <field name="name">รายได้จากการรับบริจาค</field>
+        <field name="parent_id" ref="product_category_4120000000"/>
+    </record>
+
+    <record id="product_category_4123000000" model="product.category">
+        <field name="name">รายได้ดอกเบี้ย</field>
+        <field name="parent_id" ref="product_category_4120000000"/>
+    </record>
+
+    <record id="product_category_4124000000" model="product.category">
+        <field name="name">บัญชีพักรายได้</field>
+        <field name="parent_id" ref="product_category_4120000000"/>
+    </record>
+
+    <record id="product_category_4129000000" model="product.category">
+        <field name="name">รายได้ระหว่างหน่วยงานภายใน</field>
+        <field name="parent_id" ref="product_category_4120000000"/>
+    </record>
+
+    <record id="product_category_4200000000" model="product.category">
+        <field name="name">รายได้ที่ไม่เกิดจากการดำเนินการ</field>
+        <field name="parent_id" ref="product_category_4000000000"/>
+    </record>
+
+    <record id="product_category_4300000000" model="product.category">
+        <field name="name">รายได้แผ่นดิน</field>
+        <field name="parent_id" ref="product_category_4000000000"/>
+    </record>
+
+    <record id="product_category_4310000000" model="product.category">
+        <field name="name">รายได้แผ่นดินอื่น</field>
+        <field name="parent_id" ref="product_category_4300000000"/>
+    </record>
+
+</odoo>

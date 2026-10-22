@@ -140,8 +140,8 @@ class SarabunDocumentMixin(models.AbstractModel):
             vals["content"] = content
             vals["include_content"] = True
         # The official number is NOT assigned at create — only the issuing ส่วนงาน
-        # is supplied; ลงทะเบียน happens atomically at completion, when the final
-        # approver signs (ADR-0010). Omit when unresolved so the document's own
+        # is supplied; ลงทะเบียน happens atomically when the number-issuing step
+        # (ลงนามในใบปะหน้า) is signed (ADR-0017). Omit when unresolved so the document's own
         # default applies.
         dept = self._get_sarabun_sender_department()
         if dept:

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- Category-less on purpose: shown as an independent checkbox on the
+         user form, orthogonal to the Budget role dropdown. -->
+    <record id="group_budget_buddy" model="res.groups">
+        <field name="name">เจ้าหน้าที่ Buddy (ส่วนกลาง)</field>
+        <field name="implied_ids" eval="[(4, ref('budget.group_budget_user'))]" />
+        <field
+            name="comment"
+        >Central-office officer who verifies budget documents of the units (ส่วนงาน) they cover.</field>
+    </record>
+
+</odoo>

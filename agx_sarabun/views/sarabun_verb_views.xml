@@ -11,6 +11,7 @@
                 <field name="gating" widget="boolean_toggle"/>
                 <field name="show_signature" widget="boolean_toggle"/>
                 <field name="is_signature" widget="boolean_toggle"/>
+                <field name="issues_number" widget="boolean_toggle"/>
                 <field name="active" widget="boolean_toggle"/>
             </tree>
         </field>
@@ -35,6 +36,7 @@
                             <field name="gating"/>
                             <field name="show_signature"/>
                             <field name="is_signature"/>
+                            <field name="issues_number"/>
                         </group>
                     </group>
                     <div class="text-muted">
@@ -43,7 +45,9 @@
                         signature block on the official document (leave it off for
                         ตรวจสอบ / พิจารณา / ส่งต่อ — name in the Route only);
                         <strong>ลายเซ็นเชิงอำนาจ (Authoritative sign)</strong> also blocks
-                        Recall and always shows. The built-in verbs are referenced by the
+                        Recall and always shows; <strong>ออกเลขที่หนังสือ (Issues
+                        number)</strong> gives the หนังสือ its official number when the
+                        step is completed. The built-in verbs are referenced by the
                         engine via their XML id — relabel freely, but don't delete them.
                     </div>
                 </sheet>

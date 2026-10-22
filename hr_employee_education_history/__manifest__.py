@@ -1,6 +1,6 @@
 {
     "name": "HR Employee Education History",
-    "version": "16.0.1.1.2",
+    "version": "16.0.1.1.3",
     "category": "Human Resources",
     "website": "https://github.com/aginix/kmitl-odoo",
     "author": "Nonpawit, Aginix Technologies",

@@ -43,6 +43,15 @@ class BudgetTransfer(models.Model):
             "rejected": "set default",
         },
     )
+    # The generated แบบ งปม.303 enclosed on the current หนังสือ — re-rendered in
+    # place when the letter is re-sent after ตีกลับ/ดึงกลับ (see
+    # ``_attach_transfer_pdf_enclosure``).
+    sarabun_enclosure_attachment_id = fields.Many2one(
+        comodel_name="ir.attachment",
+        copy=False,
+        ondelete="set null",
+        readonly=True,
+    )
 
     # --- hooks ---------------------------------------------------------
     def _get_sarabun_document_type(self):
@@ -112,6 +121,10 @@ class BudgetTransfer(models.Model):
         return action
 
     def _attach_transfer_pdf_enclosure(self, document):
+        """Render แบบ งปม.303 and enclose it on ``document``. Upsert: when this
+        หนังสือ already carries the generated file (a re-send after ตีกลับ/
+        ดึงกลับ), overwrite its content in place so the signer sees the revised
+        lines; otherwise create and link a new one."""
         self.ensure_one()
         pdf, _dummy = (
             self.env["ir.actions.report"]
@@ -121,6 +134,10 @@ class BudgetTransfer(models.Model):
                 self.ids,
             )
         )
+        existing = self.sarabun_enclosure_attachment_id
+        if existing and existing in document.enclosure_attachment_ids:
+            existing.sudo().write({"datas": base64.b64encode(pdf)})
+            return
         attachment = (
             self.env["ir.attachment"]
             .sudo()
@@ -137,6 +154,7 @@ class BudgetTransfer(models.Model):
             )
         )
         document.sudo().write({"enclosure_attachment_ids": [(4, attachment.id)]})
+        self.sarabun_enclosure_attachment_id = attachment
 
     # --- lifecycle callbacks ------------------------------------------
     def _on_sarabun_circulating(self, document):
@@ -146,16 +164,23 @@ class BudgetTransfer(models.Model):
             # at ยืนยัน, not as constraints).
             self._validate_transfer_data()
         if self.state in ("submitted", "returned"):
-            # The transfer's own date field is hidden (ADR-0014 follow-up) —
-            # it now tracks the letter's ลงวันที่ (re-stamped on every send),
-            # not the moment the transfer was submitted in draft.
-            self.write({"state": "sent", "date": document.date})
+            # Refresh the enclosed แบบ งปม.303 so it reflects any revision —
+            # also from ``submitted``, which a returned transfer reaches again
+            # via Reset to Draft + ยืนยัน while its old หนังสือ stays live (a
+            # render failure blocks the send rather than letting a stale form
+            # go out).
+            self._attach_transfer_pdf_enclosure(document)
+            self.state = "sent"
         return super()._on_sarabun_circulating(document)
 
     def _on_sarabun_completed(self, document):
         # ADR-0014: trust the confirm-time check, do NOT re-validate
         # availability — the reservation window is a known, accepted race
         # until transfers go through a budget reservation (deferred).
+        # The transfer's own date field is hidden (ADR-0014 follow-up) — it
+        # tracks the letter's ลงวันที่, which only exists once the number is
+        # issued (agx_sarabun ADR-0017), not the draft/confirm date.
+        self.date = document.date
         self._post_transfer()  # sets state='posted'
         final = document._signature_steps()[-1:]
         self.write(

@@ -543,10 +543,10 @@ def _dr_commitment(dr):
     """Recover the reserved budget commitment from the originating request.
 
     The DR created from a purchase request approval (PA) does not carry the
-    commitment, so we follow the reference back to the PR which reserved it.
+    commitment, so we follow the PA back to the PR which reserved it.
     """
-    approval = dr.reference
-    if approval and approval._name == "purchase.request.approval":
+    approval = dr.purchase_request_approval_id
+    if approval:
         return approval.request_id.budget_commitment_id
     return dr.budget_commitment_id
 
