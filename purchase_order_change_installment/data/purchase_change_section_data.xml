@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data noupdate="1">
+        <record
+            id="purchase_change_section_installment"
+            model="purchase.change.section"
+        >
+            <field name="name">งวดงาน</field>
+            <field name="section_type">modification</field>
+        </record>
+    </data>
+</odoo>
