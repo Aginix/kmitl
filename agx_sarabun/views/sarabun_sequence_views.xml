@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <!-- Register (sequence) -->
     <record id="view_sarabun_sequence_tree" model="ir.ui.view">
@@ -6,10 +6,12 @@
         <field name="model">sarabun.document.sequence</field>
         <field name="arch" type="xml">
             <tree>
-                <field name="name"/>
-                <field name="sender_department_id"/>
-                <field name="next_counter"/>
-                <field name="active" widget="boolean_toggle"/>
+                <field name="name" />
+                <field name="sender_department_id" />
+                <field name="prefix" />
+                <field name="suffix" optional="hide" />
+                <field name="next_counter" />
+                <field name="active" widget="boolean_toggle" readonly="1" />
             </tree>
         </field>
     </record>
@@ -21,30 +23,38 @@
             <form>
                 <sheet>
                     <div class="oe_title">
-                        <h1><field name="name" placeholder="ทะเบียนหนังสือกองคลัง"/></h1>
+                        <h1><field
+                                name="name"
+                                placeholder="ทะเบียนหนังสือกองคลัง"
+                            /></h1>
                     </div>
                     <group>
-                        <group string="หน่วยงานเจ้าของเล่ม (หนึ่งหน่วยงานมีได้หลายเล่มทะเบียน)">
-                            <field name="sender_department_id"/>
-                            <field name="active" widget="boolean_toggle"/>
+                        <group
+                            string="หน่วยงานเจ้าของเล่ม (หนึ่งหน่วยงานมีได้หลายเล่มทะเบียน)"
+                        >
+                            <field name="sender_department_id" />
+                            <field name="active" widget="boolean_toggle" />
                         </group>
                         <group string="Rendering">
-                            <field name="prefix"/>
-                            <field name="suffix"/>
-                            <field name="padding"/>
-                            <field name="next_counter"/>
+                            <field name="prefix" />
+                            <field name="suffix" />
+                            <field name="padding" />
+                            <field name="next_counter" />
                         </group>
                     </group>
-                    <separator string="Allocated Numbers"/>
+                    <separator string="Allocated Numbers" />
                     <field name="number_ids">
-                        <tree decoration-muted="state == 'voided'" decoration-info="state == 'reserved'">
-                            <field name="register_number"/>
-                            <field name="counter"/>
-                            <field name="fiscal_year"/>
-                            <field name="state" widget="badge"/>
-                            <field name="document_id"/>
-                            <field name="used_date"/>
-                            <field name="void_reason" optional="show"/>
+                        <tree
+                            decoration-muted="state == 'voided'"
+                            decoration-info="state == 'reserved'"
+                        >
+                            <field name="register_number" />
+                            <field name="counter" />
+                            <field name="fiscal_year" />
+                            <field name="state" widget="badge" />
+                            <field name="document_id" />
+                            <field name="used_date" />
+                            <field name="void_reason" optional="show" />
                         </tree>
                     </field>
                 </sheet>
