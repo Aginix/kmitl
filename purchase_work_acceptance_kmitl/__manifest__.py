@@ -21,6 +21,7 @@
         'purchase_contract_kmitl',
     ],
     "data": [
+        "security/security.xml",
         "security/ir.model.access.csv",
         "data/server_action.xml",
         "data/tier.definition.csv",
