@@ -414,7 +414,28 @@ class SarabunDocument(models.Model):
         docs = super().create(vals_list)
         for doc in docs:
             doc._ensure_originator_step()
+        docs._adopt_orphan_enclosures()
         return docs
+
+    def write(self, vals):
+        res = super().write(vals)
+        if "enclosure_attachment_ids" in vals:
+            self._adopt_orphan_enclosures()
+        return res
+
+    def _adopt_orphan_enclosures(self):
+        """Stamp res_id on enclosures uploaded before the หนังสือ was first saved.
+
+        The many2many_binary widget uploads with ``res_id=0`` while the record is
+        unsaved, and ``ir.attachment.check()`` hides such files from everyone but
+        the uploader — so recipients could not open the หนังสือ. Only orphans are
+        adopted, never an attachment owned by a source record (bridges link those)."""
+        for doc in self:
+            orphans = doc.enclosure_attachment_ids.sudo().filtered(
+                lambda a: not a.res_id
+            )
+            if orphans:
+                orphans.write({"res_model": self._name, "res_id": doc.id})
 
     # === Computes ===
     @api.depends("state")
