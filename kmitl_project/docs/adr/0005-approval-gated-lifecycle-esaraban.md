@@ -1,5 +1,7 @@
 # Approval-gated project lifecycle routed through e-Saraban
 
+> **Amended by [ADR-0011](./0011-project-deletion-replaces-cancel.md):** Cancel is no longer its own action — ลบโครงการ hard-deletes a project with no ledger footprint, or soft-deletes it (`cancel` + archived) once it holds no money.
+
 > **Amended by [ADR-0010](./0010-project-reserves-on-approval.md):** `to_verify → to_send` now only confirms the allocated budget (ยืนยันงบประมาณ); the commitment is reserved when the project is approved (`→ in_progress`).
 
 A `kmitl.project` no longer goes live on a one-click Confirm (`draft→new`). It now passes an **approval front that mirrors `agx_approval`** — `draft → to_verify → to_send → sent → in_progress → complete` — where the ขออนุมัติจัดโครงการและค่าใช้จ่าย is a หนังสือ routed through e-Saraban. The old `new`, `approved` and `on_hold` states are gone (`approved` is folded into `in_progress`; `on_hold` is dropped). Base `kmitl_project` owns every state and the forward/reset/cancel transitions plus a **manual approve fallback**; a new bridge **`kmitl_project_sarabun`** (`_inherit = ["kmitl.project", "sarabun.document.mixin"]`) adds *สร้างหนังสือ* (`action_submit_to_sarabun`) and the `_on_sarabun_*` callbacks that drive the หนังสือ-based transitions. This is the same pattern as `agx_approval` + `agx_approval_sarabun` (integration contract: agx_sarabun ADR-0004).

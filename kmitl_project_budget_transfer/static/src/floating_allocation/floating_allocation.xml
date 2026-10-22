@@ -1,12 +1,23 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <templates xml:space="preserve">
 
-    <t t-name="kmitl_project_floating_allocation.FloatingAllocation" owl="1">
+    <t t-name="kmitl_project_budget_transfer.FloatingAllocation" owl="1">
         <div class="o_kfa">
             <!-- No floating pool covers the project, or it is used up -->
             <t t-if="data.step === 'input' and (!data.pool_found or isExhausted)">
                 <div class="o_kfa_nopool">
                     <div class="o_kfa_icon"><i class="fa fa-info" /></div>
+                    <t t-if="isReturn">
+                        <h3>ไม่มีเงินที่โอนคืนงบลอยได้</h3>
+                        <p t-if="isExhausted">
+                            เงินของโครงการถูกผูกพัน/ใช้จ่ายไปแล้ว หรือคืนแหล่งที่มาครบแล้ว
+                        </p>
+                        <p t-else="">
+                            ไม่พบใบโอนงบประมาณเข้าโครงการในปีงบประมาณของโครงการ<br
+                            />เงินที่ไม่ได้มาจากใบโอนต้องโอนออกด้วยใบโอนงบประมาณตามขั้นตอนปกติ
+                        </p>
+                    </t>
+                    <t t-else="">
                     <h3 t-if="isExhausted">เงินลอยสำหรับโครงการนี้ถูกใช้หมดแล้ว</h3>
                     <h3 t-else="">ไม่พบเงินลอยสำหรับโครงการนี้</h3>
                     <p t-if="isExhausted">
@@ -18,76 +29,59 @@
                         ยังไม่มีงบประมาณจัดสรร (เงินลอย) ที่พิกัดงบประมาณของโครงการ<br
                         />หรือระดับที่ครอบพิกัดนี้
                     </p>
+                    </t>
                     <div class="o_kfa_coord">
                         <div class="o_kfa_kicker">พิกัดงบประมาณของโครงการ</div>
                         <div class="o_kfa_title" t-esc="data.project_label" />
-                        <t t-call="kmitl_project_floating_allocation.Dims">
-                            <t t-set="dims" t-value="toDims" />
+                        <t t-call="kmitl_project_budget_transfer.Dims">
+                            <t t-set="dims" t-value="projectDims" />
                         </t>
                     </div>
-                    <div class="o_kfa_next">
+                    <div t-if="!isReturn" class="o_kfa_next">
                         หากต้องการโอนงบประมาณจากพิกัดอื่น กรุณาทำใบโอนงบประมาณตามขั้นตอนปกติ
                     </div>
                 </div>
             </t>
 
             <t t-else="">
-                <t t-call="kmitl_project_floating_allocation.Steps" />
+                <t t-call="kmitl_project_budget_transfer.Steps" />
 
                 <!-- Step 1: from → to + amount -->
                 <t t-if="data.step === 'input'">
                     <div class="o_kfa_flow">
-                        <div class="o_kfa_acct">
-                            <div class="o_kfa_kicker">จาก</div>
-                            <div class="o_kfa_title">เงินลอย</div>
-                            <t t-call="kmitl_project_floating_allocation.Dims">
-                                <t t-set="dims" t-value="fromDims" />
+                        <t t-if="isReturn">
+                            <t t-call="kmitl_project_budget_transfer.ProjectCard">
+                                <t t-set="kicker" t-value="'จาก · โครงการ/กิจกรรม'" />
                             </t>
-                            <div class="o_kfa_bal">
-                                <span class="o_kfa_bal_label">คงเหลือ</span>
-                                <span class="o_kfa_bal_value">฿<t
-                                        t-esc="money(data.floating_available)"
-                                    /></span>
-                            </div>
-                            <div
-                                class="o_kfa_after"
-                                t-att-class="{'o_kfa_neg': isOverAvailable}"
-                            >
-                                <t t-if="amount">หลังโอน <b>฿<t
-                                            t-esc="money(floatingAfter)"
-                                        /></b></t>
-                            </div>
-                        </div>
-                        <div class="o_kfa_arrow"><i
-                                class="fa fa-long-arrow-right"
-                            /></div>
-                        <div class="o_kfa_acct o_kfa_acct_to">
-                            <div class="o_kfa_kicker">ไป · โครงการ/กิจกรรม</div>
-                            <div class="o_kfa_title" t-esc="data.project_label" />
-                            <t t-call="kmitl_project_floating_allocation.Dims">
-                                <t t-set="dims" t-value="toDims" />
+                            <div class="o_kfa_arrow"><i
+                                    class="fa fa-long-arrow-right"
+                                /></div>
+                            <t t-call="kmitl_project_budget_transfer.PoolCard">
+                                <t t-set="kicker" t-value="'ไป'" />
                             </t>
-                            <div class="o_kfa_bal">
-                                <span class="o_kfa_bal_label">ได้รับจัดสรรแล้ว</span>
-                                <span class="o_kfa_bal_value">฿<t
-                                        t-esc="money(data.project_received)"
-                                    /></span>
-                            </div>
-                            <div class="o_kfa_after">
-                                <t t-if="amount">หลังโอน <b>฿<t
-                                            t-esc="money(projectAfter)"
-                                        /></b></t>
-                            </div>
-                        </div>
+                        </t>
+                        <t t-else="">
+                            <t t-call="kmitl_project_budget_transfer.PoolCard">
+                                <t t-set="kicker" t-value="'จาก'" />
+                            </t>
+                            <div class="o_kfa_arrow"><i
+                                    class="fa fa-long-arrow-right"
+                                /></div>
+                            <t t-call="kmitl_project_budget_transfer.ProjectCard">
+                                <t t-set="kicker" t-value="'ไป · โครงการ/กิจกรรม'" />
+                            </t>
+                        </t>
                     </div>
 
                     <div
                         class="o_kfa_amount"
                         t-att-class="{'o_kfa_amount_bad': isOverAvailable}"
                     >
-                        <label
-                            for="o_kfa_amount_input"
-                        >จำนวนเงินที่ต้องการจัดสรร</label>
+                        <label for="o_kfa_amount_input"><t
+                                t-if="isReturn"
+                            >จำนวนเงินที่ต้องการโอนคืน</t><t
+                                t-else=""
+                            >จำนวนเงินที่ต้องการจัดสรร</t></label>
                         <div class="o_kfa_amount_field">
                             <span class="o_kfa_currency">฿</span>
                             <input
@@ -103,9 +97,16 @@
                             />
                         </div>
                         <div class="o_kfa_hint">
-                            <t t-if="isOverAvailable">เกินเงินลอยคงเหลือ ฿<t
+                            <t t-if="isOverAvailable"><t t-if="isReturn">เกินยอดที่โอนคืนได้</t><t
+                                    t-else=""
+                                >เกินเงินลอยคงเหลือ</t> ฿<t
                                     t-esc="money(data.floating_available)"
                                 /></t>
+                            <a
+                                t-elif="isReturn"
+                                href="#"
+                                t-on-click.prevent="onFillMax"
+                            >คืนทั้งหมด ฿<t t-esc="money(data.floating_available)" /></a>
                             <t t-elif="data.plan_total">แผนงบประมาณโครงการ ฿<t
                                     t-esc="money(data.plan_total)"
                                 /></t>
@@ -117,11 +118,20 @@
                     >
                         ยอดหลังโอนเกินแผนงบประมาณโครงการ
                     </div>
-                    <div t-if="data.commitment_status === 'reserved'" class="o_kfa_msg">
+                    <div
+                        t-if="isReturn and data.commitment_status !== 'none'"
+                        class="o_kfa_msg"
+                    >
+                        โครงการจองงบประมาณแล้ว — ยอดจองที่ยังไม่ผูกพันจะลดลงตามเงินที่โอนคืนอัตโนมัติ
+                    </div>
+                    <div
+                        t-if="!isReturn and data.commitment_status === 'reserved'"
+                        class="o_kfa_msg"
+                    >
                         โครงการจองงบประมาณแล้ว — ใบจองจะปรับเป็นยอดใหม่อัตโนมัติ
                     </div>
                     <div
-                        t-if="data.commitment_status === 'spending'"
+                        t-if="!isReturn and data.commitment_status === 'spending'"
                         class="o_kfa_msg o_kfa_msg_warn"
                     >
                         โครงการเริ่มใช้จ่ายแล้ว — เงินที่จัดสรรเพิ่มจะเข้ามิติโครงการ แต่ใบจองเดิมจะไม่ขยายตามอัตโนมัติ
@@ -135,7 +145,7 @@
                         <div class="o_kfa_big_value">฿<t t-esc="money(amount)" /></div>
                     </div>
                     <div class="o_kfa_rows">
-                        <t t-call="kmitl_project_floating_allocation.FromTo" />
+                        <t t-call="kmitl_project_budget_transfer.FromTo" />
                         <div class="o_kfa_row">
                             <div class="o_kfa_row_label">บันทึกช่วยจำ</div>
                             <div class="o_kfa_row_value"><t
@@ -154,11 +164,15 @@
                             class="fa fa-check"
                         /></div>
                     <div class="o_kfa_big">
-                        <div class="o_kfa_big_label">จัดสรรงบประมาณสำเร็จ</div>
+                        <div class="o_kfa_big_label"><t
+                                t-if="isReturn"
+                            >โอนคืนงบลอยสำเร็จ</t><t
+                                t-else=""
+                            >จัดสรรงบประมาณสำเร็จ</t></div>
                         <div class="o_kfa_big_value">฿<t t-esc="money(amount)" /></div>
                     </div>
                     <div class="o_kfa_rows">
-                        <t t-call="kmitl_project_floating_allocation.FromTo" />
+                        <t t-call="kmitl_project_budget_transfer.FromTo" />
                         <div class="o_kfa_row">
                             <div class="o_kfa_row_label">เลขที่ใบโอน</div>
                             <div class="o_kfa_row_value" t-esc="data.transfer_name" />
@@ -177,7 +191,7 @@
         </div>
     </t>
 
-    <t t-name="kmitl_project_floating_allocation.Steps" owl="1">
+    <t t-name="kmitl_project_budget_transfer.Steps" owl="1">
         <div class="o_kfa_steps">
             <t t-foreach="steps" t-as="label" t-key="label_index">
                 <div
@@ -195,7 +209,7 @@
     </t>
 
     <!-- Complete names: ancestors muted, leaf in ink. -->
-    <t t-name="kmitl_project_floating_allocation.Dims" owl="1">
+    <t t-name="kmitl_project_budget_transfer.Dims" owl="1">
         <dl class="o_kfa_dims">
             <t t-foreach="dims" t-as="dim" t-key="dim.key">
                 <dt t-esc="dim.label" />
@@ -210,18 +224,63 @@
         </dl>
     </t>
 
-    <t t-name="kmitl_project_floating_allocation.FromTo" owl="1">
+    <!-- The floating pool (allocation) or the chosen Inflow Source (return). -->
+    <t t-name="kmitl_project_budget_transfer.PoolCard" owl="1">
+        <div class="o_kfa_acct" t-att-class="{'o_kfa_acct_to': isReturn}">
+            <div class="o_kfa_kicker" t-esc="kicker" />
+            <div class="o_kfa_title"><t t-if="isReturn">แหล่งที่มา (เงินลอย)</t><t
+                    t-else=""
+                >เงินลอย</t></div>
+            <t t-call="kmitl_project_budget_transfer.Dims">
+                <t t-set="dims" t-value="poolDims" />
+            </t>
+            <div class="o_kfa_bal">
+                <span class="o_kfa_bal_label"><t t-if="isReturn">คืนได้</t><t
+                        t-else=""
+                    >คงเหลือ</t></span>
+                <span class="o_kfa_bal_value">฿<t
+                        t-esc="money(data.floating_available)"
+                    /></span>
+            </div>
+            <div class="o_kfa_after" t-att-class="{'o_kfa_neg': isOverAvailable}">
+                <t t-if="amount">หลังโอน <b>฿<t t-esc="money(floatingAfter)" /></b></t>
+            </div>
+        </div>
+    </t>
+
+    <t t-name="kmitl_project_budget_transfer.ProjectCard" owl="1">
+        <div class="o_kfa_acct" t-att-class="{'o_kfa_acct_to': !isReturn}">
+            <div class="o_kfa_kicker" t-esc="kicker" />
+            <div class="o_kfa_title" t-esc="data.project_label" />
+            <t t-call="kmitl_project_budget_transfer.Dims">
+                <t t-set="dims" t-value="projectDims" />
+            </t>
+            <div class="o_kfa_bal">
+                <span class="o_kfa_bal_label">ได้รับจัดสรรแล้ว</span>
+                <span class="o_kfa_bal_value">฿<t
+                        t-esc="money(data.project_received)"
+                    /></span>
+            </div>
+            <div class="o_kfa_after">
+                <t t-if="amount">หลังโอน <b>฿<t t-esc="money(projectAfter)" /></b></t>
+            </div>
+        </div>
+    </t>
+
+    <t t-name="kmitl_project_budget_transfer.FromTo" owl="1">
         <div class="o_kfa_row">
             <div class="o_kfa_row_label">จาก</div>
             <div class="o_kfa_row_value">
-                เงินลอย
+                <t t-if="isReturn" t-esc="data.project_label" />
+                <t t-else="">เงินลอย</t>
                 <small t-esc="budgetCode(fromDims)" />
             </div>
         </div>
         <div class="o_kfa_row">
             <div class="o_kfa_row_label">ไป</div>
             <div class="o_kfa_row_value">
-                <t t-esc="data.project_label" />
+                <t t-if="isReturn">แหล่งที่มา (เงินลอย)</t>
+                <t t-else="" t-esc="data.project_label" />
                 <small t-esc="budgetCode(toDims)" />
             </div>
         </div>

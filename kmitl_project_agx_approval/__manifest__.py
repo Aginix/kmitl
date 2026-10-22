@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
 {
     "name": "KMITL Project — Approval Request Budget Draw",
     "summary": "Draw an approval request's budget from a KMITL project's reserved slip",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.1.0",
     "category": "KMITL",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",

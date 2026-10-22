@@ -1,6 +1,4 @@
-# -*- coding: utf-8 -*-
 from odoo import _, fields, models
-from odoo.exceptions import UserError
 
 # Disbursement states that no longer hold the project open: cancelled, or fully
 # settled by the finance bridge (paid/cleared). Everything else is "ค้าง".
@@ -121,7 +119,9 @@ class KmitlProject(models.Model):
         if not self.analytic_account_id:
             return False
         return bool(
-            self.env["disbursement.request"].sudo().search_count(
+            self.env["disbursement.request"]
+            .sudo()
+            .search_count(
                 [
                     ("kmitl_project_analytic_id", "=", self.analytic_account_id.id),
                     ("state", "not in", DISBURSEMENT_SETTLED_STATES),
@@ -129,15 +129,10 @@ class KmitlProject(models.Model):
             )
         )
 
-    def action_complete(self):
-        """Block closing a project that still has an outstanding (ค้าง)
-        disbursement — its money is not yet fully accounted for."""
-        self.ensure_one()
+    def _get_open_downstream_documents(self):
+        """An outstanding (ค้าง) disbursement keeps the project from being
+        closed or deleted — its money is not yet fully accounted for."""
+        res = super()._get_open_downstream_documents()
         if self._has_open_disbursement():
-            raise UserError(
-                _(
-                    "ไม่สามารถปิดโครงการได้ "
-                    "เนื่องจากยังมีใบขอเบิกที่ค้างดำเนินการอยู่"
-                )
-            )
-        return super().action_complete()
+            res.append(_("ใบขอเบิกที่ค้างดำเนินการอยู่"))
+        return res

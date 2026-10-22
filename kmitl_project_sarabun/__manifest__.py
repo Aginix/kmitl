@@ -1,9 +1,8 @@
-# -*- coding: utf-8 -*-
 {
     "name": "KMITL Project — e-Saraban Integration",
     "summary": "Route a KMITL Project for approval (ขออนุมัติจัดโครงการและค่าใช้จ่าย) "
     "through e-Saraban",
-    "version": "16.0.1.3.0",
+    "version": "16.0.1.4.0",
     "category": "Project",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",

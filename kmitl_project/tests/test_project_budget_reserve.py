@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from datetime import date
 
 from odoo.exceptions import UserError, ValidationError
@@ -205,29 +204,17 @@ class TestProjectBudgetReserve(TransactionCase):
         project._reserve_project_commitment()
         self.assertEqual(len(project.budget_commitment_ids), 1)
 
-    def test_cancel_releases_untouched_commitment(self):
-        """Cancelling a legacy project reserved before approval (to_send) that
-        has not yet spent cancels its reservation."""
-        project = self._make_project()
-        project.action_confirm()
-        self._allocate(project, 100000.0)
-        self._reserve(project)
-        project._reserve_project_commitment()  # legacy: reserved at to_send
-        commitment = project.budget_commitment_ids
-        project.action_cancel()
-        self.assertEqual(project.state, "cancel")
-        self.assertEqual(commitment.state, "cancel")
-
-    def test_cancel_keeps_commitment_when_in_progress(self):
-        """Cancelling an in-progress project keeps its commitment."""
+    def test_cancel_blocked_while_money_held(self):
+        """Cancel is the soft delete of ADR-0011: a project still holding its
+        allocation (reserved or not) cannot be cancelled, and nothing moves."""
         project = self._make_project()
         project.action_confirm()
         self._allocate(project, 100000.0)
         self._reserve_and_approve(project)
-        self.assertEqual(project.state, "in_progress")
         commitment = project.budget_commitment_ids
-        project.action_cancel()
-        self.assertEqual(project.state, "cancel")
+        with self.assertRaises(UserError):
+            project.action_cancel()
+        self.assertEqual(project.state, "in_progress")
         self.assertEqual(commitment.state, "reserved")
 
     def test_approve_keeps_legacy_reservation(self):
@@ -375,9 +362,9 @@ class TestProjectBudgetReserve(TransactionCase):
         other_dept = self.env["account.analytic.account"].create(
             {
                 "name": "Other Dept",
-                "plan_id": self.env["account.analytic.plan"].search(
-                    [("code", "=", "departments")], limit=1
-                ).id,
+                "plan_id": self.env["account.analytic.plan"]
+                .search([("code", "=", "departments")], limit=1)
+                .id,
             }
         )
         with self.assertRaises(UserError):
@@ -391,9 +378,9 @@ class TestProjectBudgetReserve(TransactionCase):
         other_activity = self.env["account.analytic.account"].create(
             {
                 "name": "Other Activity",
-                "plan_id": self.env["account.analytic.plan"].search(
-                    [("code", "=", "activities")], limit=1
-                ).id,
+                "plan_id": self.env["account.analytic.plan"]
+                .search([("code", "=", "activities")], limit=1)
+                .id,
             }
         )
         dist = dict(project.analytic_distribution or {})
@@ -410,7 +397,9 @@ class TestProjectBudgetReserve(TransactionCase):
         # The project now has analytic_account_id from action_confirm.
         # The kmitl_project key should already be in analytic_distribution.
         # Simulate writing the same distribution again (no-op change) — should not raise.
-        project.write({"analytic_distribution": dict(project.analytic_distribution or {})})
+        project.write(
+            {"analytic_distribution": dict(project.analytic_distribution or {})}
+        )
 
     def _active_commitment(self, project):
         return project.budget_commitment_ids.filtered(lambda c: c.state != "cancel")

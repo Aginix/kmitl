@@ -269,3 +269,110 @@ class TestFloatingAllocation(TransactionCase):
         wizard.amount = 1
         with self.assertRaises(UserError):
             wizard.action_next()
+
+    # ------------------------------------------------------------------
+    # โอนคืนงบลอย — Floating Return (kmitl_project ADR-0011)
+    # ------------------------------------------------------------------
+    def _return_wizard(self, project, user=None):
+        Wizard = self.env["kmitl.project.floating.return"]
+        if user:
+            Wizard = Wizard.with_user(user)
+        return Wizard.create({"project_id": project.id})
+
+    def test_return_goes_back_to_the_inflow_source(self):
+        self._appropriate(100000)
+        project = self._project()
+        allocation = self._allocate(project, 30000)
+        pool_from = allocation.transfer_id.line_ids.filtered(
+            lambda line: line.transfer_direction == "from"
+        )
+
+        wizard = self._return_wizard(project, self.budget_user)
+        self.assertEqual(len(wizard.source_ids), 1)
+        self.assertEqual(wizard.source_id.returnable, 30000)
+        self.assertEqual(wizard.amount, 30000)  # preset to the full amount
+        wizard.amount = 10000
+        wizard.action_next()
+        wizard.action_confirm()
+
+        transfer = wizard.transfer_id
+        self.assertEqual(transfer.state, "posted")
+        self.assertTrue(transfer.is_floating_return)
+        self.assertFalse(transfer.is_floating_allocation)
+        to_line = transfer.line_ids.filtered(
+            lambda line: line.transfer_direction == "to"
+        )
+        self.assertEqual(to_line.account_id, pool_from.account_id)
+        self.assertEqual(to_line.analytic_distribution, pool_from.analytic_distribution)
+        self.assertEqual(project.budget_amount, 20000)
+        # What was returned is no longer returnable.
+        self.assertEqual(self._return_wizard(project).source_id.returnable, 20000)
+
+    def test_return_releases_the_reservation(self):
+        self._appropriate(100000)
+        project = self._project()
+        self._allocate(project, 30000)
+        self.env["kmitl.project.reserve.confirm"].create(
+            {"project_id": project.id}
+        ).action_confirm()
+        project.action_approve()
+        commitment = project.budget_commitment_ids
+        self.assertEqual(commitment.available_to_obligate, 30000)
+
+        wizard = self._return_wizard(project)
+        wizard.action_next()
+        wizard.action_confirm()
+        self.assertEqual(project.budget_amount, 0)
+        self.assertEqual(commitment.available_to_obligate, 0)
+        self.assertFalse(project._get_held_money_reasons())
+
+    def test_return_above_returnable_raises(self):
+        self._appropriate(100000)
+        project = self._project()
+        self._allocate(project, 30000)
+        wizard = self._return_wizard(project)
+        wizard.amount = 30000.01
+        with self.assertRaises(UserError):
+            wizard.action_next()
+
+    def test_return_blocked_while_budget_confirmed(self):
+        self._appropriate(100000)
+        project = self._project()
+        self._allocate(project, 30000)
+        self.env["kmitl.project.reserve.confirm"].create(
+            {"project_id": project.id}
+        ).action_confirm()
+        self.assertEqual(project.state, "to_send")
+        with self.assertRaises(UserError):
+            project.action_open_floating_return()
+
+    def test_return_denied_to_non_budget_user(self):
+        self._appropriate(100000)
+        project = self._project()
+        self._allocate(project, 30000)
+        with self.assertRaises(UserError):
+            project.with_user(self.plain_user).action_open_floating_return()
+
+    def test_pending_transfer_holds_money(self):
+        """A transfer naming the project's dimension that has not posted yet
+        keeps the project from being retargeted or deleted."""
+        self._appropriate(100000)
+        project = self._project()
+        wizard = self._wizard(project)
+        wizard.amount = 1000
+        self.env["budget.transfer"].create(wizard._prepare_transfer_vals())
+        self.assertTrue(project._has_pending_project_transfer())
+        with self.assertRaises(UserError):
+            project.action_delete()
+
+    def test_full_return_then_delete_soft_deletes(self):
+        self._appropriate(100000)
+        project = self._project()
+        self._allocate(project, 30000)
+        wizard = self._return_wizard(project)
+        wizard.action_next()
+        wizard.action_confirm()
+        project.action_delete()
+        self.assertEqual(project.state, "cancel")
+        self.assertFalse(project.active)
+        self.assertFalse(project.analytic_account_id.active)

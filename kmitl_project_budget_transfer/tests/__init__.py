@@ -1,2 +1,3 @@
 from . import test_kmitl_project_budget_transfer
 from . import test_kmitl_project_budget_transfer_reservation
+from . import test_floating_allocation

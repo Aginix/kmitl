@@ -22,4 +22,35 @@
         </field>
     </record>
 
+    <record id="view_kmitl_project_form_floating" model="ir.ui.view">
+        <field name="name">kmitl.project.form.floating.allocation</field>
+        <field name="model">kmitl.project</field>
+        <field name="inherit_id" ref="kmitl_project.view_kmitl_project_form" />
+        <field name="arch" type="xml">
+            <!-- From ส่งเข้าแผน until the project closes (ADR-0009); money goes
+                 back whenever it may (ADR-0011). -->
+            <xpath
+                expr="//header/button[@name='action_reserve_budget']"
+                position="before"
+            >
+                <button
+                    string="จัดสรรงบประมาณ (งบลอย)"
+                    name="action_open_floating_allocation"
+                    type="object"
+                    icon="fa-exchange"
+                    groups="budget.group_budget_user"
+                    states="to_verify,to_send,sent,returned,in_progress"
+                />
+                <button
+                    string="โอนคืนงบลอย"
+                    name="action_open_floating_return"
+                    type="object"
+                    icon="fa-undo"
+                    groups="budget.group_budget_user"
+                    attrs="{'invisible': ['|', ('analytic_account_id', '=', False), ('state', 'not in', ('draft', 'to_verify', 'returned', 'rejected', 'in_progress', 'complete'))]}"
+                />
+            </xpath>
+        </field>
+    </record>
+
 </odoo>

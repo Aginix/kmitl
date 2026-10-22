@@ -22,7 +22,10 @@ function parseDims(json) {
 }
 
 /**
- * จัดสรรงบประมาณ (งบลอย) — the body of the wizard (ADR-0009).
+ * จัดสรรงบประมาณ (งบลอย) — the body of the wizard (ADR-0009), also used by
+ * its reverse, โอนคืนงบลอย (``direction`` = ``return``, ADR-0011), where the
+ * ``pool_*`` fields describe the chosen Inflow Source and money flows from the
+ * project to it.
  *
  * Renders the three steps from the wizard record: ``input`` (FROM the floating
  * pool → TO the project, side by side, with the amount typed here and the
@@ -46,11 +49,20 @@ export class FloatingAllocationWidget extends Component {
     get amount() {
         return this.data.amount || 0;
     }
-    get fromDims() {
+    get isReturn() {
+        return this.data.direction === "return";
+    }
+    get poolDims() {
         return parseDims(this.data.posted_pool_dims || this.data.pool_dims);
     }
-    get toDims() {
+    get projectDims() {
         return parseDims(this.data.project_dims);
+    }
+    get fromDims() {
+        return this.isReturn ? this.projectDims : this.poolDims;
+    }
+    get toDims() {
+        return this.isReturn ? this.poolDims : this.projectDims;
     }
     get isExhausted() {
         return this.data.pool_found && this.data.floating_available <= 0.005;
@@ -59,14 +71,18 @@ export class FloatingAllocationWidget extends Component {
         return this.data.floating_available - this.amount;
     }
     get projectAfter() {
-        return this.data.project_received + this.amount;
+        return this.isReturn
+            ? this.data.project_received - this.amount
+            : this.data.project_received + this.amount;
     }
     get isOverAvailable() {
         return this.amount - this.data.floating_available > 0.005;
     }
     get isOverPlan() {
         return (
-            this.data.plan_total > 0 && this.projectAfter - this.data.plan_total > 0.005
+            !this.isReturn &&
+            this.data.plan_total > 0 &&
+            this.projectAfter - this.data.plan_total > 0.005
         );
     }
     get transferDate() {
@@ -99,13 +115,19 @@ export class FloatingAllocationWidget extends Component {
         this.props.record.update({amount: Number.isFinite(value) ? value : 0});
     }
 
+    onFillMax() {
+        const value = this.data.floating_available || 0;
+        this.state.raw = moneyFormat.format(value);
+        this.props.record.update({amount: value});
+    }
+
     onAmountBlur() {
         this.state.raw = this.amount ? moneyFormat.format(this.amount) : "";
     }
 }
 
 FloatingAllocationWidget.template =
-    "kmitl_project_floating_allocation.FloatingAllocation";
+    "kmitl_project_budget_transfer.FloatingAllocation";
 FloatingAllocationWidget.props = {...standardWidgetProps};
 
 registry

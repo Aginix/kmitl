@@ -24,6 +24,14 @@ _Avoid_: allocation (unqualified — clashes with budget's appropriation sense),
 A **Project Allocation** a Budget User makes from the project itself, drawing the **Floating Budget** pool that already covers the project's own coordinate (its รหัสงบ + four dimensions, or the coarser pool above them) and taking effect at once — no หนังสือขออนุมัติโอนงบประมาณ, no approval step. In the ledger it is still an ordinary Budget Transfer (FROM the pool, TO the project's dimension), so it shows as รับโอนเข้า among the **Project Budget Movements**. Available from ส่งเข้าแผน until the project closes and may be repeated to top up. See [ADR-0009](./docs/adr/0009-direct-floating-allocation-skips-transfer-approval.md).
 _Avoid_: quick transfer, งบลอย as the name of the pool (the pool is the Floating Budget / เงินลอย; "งบลอย" only labels this action)
 
+**Floating Return (โอนคืนงบลอย)**:
+The reverse of a **Direct Floating Allocation**: a Budget User sends money that sits at the project's dimension back to one of its **Inflow Sources**, taking effect at once — no หนังสือขออนุมัติโอนงบประมาณ. Money that is reserved but not yet obligated comes out of the reservation in the same move. It is the only way to clear a project's **Held Money**, so it is what a project needs before it can be deleted or retargeted. Not possible while the ขออนุมัติ หนังสือ quotes the budget (`to_send`, `sent`). In the ledger it is an ordinary Budget Transfer, shown as โอนออก among the **Project Budget Movements**. See [ADR-0011](./docs/adr/0011-project-deletion-replaces-cancel.md).
+_Avoid_: refund / คืนเงิน (money already spent is never returned this way); คืนจอง (that only releases a reservation and leaves the money at the project)
+
+**Inflow Source (แหล่งที่มาของเงิน)**:
+One place money came into the project from — the FROM side (Funding Unit + รหัสงบ + four dimensions) of a posted transfer into the project's dimension, netted against what has already been sent back there. A **Floating Return** always returns to an Inflow Source, never to an arbitrary coordinate, so a supporting unit's money goes back to that unit.
+_Avoid_: Funding Unit (that names only the ส่วนงาน of a source, not the whole coordinate)
+
 **Supported Project (โครงการที่มีการสนับสนุนจากหน่วยงานอื่น)**:
 A project flagged as receiving budget from **another unit**. Its project dimension is opened to every unit (not just the owning one), so a supporting unit can raise a **Project Allocation** into it — always onto the project's **own** coordinate (the owning unit's ส่วนงาน/กิจกรรม/กองทุน + the project's dimension), never the supporter's. The flag only widens who may *pick* the project; it never moves where the money sits. See [ADR-0008](./docs/adr/0008-supported-project-opens-analytic-ou.md).
 _Avoid_: shared / co-owned project (the project still belongs to one unit and its money sits at that unit's coordinate)
@@ -61,8 +69,20 @@ Whether a movement has taken effect: **ผ่านแล้ว** (posted), **�
 _Avoid_: received (only inflows are "received"; ตัดงบ rows are posted, not received)
 
 **Project Number (เลขที่รันโครงการ, `key`)**:
-A sequential running number that identifies a Project. Minted once, when the project is **submitted to งานแผน** (`draft→to_verify`, ส่งเข้าแผน — the moment its analytic account is created and its budget target is locked, ahead of the allocation), and stable for the project's life — a later reset-to-draft never re-issues or clears it. Stamped with the project's **fiscal year** (`account_fiscal_year_id`), which stays freely editable while the project is a first draft and is frozen once a Project Number exists. Reused as the `code` of the project's analytic account.
+A sequential running number that identifies a Project. Minted once, when the project is **submitted to งานแผน** (`draft→to_verify`, ส่งเข้าแผน — the moment its analytic account is created and its budget target is locked, ahead of the allocation), and stable for the project's life — a later reset-to-draft never re-issues or clears it. Stamped with the project's **fiscal year** (`account_fiscal_year_id`), which stays freely editable while the project is a first draft and is frozen once a Project Number exists. Reused as the `code` of the project's analytic account. A soft-deleted project keeps its number.
 _Avoid_: Project Code (รหัสโครงการ) — a distinct approval-time identifier, **not yet implemented**; do not conflate it with the Project Number even though both currently share the `key` field.
+
+**Project Deletion (ลบโครงการ)**:
+The single way to take a project out of use. A project with no **Ledger Footprint** is deleted for good together with its analytic account; one that has a footprint but has never spent is **soft-deleted** — it becomes ยกเลิก (`cancel`) and both it and its analytic account are archived, and resetting it to draft brings both back with the same **Project Number**. A project that has spent money cannot be deleted; it is closed (ปิดโครงการ) instead. Deletion never moves money: it waits until the project holds no **Held Money**, has no open purchase request, approval request or disbursement, and has no หนังสือ circulating. A project with no Project Number may be deleted by any Project Owner; one with a number only by project officers. See [ADR-0011](./docs/adr/0011-project-deletion-replaces-cancel.md).
+_Avoid_: cancel as a separate act (ยกเลิก is now only the state a soft-deleted project ends in)
+
+**Ledger Footprint (ประวัติในบัญชีงบประมาณ)**:
+Whether the project's analytic account has ever been recorded on any other document — a budget movement, a reservation, a transfer, a purchase request, in any state, even cancelled. A project with a footprint is part of the budget history, so its analytic account is kept (archived), never deleted.
+_Avoid_: balance (a footprint can exist even when every figure nets to 0)
+
+**Held Money (เงินค้างในมิติโครงการ)**:
+Money still tied to the project's dimension: a non-zero net allocation on any coordinate in any fiscal year, an active reservation, or a transfer into or out of the dimension that is still in progress. While a project holds any, its รหัสงบ and budget dimensions cannot change and it cannot be deleted; a **Floating Return** clears it. Closing a project returns its unspent reservation (คืนจอง) but leaves the money held until a Floating Return.
+_Avoid_: Project Budget Remaining (that is reserved minus spent, only one part of it)
 
 **Project Budget Remaining (งบประมาณคงเหลือ)**:
 A project's reserved `budget_amount` minus what has actually been **consumed (เบิกจ่าย)** from its commitment — the project money still available to spend. It is the project's own reservation-vs-spend, **not** the budget account's disbursement *Remaining (f)*, and **not** the พ.1 planning headroom (`budget_amount − Σ estimated_cost`) that caps how many purchase requests a project may raise.
