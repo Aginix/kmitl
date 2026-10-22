@@ -76,7 +76,7 @@ export class PayableDueReport extends Component {
             departments: _t("Departments"),
             sources: _t("Sources"),
             funds: _t("Funds"),
-            activities: _t("Activities"),
+            activities: _t("Analytic Activities"),
             vendor: _t("Vendor"),
             partnerType: _t("Partner Type"),
         };
