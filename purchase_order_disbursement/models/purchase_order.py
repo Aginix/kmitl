@@ -48,18 +48,22 @@ class PurchaseOrder(models.Model):
         store=False,
     )
 
-    @api.depends("disbursement_request_ids", "disbursement_request_ids.amount_total")
+    @api.depends("disbursement_request_ids", "disbursement_request_ids.amount_total", "disbursement_request_ids.state")
     def _compute_disbursement_request(self):
         for order in self:
-            order.disbursement_request_total = sum(order.disbursement_request_ids.mapped("amount_total"))
+            active_requests = order.disbursement_request_ids.filtered(lambda d: d.state != "cancel")
+            order.disbursement_request_total = sum(active_requests.mapped("amount_total"))
             order.is_disbursement_request_allowed = order.disbursement_request_total < order.amount_total
             order.disbursement_request_count = len(order.disbursement_request_ids)
 
-    @api.depends("state", "is_disbursement_request_allowed")
+    @api.depends("state", "is_disbursement_request_allowed", "disbursement_request_ids.state")
     def _compute_hide_create_disbursement_request_button(self):
         for order in self:
+            has_active = any(d.state != "cancel" for d in order.disbursement_request_ids)
             order.hide_create_disbursement_request_button = (
-                order.state != "purchase" or not order.is_disbursement_request_allowed
+                order.state != "purchase"
+                or not order.is_disbursement_request_allowed
+                or has_active
             )
 
     # -- return-to-source contract (disbursement.return.source.mixin) -----
