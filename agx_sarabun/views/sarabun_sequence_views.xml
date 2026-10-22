@@ -9,7 +9,7 @@
                 <field name="name" />
                 <field name="sender_department_id" />
                 <field name="prefix" />
-                <field name="suffix" />
+                <field name="suffix" optional="hide" />
                 <field name="next_counter" />
                 <field name="active" widget="boolean_toggle" readonly="1" />
             </tree>
