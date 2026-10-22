@@ -6,13 +6,15 @@
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
     "summary": "Route work.acceptance tier reviews to the unified "
-    "mail_activity_todo inbox.",
+    "mail_activity_todo inbox via base.automation.",
     "depends": [
-        "purchase_work_acceptance_kmitl",
+        "purchase_work_acceptance_tier_validation",
         "mail_activity_todo",
+        "base_automation",
     ],
     "data": [
         "data/mail_activity_type.xml",
+        "data/base_automation.xml",
     ],
     "installable": True,
     "auto_install": True,
