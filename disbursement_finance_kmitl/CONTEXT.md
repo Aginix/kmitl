@@ -19,7 +19,8 @@ with round 1's verify/approve. Both round-2 steps also contribute a signature ro
 the ใบขอเบิก's **signature block**, which is owned by `disbursement` — this module only
 declares its two steps and stamps them, and never touches the report (see
 [`disbursement` ADR-0002](../disbursement/docs/adr/0002-signature-block-snapshots-per-step.md)).
-Because the round is forward-only, those rows are never archived.
+Returning a step archives its row, so a superseded signature stops printing while
+its history survives (ADR-0008).
 
 The two rounds also live in **different apps**: round 1 in **การขอเบิก**, which is the
 requesting unit's, and round 2 in **การเงิน**, which is the treasury office's. An app
@@ -149,9 +150,14 @@ overwrite the account the person just picked.
 
 ## Rules
 
-- The workflow is **forward-only** in round 2: there is no reject/return. A request that
-  must be corrected is cancelled (before payment) or the bill is reversed by accounting.
-  The one exception is a **cheque that dies after it was handed over** — bounced, lost,
+- Round 2 is returned **one step back at a time** while the money has not left:
+  `bills_posted` → `approved`, `payment_audited` → `bills_posted`, `payment_authorized`
+  → `payment_audited`, each by the group that owns that step, with a mandatory reason.
+  The bills and vouchers belong to the offices that raised them, so a return is
+  **refused until they are cancelled** — it never reverses a posted entry for them.
+  Once the request is `paid` there is no return; the account.move maker-checker
+  corrects it from there. See ADR-0008. What moves backwards after that is a
+  **cheque that dies after it was handed over** — bounced, lost,
   out of date, drawn wrong. It is the only instrument that can fail once the payee is
   holding it, so cancelling it withdraws that payee's voucher back to `confirmed` and a
   replacement cheque is written on the same voucher. The **request does not follow it

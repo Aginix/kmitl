@@ -192,10 +192,10 @@ class TestPaymentWorkflow(TransactionCase):
         request.action_authorize()
         self.assertEqual(request.state, "payment_authorized")
 
-    def test_audit_and_authorize_leave_signatures_that_are_never_archived(self):
+    def test_audit_and_authorize_leave_active_signatures(self):
         """Each round-2 step contributes a row to the ใบขอเบิก's signature block
-        (disbursement ADR-0002). The round is forward-only, so unlike the
-        pre-approval steps these rows are never archived."""
+        (disbursement ADR-0002). The rows stay active while the request moves
+        forward; returning a step archives its row (ADR-0008)."""
         request = self._billed_request()
         request.action_audit()
         request.action_authorize()

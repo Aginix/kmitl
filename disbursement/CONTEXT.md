@@ -75,8 +75,28 @@ Either approver's action, during their turn, that returns the pending approval
 with a reason. The request stays at `verified`; `approval_state` becomes
 `rejected` and a Todo goes to the requester. Re-sent for approval with
 **Request Approval Again**.
-_Avoid_: Return to verification (a separate flow that bounces to `signed`),
-Cancel (terminal).
+_Avoid_: Cancel (terminal). The other returns move `state` and are listed under
+**Return**.
+
+**Return** (ตีกลับ):
+A step's owner sends the request one step back with a mandatory reason, recorded on
+the chatter and raised as a Todo to the step before. One button per state, owned by
+that step's group, run through `disbursement.return.request.wizard`.
+
+| Step (`state`)       | Who returns it               | Goes back to      |
+| -------------------- | ---------------------------- | ----------------- |
+| `submitted`          | head                         | `draft`           |
+| `signed`             | verification officer         | `draft`           |
+| `verified`           | manager (to the verifier)    | `signed`          |
+| `approved`           | accounting (to the verifier) | `signed`          |
+| `bills_posted`       | payment auditor              | `approved`        |
+| `payment_audited`    | payment authorizer           | `bills_posted`    |
+| `payment_authorized` | finance (pays)               | `payment_audited` |
+
+The last three come from `disbursement_finance_kmitl` (its ADR-0008). **Reject** is
+not in the table: it leaves `state` at `verified`.
+_Avoid_: Reset to draft (the manager's way back all the way, which discards every
+signature).
 
 **`approval_state`**:
 The two-approver sub-workflow, kept separate from the request's real `state`

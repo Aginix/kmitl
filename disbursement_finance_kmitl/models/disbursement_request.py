@@ -21,8 +21,9 @@ class DisbursementRequest(models.Model):
     """Post-bill payment-execution workflow on the disbursement request.
 
     After the accounting office posts the vendor bills (``bills_posted``), the
-    request enters a second, forward-only approval phase that is separate from
-    the pre-bill request approval (signed/verified/approved):
+    request enters a second approval phase that is separate from the pre-bill
+    request approval (signed/verified/approved). It runs forward, and each step
+    before the money leaves can be returned one step back (ADR-0008):
 
         bills_posted
           -> payment_audited      (auditor       : action_audit)
@@ -209,15 +210,17 @@ class DisbursementRequest(models.Model):
     # ------------------------------------------------------------------
     # Todo fan-out (mirrors accounting_kmitl_workflow._schedule_approval_todo)
     # ------------------------------------------------------------------
-    def _schedule_payment_todo(self, activity_xmlid, group_xmlid):
-        """Push an execution Todo to every member of the responsible group."""
+    def _schedule_payment_todo(self, activity_xmlid, group_xmlid, **values):
+        """Push a Todo to every member of the responsible group."""
         group = self.env.ref(group_xmlid, raise_if_not_found=False)
         if not group:
             return
         for rec in self:
             for user in group.users:
                 rec.activity_schedule(
-                    activity_xmlid, user_id=user.id, note=rec.name or ""
+                    activity_xmlid,
+                    user_id=user.id,
+                    **{"note": rec.name or "", **values},
                 )
 
     def write(self, vals):
@@ -412,7 +415,7 @@ class DisbursementRequest(models.Model):
         return True
 
     # ------------------------------------------------------------------
-    # Workflow actions (forward-only, no reject in this phase)
+    # Workflow actions
     # ------------------------------------------------------------------
     def action_audit(self):
         """Auditor verifies the disbursement after the bills are posted."""
@@ -601,6 +604,133 @@ class DisbursementRequest(models.Model):
             ):
                 continue
             record._hand_over()
+        return True
+
+    # ------------------------------------------------------------------
+    # Return one step back (ADR-0008)
+    # ------------------------------------------------------------------
+    def _return_step_handler(self, mode):
+        handler = {
+            "audit": self._action_return_from_audit,
+            "authorize": self._action_return_from_authorize,
+            "pay": self._action_return_from_pay,
+        }.get(mode)
+        return handler or super()._return_step_handler(mode)
+
+    def action_return_audit_open_wizard(self):
+        return self._return_wizard_action(_("Return to Accounting"), "audit")
+
+    def action_return_authorize_open_wizard(self):
+        return self._return_wizard_action(_("Return to Audit"), "authorize")
+
+    def action_return_pay_open_wizard(self):
+        return self._return_wizard_action(_("Return to Authorization"), "pay")
+
+    def _post_return_note(self, title, target, reason):
+        """Record a return on the chatter, where the reason lives."""
+        self.message_post(
+            body=_(
+                "<p><b>%(title)s</b></p><p>%(target)s<br/>Reason: <b>%(reason)s</b></p>",
+                title=title,
+                target=target,
+                reason=reason,
+            ),
+            subtype_xmlid="mail.mt_comment",
+        )
+
+    def _action_return_from_audit(self, reason):
+        """The auditor sends a billed request back to the accounting office.
+
+        Accounting owns the bills, so they are not reversed for them: the
+        auditor cancels them first, and posting the replacements brings the
+        request back to ``bills_posted`` on its own (``account.move._post``)."""
+        self.ensure_one()
+        if self.state != "bills_posted":
+            raise UserError(_("Only bills-posted requests can be returned."))
+        active_bills = self.bill_ids.filtered(lambda b: b.state != "cancel")
+        if active_bills:
+            raise UserError(
+                _(
+                    "Cannot return to accounting: bill(s) %s exist. "
+                    "Cancel the bill(s) first."
+                )
+                % ", ".join(active_bills.mapped("name"))
+            )
+        self.state = "approved"
+        self.activity_unlink([TO_AUDIT_ACTIVITY])
+        self._schedule_payment_todo(
+            "mail.mail_activity_data_todo",
+            ACCOUNTING_MAKER_GROUP,
+            summary=_("Returned from payment audit"),
+            note=reason,
+        )
+        self._post_return_note(
+            _("Returned to accounting"),
+            _("Returned to the accounting office to bill again."),
+            reason,
+        )
+        return True
+
+    def _action_return_from_authorize(self, reason):
+        """The authorizer sends an audited request back to the auditor, whose
+        signature no longer stands and is archived (ADR-0002)."""
+        self.ensure_one()
+        if self.state != "payment_audited":
+            raise UserError(_("Only audited requests can be returned."))
+        self._archive_signatures(["payment_audit"])
+        # Entering ``bills_posted`` is what notifies the auditors (see ``write``).
+        self.write(
+            {
+                "state": "bills_posted",
+                "payment_auditor_id": False,
+                "payment_audit_date": False,
+            }
+        )
+        self.activity_unlink([TO_AUTHORIZE_ACTIVITY])
+        self._post_return_note(
+            _("Returned to audit"),
+            _("Returned to the payment auditor for re-checking."),
+            reason,
+        )
+        return True
+
+    def _action_return_from_pay(self, reason):
+        """The finance office sends an authorized request back to the authorizer.
+
+        The vouchers are the finance office's to cancel, so they are not
+        cancelled for them. Their payment lines are freed afterwards, or
+        ``_payable_payment_lines`` would skip them and authorizing again would
+        raise no vouchers."""
+        self.ensure_one()
+        if self.state != "payment_authorized":
+            raise UserError(_("Only authorized requests can be returned."))
+        active_payments = self.payment_ids.filtered(lambda p: p.state != "cancel")
+        if active_payments:
+            raise UserError(
+                _(
+                    "Cannot return to authorization: payment(s) %s exist. "
+                    "Cancel the payment(s) first."
+                )
+                % ", ".join(active_payments.mapped("name"))
+            )
+        self.payment_line_ids.filtered("payment_id").write({"payment_id": False})
+        self._archive_signatures(["payment_authorize"])
+        self.write(
+            {
+                "state": "payment_audited",
+                "payment_authorizer_id": False,
+                "payment_authorize_date": False,
+            }
+        )
+        self.activity_unlink([TO_PAY_ACTIVITY])
+        self._schedule_payment_todo(
+            TO_AUTHORIZE_ACTIVITY, AUTHORIZER_GROUP, note=reason
+        )
+        self._post_return_note(
+            _("Returned to authorization"),
+            _("Returned to the payment authorizer for re-authorization."),
+            reason,
+        )
         return True
 
     def action_submit_payments(self):

@@ -1,6 +1,7 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 
 from odoo import _, fields, models
+from odoo.exceptions import UserError
 
 
 class DisbursementReturnRequestWizard(models.TransientModel):
@@ -16,15 +17,21 @@ class DisbursementReturnRequestWizard(models.TransientModel):
     reason = fields.Text(string="Reason", required=True)
     # "edit": return for correction (bounce to the source, or signed -> draft).
     # "verification": approver/accounting return to the verification officer.
+    # "head": the head returns a submitted request to the requester.
+    # Each mode maps to a step on the request (see _return_step_handler).
     mode = fields.Selection(
-        selection=[("edit", "Edit"), ("verification", "Verification")],
+        selection=[
+            ("edit", "Edit"),
+            ("verification", "Verification"),
+            ("head", "Head"),
+        ],
         default="edit",
     )
 
     def action_return(self):
         self.ensure_one()
-        if self.mode == "verification":
-            self.request_id._action_return_to_verification(self.reason)
-        else:
-            self.request_id._action_return_for_edit(self.reason)
+        handler = self.request_id._return_step_handler(self.mode)
+        if not handler:
+            raise UserError(_("Unknown return step: %s") % self.mode)
+        handler(self.reason)
         return {"type": "ir.actions.act_window_close"}

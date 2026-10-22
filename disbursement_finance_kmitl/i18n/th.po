@@ -70,6 +70,7 @@ msgid "Approver"
 msgstr "ผู้อนุมัติ"
 
 #. module: disbursement_finance_kmitl
+#: model:ir.model.fields.selection,name:disbursement_finance_kmitl.selection__disbursement_return_request_wizard__mode__audit
 #: model_terms:ir.ui.view,arch_db:disbursement_finance_kmitl.view_disbursement_request_queue_tree
 msgid "Audit"
 msgstr "ตรวจสอบ"
@@ -92,6 +93,7 @@ msgid "Audited by Me"
 msgstr "ที่ฉันตรวจสอบ"
 
 #. module: disbursement_finance_kmitl
+#: model:ir.model.fields.selection,name:disbursement_finance_kmitl.selection__disbursement_return_request_wizard__mode__authorize
 #: model_terms:ir.ui.view,arch_db:disbursement_finance_kmitl.view_disbursement_request_queue_tree
 msgid "Authorize"
 msgstr "อนุมัติ"
@@ -851,3 +853,97 @@ msgstr "ยืนยันจ่ายสำเร็จ"
 #: model_terms:ir.ui.view,arch_db:disbursement_finance_kmitl.view_disbursement_request_form_inherit_finance
 msgid "Confirm the bank has successfully paid every item?"
 msgstr "ยืนยันว่าธนาคารจ่ายเงินสำเร็จครบทุกรายการแล้ว?"
+
+#. module: disbursement_finance_kmitl
+#: model:ir.model.fields.selection,name:disbursement_finance_kmitl.selection__disbursement_return_request_wizard__mode__pay
+msgid "Pay"
+msgstr "จ่ายเงิน"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
+#: model_terms:ir.ui.view,arch_db:disbursement_finance_kmitl.view_disbursement_request_form_inherit_finance
+msgid "Return to Accounting"
+msgstr "ตีกลับให้บัญชี"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
+#: model_terms:ir.ui.view,arch_db:disbursement_finance_kmitl.view_disbursement_request_form_inherit_finance
+msgid "Return to Audit"
+msgstr "ตีกลับให้ผู้ตรวจสอบ"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
+#: model_terms:ir.ui.view,arch_db:disbursement_finance_kmitl.view_disbursement_request_form_inherit_finance
+msgid "Return to Authorization"
+msgstr "ตีกลับให้ผู้อนุมัติ"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
+#, python-format
+msgid "Only bills-posted requests can be returned."
+msgstr "ตีกลับได้เฉพาะใบขอเบิกที่ลงบิลแล้ว (bills posted) เท่านั้น"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
+#, python-format
+msgid "Cannot return to accounting: bill(s) %s exist. Cancel the bill(s) first."
+msgstr "ตีกลับให้บัญชีไม่ได้: ยังมีบิล %s อยู่ กรุณายกเลิกบิลก่อน"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
+msgid "Returned from payment audit"
+msgstr "ตีกลับจากการตรวจสอบการเบิกจ่าย"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
+msgid "Returned to accounting"
+msgstr "ตีกลับให้บัญชี"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
+msgid "Returned to the accounting office to bill again."
+msgstr "ตีกลับให้ฝ่ายบัญชีเพื่อลงบิลใหม่"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
+#, python-format
+msgid "Only audited requests can be returned."
+msgstr "ตีกลับได้เฉพาะใบขอเบิกที่ตรวจสอบแล้วเท่านั้น"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
+msgid "Returned to audit"
+msgstr "ตีกลับให้ผู้ตรวจสอบ"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
+msgid "Returned to the payment auditor for re-checking."
+msgstr "ตีกลับให้ผู้ตรวจสอบการเบิกจ่ายเพื่อตรวจสอบอีกครั้ง"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
+#, python-format
+msgid "Only authorized requests can be returned."
+msgstr "ตีกลับได้เฉพาะใบขอเบิกที่อนุมัติเบิกจ่ายแล้วเท่านั้น"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
+#, python-format
+msgid "Cannot return to authorization: payment(s) %s exist. Cancel the payment(s) first."
+msgstr "ตีกลับให้ผู้อนุมัติไม่ได้: ยังมีใบสำคัญจ่าย %s อยู่ กรุณายกเลิกใบสำคัญจ่ายก่อน"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
+msgid "Returned to authorization"
+msgstr "ตีกลับให้ผู้อนุมัติ"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
+msgid "Returned to the payment authorizer for re-authorization."
+msgstr "ตีกลับให้ผู้อนุมัติเบิกจ่ายเพื่ออนุมัติอีกครั้ง"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
+#, python-format
+msgid "<p><b>%(title)s</b></p><p>%(target)s<br/>Reason: <b>%(reason)s</b></p>"
+msgstr "<p><b>%(title)s</b></p><p>%(target)s<br/>เหตุผล: <b>%(reason)s</b></p>"

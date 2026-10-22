@@ -8,9 +8,9 @@ class DisbursementRequestSignature(models.Model):
 
     The block itself lives in ``disbursement`` and loops every row, so this
     bridge only has to declare its two steps and stamp them — no report
-    inheritance is needed. Unlike the pre-approval steps these are never
-    archived: the payment-execution phase is forward-only, so its who-did-it
-    stamps are never cleared either.
+    inheritance is needed. Like the pre-approval steps, a row is archived when
+    its step is returned, together with the who-did-it stamp it recorded
+    (ADR-0008).
     """
 
     _inherit = "disbursement.request.signature"

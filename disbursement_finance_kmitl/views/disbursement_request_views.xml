@@ -250,6 +250,30 @@
             <!-- Payment-execution buttons, placed before Reset to draft -->
             <xpath expr="//button[@name='action_draft']" position="before">
                 <button
+                    name="action_return_audit_open_wizard"
+                    string="Return to Accounting"
+                    type="object"
+                    class="btn-warning"
+                    attrs="{'invisible': [('state', '!=', 'bills_posted')]}"
+                    groups="disbursement_finance_kmitl.group_disbursement_payment_auditor"
+                />
+                <button
+                    name="action_return_authorize_open_wizard"
+                    string="Return to Audit"
+                    type="object"
+                    class="btn-warning"
+                    attrs="{'invisible': [('state', '!=', 'payment_audited')]}"
+                    groups="disbursement_finance_kmitl.group_disbursement_payment_authorizer"
+                />
+                <button
+                    name="action_return_pay_open_wizard"
+                    string="Return to Authorization"
+                    type="object"
+                    class="btn-warning"
+                    attrs="{'invisible': [('state', '!=', 'payment_authorized')]}"
+                    groups="disbursement_finance_kmitl.group_disbursement_payment_finance"
+                />
+                <button
                     name="action_audit"
                     string="Audit Disbursements"
                     type="object"
