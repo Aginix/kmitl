@@ -24,11 +24,41 @@
                             invisible="0"
                             groups="base.group_erp_manager"
                         />
-                        <field name="budget_account_id"/>
-                        <field name="activity_analytic_id" string="Activity"/>
-                        <field name="department_analytic_id" string="Department"/>
-                        <field name="fund_analytic_id" string="Fund"/>
-                        <field name="source_analytic_id" string="Source"/>
+                        <field
+                            name="budget_commitment_id"
+                            options="{'no_create': True, 'no_open': True}"
+                            attrs="{'readonly': [('state', 'in', ('purchase', 'done', 'cancel'))]}"
+                        />
+                        <field
+                            name="budget_account_id"
+                            force_save="1"
+                            attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', 'in', ('purchase', 'done', 'cancel'))]}"
+                        />
+                        <field name="budget_account_product_id" invisible="1"/>
+                        <field
+                            name="activity_analytic_id"
+                            string="Activity"
+                            force_save="1"
+                            attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', 'in', ('purchase', 'done', 'cancel'))]}"
+                        />
+                        <field
+                            name="department_analytic_id"
+                            string="Department"
+                            force_save="1"
+                            attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', 'in', ('purchase', 'done', 'cancel'))]}"
+                        />
+                        <field
+                            name="fund_analytic_id"
+                            string="Fund"
+                            force_save="1"
+                            attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', 'in', ('purchase', 'done', 'cancel'))]}"
+                        />
+                        <field
+                            name="source_analytic_id"
+                            string="Source"
+                            force_save="1"
+                            attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', 'in', ('purchase', 'done', 'cancel'))]}"
+                        />
                         <field name="procurement_plan_analytic_id" invisible="1" />
                     </group>
                     <group name="procurement_plan" string="Procurement Plan">
@@ -54,7 +84,6 @@
                     icon="fa-money"
                     attrs="{'invisible':[('budget_commitment_id','=',False)]}"
                 >
-                    <field name="budget_commitment_id" invisible="1" />
                     <div class="o_stat_info">
                         <span>Budget Commitment</span>
                     </div>
@@ -95,10 +124,11 @@
                 expr="//field[@name='order_line']//tree/field[@name='product_id']"
                 position="attributes"
             >
-                <attribute name="invisible">1</attribute>
+                <attribute name="optional">hide</attribute>
+                <attribute name="attrs">{'readonly': [('state', 'in', ('purchase', 'to approve', 'done', 'cancel'))]}</attribute>
             </xpath>
             <xpath expr="//field[@name='order_line']" position="attributes">
-                <attribute name="context">{'default_state': 'draft', 'default_product_id': product_id}</attribute>
+                <attribute name="context">{'default_state': 'draft', 'default_product_id': budget_account_product_id}</attribute>
             </xpath>
         </field>
     </record>
