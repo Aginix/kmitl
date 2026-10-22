@@ -19,17 +19,4 @@
         </field>
     </record>
 
-    <record id="view_account_asset_tree" model="ir.ui.view">
-        <field name="name">view.account.asset.tree</field>
-        <field name="model">account.asset</field>
-        <field name="inherit_id" ref="account_asset_management.account_asset_view_tree"/>
-        <field name="arch" type="xml">
-            <xpath expr="//tree" position="inside">
-                <header>
-                    <button name="create_asset_number" string="Get Asset Number" type="object" class="btn-primary" />
-                </header>
-            </xpath>
-        </field>
-    </record>
-
 </odoo>
