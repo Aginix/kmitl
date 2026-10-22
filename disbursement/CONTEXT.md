@@ -56,7 +56,8 @@ reservation is optional: with one it is consumed like any request; without one
 it carries its own dimensions and budget code and, under budget control, is
 consumed directly from the pool on the Rector-delegated approval (see ADR 0005;
 opt-in via `disbursement_direct_claim`).
-Any payment type may be a direct claim.
+Any payment type may be a direct claim; only users granted the ตั้งเบิกตรง right
+may raise one.
 _Avoid_: จ่ายตรง / Direct paid (that is the **payment type** — paid straight to
 the payee rather than as an advance or a prepayment), Stand-alone request (a
 request without budget control at all).

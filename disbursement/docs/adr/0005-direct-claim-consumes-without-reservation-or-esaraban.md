@@ -21,7 +21,9 @@ A request ticked **ตั้งเบิกตรง** (`is_direct_claim`) is a 
   `disbursement_direct_claim_budget` posts a **Direct Consumption** (ตัดงบตรง, budget
   ADR-0019) for the request's amount; cancelling the request cancels it.
   Availability is pre-checked on Submit and enforced again when posting.
-- **Anyone may tick it.** The request's own approval chain — officer, Finance
+- **Only granted users may tick it** (group `disbursement_direct_claim.group_disbursement_direct_claim`,
+  ตั้งเบิกตรง; enforced on create/write, others see the flag read-only).
+  The request's own approval chain — officer, Finance
   Director, Rector-delegated approver — is the control, so the Budget-Manager
   right ADR-0019 requires for a hand-posted direct consumption is waived for a
   consumption posted by an approved request (context

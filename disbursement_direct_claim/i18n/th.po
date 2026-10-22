@@ -13,17 +13,6 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #. module: disbursement_direct_claim
-#: model:ir.model.fields,field_description:disbursement_direct_claim.field_disbursement_request__is_direct_claim
-#: model_terms:ir.ui.view,arch_db:disbursement_direct_claim.view_disbursement_request_search
-msgid "Direct Claim"
-msgstr "ตั้งเบิกตรง"
-
-#. module: disbursement_direct_claim
-#: code:addons/disbursement_direct_claim/models/disbursement_request.py:0
-msgid "A direct claim needs the memo number."
-msgstr "ใบขอเบิกตั้งเบิกตรงต้องระบุเลขที่หนังสือ"
-
-#. module: disbursement_direct_claim
 #: code:addons/disbursement_direct_claim/models/disbursement_request.py:0
 msgid "A direct claim needs the date the memo was signed."
 msgstr "ใบขอเบิกตั้งเบิกตรงต้องระบุวันที่หน่วยงานลงนามในหนังสือ"
@@ -32,3 +21,27 @@ msgstr "ใบขอเบิกตั้งเบิกตรงต้องร
 #: code:addons/disbursement_direct_claim/models/disbursement_request.py:0
 msgid "A direct claim needs the memo attached to the request."
 msgstr "ใบขอเบิกตั้งเบิกตรงต้องแนบไฟล์หนังสือบันทึกข้อความ"
+
+#. module: disbursement_direct_claim
+#: code:addons/disbursement_direct_claim/models/disbursement_request.py:0
+msgid "A direct claim needs the memo number."
+msgstr "ใบขอเบิกตั้งเบิกตรงต้องระบุเลขที่หนังสือ"
+
+#. module: disbursement_direct_claim
+#: model:ir.model.fields,field_description:disbursement_direct_claim.field_disbursement_request__is_direct_claim
+#: model_terms:ir.ui.view,arch_db:disbursement_direct_claim.view_disbursement_request_search
+msgid "Direct Claim"
+msgstr "ตั้งเบิกตรง"
+
+#. module: disbursement_direct_claim
+#: model:res.groups,name:disbursement_direct_claim.group_disbursement_direct_claim
+msgid "Disbursement Direct Claim"
+msgstr "ตั้งเบิกตรง"
+
+#. module: disbursement_direct_claim
+#. odoo-python
+#: code:addons/disbursement_direct_claim/models/disbursement_request.py:0
+#, python-format
+msgid "Only users with the Direct Claim right may set or clear it."
+msgstr ""
+"เฉพาะผู้ที่ได้รับสิทธิ์ตั้งเบิกตรงเท่านั้นที่ติ๊กหรือเอาติ๊กตั้งเบิกตรงออกได้"

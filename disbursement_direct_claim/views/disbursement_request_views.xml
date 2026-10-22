@@ -19,7 +19,16 @@
             <!-- ตั้งเบิกตรง (disbursement ADR-0005): the external memo's number
                  and date are typed here; otherwise they are stamped. -->
             <xpath expr="//group[@name='disbursement_information']/field[@name='memo_number']" position="before">
-                <field name="is_direct_claim" />
+                <field
+                    name="is_direct_claim"
+                    groups="disbursement_direct_claim.group_disbursement_direct_claim"
+                />
+                <!-- Shown, not settable, without the right. -->
+                <field
+                    name="is_direct_claim"
+                    readonly="1"
+                    groups="!disbursement_direct_claim.group_disbursement_direct_claim"
+                />
             </xpath>
             <xpath expr="//group[@name='disbursement_information']/field[@name='memo_number']" position="attributes">
                 <attribute name="readonly" />

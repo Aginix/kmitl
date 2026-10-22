@@ -10,6 +10,7 @@
     "author": "KMITL",
     "depends": ["disbursement"],
     "data": [
+        "security/security.xml",
         "views/disbursement_request_views.xml",
     ],
     "installable": True,

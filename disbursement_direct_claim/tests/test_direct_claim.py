@@ -3,7 +3,7 @@
 from datetime import date
 from unittest.mock import patch
 
-from odoo.exceptions import UserError
+from odoo.exceptions import AccessError, UserError
 from odoo.tests.common import tagged
 
 from odoo.addons.disbursement.tests.test_two_approver import TwoApproverCommon
@@ -83,3 +83,54 @@ class TestDirectClaim(TwoApproverCommon):
             dr.action_submit()
         dr.action_draft()
         self.assertEqual(dr.sign_date, date(2026, 10, 1))
+
+    def test_direct_claim_needs_the_right(self):
+        users = self.env["res.users"].with_context(no_reset_password=True)
+        plain = users.create(
+            {
+                "name": "Plain Requester",
+                "login": "dc_plain",
+                "email": "dc_plain@example.com",
+                "groups_id": [
+                    (4, self.env.ref("disbursement.group_disbursement_user").id)
+                ],
+            }
+        )
+        granted = users.create(
+            {
+                "name": "Direct Claim Requester",
+                "login": "dc_granted",
+                "email": "dc_granted@example.com",
+                "groups_id": [
+                    (
+                        4,
+                        self.env.ref(
+                            "disbursement_direct_claim.group_disbursement_direct_claim"
+                        ).id,
+                    )
+                ],
+            }
+        )
+        with self.assertRaises(AccessError):
+            self.DR.with_user(plain).create(
+                {
+                    "partner_type_id": self.partner.partner_type_id.id,
+                    "is_direct_claim": True,
+                }
+            )
+        with self.assertRaises(AccessError):
+            self.DR.with_user(plain).with_context(default_is_direct_claim=True).create(
+                {"partner_type_id": self.partner.partner_type_id.id}
+            )
+        dr = self._draft()
+        with self.assertRaises(AccessError):
+            dr.with_user(plain).is_direct_claim = True
+        # Writing the value it already has is not a change.
+        dr.with_user(plain).write({"is_direct_claim": False})
+        # A plain user still edits a direct claim's other fields.
+        dr.with_user(granted).is_direct_claim = True
+        self.assertTrue(dr.is_direct_claim)
+        dr.with_user(plain).memo_number = "อว 7201/7"
+        self.assertEqual(dr.memo_number, "อว 7201/7")
+        with self.assertRaises(AccessError):
+            dr.with_user(plain).is_direct_claim = False

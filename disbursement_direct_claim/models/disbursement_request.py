@@ -1,7 +1,7 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 
-from odoo import _, fields, models
-from odoo.exceptions import UserError
+from odoo import _, api, fields, models
+from odoo.exceptions import AccessError, UserError
 
 from odoo.addons.disbursement.models.disbursement_request import (
     DisbursementRequest as DisbursementRequestBase,
@@ -29,6 +29,30 @@ class DisbursementRequest(models.Model):
         states=DisbursementRequestBase.READONLY_STATES,
     )
 
+    @api.model_create_multi
+    def create(self, vals_list):
+        records = super().create(vals_list)
+        # After super(): the flag may also come from a default_ context key.
+        if records.filtered("is_direct_claim"):
+            self._check_direct_claim_right()
+        return records
+
+    def write(self, vals):
+        if "is_direct_claim" in vals and self.filtered(
+            lambda r: r.is_direct_claim != bool(vals["is_direct_claim"])
+        ):
+            self._check_direct_claim_right()
+        return super().write(vals)
+
+    def _check_direct_claim_right(self):
+        """Only users granted ตั้งเบิกตรง may tick or untick it."""
+        if not self.env.su and not self.env.user.has_group(
+            "disbursement_direct_claim.group_disbursement_direct_claim"
+        ):
+            raise AccessError(
+                _("Only users with the Direct Claim right may set or clear it.")
+            )
+
     def action_submit(self):
         for record in self.filtered(lambda r: r.is_direct_claim and r.state == "draft"):
             record._check_direct_claim_memo()
@@ -46,9 +70,7 @@ class DisbursementRequest(models.Model):
         if not self.sign_date:
             raise UserError(_("A direct claim needs the date the memo was signed."))
         if not self.attachment_ids:
-            raise UserError(
-                _("A direct claim needs the memo attached to the request.")
-            )
+            raise UserError(_("A direct claim needs the memo attached to the request."))
 
     def action_draft(self):
         # The memo's own date survives a reset; core clears the stamped one.
