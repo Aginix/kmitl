@@ -154,6 +154,20 @@ patch(
             }
         },
 
+        // Spinner for the fallback path — the dialog/drag flows toggle
+        // `uploading` inside `_uploadAndLink`, but click-upload here goes
+        // through stock FileInput. Hooking FileInput's own lifecycle
+        // (via the patched onBeforeUpload/onAfterUpload props) keeps the
+        // overlay in sync with the HTTP request, including the error
+        // path where `onFileUploaded` never runs.
+        onBeforeUpload() {
+            this.doctypeState.uploading = true;
+        },
+
+        onAfterUpload() {
+            this.doctypeState.uploading = false;
+        },
+
         // ------------------------------------------------------------------
         // Drag & drop — uploads immediately without asking for a doctype;
         // user can tag the newly-added attachments via the badge afterward.

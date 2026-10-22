@@ -27,6 +27,8 @@
         </xpath>
         <xpath expr="//FileInput" position="attributes">
             <attribute name="beforeOpen.bind">beforeAttachClick</attribute>
+            <attribute name="onBeforeUpload.bind">onBeforeUpload</attribute>
+            <attribute name="onAfterUpload.bind">onAfterUpload</attribute>
         </xpath>
     </t>
 
