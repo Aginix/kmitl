@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- XLSX export. Rendered against the throwaway carrier wizard; the real
+         filters (incl. report_type) travel in the report ``data`` dict (see the
+         OWL client action's action_export_xlsx), so the workbook mirrors the
+         screen. One shared action serves all three form types. -->
+    <record id="action_procurement_plan_report_xlsx" model="ir.actions.report">
+        <field name="name">แผนจัดซื้อจัดจ้าง (XLSX)</field>
+        <field name="model">procurement.plan.report.wizard</field>
+        <field name="report_type">xlsx</field>
+        <field name="report_name">procurement_plan_report.report_xlsx</field>
+        <field name="report_file">procurement_plan_report.report_xlsx</field>
+        <field name="binding_model_id" eval="False" />
+    </record>
+</odoo>
