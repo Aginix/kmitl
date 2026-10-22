@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+
+    <!-- MIS Report Template: รายงานการจัดสรรงบประมาณรายจ่าย แยกตามประเภทงบประมาณ -->
+    <record id="mis_report_budget_appropriation_expense" model="mis.report">
+        <field name="name">รายงานการจัดสรรงบประมาณรายจ่าย แยกตามประเภทงบประมาณ</field>
+        <field name="description">Budget Appropriation - Expense by Budget Type</field>
+        <field
+            name="move_lines_source"
+            ref="budget_appropriation.model_budget_appropriation_line"
+        />
+    </record>
+
+    <!-- KPI: งบบุคลากร (51xxx) -->
+    <record id="mis_kpi_appropriation_personnel" model="mis.report.kpi">
+        <field name="report_id" ref="mis_report_budget_appropriation_expense" />
+        <field name="name">personnel</field>
+        <field name="description">งบบุคลากร</field>
+        <field name="type">num</field>
+        <field name="compare_method">diff</field>
+        <field name="accumulation_method">sum</field>
+        <field name="auto_expand_accounts" eval="True" />
+        <field name="sequence">10</field>
+    </record>
+    <record id="mis_kpi_appropriation_personnel_expr" model="mis.report.kpi.expression">
+        <field name="kpi_id" ref="mis_kpi_appropriation_personnel" />
+        <field name="name">balp[51%]</field>
+    </record>
+
+    <!-- KPI: งบดำเนินงาน (52xxx) -->
+    <record id="mis_kpi_appropriation_operating" model="mis.report.kpi">
+        <field name="report_id" ref="mis_report_budget_appropriation_expense" />
+        <field name="name">operating</field>
+        <field name="description">งบดำเนินงาน</field>
+        <field name="type">num</field>
+        <field name="compare_method">diff</field>
+        <field name="accumulation_method">sum</field>
+        <field name="auto_expand_accounts" eval="True" />
+        <field name="sequence">20</field>
+    </record>
+    <record id="mis_kpi_appropriation_operating_expr" model="mis.report.kpi.expression">
+        <field name="kpi_id" ref="mis_kpi_appropriation_operating" />
+        <field name="name">balp[52%]</field>
+    </record>
+
+    <!-- KPI: งบลงทุน (53xxx) -->
+    <record id="mis_kpi_appropriation_capital" model="mis.report.kpi">
+        <field name="report_id" ref="mis_report_budget_appropriation_expense" />
+        <field name="name">capital</field>
+        <field name="description">งบลงทุน</field>
+        <field name="type">num</field>
+        <field name="compare_method">diff</field>
+        <field name="accumulation_method">sum</field>
+        <field name="auto_expand_accounts" eval="True" />
+        <field name="sequence">30</field>
+    </record>
+    <record id="mis_kpi_appropriation_capital_expr" model="mis.report.kpi.expression">
+        <field name="kpi_id" ref="mis_kpi_appropriation_capital" />
+        <field name="name">balp[53%]</field>
+    </record>
+
+    <!-- KPI: งบเงินอุดหนุน (54xxx) -->
+    <record id="mis_kpi_appropriation_subsidy" model="mis.report.kpi">
+        <field name="report_id" ref="mis_report_budget_appropriation_expense" />
+        <field name="name">subsidy</field>
+        <field name="description">งบเงินอุดหนุน</field>
+        <field name="type">num</field>
+        <field name="compare_method">diff</field>
+        <field name="accumulation_method">sum</field>
+        <field name="auto_expand_accounts" eval="True" />
+        <field name="sequence">40</field>
+    </record>
+    <record id="mis_kpi_appropriation_subsidy_expr" model="mis.report.kpi.expression">
+        <field name="kpi_id" ref="mis_kpi_appropriation_subsidy" />
+        <field name="name">balp[54%]</field>
+    </record>
+
+    <!-- KPI: งบรายจ่ายอื่น (55xxx) -->
+    <record id="mis_kpi_appropriation_other" model="mis.report.kpi">
+        <field name="report_id" ref="mis_report_budget_appropriation_expense" />
+        <field name="name">other</field>
+        <field name="description">งบรายจ่ายอื่น</field>
+        <field name="type">num</field>
+        <field name="compare_method">diff</field>
+        <field name="accumulation_method">sum</field>
+        <field name="auto_expand_accounts" eval="True" />
+        <field name="sequence">50</field>
+    </record>
+    <record id="mis_kpi_appropriation_other_expr" model="mis.report.kpi.expression">
+        <field name="kpi_id" ref="mis_kpi_appropriation_other" />
+        <field name="name">balp[55%]</field>
+    </record>
+
+    <!-- KPI: รวมงบประมาณรายจ่าย -->
+    <record id="mis_kpi_appropriation_total" model="mis.report.kpi">
+        <field name="report_id" ref="mis_report_budget_appropriation_expense" />
+        <field name="name">total_expense</field>
+        <field name="description">รวมงบประมาณรายจ่ายทั้งหมด</field>
+        <field name="type">num</field>
+        <field name="compare_method">diff</field>
+        <field name="accumulation_method">sum</field>
+        <field name="auto_expand_accounts" eval="False" />
+        <field name="sequence">100</field>
+    </record>
+    <record id="mis_kpi_appropriation_total_expr" model="mis.report.kpi.expression">
+        <field name="kpi_id" ref="mis_kpi_appropriation_total" />
+        <field name="name">personnel + operating + capital + subsidy + other</field>
+    </record>
+
+</odoo>
