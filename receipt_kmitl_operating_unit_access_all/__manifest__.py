@@ -2,13 +2,14 @@
 
 {
     "name": "Access all OUs' Receipt KMITL",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.0.1",
     "category": "KMITL/Accounting",
     "license": "AGPL-3",
     "author": "KMITL",
     "summary": "Bypass the KMITL receipt Operating Unit row-level rules",
     "depends": [
         "receipt_kmitl_operating_unit",
+        "operating_unit_access_all",
     ],
     "data": [
         "security/security.xml",

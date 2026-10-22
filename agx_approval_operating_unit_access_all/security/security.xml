@@ -5,6 +5,11 @@
         <field name="category_id" ref="operating_unit.module_operating_units" />
     </record>
 
+    <!-- "Access all Operating Units" opens this module's OUs too. -->
+    <record id="operating_unit_access_all.group_all_operating_unit" model="res.groups">
+        <field name="implied_ids" eval="[(4, ref('group_all_ou_approval_request'))]" />
+    </record>
+
     <!-- Keep the requester / responsible person ORed in, as in
          agx_approval_operating_unit, so users always reach their own requests. -->
     <function model="ir.rule" name="write">

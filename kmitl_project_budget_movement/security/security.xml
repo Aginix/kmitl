@@ -12,12 +12,15 @@
         <field name="global" eval="True" />
     </record>
 
-    <!-- A project's owners see it from any operating unit. -->
+    <!-- A project's owners see it from any operating unit, and so does
+         kmitl_project_operating_unit_access_all's group (has_group is False
+         while that module is not installed). -->
     <record id="kmitl_project_budget_move_line_operating_unit_rule" model="ir.rule">
         <field name="name">Project Budget Movement: Operating Unit</field>
         <field name="model_id" ref="model_kmitl_project_budget_move_line" />
         <field name="domain_force">[
-            '|', '|', '|', '|',
+            '|', '|', '|', '|', '|',
+            (1, '=', 1) if user.has_group('kmitl_project_operating_unit_access_all.group_all_ou_kmitl_project') else (0, '=', 1),
             ('project_id.operating_unit_id', '=', False),
             ('project_id.operating_unit_id', 'in', user.operating_unit_ids.ids),
             ('project_id.manager_id.user_id', '=', user.id),

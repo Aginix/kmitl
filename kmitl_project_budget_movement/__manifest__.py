@@ -1,6 +1,6 @@
 {
     "name": "KMITL Project Budget Movement",
-    "version": "16.0.1.0.1",
+    "version": "16.0.1.0.2",
     "summary": "Project Budget Movements (การเคลื่อนไหวงบประมาณโครงการ), "
     "readable by project owners without budget rights",
     "category": "KMITL/Budgeting",

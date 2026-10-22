@@ -1,10 +1,10 @@
 {
     "name": "Access all OUs' Advance Payment",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.0.1",
     "category": "KMITL",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    "depends": ["advance_payment_operating_unit"],
+    "depends": ["advance_payment_operating_unit", "operating_unit_access_all"],
     "data": [
         "security/security.xml",
     ],

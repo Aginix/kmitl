@@ -1,8 +1,13 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <record id="group_all_ou_purchase_order" model="res.groups">
         <field name="name">Access all OUs' purchase order</field>
         <field name="category_id" ref="operating_unit.module_operating_units" />
+    </record>
+
+    <!-- "Access all Operating Units" opens this module's OUs too. -->
+    <record id="operating_unit_access_all.group_all_operating_unit" model="res.groups">
+        <field name="implied_ids" eval="[(4, ref('group_all_ou_purchase_order'))]" />
     </record>
 
     <function model="ir.rule" name="write">

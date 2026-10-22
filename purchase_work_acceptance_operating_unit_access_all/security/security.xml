@@ -7,6 +7,11 @@
         </record>
     </data>
 
+    <!-- "Access all Operating Units" opens this module's OUs too. -->
+    <record id="operating_unit_access_all.group_all_operating_unit" model="res.groups">
+        <field name="implied_ids" eval="[(4, ref('group_all_ou_work_acceptance'))]" />
+    </record>
+
     <function model="ir.rule" name="write">
         <value
             eval="[ref('purchase_work_acceptance_operating_unit.ir_rule_work_acceptance_operating_units'),

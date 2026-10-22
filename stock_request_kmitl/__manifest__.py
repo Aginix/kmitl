@@ -1,12 +1,11 @@
-# -*- coding: utf-8 -*-
 {
-    'name': 'Stock Request KMITL',
-    'version': '16.0.1.0.0',
-    'summary': """ Stock Request KMITL Summary """,
+    "name": "Stock Request KMITL",
+    "version": "16.0.1.0.1",
+    "summary": """ Stock Request KMITL Summary """,
     "category": "KMITL",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    'depends': ['stock_account', 'stock_kmitl'],
+    "depends": ["stock_account", "stock_kmitl", "operating_unit_access_all"],
     "data": [
         "data/stock_request_sequence.xml",
         "security/stock_request_security.xml",
@@ -15,7 +14,7 @@
         "views/stock_request_views.xml",
         "views/menu.xml",
     ],
-    'installable': True,
-    'auto_install': False,
-    'license': 'LGPL-3',
+    "installable": True,
+    "auto_install": False,
+    "license": "LGPL-3",
 }

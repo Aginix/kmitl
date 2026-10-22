@@ -3,12 +3,12 @@
 
 {
     "name": "Access all OUs' Analytics",
-    "version": "16.0.1.0.1",
+    "version": "16.0.1.0.2",
     "author": "Ecosoft, Odoo Community Association (OCA)",
     "category": "Sales",
     "license": "AGPL-3",
     "website": "https://github.com/OCA/operating-unit",
-    "depends": ["analytic_operating_unit"],
+    "depends": ["analytic_operating_unit", "operating_unit_access_all"],
     "data": [
         "security/analytic_security.xml",
     ],

@@ -1,11 +1,10 @@
-# -*- coding: utf-8 -*-
 {
     "name": "Access all OUs' Purchase Guarantee",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.0.1",
     "category": "KMITL",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    "depends": ["purchase_guarantee_operating_unit"],
+    "depends": ["purchase_guarantee_operating_unit", "operating_unit_access_all"],
     "data": [
         "security/security.xml",
     ],
