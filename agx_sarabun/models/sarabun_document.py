@@ -9,6 +9,10 @@ minimal; behaviour is added per phase.
 
 import base64
 import logging
+import re
+
+from lxml import etree, html as lxml_html
+from markupsafe import Markup, escape
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
@@ -1379,6 +1383,98 @@ class SarabunDocument(models.Model):
             .sudo()
             ._render(template, {"o": origin.with_context(lang="th_TH")})
         )
+
+    @api.model
+    def _report_thai_distribute(self, text):
+        """Markup for a ``.distribute`` block in the หนังสือ PDF (a copy of
+        ``kmitl.project._report_thai_distribute``; keep the two in sync).
+
+        wkhtmltopdf only stretches justified text at spaces and ignores
+        ``text-justify: distribute``, while Thai has no spaces between words.
+        So put a space at every Thai word boundary (the CSS cancels its width
+        with a negative ``word-spacing``) and wrap the real spaces in
+        ``span.rs`` to keep their normal width: justify then spreads each line
+        across all its words, and lines wrap between words, never inside one.
+
+        ``text`` is plain text (Text/Char) or Markup (an Html field), in which
+        case every text node is segmented and the markup kept as is.
+        """
+        if not text:
+            return ""
+        try:
+            from pythainlp.tokenize import word_tokenize
+
+            def tokenize(line):
+                return word_tokenize(line, engine="newmm", keep_whitespace=True)
+
+        except ImportError:
+            _logger.warning("pythainlp is not installed; Thai text not segmented")
+
+            def tokenize(line):
+                return [token for token in re.split(r"(\s+)", line) if token]
+
+        def is_thai(char):
+            return "\u0e00" <= char <= "\u0e7f" and char not in "ๆฯ"
+
+        def runs(line):
+            """Alternating [text, space, text, ...] runs of ``line``, with a
+            space inserted at every Thai word boundary inside the text runs."""
+            out, prev = [""], ""
+            for token in tokenize(line) if line else []:
+                if token.isspace():
+                    out += [token, ""]
+                    prev = ""
+                    continue
+                if prev and is_thai(prev[-1]) and is_thai(token[0]):
+                    out[-1] += " "
+                out[-1] += token
+                prev = token
+            return out
+
+        def real_space(space, tail):
+            span = etree.Element("span", {"class": "rs"})
+            span.text, span.tail = space, tail
+            return span
+
+        if isinstance(text, Markup):
+            # The editor puts a zero-width space after each Tab; THSarabunNew
+            # has no glyph for it.
+            root = lxml_html.fragment_fromstring(
+                text.replace("\u200b", ""), create_parent="div"
+            )
+            for el in list(root.iter(etree.Element)):
+                parts = runs(el.text)
+                el.text = parts[0]
+                for i in range(1, len(parts), 2):
+                    el.insert(i // 2, real_space(parts[i], parts[i + 1]))
+                if el is not root and el.tail:
+                    parts = runs(el.tail)
+                    el.tail = parts[0]
+                    parent, index = el.getparent(), el.getparent().index(el)
+                    for i in range(1, len(parts), 2):
+                        parent.insert(
+                            index + 1 + i // 2, real_space(parts[i], parts[i + 1])
+                        )
+            return Markup(lxml_html.tostring(root, encoding="unicode")[5:-6])
+
+        lines = []
+        for line in text.split("\n"):
+            body = line.lstrip(" \t")
+            # The CSS white-space: pre-line collapses leading spaces: keep the
+            # line's indent as non-breaking spaces.
+            indent = line[: len(line) - len(body)].replace("\t", "    ")
+            parts = (
+                ["", indent.replace(" ", "\xa0")] + runs(body) if indent else runs(body)
+            )
+            lines.append(
+                Markup("").join(
+                    Markup('<span class="rs">%s</span>') % part
+                    if i % 2
+                    else escape(part)
+                    for i, part in enumerate(parts)
+                )
+            )
+        return Markup("\n").join(lines)
 
     def _get_report_base_filename(self):
         self.ensure_one()
