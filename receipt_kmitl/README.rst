@@ -79,8 +79,48 @@ After install, a Manager must:
    (the two must differ), and a Payment Type (Cash / Cheque / Money Transfer /
    Other) — the type controls which box is ticked on the printed official
    receipt.
-3. Create products (standard Odoo products) with an Income Account set to the
-   appropriate income-type account.
+3. Review the revenue products. The module seeds one product per revenue
+   account of the KMITL chart (see `Revenue product data`_) — archive the ones
+   your office does not collect, or add your own with an Income Account set to
+   an income-type account.
+
+Revenue product data
+====================
+
+Receipt lines require a product whose income account is set **on the product
+itself** (the picker's domain is ``[('property_account_income_id', '!=',
+False)]``; the category fallback in ``_onchange_product_id`` only runs after
+that). The module therefore ships the catalogue: one ``product.template`` per
+revenue account of the KMITL chart — every code starting with ``4``, 316 in
+total, including the header accounts — generated from
+``account_kmitl/data/account.account.template.csv``.
+
+Products are filed in a 22-node ``product.category`` tree mirroring the chart's
+own levels, rooted at ``รายได้``:
+
+::
+
+  รายได้
+  ├── รายได้จากการดำเนินงาน
+  │   ├── รายได้จากรัฐบาล → 4111……4115
+  │   └── รายได้จากแหล่งอื่น
+  │       ├── รายได้อื่น → ค่าธรรมเนียมการศึกษา, ค่าธรรมเนียมอื่นๆ,
+  │       │                งานบริการ, เงินผลประโยชน์, อื่นๆ
+  │       ├── รายได้จากการรับบริจาค, รายได้ดอกเบี้ย, บัญชีพักรายได้,
+  │       └── รายได้ระหว่างหน่วยงานภายใน
+  ├── รายได้ที่ไม่เกิดจากการดำเนินการ
+  └── รายได้แผ่นดิน → รายได้แผ่นดินอื่น
+
+A product for a header account sits in its own category. ``default_code`` is
+the 10-digit account code, ``list_price`` is ``0.00`` so the cashier types the
+amount, ``sale_ok``/``purchase_ok`` are off to keep the 316 items out of the
+sales and purchase pickers, and taxes are cleared (KMITL charges no VAT).
+
+The data is ``noupdate="1"``: prices, names and archived state edited in the UI
+survive an upgrade, and names are not re-synced when the chart changes. Adding
+a record to the data file still reaches an installed database on ``-u`` (its
+external id does not exist yet); changing a field on an existing record does
+not — that needs a migration script.
 
 Usage
 =====
