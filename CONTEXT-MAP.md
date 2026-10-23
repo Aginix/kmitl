@@ -166,6 +166,10 @@ upfront.
   document, stamped on it by ordered routing rules while it is draft and sticky after;
   each ระบบงาน (work area) gets an overview of its ศูนย์งาน with configurable counters.
   Membership is focus only — OU rules and per-state rights stay authoritative.
+  - **`purchase_request_work_center`** + **`purchase_request_approval_work_center`** (no
+    own glossary — part of the Work Center context): the งานพัสดุ area, routing พ.1 and
+    พจ.1 (independently, possibly to the same ศูนย์งาน) and the overview menu in
+    งานพัสดุ.
 
 ## Relationships
 

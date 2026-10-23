@@ -1,0 +1,100 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* purchase_request_work_center
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-23 06:25+0000\n"
+"PO-Revision-Date: 2026-10-23 06:25+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: purchase_request_work_center
+#: model_terms:ir.actions.act_window,help:purchase_request_work_center.action_work_center_overview
+msgid ""
+"A work center owns and follows the พ.1 / พจ.1 its routing\n"
+"                rules give it. Remove the \"My Work Centers\" filter to see them\n"
+"                all."
+msgstr ""
+"ศูนย์งานเป็นเจ้าของและติดตาม พ.1 / พจ.1 ที่กฎการจัดเข้าศูนย์งานจัดให้\n"
+"                เอาตัวกรอง \"ศูนย์งานของฉัน\" ออกเพื่อดูทั้งหมด"
+
+#. module: purchase_request_work_center
+#: model:ir.actions.act_window,name:purchase_request_work_center.action_work_center_counter
+#: model:ir.ui.menu,name:purchase_request_work_center.menu_work_center_counter
+msgid "Card Counters"
+msgstr "ตัวนับบนการ์ด"
+
+#. module: purchase_request_work_center
+#: model:ir.ui.menu,name:purchase_request_work_center.menu_work_center_config
+msgid "Configuration"
+msgstr "ตั้งค่า"
+
+#. module: purchase_request_work_center
+#: model_terms:ir.ui.view,arch_db:purchase_request_work_center.view_purchase_request_search_work_center
+msgid "My Work Centers"
+msgstr "ศูนย์งานของฉัน"
+
+#. module: purchase_request_work_center
+#: model_terms:ir.ui.view,arch_db:purchase_request_work_center.view_purchase_request_search_work_center
+msgid "No Work Center"
+msgstr "ยังไม่มีศูนย์งาน"
+
+#. module: purchase_request_work_center
+#: model_terms:ir.actions.act_window,help:purchase_request_work_center.action_work_center_overview
+msgid "No work center yet"
+msgstr "ยังไม่มีศูนย์งาน"
+
+#. module: purchase_request_work_center
+#: model:ir.ui.menu,name:purchase_request_work_center.menu_work_center_overview
+msgid "Overview"
+msgstr "ภาพรวม"
+
+#. module: purchase_request_work_center
+#: model:ir.model,name:purchase_request_work_center.model_purchase_request
+msgid "Purchase Request"
+msgstr "แบบขอให้จัดหา (พ.1)"
+
+#. module: purchase_request_work_center
+#: model:ir.actions.act_window,name:purchase_request_work_center.action_work_center_rule
+#: model:ir.ui.menu,name:purchase_request_work_center.menu_work_center_rule
+msgid "Routing Rules"
+msgstr "กฎการจัดเข้าศูนย์งาน"
+
+#. module: purchase_request_work_center
+#: model:ir.model.fields,help:purchase_request_work_center.field_purchase_request__work_center_manual
+msgid ""
+"Set when the work center was picked by hand: routing rules no longer change "
+"it. Clear the work center to follow the rules again."
+msgstr ""
+"ถูกตั้งเมื่อเลือกศูนย์งานเอง กฎการจัดเข้าศูนย์งานจะไม่เปลี่ยนค่าอีก "
+"ล้างค่าศูนย์งานเพื่อกลับไปใช้กฎ"
+
+#. module: purchase_request_work_center
+#: model:ir.model.fields,field_description:purchase_request_work_center.field_purchase_request__work_center_id
+#: model:ir.ui.menu,name:purchase_request_work_center.menu_work_center_root
+#: model_terms:ir.ui.view,arch_db:purchase_request_work_center.view_purchase_request_search_work_center
+msgid "Work Center"
+msgstr "ศูนย์งาน"
+
+#. module: purchase_request_work_center
+#: model:ir.actions.act_window,name:purchase_request_work_center.action_work_center_config
+msgid "Work Center Configuration"
+msgstr "ตั้งค่าศูนย์งาน"
+
+#. module: purchase_request_work_center
+#: model:ir.model.fields,field_description:purchase_request_work_center.field_purchase_request__work_center_manual
+msgid "Work Center Pinned"
+msgstr "ศูนย์งานกำหนดเอง"
+
+#. module: purchase_request_work_center
+#: model:ir.actions.act_window,name:purchase_request_work_center.action_work_center_overview
+msgid "Work Centers"
+msgstr "ศูนย์งาน"

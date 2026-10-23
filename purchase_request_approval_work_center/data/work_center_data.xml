@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record
+        id="purchase_request_work_center.work_center_area_procurement"
+        model="work.center.area"
+    >
+        <field
+            name="model_ids"
+            eval="[(4, ref('purchase_request_approval.model_purchase_request_approval'))]"
+        />
+    </record>
+
+    <data noupdate="1">
+        <record id="counter_pa_draft" model="work.center.counter">
+            <field name="name">พจ.1 ร่าง</field>
+            <field
+                name="area_id"
+                ref="purchase_request_work_center.work_center_area_procurement"
+            />
+            <field
+                name="model_id"
+                ref="purchase_request_approval.model_purchase_request_approval"
+            />
+            <field name="domain">[('state', '=', 'draft')]</field>
+            <field name="sequence">110</field>
+        </record>
+        <record id="counter_pa_to_approve" model="work.center.counter">
+            <field name="name">พจ.1 รออนุมัติ</field>
+            <field
+                name="area_id"
+                ref="purchase_request_work_center.work_center_area_procurement"
+            />
+            <field
+                name="model_id"
+                ref="purchase_request_approval.model_purchase_request_approval"
+            />
+            <field name="domain">[('state', '=', 'to_approve')]</field>
+            <field name="sequence">120</field>
+        </record>
+        <record id="counter_pa_returned" model="work.center.counter">
+            <field name="name">พจ.1 ตีกลับ / รอแก้ พ.1</field>
+            <field
+                name="area_id"
+                ref="purchase_request_work_center.work_center_area_procurement"
+            />
+            <field
+                name="model_id"
+                ref="purchase_request_approval.model_purchase_request_approval"
+            />
+            <field
+                name="domain"
+            >[('state', 'in', ['sarabun_returned', 'pending_pr'])]</field>
+            <field name="sequence">130</field>
+        </record>
+    </data>
+
+</odoo>
