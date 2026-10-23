@@ -145,6 +145,17 @@ class TestChangeRequest(TransactionCase):
         self.assertEqual(reopened["state"], "open")
         self.assertEqual(self._activities(made["id"], ANSWER).user_id, self.maker)
 
+    def test_steps_signal_the_record_live(self):
+        Bus = self.env["bus.bus"]
+        channel = '"agx_change_request:%s:%s"' % (self.holder._name, self.holder.id)
+        before = Bus.search_count([("channel", "like", channel)])
+        made = self._make()
+        self.Request.with_user(self.maker).request_reply(made["id"], "Done")
+        self.assertEqual(Bus.search_count([("channel", "like", channel)]), before + 2)
+        # It says which record changed, nothing of the request itself.
+        message = Bus.search([("channel", "like", channel)], order="id desc", limit=1)
+        self.assertNotIn("Done", message.message)
+
     def test_admin_closes_on_behalf(self):
         made = self._make()
         self.assertFalse(

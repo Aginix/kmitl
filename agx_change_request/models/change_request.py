@@ -6,6 +6,14 @@ from odoo.exceptions import AccessError, UserError
 from .change_request_mixin import OUTSTANDING
 
 ANSWER_ACTIVITY = "agx_change_request.mail_activity_change_request_answer"
+# Bus notification telling the forms showing a record that its requests
+# changed; it carries no content, they read them again with their own rights.
+CHANGED_NOTIFICATION = "agx_change_request/changed"
+
+
+def bus_channel(res_model, res_id):
+    """The bus channel of the Change requests of one record."""
+    return "agx_change_request:%s:%s" % (res_model, res_id)
 
 
 class ChangeRequest(models.Model):
@@ -177,6 +185,12 @@ class ChangeRequest(models.Model):
             subtype_xmlid="mail.mt_note",
             author_id=self.env.user.partner_id.id,
             partner_ids=partners.ids if partners else None,
+        )
+        # Every step is posted: forms showing the record catch up live.
+        self.env["bus.bus"]._sendone(
+            bus_channel(self.res_model, self.res_id),
+            CHANGED_NOTIFICATION,
+            {"res_model": self.res_model, "res_id": self.res_id},
         )
 
     def _label(self):

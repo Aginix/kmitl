@@ -132,7 +132,9 @@ export class ChangeRequestPanel extends Component {
             historyOf: null,
         });
         onWillStart(() => this.load(this.props));
-        useExternalListener(window, CHANGED_EVENT, () => this.load());
+        // Steps taken elsewhere (the viewer, another user): keep what is
+        // being typed here.
+        useExternalListener(window, CHANGED_EVENT, () => this.refresh());
         onWillUpdateProps((next) => {
             if (
                 next.resId !== this.props.resId ||
@@ -158,6 +160,19 @@ export class ChangeRequestPanel extends Component {
             historyOf: null,
         });
         props.onChanged(
+            data.requests.filter((request) => OUTSTANDING.includes(request.state))
+                .length
+        );
+    }
+
+    async refresh() {
+        const data = await this.orm.call(MODEL, "request_load", [
+            this.props.resModel,
+            this.props.resId,
+        ]);
+        this.state.requests = data.requests;
+        this.state.suggestions = data.suggestions;
+        this.props.onChanged(
             data.requests.filter((request) => OUTSTANDING.includes(request.state))
                 .length
         );
