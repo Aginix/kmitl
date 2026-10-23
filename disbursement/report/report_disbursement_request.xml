@@ -48,8 +48,9 @@
                             <div class="col-8">
                                 เลขที่                                <span class="ms-2 fw-normal" t-out="o.name"/>
                             </div>
+                            <!-- วันที่หน่วยงานลงนาม: blank until the head has signed. -->
                             <div class="col">
-                                วันที่                                <span class="ms-2 fw-normal" t-field="o.date"/>
+                                วันที่                                <span class="ms-2 fw-normal" t-field="o.sign_date"/>
                             </div>
                         </div>
 

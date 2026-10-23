@@ -76,9 +76,12 @@ class DisbursementRequest(models.Model):
             ],
         }
         # budget_operating_unit would stamp the approver's unit; the
-        # consumption belongs to the requester's.
+        # consumption belongs to the request's (disbursement_operating_unit),
+        # else to its requester's.
         if "operating_unit_id" in Move._fields:
-            unit = self.user_id.sudo().default_operating_unit_id
+            unit = (
+                "operating_unit_id" in self._fields and self.sudo().operating_unit_id
+            ) or self.user_id.sudo().default_operating_unit_id
             if unit:
                 vals["operating_unit_id"] = unit.id
         move = Move.create(vals)
