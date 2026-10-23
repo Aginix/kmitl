@@ -106,7 +106,9 @@ class KmitlProject(models.Model):
             if old_manager and old_manager != rec.manager_id:
                 old_user = old_manager.sudo().user_id
                 if old_user and old_user not in (
-                    rec.coordinator_ids | rec.creating_user_id
+                    rec.coordinator_ids
+                    | rec.creating_user_id
+                    | rec.manager_id.sudo().user_id
                 ):
                     rec.message_unsubscribe(partner_ids=old_user.partner_id.ids)
         return res
