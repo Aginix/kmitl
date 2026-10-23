@@ -186,13 +186,19 @@ class TestProjectBudgetReserve(TransactionCase):
             commitment.analytic_distribution or {},
         )
 
-    def test_budget_remaining_starts_at_full_reserved(self):
-        """budget_remaining = reserved − consumed; right after reserve nothing consumed."""
+    def test_budget_remaining_is_received_minus_consumed(self):
+        """budget_remaining = received − consumed (ADR-0012): the full allocation
+        before the reservation, then lowered by each ตัดงบ."""
         project = self._make_project()
         project.action_confirm()
         self._allocate(project, 100000.0)
+        self.assertAlmostEqual(project.budget_remaining, 100000.0)
         self._reserve_and_approve(project)
         self.assertAlmostEqual(project.budget_remaining, 100000.0)
+        project.budget_commitment_ids._post_budget_event("consume", 40000.0)
+        project.invalidate_recordset()
+        self.assertAlmostEqual(project.budget_consumed, 40000.0)
+        self.assertAlmostEqual(project.budget_remaining, 60000.0)
 
     def test_reserve_is_idempotent(self):
         """Re-running _reserve_project_commitment does not create a second commitment."""

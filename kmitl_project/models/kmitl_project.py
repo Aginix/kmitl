@@ -489,10 +489,20 @@ class KmitlProject(models.Model):
         string="จำนวนผูกพันงบประมาณ",
         compute="_compute_budget_commitment_count",
     )
+    # Read from the ledger, which project users cannot read: compute as sudo.
+    budget_consumed = fields.Float(
+        string="เบิกจ่ายแล้ว",
+        digits="Product Price",
+        compute="_compute_budget_remaining",
+        compute_sudo=True,
+        help="ยอดตัดงบ (เบิกจ่าย) ที่ผ่านแล้ว ณ รหัสงบและมิติทั้งหมดของโครงการ",
+    )
     budget_remaining = fields.Float(
         string="งบประมาณคงเหลือ",
+        digits="Product Price",
         compute="_compute_budget_remaining",
-        help="งบประมาณที่จองไว้ของโครงการ หักด้วยยอดที่เบิกจ่าย (ใช้) ไปแล้ว",
+        compute_sudo=True,
+        help="งบประมาณที่ได้รับการจัดสรร หักด้วยยอดที่เบิกจ่ายไปแล้ว (เงินที่ยังอยู่ในโครงการ)",
     )
 
     activity_analytic_id = fields.Many2one(
@@ -1065,22 +1075,26 @@ class KmitlProject(models.Model):
                 ).mapped("amount")
             )
 
-    @api.depends(
-        "budget_reserved",
-        "budget_commitment_ids.state",
-        "budget_commitment_ids.total_consumed",
-    )
+    @api.depends("budget_amount")
     def _compute_budget_remaining(self):
-        """Money left in the project = reserved budget − what has actually been
-        consumed (เบิกจ่าย) from its commitment. Not the budget-account dashboard
-        status — strictly this project's reservation vs its spend."""
+        """Money still sitting at the project (ADR-0012) = Project Budget received
+        − posted ตัดงบ at the same coordinate ``budget_amount`` sums, so it is
+        meaningful in every state and equals the net of the posted Project Budget
+        Movements. Not reserved − consumed, and not the budget-account dashboard
+        status."""
+        BML = self.env["budget.move.line"]
         for rec in self:
-            used = sum(
-                rec.budget_commitment_ids.filtered(
-                    lambda c: c.state != "cancel"
-                ).mapped("total_consumed")
+            domain = rec._budget_coordinate_domain()
+            groups = (
+                BML.read_group(
+                    domain + [("move_type", "=", "consume")], ["balance"], []
+                )
+                if domain
+                else []
             )
-            rec.budget_remaining = rec.budget_reserved - used
+            # Consume lines post a negative balance.
+            rec.budget_consumed = -(groups[0].get("balance") or 0.0) if groups else 0.0
+            rec.budget_remaining = rec.budget_amount - rec.budget_consumed
 
     def action_open_budget_commitments(self):
         self.ensure_one()
@@ -1539,6 +1553,29 @@ class KmitlProject(models.Model):
         for rec in self:
             rec.budget_target_locked = bool(rec.key)
 
+    def _budget_coordinate_domain(self):
+        """Posted ``budget.move.line`` at the project's full target coordinate:
+        its รหัสงบ + the four base dims + its own ``kmitl_project`` dim, in its
+        fiscal year. ``None`` while the coordinate is incomplete."""
+        self.ensure_one()
+        if (
+            not self.analytic_account_id
+            or not self.account_fiscal_year_id
+            or not self.budget_account_id
+        ):
+            return None
+        return [
+            ("parent_state", "=", "posted"),
+            ("account_fiscal_year_id", "=", self.account_fiscal_year_id.id),
+            ("company_id", "=", self.company_id.id),
+            ("account_id", "=", self.budget_account_id.id),
+            ("kmitl_project_analytic_id", "=", self.analytic_account_id.id),
+            ("department_analytic_id", "=", self.department_analytic_id.id),
+            ("fund_analytic_id", "=", self.fund_analytic_id.id),
+            ("source_analytic_id", "=", self.source_analytic_id.id),
+            ("activity_analytic_id", "=", self.activity_analytic_id.id),
+        ]
+
     @api.depends(
         "analytic_account_id",
         "analytic_distribution",
@@ -1559,26 +1596,11 @@ class KmitlProject(models.Model):
         where the allocation actually landed (money stranded at the old coordinate
         → จองงบ correctly blocked until it is re-aligned)."""
         BML = self.env["budget.move.line"]
-        _APPROPRIATION_TYPES = ("appropriation", "entry")
         for rec in self:
-            if (
-                not rec.analytic_account_id
-                or not rec.account_fiscal_year_id
-                or not rec.budget_account_id
-            ):
+            domain = rec._budget_coordinate_domain()
+            if not domain:
                 rec.budget_amount = 0.0
                 continue
-            domain = [
-                ("parent_state", "=", "posted"),
-                ("move_type", "in", list(_APPROPRIATION_TYPES)),
-                ("account_fiscal_year_id", "=", rec.account_fiscal_year_id.id),
-                ("company_id", "=", rec.company_id.id),
-                ("account_id", "=", rec.budget_account_id.id),
-                ("kmitl_project_analytic_id", "=", rec.analytic_account_id.id),
-                ("department_analytic_id", "=", rec.department_analytic_id.id),
-                ("fund_analytic_id", "=", rec.fund_analytic_id.id),
-                ("source_analytic_id", "=", rec.source_analytic_id.id),
-                ("activity_analytic_id", "=", rec.activity_analytic_id.id),
-            ]
+            domain += [("move_type", "in", ["appropriation", "entry"])]
             groups = BML.read_group(domain, ["balance"], [])
             rec.budget_amount = (groups[0].get("balance") or 0.0) if groups else 0.0
