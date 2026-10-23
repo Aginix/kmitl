@@ -67,14 +67,10 @@
                     <button string="ปิดโครงการ" name="action_complete" states="in_progress" type="object" class="oe_highlight" />
                     <button string="Reset to Draft" name="action_draft" states="to_verify,to_send,returned" type="object" />
                     <button string="Reset to Draft" name="action_draft" groups="project.group_project_manager" states="rejected,cancel" type="object" />
-                    <button string="ลบโครงการ" name="action_delete" type="object"
-                        attrs="{'invisible': [('can_delete', '=', False)]}"
-                        confirm="โครงการที่ยังไม่เคยมีประวัติงบประมาณจะถูกลบถาวรพร้อมมิติโครงการ ส่วนโครงการที่มีประวัติแล้วจะถูกยกเลิกและเก็บเข้าคลัง (กู้คืนได้ด้วย Reset to Draft) ต้องการลบโครงการหรือไม่?" />
                     <field name="state" widget="statusbar" statusbar_visible="draft,to_verify,to_send,sent,in_progress,complete" />
                 </header>
                 <sheet>
                     <field name="is_editable" invisible="1" />
-                    <field name="can_delete" invisible="1" />
                     <field name="budget_target_locked" invisible="1" />
                     <div class="oe_button_box" name="button_box" groups="base.group_user">
                         <button

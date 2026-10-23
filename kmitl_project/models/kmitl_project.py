@@ -435,7 +435,6 @@ class KmitlProject(models.Model):
 
     active = fields.Boolean(default=True)
     is_editable = fields.Boolean(compute="_compute_is_editable")
-    can_delete = fields.Boolean(compute="_compute_can_delete")
 
     budget_account_id = fields.Many2one(
         comodel_name="budget.account",
@@ -727,19 +726,6 @@ class KmitlProject(models.Model):
         self._release_project_commitment()
         self.write({"state": "rejected"})
 
-    def action_delete(self):
-        """ลบโครงการ (ADR-0011): delete the project and its analytic account
-        outright when the account has no Ledger Footprint, otherwise soft-delete
-        it (``action_cancel``)."""
-        self.ensure_one()
-        if self._must_soft_delete():
-            self.action_cancel()
-            return True
-        self.unlink()
-        return self.env["ir.actions.act_window"]._for_xml_id(
-            "kmitl_project.action_kmitl_project_all"
-        )
-
     def action_cancel(self):
         """Soft delete (ADR-0011): → ``cancel`` and archive the project and its
         analytic account, for a project whose analytic is part of the budget
@@ -985,17 +971,6 @@ class KmitlProject(models.Model):
                 % "\n".join("- %s" % (line.name or _("(ไม่ระบุรายการ)")) for line in bad)
             )
 
-    def _compute_can_delete(self):
-        """Show ลบโครงการ only where it can pass the rights/state guards of
-        ``_check_deletable``: a numbered project only to project officers."""
-        is_officer = self.env.user.has_group(
-            "kmitl_project.group_kmitl_project_user_all"
-        )
-        for rec in self:
-            rec.can_delete = rec.state not in ("sent", "complete", "cancel") and (
-                is_officer or not rec.key
-            )
-
     def _compute_is_editable(self):
         for rec in self:
             if rec.state in ("draft", "returned"):
@@ -1004,21 +979,17 @@ class KmitlProject(models.Model):
                 rec.is_editable = False
 
     def unlink(self):
-        """Delete for good, together with the analytic account — only a project
-        whose analytic has no Ledger Footprint (ADR-0011); one that is part of
-        the budget history is soft-deleted with ลบโครงการ instead."""
+        """ลบโครงการ (ADR-0011), Odoo's own Delete: a project whose analytic
+        has no Ledger Footprint goes for good together with the analytic; one
+        that is part of the budget history is soft-deleted (``action_cancel``)
+        instead, so it stays archived and can be revived."""
         for rec in self:
             rec._check_deletable()
-            if rec._must_soft_delete():
-                raise UserError(
-                    _(
-                        "โครงการ %s มีประวัติในบัญชีงบประมาณแล้ว จึงลบถาวรไม่ได้ "
-                        'กรุณากดปุ่ม "ลบโครงการ" เพื่อยกเลิกและเก็บเข้าคลังแทน'
-                    )
-                    % (rec.key or rec.name)
-                )
-        analytics = self.analytic_account_id
-        res = super().unlink()
+        soft = self.filtered(lambda p: p._must_soft_delete())
+        soft.action_cancel()
+        hard = self - soft
+        analytics = hard.analytic_account_id
+        res = super(KmitlProject, hard).unlink()
         analytics.sudo().unlink()
         return res
 

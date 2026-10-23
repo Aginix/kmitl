@@ -106,7 +106,7 @@ class TestProjectLifecycle(TransactionCase):
     # -- ลบโครงการ ------------------------------------------------------------
     def test_delete_draft_without_number(self):
         project = self._make_project()
-        project.action_delete()
+        project.unlink()
         self.assertFalse(project.exists())
 
     def test_delete_without_footprint_removes_analytic(self):
@@ -115,7 +115,7 @@ class TestProjectLifecycle(TransactionCase):
         project.action_confirm()
         analytic = project.analytic_account_id
         self.assertTrue(analytic)
-        project.action_delete()
+        project.unlink()
         self.assertFalse(project.exists())
         self.assertFalse(analytic.exists())
 
@@ -125,7 +125,7 @@ class TestProjectLifecycle(TransactionCase):
         self._allocate(project, 1000.0)
         self.assertTrue(project.has_held_money)
         with self.assertRaises(UserError):
-            project.action_delete()
+            project.unlink()
         self.assertEqual(project.state, "to_verify")
 
     def test_soft_delete_with_footprint_and_revive(self):
@@ -138,14 +138,14 @@ class TestProjectLifecycle(TransactionCase):
         move = self._allocate(project, 1000.0)
         move.button_cancel()
         self.assertFalse(project.has_held_money)
-        project.action_delete()
+        project.unlink()
         self.assertTrue(project.exists())
         self.assertEqual(project.state, "cancel")
         self.assertFalse(project.active)
         self.assertFalse(analytic.active)
-        # The footprint also forbids the plain unlink.
-        with self.assertRaises(UserError):
-            project.unlink()
+        # Deleting again never removes it: the footprint forbids a hard delete.
+        project.unlink()
+        self.assertTrue(project.exists())
 
         project.action_draft()
         self.assertEqual(project.state, "draft")
@@ -158,7 +158,7 @@ class TestProjectLifecycle(TransactionCase):
         project.action_confirm()
         project.state = "sent"
         with self.assertRaises(UserError):
-            project.action_delete()
+            project.unlink()
 
     def test_numbered_project_delete_needs_officer(self):
         """A Project Owner may delete an unnumbered draft; once the project has
@@ -175,8 +175,7 @@ class TestProjectLifecycle(TransactionCase):
                 "account_fiscal_year_id": self.fiscal_year.id,
             }
         )
-        self.assertTrue(draft.can_delete)
-        draft.action_delete()
+        draft.unlink()
         self.assertFalse(draft.exists())
 
         numbered = self._make_project(
@@ -184,9 +183,8 @@ class TestProjectLifecycle(TransactionCase):
         )
         numbered.action_confirm()
         numbered = numbered.with_user(owner)
-        self.assertFalse(numbered.can_delete)
         with self.assertRaises(UserError):
-            numbered.action_delete()
+            numbered.unlink()
 
     # -- Retarget guard ---------------------------------------------------------
     def test_retarget_blocked_while_money_held(self):

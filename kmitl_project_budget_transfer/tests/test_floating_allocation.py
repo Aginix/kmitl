@@ -398,7 +398,7 @@ class TestFloatingAllocation(TransactionCase):
         self.env["budget.transfer"].create(wizard._prepare_transfer_vals())
         self.assertTrue(project._has_pending_project_transfer())
         with self.assertRaises(UserError):
-            project.action_delete()
+            project.unlink()
 
     def test_full_return_then_delete_soft_deletes(self):
         self._appropriate(100000)
@@ -407,7 +407,7 @@ class TestFloatingAllocation(TransactionCase):
         wizard = self._return_wizard(project)
         wizard.action_next()
         wizard.action_confirm()
-        project.action_delete()
+        project.unlink()
         self.assertEqual(project.state, "cancel")
         self.assertFalse(project.active)
         self.assertFalse(project.analytic_account_id.active)
