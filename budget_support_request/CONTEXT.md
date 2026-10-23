@@ -15,8 +15,17 @@ routed by a separate bridge).
 The document a requesting unit files to ask central for budget. It carries only the
 *request* side — the requester's `department` dimension, the amount asked for, a
 rich-text justification (เหตุผล/ความจำเป็น), and supporting attachments. It does **not**
-carry the funding source; central chooses that when fulfilling.
+name the pool the money comes out of; central picks that when fulfilling.
 _Avoid_: budget request (ambiguous with พ.1 purchase request), transfer
+
+**แหล่งเงิน of a support request**:
+Always **งบประมาณเงินรายได้** — central supports units out of revenue budget and nothing
+else, so this is a stated fact about the request, not a question put to the requester. It
+is shown, and travels onto whichever document fulfils the request (where ADR-0009 requires
+both sides of a transfer to agree on it), but it is never chosen. A request naming any
+other แหล่งเงิน is refused outright, however it was written.
+_Avoid_: funding source (that is the *pool* central picks at fulfilment — a different
+choice), budget type
 
 **Requesting Unit (หน่วยงานผู้ขอรับการสนับสนุน)**:
 The unit asking for support, identified on the request by its **`department` dimension**
@@ -38,7 +47,7 @@ request is by definition central funding a unit, never the unit funding itself �
 requester then owns and spends it freely (a `budget.transfer`). **Reserve (จอง)** creates a standalone ใบจองงบประมาณ (`budget.commitment`) with
 the requester as **Beneficiary Unit**, keeping central's dimension on the slip; the
 requester draws it down through its own พ.1/disbursement. Central always chooses the
-funding source and dimensions; on Transfer the target department is the requester's, on
+pool and the remaining dimensions; on Transfer the target department is the requester's, on
 Reserve the commitment's own department is central's (budget ADR-0011).
 _Avoid_: allocation (that is ปรับเข้าแผน into a project dimension — a different move)
 

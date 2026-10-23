@@ -3,6 +3,9 @@ from odoo.exceptions import UserError, ValidationError
 from odoo.tools import html2plaintext
 
 BUDDY_GROUP_XMLID = "budget_buddy.group_budget_buddy"
+# Central only supports units out of เงินรายได้ (the `sources` code), so the
+# request's แหล่งเงิน is fixed rather than asked for.
+SOURCE_REVENUE_CODE = "2"
 FULFIL_ACTIVITY = "budget_support_request.mail_activity_support_fulfil"
 ACK_ACTIVITY = "budget_support_request.mail_activity_support_ack"
 
@@ -64,11 +67,70 @@ class BudgetSupportRequest(models.Model):
         store=True,
         tracking=True,
     )
-    _analytic_keys = {"departments": "department_analytic_id"}
+
+    source_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="แหล่งเงินงบประมาณ",
+        compute="_compute_analytic_id",
+        inverse="_inverse_source_analytic",
+        domain=[("root_plan_id.code", "=", "sources")],
+        store=True,
+        readonly=True,
+        tracking=True,
+        help="Fixed: central supports units out of งบประมาณเงินรายได้ only.",
+    )
+    _analytic_keys = {
+        "departments": "department_analytic_id",
+        "sources": "source_analytic_id",
+    }
 
     def _inverse_department_analytic(self):
         for record in self:
             record._update_analytic_distribution("departments")
+
+    def _inverse_source_analytic(self):
+        for record in self:
+            record._update_analytic_distribution("sources")
+
+    @api.model
+    def _default_source_analytic(self):
+        return self.env["account.analytic.account"].search(
+            [("root_plan_id.code", "=", "sources"), ("code", "=", SOURCE_REVENUE_CODE)],
+            limit=1,
+        )
+
+    @api.constrains("source_analytic_id", "analytic_distribution")
+    def _check_source_is_fixed(self):
+        """``readonly`` only stops the form; the แหล่งเงิน is fixed for every
+        support request, so hold it over RPC and over a hand-written
+        ``analytic_distribution`` too."""
+        fixed = self._default_source_analytic()
+        if not fixed:
+            return
+        for request in self:
+            if request.source_analytic_id and request.source_analytic_id != fixed:
+                raise ValidationError(
+                    _(
+                        "แหล่งเงินของคำขอรับการสนับสนุนถูกกำหนดเป็น %(fixed)s "
+                        "เท่านั้น (ได้รับ %(given)s)"
+                    )
+                    % {
+                        "fixed": fixed.display_name,
+                        "given": request.source_analytic_id.display_name,
+                    }
+                )
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        """Stamp the fixed แหล่งเงิน server-side. It cannot ride on a plain
+        ``default``: the field is readonly, and the web client drops readonly
+        fields on save, so the value would never reach
+        ``analytic_distribution``."""
+        source = self._default_source_analytic()
+        if source:
+            for vals in vals_list:
+                vals.setdefault("source_analytic_id", source.id)
+        return super().create(vals_list)
 
     company_id = fields.Many2one(
         comodel_name="res.company",
@@ -491,19 +553,32 @@ class BudgetSupportRequest(models.Model):
     # ------------------------------------------------------------------
     def _after_approved(self):
         """Tell the one named Buddy that this request is ready to fulfil —
-        not the whole central office (CONTEXT.md ▸ Buddy)."""
+        not the whole central office (CONTEXT.md ▸ Buddy).
+
+        ``sudo`` after the authority check: creating a mail.activity is gated
+        on ``_mail_post_access`` applied to the *request* (mail_activity.py
+        ``_filter_access_rules_remaining``), i.e. on the OU read rule here, so
+        an approver outside the requesting unit's OU could not schedule it.
+        Who may approve was already decided by ``action_approve`` / the
+        e-Saraban letter; the assignee still has to be able to read the
+        request, which Odoo enforces in ``_check_access_assignation``.
+        """
         for request in self.filtered("officer_id"):
-            request.activity_schedule(
+            request.sudo().activity_schedule(
                 FULFIL_ACTIVITY,
                 user_id=request.officer_id.id,
                 summary=_("จัดสรรงบประมาณตามคำขอ %s") % (request.name or ""),
             )
 
     def _after_done(self):
-        """Clear the officer's fulfilment Todo and notify the requester."""
-        self.activity_feedback([FULFIL_ACTIVITY])
+        """Clear the Buddy's fulfilment Todo and notify the requester.
+
+        ``sudo`` for the same reason as :meth:`_after_approved` — and because
+        clearing someone else's activity is otherwise limited to its creator
+        or assignee."""
+        self.sudo().activity_feedback([FULFIL_ACTIVITY])
         for request in self:
-            request.activity_schedule(ACK_ACTIVITY, user_id=request.user_id.id)
+            request.sudo().activity_schedule(ACK_ACTIVITY, user_id=request.user_id.id)
 
     def _on_fulfilment_posted(self):
         """Move an approved request to in_progress once central has posted a
@@ -523,6 +598,9 @@ class BudgetSupportRequest(models.Model):
             "reason": html2plaintext(self.reason or ""),
             "date": self.date,
             "account_fiscal_year_id": self.account_fiscal_year_id.id,
+            # แหล่งเงิน IS known and must match on both sides of a transfer
+            # (ADR-0009), unlike the department.
+            "source_analytic_id": self.source_analytic_id.id,
             # NO header department: on a budget.transfer the header IS the
             # source (FROM lines hide the field and always take it), and a
             # support request is central funding a unit — central picks its
@@ -555,5 +633,6 @@ class BudgetSupportRequest(models.Model):
             "title": _("สนับสนุน %s") % (self.name or ""),
             "account_fiscal_year_id": self.account_fiscal_year_id.id,
             "amount": self.amount_requested,
+            "source_analytic_id": self.source_analytic_id.id,
             "support_request_id": self.id,
         }

@@ -43,10 +43,15 @@ class BudgetSupportRequest(models.Model):
 
     def _get_sarabun_subject(self):
         self.ensure_one()
-        return _("ขออนุมัติสนับสนุนงบประมาณ %(dept)s ประจำปีงบประมาณ พ.ศ. %(fy)s") % {
-            "dept": self._sarabun_dim_name(self.department_analytic_id),
+        return _("ขอรับการสนับสนุน%(source)sสถาบัน ประจำปีงบประมาณ พ.ศ. %(fy)s เพิ่มเติม") % {
+            "source": self.source_analytic_id.name or "",
             "fy": self.account_fiscal_year_id.name or "",
         }
+
+    def _get_sarabun_addressee(self):
+        """เรียน — like a budget transfer, a support request is decided by the
+        อธิการบดี, so the หนังสือ is addressed to them."""
+        return _("อธิการบดี")
 
     def _get_sarabun_body_template(self):
         """The live คำขอ figures, rendered between the หนังสือ's เนื้อหา and the
@@ -78,11 +83,12 @@ class BudgetSupportRequest(models.Model):
         action = super().action_submit_to_sarabun()
         if action and action.get("res_id"):
             document = self.env["sarabun.document"].browse(action["res_id"])
-            # Only the enclosures: the mixin's _prepare_sarabun_document_vals
-            # already seeds content + include_content from
-            # _get_sarabun_content() at create.
+            # content + include_content are already seeded by the mixin's
+            # _prepare_sarabun_document_vals from _get_sarabun_content(); เรียน
+            # has no such hook, so it is set here.
             document.sudo().write(
                 {
+                    "addressee": self._get_sarabun_addressee(),
                     "enclosure_attachment_ids": [
                         (6, 0, self._copy_attachments_to_sarabun(document).ids)
                     ],

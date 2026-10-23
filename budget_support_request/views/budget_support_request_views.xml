@@ -40,6 +40,7 @@
                     <group>
                         <group name="request_info" string="Request Information">
                             <field name="department_analytic_id" required="1" attrs="{'readonly': [('can_edit', '=', False)]}" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="source_analytic_id" options="{'no_create': True, 'no_open': True}"/>
                             <field name="date" attrs="{'readonly': [('can_edit', '=', False)]}"/>
                             <field name="fiscal_year_locked" invisible="1"/>
                             <field name="account_fiscal_year_id" attrs="{'readonly': ['|', ('can_edit', '=', False), ('fiscal_year_locked', '=', True)]}"/>
@@ -64,7 +65,7 @@
                     </group>
 
                     <group name="attachments" string="เอกสารแนบ" colspan="4">
-                        <field name="attachment_ids" nolabel="1" widget="many2many_binary" attrs="{'readonly': [('can_edit', '=', False)]}"/>
+                        <field name="attachment_ids" nolabel="1" colspan="2" widget="many2many_binary" attrs="{'readonly': [('can_edit', '=', False)]}"/>
                     </group>
                 </sheet>
 
@@ -95,6 +96,7 @@
                 <field name="name"/>
                 <field name="date"/>
                 <field name="department_analytic_id"/>
+                <field name="source_analytic_id" optional="hide"/>
                 <field name="user_id"/>
                 <field name="officer_id" optional="show"/>
                 <field name="amount_requested" widget="monetary" sum="Total"/>

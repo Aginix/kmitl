@@ -11,9 +11,14 @@
          หนังสือ (agx_sarabun action_send accepts draft|returned) would
          otherwise go out for signature carrying the superseded amount. -->
     <template id="report_budget_support_request_body">
-        <!-- Bootstrap paints a 2px separator between thead and tbody, heavier
-             than the 1px cell borders around it. Flatten it so the table reads
-             at one intensity under the Sarabun layout. -->
+        <!-- Bootstrap's `.table > :not(:first-child)` paints a 2px solid
+             separator between the first row group and the rest, which reads
+             heavier than the surrounding 1px cell borders — and wkhtmltopdf
+             then drops some of those hairlines entirely, leaving a table with
+             gaps in its outline. Flatten the separator and carry the `border`
+             utility so every edge is drawn at the same 1px (same recipe as
+             purchase_request_sarabun, #1480). Scoped to `.table-bordered` so
+             the Sarabun header layout's unbordered tables aren't picked up. -->
         <style>
             .table-bordered > :not(:first-child) {
                 border-top-width: 1px !important;
@@ -21,12 +26,16 @@
         </style>
 
         <div class="my-4"/>
-        <table class="table table-bordered table-sm mb-4">
-            <tbody>
+        <table class="table table-bordered border table-sm mb-4">
+            <thead>
                 <tr>
-                    <td style="width:35%">เลขที่คำขอ</td>
-                    <td><span t-out="o.name or '-'"/></td>
+                    <th class="fw-normal text-start align-top" style="width:35%">เลขที่คำขอ</th>
+                    <th class="fw-normal text-start align-top">
+                        <span t-out="o.name or '-'"/>
+                    </th>
                 </tr>
+            </thead>
+            <tbody>
                 <tr>
                     <td>ส่วนงานผู้ขอรับการสนับสนุน</td>
                     <td>
@@ -36,16 +45,20 @@
                     </td>
                 </tr>
                 <tr>
+                    <td>แหล่งเงินงบประมาณ</td>
+                    <td><span t-out="o.source_analytic_id.name or '-'"/></td>
+                </tr>
+                <tr>
                     <td>ปีงบประมาณ</td>
                     <td><span t-out="o.account_fiscal_year_id.name or '-'"/></td>
                 </tr>
                 <tr>
                     <td>จำนวนเงินที่ขอรับการสนับสนุน</td>
+                    <!-- Plain thousands format, not the monetary widget: the
+                         widget prints the ฿ symbol, which reads as a duplicate
+                         next to the Thai คำว่า บาท the official letter uses. -->
                     <td class="text-end">
-                        <span
-                            t-out="o.amount_requested"
-                            t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"
-                        /> บาท
+                        <span t-out="'{:,.2f}'.format(o.amount_requested)"/> บาท
                     </td>
                 </tr>
             </tbody>
