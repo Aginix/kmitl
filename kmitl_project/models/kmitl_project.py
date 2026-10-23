@@ -748,8 +748,12 @@ class KmitlProject(models.Model):
         """Every guard of ลบโครงการ (ADR-0011): deleting never moves money and
         never strands a document that still points at the project."""
         self.ensure_one()
-        if self.key and not self.env.user.has_group(
-            "kmitl_project.group_kmitl_project_user_all"
+        if (
+            self.key
+            and not self.env.su
+            and not self.env.user.has_group(
+                "kmitl_project.group_kmitl_project_user_all"
+            )
         ):
             raise UserError(
                 _("โครงการที่มีเลขที่รันแล้ว (%s) ลบได้เฉพาะเจ้าหน้าที่โครงการเท่านั้น") % self.key
@@ -900,7 +904,7 @@ class KmitlProject(models.Model):
         return reasons
 
     def _compute_has_held_money(self):
-        held = self._held_analytic_ids()
+        held = self._held_analytic_ids(self.analytic_account_id.ids)
         for rec in self:
             rec.has_held_money = rec.analytic_account_id.id in held
 
@@ -917,8 +921,14 @@ class KmitlProject(models.Model):
         ]
 
     @api.model
-    def _held_analytic_ids(self):
-        """Project analytic accounts with a non-zero net posted allocation."""
+    def _held_analytic_ids(self, analytic_ids=None):
+        """Project analytic accounts with a non-zero net posted allocation,
+        among ``analytic_ids`` when given."""
+        analytic_leaf = (
+            ("kmitl_project_analytic_id", "in", analytic_ids)
+            if analytic_ids is not None
+            else ("kmitl_project_analytic_id", "!=", False)
+        )
         groups = (
             self.env["budget.move.line"]
             .sudo()
@@ -926,7 +936,7 @@ class KmitlProject(models.Model):
                 [
                     ("parent_state", "=", "posted"),
                     ("move_type", "in", ["appropriation", "entry"]),
-                    ("kmitl_project_analytic_id", "!=", False),
+                    analytic_leaf,
                 ],
                 ["balance"],
                 ["kmitl_project_analytic_id"],

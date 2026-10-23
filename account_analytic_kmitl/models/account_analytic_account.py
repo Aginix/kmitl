@@ -84,6 +84,8 @@ class AccountAnalyticAccount(models.Model):
             return False
         if self.sudo().line_ids:
             return True
+        # Raw SQL below: pending ORM writes must reach the tables first.
+        self.env.flush_all()
         ids = [str(account_id) for account_id in self.ids]
         for model in self.env.registry.values():
             field = model._fields.get("analytic_distribution")

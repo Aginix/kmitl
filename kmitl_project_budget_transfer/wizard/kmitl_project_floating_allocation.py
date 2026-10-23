@@ -278,7 +278,12 @@ class KmitlProjectFloatingAllocation(models.TransientModel):
                 if "exception_ids" in transfer._fields
                 else []
             )
-            raise UserError("\n".join([_("ไม่สามารถจัดสรรงบประมาณได้:")] + names))
+            title = (
+                _("ไม่สามารถโอนคืนงบลอยได้:")
+                if self.direction == "return"
+                else _("ไม่สามารถจัดสรรงบประมาณได้:")
+            )
+            raise UserError("\n".join([title] + names))
         transfer.sudo().write(
             {"approver_id": self.env.uid, "approval_date": fields.Datetime.now()}
         )

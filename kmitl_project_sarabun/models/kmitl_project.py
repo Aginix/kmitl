@@ -167,7 +167,7 @@ class KmitlProject(models.Model):
         so it is voided the way ยกเลิกการส่ง does — the engine offers no withdraw
         for a non-circulating doc — and kept as the audit record."""
         for project in self:
-            stale = project.sarabun_document_ids.sudo().filtered(
+            stale = project._all_sarabun_documents().filtered(
                 lambda d: d.state in ("draft", "returned")
             )
             deletable = stale.filtered(
@@ -200,8 +200,21 @@ class KmitlProject(models.Model):
         audit record pointing at the project, so the project is soft-deleted
         rather than removed (ADR-0011)."""
         return super()._must_soft_delete() or bool(
-            self.sarabun_document_ids.filtered(
+            self._all_sarabun_documents().filtered(
                 lambda d: d.state != "draft" or d.register_number_id
+            )
+        )
+
+    def _all_sarabun_documents(self):
+        """Every หนังสือ of the project, sudo: ``sarabun_document_ids`` is
+        computed under the user's record rules (sender / reached users only),
+        so a project officer would not see another owner's หนังสือ."""
+        self.ensure_one()
+        return (
+            self.env["sarabun.document"]
+            .sudo()
+            .search(
+                [("origin_model", "=", self._name), ("origin_res_id", "=", self.id)]
             )
         )
 

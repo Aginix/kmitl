@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import logging
 
 from odoo import _, api, fields, models
@@ -88,9 +87,7 @@ class PurchaseRequest(models.Model):
                 super()._domain_budget_account_id()
                 + [("id", "=", commitment.account_id.id)]
             ):
-                raise UserError(
-                    _("รหัสงบประมาณของใบจองที่เลือกไม่สามารถใช้กับเอกสารนี้ได้")
-                )
+                raise UserError(_("รหัสงบประมาณของใบจองที่เลือกไม่สามารถใช้กับเอกสารนี้ได้"))
             return True
         return super()._check_drawable_commitment(commitment)
 
@@ -136,10 +133,7 @@ class PurchaseRequest(models.Model):
         this_pr = sum(self.line_ids.mapped("estimated_cost"))
         if pr_total > project.budget_amount:
             raise UserError(
-                _(
-                    "ใบขอซื้อนี้ (%s) เกินงบประมาณคงเหลือของโครงการ "
-                    "(คงเหลือ %s จากงบ %s)"
-                )
+                _("ใบขอซื้อนี้ (%s) เกินงบประมาณคงเหลือของโครงการ (คงเหลือ %s จากงบ %s)")
                 % (
                     "{:,.2f}".format(this_pr),
                     "{:,.2f}".format(project.budget_amount - (pr_total - this_pr)),
@@ -165,9 +159,7 @@ class PurchaseRequest(models.Model):
                 lambda c: c.state in ("reserved", "partial")
             )[:1]
             if not commitment:
-                raise UserError(
-                    _("โครงการยังไม่ได้จองงบประมาณ ไม่สามารถดำเนินการได้")
-                )
+                raise UserError(_("โครงการยังไม่ได้จองงบประมาณ ไม่สามารถดำเนินการได้"))
             self._enforce_project_budget_cap(project)
             self.budget_commitment_id = commitment.id
             # Same rail as the reserve-new path: จองงบ advances to to_approve
@@ -282,9 +274,7 @@ class KmitlProject(models.Model):
         inverse_name="kmitl_project_id",
         string="ใบขอซื้อ (พ.1)",
     )
-    purchase_request_count = fields.Integer(
-        compute="_compute_purchase_request_count"
-    )
+    purchase_request_count = fields.Integer(compute="_compute_purchase_request_count")
 
     @api.depends("purchase_request_ids")
     def _compute_purchase_request_count(self):
@@ -318,13 +308,13 @@ class KmitlProject(models.Model):
             )
 
     def _project_pr_total(self):
-        """Total estimated cost already claimed by the project's non-rejected
-        purchase requests."""
+        """Total estimated cost already claimed by the project's purchase
+        requests, except the rejected or cancelled ones."""
         self.ensure_one()
         return sum(
             sum(pr.line_ids.mapped("estimated_cost"))
             for pr in self.purchase_request_ids.filtered(
-                lambda r: r.state != "rejected"
+                lambda r: r.state not in ("rejected", "cancelled")
             )
         )
 
@@ -337,9 +327,7 @@ class KmitlProject(models.Model):
             "domain": [("id", "in", self.purchase_request_ids.ids)],
         }
         if len(self.purchase_request_ids) == 1:
-            action.update(
-                {"view_mode": "form", "res_id": self.purchase_request_ids.id}
-            )
+            action.update({"view_mode": "form", "res_id": self.purchase_request_ids.id})
         else:
             action["view_mode"] = "tree,form"
         return action
@@ -354,13 +342,9 @@ class KmitlProject(models.Model):
             lambda c: c.state in ("reserved", "partial")
         )[:1]
         if self.state != "in_progress" or not commitment:
-            raise UserError(
-                _("สร้างใบขอซื้อได้เฉพาะโครงการที่ได้รับอนุมัติและกำลังดำเนินการเท่านั้น")
-            )
+            raise UserError(_("สร้างใบขอซื้อได้เฉพาะโครงการที่ได้รับอนุมัติและกำลังดำเนินการเท่านั้น"))
         if self.budget_amount - self._project_pr_total() <= 0:
-            raise UserError(
-                _("งบประมาณของโครงการถูกจัดสรรให้ใบขอซื้อครบแล้ว")
-            )
+            raise UserError(_("งบประมาณของโครงการถูกจัดสรรให้ใบขอซื้อครบแล้ว"))
         return {
             "type": "ir.actions.act_window",
             "name": _("สร้างใบขอซื้อจากโครงการ"),
