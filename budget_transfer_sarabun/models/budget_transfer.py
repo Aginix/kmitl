@@ -170,14 +170,12 @@ class BudgetTransfer(models.Model):
             # before the letter goes back out (the line policies are checked
             # at ยืนยัน, not as constraints).
             self._validate_transfer_data()
-        if self.state in ("submitted", "returned"):
-            # Refresh the enclosed แบบ งปม.303 so it reflects any revision —
-            # also from ``submitted``, which a returned transfer reaches again
-            # via Reset to Draft + ยืนยัน while its old หนังสือ stays live (a
-            # render failure blocks the send rather than letting a stale form
-            # go out).
-            self._attach_transfer_pdf_enclosure(document)
-            self.state = "sent"
+        # Refresh the enclosed แบบ งปม.303 so it reflects any revision — also
+        # from ``submitted``, which a returned transfer reaches again via Reset
+        # to Draft + ยืนยัน while its old หนังสือ stays live (a render failure
+        # blocks the send rather than letting a stale form go out).
+        self._attach_transfer_pdf_enclosure(document)
+        self.state = "sent"
         return super()._on_sarabun_circulating(document)
 
     def _on_sarabun_completed(self, document):
@@ -199,7 +197,11 @@ class BudgetTransfer(models.Model):
         return super()._on_sarabun_completed(document)
 
     def _on_sarabun_returned(self, document, step):
-        self.state = "returned"
+        # Only a transfer out for signature is reopened. An admin reset of a
+        # letter (agx_sarabun_reset → _on_sarabun_recalled) behind a posted /
+        # cancelled / rejected transfer must not revive it as editable.
+        if self.state == "sent":
+            self.state = "returned"
         return super()._on_sarabun_returned(document, step)
 
     def _on_sarabun_rejected(self, document, step):
@@ -213,6 +215,19 @@ class BudgetTransfer(models.Model):
 
     def _get_sarabun_report_action(self):
         return False  # default e-Saraban body; งปม.303 rides as enclosure
+
+    def _compute_sarabun_documents(self):
+        """A completed หนังสือ is only live while its transfer stays posted.
+        Once a manager resets the posted transfer, that letter is a past
+        approval — counting it as live would hide "สร้างหนังสือ" and block the
+        manual approve forever (a completed letter can't be sent or deleted)."""
+        super()._compute_sarabun_documents()
+        for transfer in self.filtered(lambda t: t.state != "posted"):
+            transfer.sarabun_has_live_document = bool(
+                transfer.sarabun_document_ids.filtered(
+                    lambda d: d.state not in ("rejected", "cancelled", "completed")
+                )
+            )
 
     # --- editability + button visibility for the bridge-owned states ----
     def _compute_can_edit(self):
@@ -262,6 +277,7 @@ class BudgetTransfer(models.Model):
             )
         res = super().action_cancel()
         self._abandon_stale_sarabun_documents()
+        self._void_returned_sarabun_documents()
         return res
 
     def action_reset_to_draft(self):
@@ -286,14 +302,65 @@ class BudgetTransfer(models.Model):
         self._abandon_stale_sarabun_documents()
         return res
 
+    def _sarabun_documents_in(self, states):
+        """This transfer's หนังสือ in ``states`` — searched directly, not via the
+        non-stored ``sarabun_document_ids`` (its cache is never invalidated)."""
+        self.ensure_one()
+        return (
+            self.env["sarabun.document"]
+            .sudo()
+            .search(
+                [
+                    ("origin_model", "=", self._name),
+                    ("origin_res_id", "=", self.id),
+                    ("state", "in", states),
+                ]
+            )
+        )
+
     def _abandon_stale_sarabun_documents(self):
         """Discard a ร่าง หนังสือ not yet sent when the transfer is reset to draft
-        or cancelled — its content and enclosed งปม.303 were snapshotted at
-        สร้างหนังสือ, so it is stale; discarding it also re-opens "สร้างหนังสือ"
-        once the transfer is re-confirmed. Only drafts are disposable
-        (sarabun.document.unlink refuses anything else); a returned letter stays
-        and is blocked from re-sending by ``_on_sarabun_circulating``."""
-        self.sarabun_document_ids.filtered(lambda d: d.state == "draft").sudo().unlink()
+        or cancelled — its content was snapshotted at สร้างหนังสือ, so it is
+        stale; discarding it also re-opens "สร้างหนังสือ" once the transfer is
+        re-confirmed. A numbered draft (admin-reset letter) can't be deleted
+        (sarabun.document.unlink refuses it) and is kept — re-sending it
+        re-renders the งปม.303 and is blocked until the transfer is
+        re-confirmed (``_on_sarabun_circulating``)."""
+        for transfer in self:
+            drafts = transfer._sarabun_documents_in(["draft"]).filtered(
+                lambda d: not d.register_number_id
+            )
+            if not drafts:
+                continue
+            transfer.message_post(
+                body=_("ลบร่างหนังสือที่ยังไม่ได้ส่ง: %s") % ", ".join(drafts.mapped("subject")),
+                subtype_xmlid="mail.mt_note",
+            )
+            drafts.unlink()
+
+    def _void_returned_sarabun_documents(self):
+        """A transfer cancelled while its letter is ตีกลับ/ดึงกลับ would strand
+        that letter: the engine only lets a returned letter be re-sent (blocked
+        once the transfer is cancelled) — it can't be withdrawn or deleted.
+        Close it the way ยกเลิกการส่ง does (clear to-dos, skip pending steps,
+        void the number → cancelled), without the origin callback that would
+        put the transfer back to submitted."""
+        for transfer in self:
+            for document in transfer._sarabun_documents_in(["returned"]):
+                document.routing_step_ids._clear_activities()
+                document.routing_step_ids.filtered(
+                    lambda s: s.state in ("waiting", "active")
+                ).write({"state": "skipped"})
+                document.state = "cancelled"
+                document._void_register("cancelled")
+                document.message_post(
+                    body=_("ยกเลิกหนังสือ เนื่องจากใบโอน %s ถูกยกเลิก") % transfer.name
+                )
+                transfer.message_post(
+                    body=_("ยกเลิกหนังสือที่ถูกตีกลับ: %s")
+                    % (document.name or document.subject),
+                    subtype_xmlid="mail.mt_note",
+                )
 
     def _check_no_live_sarabun_document(self):
         """The manual Approve & Post fallback must not run behind a หนังสือ that
