@@ -33,6 +33,8 @@ class KmitlProjectFloatingAllocation(models.TransientModel):
     _description = "จัดสรรงบประมาณ (งบลอย)"
 
     project_id = fields.Many2one("kmitl.project", required=True)
+    # Read by the widget: ``allocate`` (pool → project) or ``return``.
+    direction = fields.Char(default="allocate", readonly=True)
     step = fields.Selection(
         [("input", "กรอกจำนวนเงิน"), ("review", "ตรวจสอบ"), ("done", "สำเร็จ")],
         default="input",
@@ -184,7 +186,7 @@ class KmitlProjectFloatingAllocation(models.TransientModel):
     def _reopen(self):
         return {
             "type": "ir.actions.act_window",
-            "name": _("จัดสรรงบประมาณ (งบลอย)"),
+            "name": self._description,
             "res_model": self._name,
             "res_id": self.id,
             "view_mode": "form",
@@ -206,9 +208,12 @@ class KmitlProjectFloatingAllocation(models.TransientModel):
                 % "{:,.2f}".format(self.floating_available)
             )
 
+    def _check_allowed(self):
+        self.project_id._check_floating_allocation_allowed()
+
     def action_next(self):
         self.ensure_one()
-        self.project_id._check_floating_allocation_allowed()
+        self._check_allowed()
         self._check_amount()
         self.step = "review"
         return self._reopen()
@@ -260,8 +265,7 @@ class KmitlProjectFloatingAllocation(models.TransientModel):
     def action_confirm(self):
         """Create the transfer, run the ordinary ยืนยัน checks, post at once."""
         self.ensure_one()
-        project = self.project_id
-        project._check_floating_allocation_allowed()
+        self._check_allowed()
         self._check_amount()
         pool_dims = self.pool_dims
         transfer = self.env["budget.transfer"].create(self._prepare_transfer_vals())
@@ -274,18 +278,17 @@ class KmitlProjectFloatingAllocation(models.TransientModel):
                 if "exception_ids" in transfer._fields
                 else []
             )
-            raise UserError("\n".join([_("ไม่สามารถจัดสรรงบประมาณได้:")] + names))
+            title = (
+                _("ไม่สามารถโอนคืนงบลอยได้:")
+                if self.direction == "return"
+                else _("ไม่สามารถจัดสรรงบประมาณได้:")
+            )
+            raise UserError("\n".join([title] + names))
         transfer.sudo().write(
             {"approver_id": self.env.uid, "approval_date": fields.Datetime.now()}
         )
         transfer.sudo()._post_transfer()
-        transfer.message_post(
-            body=_("จัดสรรตรงจากงบลอยผ่านหน้าโครงการ (ไม่ผ่านกระบวนการขออนุมัติโอนงบประมาณ)")
-        )
-        project.sudo().message_post(
-            body=_("จัดสรรงบประมาณ (งบลอย) %(amount)s บาท — ใบโอน %(name)s")
-            % {"amount": "{:,.2f}".format(self.amount), "name": transfer.name}
-        )
+        self._post_transfer_messages(transfer)
         self.write(
             {
                 "step": "done",
@@ -294,6 +297,15 @@ class KmitlProjectFloatingAllocation(models.TransientModel):
             }
         )
         return self._reopen()
+
+    def _post_transfer_messages(self, transfer):
+        transfer.message_post(
+            body=_("จัดสรรตรงจากงบลอยผ่านหน้าโครงการ (ไม่ผ่านกระบวนการขออนุมัติโอนงบประมาณ)")
+        )
+        self.project_id.sudo().message_post(
+            body=_("จัดสรรงบประมาณ (งบลอย) %(amount)s บาท — ใบโอน %(name)s")
+            % {"amount": "{:,.2f}".format(self.amount), "name": transfer.name}
+        )
 
     def action_open_transfer(self):
         self.ensure_one()

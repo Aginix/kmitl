@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 
-    <record id="view_kmitl_project_floating_allocation_form" model="ir.ui.view">
-        <field name="name">kmitl.project.floating.allocation.form</field>
-        <field name="model">kmitl.project.floating.allocation</field>
+    <record id="view_kmitl_project_floating_return_form" model="ir.ui.view">
+        <field name="name">kmitl.project.floating.return.form</field>
+        <field name="model">kmitl.project.floating.return</field>
         <field name="arch" type="xml">
-            <form string="จัดสรรงบประมาณ (งบลอย)" class="o_kfa_form">
+            <form string="โอนคืนงบลอย" class="o_kfa_form">
                 <!-- Read by the kmitl_floating_allocation widget (record.data). -->
                 <field name="project_id" invisible="1" force_save="1" />
+                <field name="direction" invisible="1" />
                 <field name="step" invisible="1" />
                 <field name="amount" invisible="1" />
                 <field name="pool_found" invisible="1" />
@@ -23,7 +24,6 @@
                 <field name="transfer_date" invisible="1" />
                 <field name="transfer_user_id" invisible="1" />
                 <widget name="kmitl_floating_allocation" />
-                <!-- Only while there is floating money to move. -->
                 <div
                     class="o_kfa_note"
                     attrs="{'invisible': ['|', '|', ('step', '!=', 'input'), ('pool_found', '=', False), ('floating_available', '&lt;=', 0)]}"
@@ -41,7 +41,7 @@
                     <button
                         name="action_confirm"
                         type="object"
-                        string="ยืนยันโอน"
+                        string="ยืนยันโอนคืน"
                         class="btn-primary"
                         attrs="{'invisible': [('step', '!=', 'review')]}"
                     />
@@ -65,7 +65,7 @@
                         class="btn-secondary"
                         attrs="{'invisible': [('step', '!=', 'done')]}"
                     />
-                    <!-- No / used-up pool: nothing to do but close. -->
+                    <!-- Nothing to return: nothing to do but close. -->
                     <button
                         string="ปิด"
                         special="cancel"

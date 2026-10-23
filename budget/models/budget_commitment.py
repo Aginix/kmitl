@@ -444,9 +444,12 @@ class BudgetCommitment(models.Model):
             return -((groups[0]["balance"] or 0.0) if groups else 0.0)
 
         currency = self.currency_id or self.env.company.currency_id
-        if currency.compare_amounts(
-            held([("commitment_line_id.move_type", "=", "obligate")]), 0.0
-        ) > 0:
+        if (
+            currency.compare_amounts(
+                held([("commitment_line_id.move_type", "=", "obligate")]), 0.0
+            )
+            > 0
+        ):
             return max(held([]), 0.0)
         return self.available_to_obligate
 
@@ -658,16 +661,16 @@ class BudgetCommitment(models.Model):
             if record.state != "draft":
                 raise UserError(_("Only draft commitments can be reserved."))
             if record.amount <= 0:
-                raise UserError(
-                    _("กรุณาระบุวงเงินอนุมัติมากกว่า 0 ก่อนจองงบประมาณ")
-                )
+                raise UserError(_("กรุณาระบุวงเงินอนุมัติมากกว่า 0 ก่อนจองงบประมาณ"))
             # The pending reserve events are the command to reserve (they post to
             # the ledger only once reserved), so test for them, not for a total.
             if not record._pending_reserve_lines():
                 record._create_reserve_line_from_header()
             if sum(record._pending_reserve_lines().mapped("amount")) <= 0:
                 raise UserError(
-                    _("Cannot reserve: no reserve lines found. Add reserve lines first.")
+                    _(
+                        "Cannot reserve: no reserve lines found. Add reserve lines first."
+                    )
                 )
             record._check_reserve_availability()
             if record.name == _("New"):
@@ -715,9 +718,9 @@ class BudgetCommitment(models.Model):
         self.ensure_one()
         if move_type != "reserve" or is_return:
             first_reserve = self.line_ids.filtered(
-                lambda l: l.move_type == "reserve"
-                and l.state == "posted"
-                and not l.is_return
+                lambda l: (
+                    l.move_type == "reserve" and l.state == "posted" and not l.is_return
+                )
             )[:1]
             if not first_reserve:
                 raise UserError(
@@ -906,8 +909,7 @@ class BudgetCommitment(models.Model):
                 continue
             if record.state == "done":
                 raise UserError(
-                    _("Cannot cancel commitment %s - it is already done")
-                    % record.name
+                    _("Cannot cancel commitment %s - it is already done") % record.name
                 )
             record.line_ids.filtered(lambda l: l.state == "posted").action_cancel()
             record.state = "cancel"
@@ -917,18 +919,14 @@ class BudgetCommitment(models.Model):
         """Reset cancelled commitment to draft"""
         for record in self:
             if record.state != "cancel":
-                raise UserError(
-                    _("Only cancelled commitments can be reset to draft.")
-                )
+                raise UserError(_("Only cancelled commitments can be reset to draft."))
             record.state = "draft"
 
     def action_obligate(self):
         """Open wizard to add an obligate line."""
         self.ensure_one()
         if self.state not in ("reserved", "partial"):
-            raise UserError(
-                _("Can only obligate in reserved or in-progress state.")
-            )
+            raise UserError(_("Can only obligate in reserved or in-progress state."))
         return {
             "type": "ir.actions.act_window",
             "name": _("ผูกพันงบประมาณ"),
@@ -945,13 +943,9 @@ class BudgetCommitment(models.Model):
         """Open wizard to add a consume line."""
         self.ensure_one()
         if self.state not in ("reserved", "partial"):
-            raise UserError(
-                _("Can only consume in reserved or in-progress state.")
-            )
+            raise UserError(_("Can only consume in reserved or in-progress state."))
         if self.available_to_consume <= 0:
-            raise UserError(
-                _("No obligated amount available to consume.")
-            )
+            raise UserError(_("No obligated amount available to consume."))
         return {
             "type": "ir.actions.act_window",
             "name": _("ตัดงบประมาณ"),
@@ -1008,6 +1002,28 @@ class BudgetCommitment(models.Model):
             "target": "new",
             "context": context,
         }
+
+    def _return_leftover(self, source=None, name=None, date=None):
+        """Return the whole leftover reservation (คืนจอง, ADR-0009): one negative
+        ``reserve`` line flagged ``is_return`` for ``available_to_obligate``,
+        re-read now so a concurrent consume cannot let it over-return. Returns
+        the posted line, or ``False`` when nothing is left.
+
+        Returning drives the commitment to ``done`` but must NOT auto-close the
+        owning procurement plan (ADR-0009); the flag is read by
+        procurement_plan's _sync_state override."""
+        self.ensure_one()
+        amount = self.available_to_obligate
+        if amount <= 0:
+            return False
+        return self.with_context(skip_plan_autoclose=True)._post_budget_event(
+            "reserve",
+            -amount,
+            source=source,
+            name=name or _("ส่งคืนเงินเหลือจ่าย"),
+            is_return=True,
+            date=date,
+        )
 
     def action_view_budget_moves(self):
         """View related budget moves"""

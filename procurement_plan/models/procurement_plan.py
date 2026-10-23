@@ -200,11 +200,13 @@ class ProcurementPlan(models.Model):
                     "Please cancel it first."
                 )
             )
-        # Delete the empty related analytic account
+        # Delete the related analytic account unless another document recorded
+        # it (budget moves, reservations, …) — that one stays archived.
         analytic_accounts_to_delete = self.env["account.analytic.account"]
         for record in self:
-            if record.analytic_account_id and not record.analytic_account_id.line_ids:
-                analytic_accounts_to_delete |= record.analytic_account_id
+            account = record.analytic_account_id
+            if account and not account._has_ledger_footprint(exclude=record):
+                analytic_accounts_to_delete |= account
         result = super().unlink()
         analytic_accounts_to_delete.unlink()
         return result

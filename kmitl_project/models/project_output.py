@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import logging
 
 from odoo import models, fields
@@ -7,8 +6,8 @@ _logger = logging.getLogger(__name__)
 
 
 class ProjectOutput(models.Model):
-    _name = 'project.output'
-    _description = 'ProjectOutput'
+    _name = "project.output"
+    _description = "ProjectOutput"
 
     sequence = fields.Integer(index=True, default=1)
     name = fields.Char("Name", required=True)
@@ -19,6 +18,8 @@ class ProjectOutput(models.Model):
         ],
         required=True,
     )
-    project_id = fields.Many2one(comodel_name="kmitl.project", required=True)
+    project_id = fields.Many2one(
+        comodel_name="kmitl.project", required=True, ondelete="cascade"
+    )
     unit = fields.Char(required=True)
     target = fields.Char(string="เป้าหมาย", required=True)

@@ -1,0 +1,113 @@
+// บัญชีโครงการ (ADR-0012) — same palette as the floating-allocation wizard.
+
+$kpbo-muted: #6b7280;
+$kpbo-line: #e5e7eb;
+$kpbo-accent: $o-brand-primary;
+$kpbo-accent-soft: mix($o-brand-primary, #fff, 10%);
+$kpbo-consumed: #b42318;
+$kpbo-warn: #f0ad4e;
+$kpbo-empty: #eef0f2;
+
+.o_kpbo {
+    margin: 8px 0 16px;
+    font-variant-numeric: tabular-nums;
+}
+
+.o_kpbo_kpis {
+    display: flex;
+    align-items: stretch;
+    border: 1px solid $kpbo-line;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.o_kpbo_kpi {
+    flex: 1 1 0;
+    padding: 12px 16px;
+
+    &.o_kpbo_hero {
+        background: $kpbo-accent-soft;
+        .o_kpbo_value {
+            color: $kpbo-accent;
+        }
+    }
+    &.o_kpbo_negative .o_kpbo_value {
+        color: $kpbo-consumed;
+    }
+}
+
+.o_kpbo_label,
+.o_kpbo_sub {
+    font-size: $o-font-size-base * 0.92;
+    color: $kpbo-muted;
+}
+
+.o_kpbo_value {
+    font-size: $o-font-size-base * 1.9;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.o_kpbo_op {
+    display: flex;
+    align-items: center;
+    color: $kpbo-muted;
+    font-size: $o-font-size-base * 1.5;
+}
+
+.o_kpbo_bar {
+    display: flex;
+    height: 10px;
+    margin-top: 12px;
+    border-radius: 5px;
+    overflow: hidden;
+    background: $kpbo-empty;
+}
+
+.o_kpbo_seg_consumed {
+    background: $kpbo-consumed;
+}
+.o_kpbo_seg_remaining {
+    background: $kpbo-accent;
+}
+.o_kpbo_seg_unreserved {
+    background: $kpbo-warn;
+}
+.o_kpbo_seg_empty {
+    background: $kpbo-empty;
+}
+
+.o_kpbo_legend {
+    display: flex;
+    gap: 16px;
+    margin-top: 4px;
+    font-size: $o-font-size-base * 0.92;
+    color: $kpbo-muted;
+
+    i {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        margin-right: 4px;
+        border-radius: 2px;
+        vertical-align: -1px;
+    }
+}
+
+.o_kpbo_actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 8px 0 12px;
+}
+
+.o_kpbo_footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 8px;
+
+    .o_kpbo_total {
+        font-weight: 600;
+    }
+}

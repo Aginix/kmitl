@@ -67,7 +67,6 @@
                     <button string="ปิดโครงการ" name="action_complete" states="in_progress" type="object" class="oe_highlight" />
                     <button string="Reset to Draft" name="action_draft" states="to_verify,to_send,returned" type="object" />
                     <button string="Reset to Draft" name="action_draft" groups="project.group_project_manager" states="rejected,cancel" type="object" />
-                    <button string="Cancel" name="action_cancel" groups="project.group_project_manager" states="draft,to_verify,to_send,returned,rejected,in_progress" type="object" />
                     <field name="state" widget="statusbar" statusbar_visible="draft,to_verify,to_send,sent,in_progress,complete" />
                 </header>
                 <sheet>
@@ -352,7 +351,10 @@
                 <filter name="state_complete" string="Completed" domain="[('state', '=', 'complete')]" />
                 <filter name="state_returned" string="Returned" domain="[('state', '=', 'returned')]" />
                 <filter name="state_rejected" string="Rejected" domain="[('state', '=', 'rejected')]" />
-                <filter name="state_cancel" string="Cancelled" domain="[('state', '=', 'cancel')]" />
+                <filter name="state_cancel" string="Cancelled" domain="[('state', '=', 'cancel'), ('active', 'in', (True, False))]" />
+                <separator />
+                <filter name="has_held_money" string="มีเงินค้าง" domain="[('has_held_money', '=', True)]" />
+                <filter name="complete_held_money" string="ปิดแล้วมีเงินค้าง" domain="[('state', '=', 'complete'), ('has_held_money', '=', True)]" />
                 <separator />
                 <filter name="current_fy" string="Current Fiscal Year" domain="[('account_fiscal_year_id.date_from', '&lt;=', context_today()), ('account_fiscal_year_id.date_to', '&gt;=', context_today())]" />
                 <separator />

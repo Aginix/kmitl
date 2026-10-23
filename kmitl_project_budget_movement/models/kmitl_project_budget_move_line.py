@@ -1,4 +1,4 @@
-from odoo import fields, models, tools
+from odoo import api, fields, models, tools
 
 
 class KmitlProjectBudgetMoveLine(models.Model):
@@ -28,6 +28,13 @@ class KmitlProjectBudgetMoveLine(models.Model):
         groups="budget.group_budget_viewer",
     )
     commitment_line_id = fields.Many2one("budget.commitment.line", readonly=True)
+    transfer_id = fields.Many2one(
+        "budget.transfer",
+        string="ใบโอนงบประมาณ",
+        readonly=True,
+        groups="budget.group_budget_viewer",
+    )
+    can_open_transfer = fields.Boolean(compute="_compute_can_open_transfer")
     name = fields.Char(string="เลขที่เอกสาร", readonly=True)
     source_name = fields.Char(
         string="เอกสารต้นทาง",
@@ -68,6 +75,21 @@ class KmitlProjectBudgetMoveLine(models.Model):
         readonly=True,
     )
 
+    @api.depends_context("uid")
+    def _compute_can_open_transfer(self):
+        """Whether the user may open the row's transfer: budget rights and the
+        transfer's operating unit — a Funding Unit's transfer is often keyed in
+        another OU."""
+        Transfer = self.env["budget.transfer"]
+        transfers = self.sudo().transfer_id
+        readable = (
+            Transfer.search([("id", "in", transfers.ids)]).ids
+            if Transfer.check_access_rights("read", raise_exception=False)
+            else []
+        )
+        for rec in self:
+            rec.can_open_transfer = rec.sudo().transfer_id.id in readable
+
     def init(self):
         tools.drop_view_if_exists(self.env.cr, self._table)
         self.env.cr.execute(
@@ -79,6 +101,7 @@ class KmitlProjectBudgetMoveLine(models.Model):
                     p.company_id AS company_id,
                     m.id AS move_id,
                     m.commitment_line_id AS commitment_line_id,
+                    t.id AS transfer_id,
                     COALESCE(t.name, m.name) AS name,
                     m.date AS date,
                     l.account_fiscal_year_id AS account_fiscal_year_id,
