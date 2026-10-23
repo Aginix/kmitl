@@ -1,0 +1,140 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* agx_photoviewer_annotation_revision
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-23 18:20+0000\n"
+"PO-Revision-Date: 2026-10-23 18:20+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: agx_photoviewer_annotation_revision
+#: model:ir.model.fields,help:agx_photoviewer_annotation_revision.field_ir_attachment__revision_superseded
+msgid "A later revision of this file was uploaded (ADR-0003)."
+msgstr "มีการอัปโหลดฉบับใหม่กว่าของไฟล์นี้แล้ว (ADR-0003)"
+
+#. module: agx_photoviewer_annotation_revision
+#. odoo-python
+#: code:addons/agx_photoviewer_annotation_revision/models/ir_attachment.py:0
+#: code:addons/agx_photoviewer_annotation_revision/models/ir_attachment.py:0
+#, python-format
+msgid "A revision must be an image or a PDF file."
+msgstr "ฉบับแก้ไขต้องเป็นไฟล์รูปภาพหรือ PDF"
+
+#. module: agx_photoviewer_annotation_revision
+#: model:ir.model,name:agx_photoviewer_annotation_revision.model_ir_attachment
+msgid "Attachment"
+msgstr "เอกสารแนบ"
+
+#. module: agx_photoviewer_annotation_revision
+#: model:ir.model,name:agx_photoviewer_annotation_revision.model_ir_attachment_annotation
+msgid "Attachment Annotation"
+msgstr "การขีดเขียนบนไฟล์แนบ"
+
+#. module: agx_photoviewer_annotation_revision
+#: model:ir.model,name:agx_photoviewer_annotation_revision.model_base
+msgid "Base"
+msgstr ""
+
+#. module: agx_photoviewer_annotation_revision
+#: model:ir.model,name:agx_photoviewer_annotation_revision.model_mail_thread
+msgid "Email Thread"
+msgstr "เธรดอีเมล"
+
+#. module: agx_photoviewer_annotation_revision
+#. odoo-python
+#: code:addons/agx_photoviewer_annotation_revision/models/ir_attachment.py:0
+#: code:addons/agx_photoviewer_annotation_revision/models/ir_attachment.py:0
+#, python-format
+msgid "Only the latest revision of a file can be revised."
+msgstr "อัปโหลดฉบับแก้ไขได้จากฉบับล่าสุดเท่านั้น"
+
+#. module: agx_photoviewer_annotation_revision
+#: model:ir.model.fields,field_description:agx_photoviewer_annotation_revision.field_ir_attachment__revision_previous_id
+msgid "Previous Revision"
+msgstr "ฉบับก่อนหน้า"
+
+#. module: agx_photoviewer_annotation_revision
+#. odoo-javascript
+#: code:addons/agx_photoviewer_annotation_revision/static/src/xml/revision_badge.xml:0
+#: code:addons/agx_photoviewer_annotation_revision/static/src/xml/revision_badge.xml:0
+#: code:addons/agx_photoviewer_annotation_revision/static/src/xml/revision_badge.xml:0
+#: code:addons/agx_photoviewer_annotation_revision/static/src/xml/revision_badge.xml:0
+#, python-format
+msgid "Replaced by revision"
+msgstr "ถูกแทนด้วยฉบับ"
+
+#. module: agx_photoviewer_annotation_revision
+#. odoo-python
+#: code:addons/agx_photoviewer_annotation_revision/models/base.py:0
+#: code:addons/agx_photoviewer_annotation_revision/models/base.py:0
+#, python-format
+msgid "Revision %(number)s of %(file)s uploaded."
+msgstr "อัปโหลดฉบับแก้ไขที่ %(number)s ของ %(file)s แล้ว"
+
+#. module: agx_photoviewer_annotation_revision
+#. odoo-javascript
+#: code:addons/agx_photoviewer_annotation_revision/static/src/js/annotation_revision.esm.js:0
+#: code:addons/agx_photoviewer_annotation_revision/static/src/js/annotation_revision.esm.js:0
+#, python-format
+msgid "Revision %s"
+msgstr "ฉบับ %s"
+
+#. module: agx_photoviewer_annotation_revision
+#. odoo-javascript
+#: code:addons/agx_photoviewer_annotation_revision/static/src/js/annotation_revision.esm.js:0
+#: code:addons/agx_photoviewer_annotation_revision/static/src/js/annotation_revision.esm.js:0
+#, python-format
+msgid "Revision %s (latest)"
+msgstr "ฉบับ %s (ล่าสุด)"
+
+#. module: agx_photoviewer_annotation_revision
+#: model:ir.model.fields,field_description:agx_photoviewer_annotation_revision.field_ir_attachment__revision_number
+msgid "Revision Number"
+msgstr "ฉบับที่"
+
+#. module: agx_photoviewer_annotation_revision
+#: model:ir.model.fields,field_description:agx_photoviewer_annotation_revision.field_ir_attachment__revision_superseded
+msgid "Revision Superseded"
+msgstr "ถูกแทนด้วยฉบับใหม่"
+
+#. module: agx_photoviewer_annotation_revision
+#. odoo-javascript
+#: code:addons/agx_photoviewer_annotation_revision/static/src/js/annotation_revision.esm.js:0
+#: code:addons/agx_photoviewer_annotation_revision/static/src/js/annotation_revision.esm.js:0
+#, python-format
+msgid "Revisions of this file"
+msgstr "ฉบับต่างๆ ของไฟล์นี้"
+
+#. module: agx_photoviewer_annotation_revision
+#. odoo-python
+#: code:addons/agx_photoviewer_annotation_revision/models/ir_attachment.py:0
+#: code:addons/agx_photoviewer_annotation_revision/models/ir_attachment.py:0
+#, python-format
+msgid ""
+"This file carries annotations and cannot be replaced: upload a revision of "
+"it instead."
+msgstr "ไฟล์นี้มีการขีดเขียนแล้ว แทนที่ไม่ได้ ให้อัปโหลดเป็นฉบับแก้ไขแทน"
+
+#. module: agx_photoviewer_annotation_revision
+#. odoo-javascript
+#: code:addons/agx_photoviewer_annotation_revision/static/src/js/annotation_revision.esm.js:0
+#: code:addons/agx_photoviewer_annotation_revision/static/src/js/annotation_revision.esm.js:0
+#, python-format
+msgid "This is revision %s; revision %s replaces it."
+msgstr "นี่คือฉบับ %s ซึ่งถูกแทนด้วยฉบับ %s แล้ว"
+
+#. module: agx_photoviewer_annotation_revision
+#. odoo-javascript
+#: code:addons/agx_photoviewer_annotation_revision/static/src/js/annotation_revision.esm.js:0
+#: code:addons/agx_photoviewer_annotation_revision/static/src/js/annotation_revision.esm.js:0
+#, python-format
+msgid "Upload a revision of this file"
+msgstr "อัปโหลดฉบับแก้ไขของไฟล์นี้"

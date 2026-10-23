@@ -23,30 +23,19 @@ class IrAttachment(models.Model):
         copy=False,
         help="A later revision of this file was uploaded (ADR-0003).",
     )
-    open_request_count = fields.Integer(compute="_compute_open_request_count")
-
-    def _compute_open_request_count(self):
-        Annotation = self.env["ir.attachment.annotation"].sudo()
-        for attachment in self:
-            if not isinstance(attachment.id, int):
-                attachment.open_request_count = 0
-                continue
-            attachment.open_request_count = Annotation.search_count(
-                [
-                    ("attachment_id", "in", attachment._revision_chain().ids),
-                    ("change_request", "=", True),
-                    ("request_state", "!=", "closed"),
-                ]
-            )
 
     def _attachment_format(self, legacy=False):
-        # The chatter shows the same open Change requests badge as the
-        # many2many_binary widget.
+        # A chatter message keeps the revision it was posted with: it is shown
+        # as superseded, and left out of the record's files.
         res_list = super()._attachment_format(legacy=legacy)
-        counts = {attachment.id: attachment.open_request_count for attachment in self}
+        superseded = {
+            attachment.id: attachment._revision_chain()[-1].revision_number
+            for attachment in self
+            if attachment.revision_superseded
+        }
         for res in res_list:
-            if counts.get(res["id"]):
-                res["openRequestCount"] = counts[res["id"]]
+            if res["id"] in superseded:
+                res["revisionSupersededBy"] = superseded[res["id"]]
         return res_list
 
     # ------------------------------------------------------------------
@@ -107,15 +96,13 @@ class IrAttachment(models.Model):
 
     def _annotation_check_revise(self):
         """Raise unless the user may upload a revision of this attachment:
-        it is the latest one, its layer is not locked and the user may edit
-        the record it belongs to, as for attaching any file."""
+        it is the latest one and the user may edit the record it belongs to,
+        as for attaching any file."""
         self.ensure_one()
         Annotation = self.env["ir.attachment.annotation"]
         attachment = Annotation._get_readable_attachment(self.id)
         if attachment.revision_superseded:
             raise UserError(_("Only the latest revision of a file can be revised."))
-        if Annotation._is_record_locked(attachment):
-            raise UserError(_("Annotations on this file are locked."))
         holder = Annotation._get_holder_record(attachment)
         if holder:
             record = self.env[holder._name].browse(holder.id)

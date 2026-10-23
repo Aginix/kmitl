@@ -1,6 +1,7 @@
 {
-    "name": "Photo Viewer - Annotation Review",
-    "summary": "Change requests on annotated files and revisions that answer them",
+    "name": "Photo Viewer - Annotation Revision",
+    "summary": "Upload a corrected file as a revision of an annotated one, "
+    "never over it",
     "version": "16.0.1.0.0",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
@@ -9,7 +10,7 @@
     "depends": ["agx_photoviewer_annotation"],
     "assets": {
         "web.assets_backend": [
-            "agx_photoviewer_annotation_review/static/src/**/*",
+            "agx_photoviewer_annotation_revision/static/src/**/*",
         ],
     },
     "installable": True,

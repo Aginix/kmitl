@@ -3,9 +3,9 @@ from odoo.exceptions import AccessError, UserError
 from odoo.http import request
 
 
-class AnnotationReviewController(http.Controller):
+class AnnotationRevisionController(http.Controller):
     @http.route(
-        "/agx_photoviewer_annotation_review/revise/<int:attachment_id>",
+        "/agx_photoviewer_annotation_revision/revise/<int:attachment_id>",
         type="http",
         auth="user",
         methods=["POST"],
@@ -23,5 +23,13 @@ class AnnotationReviewController(http.Controller):
         except (AccessError, UserError) as error:
             return request.make_json_response({"error": str(error)}, status=400)
         return request.make_json_response(
-            {"id": revision.id, "name": revision.name, "mimetype": revision.mimetype}
+            {
+                "id": revision.id,
+                "name": revision.name,
+                "mimetype": revision.mimetype,
+                "res_model": revision.res_model,
+                "res_id": revision.res_id,
+                "previous_id": attachment_id,
+                "number": revision.revision_number,
+            }
         )

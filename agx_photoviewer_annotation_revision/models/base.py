@@ -2,44 +2,30 @@ from markupsafe import Markup
 
 from odoo import _, models
 
+LATEST_ONLY = ("revision_superseded", "=", False)
+
 
 class Base(models.AbstractModel):
     _inherit = "base"
 
-    def _annotation_open_change_requests(self):
-        """Change requests not closed yet on the files of these records, on
-        every revision of them.
-
-        Open ones never hold up a record by themselves: its module may call
-        this to refuse a step (e.g. approving) while some are open.
-        """
-        Attachment = self.env["ir.attachment"].sudo()
-        attachments = Attachment.search(
-            [("res_model", "=", self._name), ("res_id", "in", self.ids)]
-        )
-        for name, field in self._fields.items():
+    def _setup_fields(self):
+        """A record shows only the latest revision among its files: the
+        One2many of its attachments (by ``res_id``) leaves superseded ones
+        out, as its many2many fields are rewritten on each revision."""
+        super()._setup_fields()
+        for field in self._fields.values():
             if (
-                field.type == "many2many"
+                field.type == "one2many"
                 and field.comodel_name == "ir.attachment"
-                and field.store
+                and field.inverse_name == "res_id"
+                and not callable(field.domain)
+                and LATEST_ONLY not in (field.domain or [])
             ):
-                attachments |= self.sudo().mapped(name)
-        for attachment in attachments:
-            attachments |= attachment._revision_chain()
-        return (
-            self.env["ir.attachment.annotation"]
-            .sudo()
-            .search(
-                [
-                    ("attachment_id", "in", attachments.ids),
-                    ("change_request", "=", True),
-                    ("request_state", "!=", "closed"),
-                ]
-            )
-        )
+                field.domain = list(field.domain or []) + [LATEST_ONLY]
 
     def _annotation_replace_revision(self, previous, revision):
-        """Show ``revision`` on this record where ``previous`` was."""
+        """Show ``revision`` on this record where ``previous`` was, and note
+        its upload in the chatter with the new file."""
         self.ensure_one()
         record = self.sudo()
         for name, field in record._fields.items():
@@ -63,4 +49,5 @@ class Base(models.AbstractModel):
                 ),
                 subtype_xmlid="mail.mt_note",
                 author_id=self.env.user.partner_id.id,
+                attachment_ids=revision.ids,
             )
