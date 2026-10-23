@@ -23,7 +23,7 @@
             </xpath>
 
             <xpath expr="//field[@name='state'][@widget='statusbar']" position="attributes">
-                <attribute name="statusbar_visible">draft,submitted,sent,approved,in_progress,done</attribute>
+                <attribute name="statusbar_visible">draft,to_verify,submitted,sent,approved,in_progress,done</attribute>
             </xpath>
 
             <xpath expr="//widget[@name='web_ribbon'][1]" position="before">
