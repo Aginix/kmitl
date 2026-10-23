@@ -114,6 +114,13 @@ msgid "Revisions of this file"
 msgstr "ฉบับต่างๆ ของไฟล์นี้"
 
 #. module: agx_photoviewer_annotation_revision
+#. odoo-javascript
+#: code:addons/agx_photoviewer_annotation_revision/static/src/js/annotation_revision.esm.js:0
+#, python-format
+msgid "The revision could not be uploaded."
+msgstr "อัปโหลดฉบับแก้ไขไม่สำเร็จ"
+
+#. module: agx_photoviewer_annotation_revision
 #. odoo-python
 #: code:addons/agx_photoviewer_annotation_revision/models/ir_attachment.py:0
 #: code:addons/agx_photoviewer_annotation_revision/models/ir_attachment.py:0

@@ -18,10 +18,11 @@ class Base(models.AbstractModel):
                 field.type == "one2many"
                 and field.comodel_name == "ir.attachment"
                 and field.inverse_name == "res_id"
-                and not callable(field.domain)
-                and LATEST_ONLY not in (field.domain or [])
+                # Callable and string domains are left as they are.
+                and isinstance(field.domain, (list, tuple))
+                and LATEST_ONLY not in field.domain
             ):
-                field.domain = list(field.domain or []) + [LATEST_ONLY]
+                field.domain = list(field.domain) + [LATEST_ONLY]
 
     def _annotation_replace_revision(self, previous, revision):
         """Show ``revision`` on this record where ``previous`` was, and note

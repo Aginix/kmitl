@@ -1,5 +1,6 @@
 from odoo import _, models
 from odoo.exceptions import UserError
+from odoo.tools import plaintext2html
 
 
 class BudgetTransfer(models.Model):
@@ -50,5 +51,8 @@ class BudgetTransfer(models.Model):
         if not reason and not lines:
             raise UserError(_("กรุณาระบุเหตุผลที่ส่งกลับแก้ไข หรือสร้างข้อขอแก้ไข"))
         if lines:
-            reason = "\n".join(filter(None, [reason, _("ข้อขอแก้ไขที่ค้างอยู่:")] + lines))
+            # As HTML: the chatter note and the To-Do keep one line per request.
+            reason = plaintext2html(
+                "\n".join(filter(None, [reason, _("ข้อขอแก้ไขที่ค้างอยู่:")] + lines))
+            )
         return super()._action_verify_return(reason)

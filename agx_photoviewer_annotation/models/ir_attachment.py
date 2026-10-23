@@ -13,10 +13,9 @@ class IrAttachment(models.Model):
 
     def _attachment_format(self, legacy=False):
         # Ship the count to the chatter so it can show the same badge as the
-        # many2many_binary widget; only annotated attachments gain the key.
+        # many2many_binary widget; always sent, so a badge clears at zero.
         res_list = super()._attachment_format(legacy=legacy)
         counts = self.env["ir.attachment.annotation"]._count_by_attachment(self.ids)
         for res in res_list:
-            if counts.get(res["id"]):
-                res["annotationCount"] = counts[res["id"]]
+            res["annotationCount"] = counts.get(res["id"], 0)
         return res_list

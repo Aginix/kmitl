@@ -18,26 +18,39 @@ class IrAttachment(models.Model):
         return self.sudo()
 
     def _compute_outstanding_request_count(self):
-        Request = self.env["change.request"].sudo()
-        for attachment in self:
-            if not isinstance(attachment.id, int):
-                attachment.outstanding_request_count = 0
-                continue
-            attachment.outstanding_request_count = Request.search_count(
+        files = {
+            attachment.id: attachment._request_files().ids
+            for attachment in self
+            if isinstance(attachment.id, int)
+        }
+        # One query for all of them, however many files are shown.
+        groups = (
+            self.env["change.request"]
+            .sudo()
+            ._read_group(
                 [
-                    ("attachment_id", "in", attachment._request_files().ids),
+                    ("attachment_id", "in", [i for ids in files.values() for i in ids]),
                     ("state", "in", OUTSTANDING),
-                ]
+                ],
+                ["attachment_id"],
+                ["attachment_id"],
+            )
+        )
+        counts = {
+            group["attachment_id"][0]: group["attachment_id_count"] for group in groups
+        }
+        for attachment in self:
+            attachment.outstanding_request_count = sum(
+                counts.get(file_id, 0) for file_id in files.get(attachment.id, [])
             )
 
     def _attachment_format(self, legacy=False):
         # The chatter shows the same outstanding requests badge as the
-        # many2many_binary widget.
+        # many2many_binary widget; always sent, so a badge clears at zero.
         res_list = super()._attachment_format(legacy=legacy)
         counts = {a.id: a.outstanding_request_count for a in self}
         for res in res_list:
-            if counts.get(res["id"]):
-                res["openRequestCount"] = counts[res["id"]]
+            res["openRequestCount"] = counts.get(res["id"], 0)
         return res_list
 
     def unlink(self):

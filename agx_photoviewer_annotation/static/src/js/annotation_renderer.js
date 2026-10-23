@@ -1211,6 +1211,8 @@ export class AnnotationEditor {
 
     async add(values) {
         const draft = {...values, is_own: true};
+        // Another file may be shown by the time the mark is saved.
+        const loading = this.loading;
         this.annotations.push(draft);
         this.redraw();
         try {
@@ -1220,10 +1222,15 @@ export class AnnotationEditor {
             });
             Object.assign(draft, saved);
         } catch (error) {
-            this.annotations.splice(this.annotations.indexOf(draft), 1);
+            if (loading === this.loading) {
+                this.annotations.splice(this.annotations.indexOf(draft), 1);
+            }
             throw error;
         } finally {
             this.redraw();
+        }
+        if (loading !== this.loading) {
+            return;
         }
         this.undoStack.push(draft);
         this.session.added.add(draft.id);
@@ -1243,7 +1250,12 @@ export class AnnotationEditor {
 
     async remove(annotation) {
         await this.call("annotation_delete", annotation.id);
-        this.annotations.splice(this.annotations.indexOf(annotation), 1);
+        const index = this.annotations.indexOf(annotation);
+        if (index === -1) {
+            // Another file is shown now.
+            return;
+        }
+        this.annotations.splice(index, 1);
         this.undoStack = this.undoStack.filter((a) => a !== annotation);
         if (this.session.added.has(annotation.id)) {
             this.session.added.delete(annotation.id);

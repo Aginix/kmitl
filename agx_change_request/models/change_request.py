@@ -2,6 +2,7 @@ from markupsafe import Markup
 
 from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError
+from odoo.tools import plaintext2html
 
 from .change_request_mixin import OUTSTANDING
 
@@ -201,7 +202,10 @@ class ChangeRequest(models.Model):
         record = self._get_record().sudo()
         for user in users:
             activity = record.activity_schedule(
-                xmlid, user_id=user.id, summary=summary, note=self.text
+                xmlid,
+                user_id=user.id,
+                summary=summary,
+                note=plaintext2html(self.text),
             )
             activity.change_request_id = self.id
 

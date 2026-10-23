@@ -99,7 +99,8 @@ class TestAnnotation(TransactionCase):
 
     def test_invalid_geometry(self):
         for kind, geometry in [
-            ("rect", {}),
+            # Not {}: a Json field stores it as NULL, refused before the check.
+            ("rect", {"x": 0.1, "y": 0.1}),
             ("pen", {"x": 0.1, "y": 0.1}),
             ("pen", {"points": [[0.1, 0.1]]}),
             ("check", {"x": "0.5", "y": 0.5}),

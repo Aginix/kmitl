@@ -119,7 +119,10 @@ class IrAttachment(models.Model):
         mimetype = self._compute_mimetype(
             {"name": name, "raw": raw, "mimetype": mimetype}
         )
-        if mimetype != "application/pdf" and not mimetype.startswith("image/"):
+        # SVG is stored as text/plain for most users (ir.attachment._check_contents).
+        if mimetype != "application/pdf" and (
+            not mimetype.startswith("image/") or mimetype == "image/svg+xml"
+        ):
             raise UserError(_("A revision must be an image or a PDF file."))
         # A file uploaded before its record was saved (res_id 0) is tied to
         # the record from now on, its revisions too.

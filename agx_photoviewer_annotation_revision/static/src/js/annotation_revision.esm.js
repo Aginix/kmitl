@@ -107,7 +107,10 @@ patch(AnnotationEditor.prototype, "agx_photoviewer_annotation_revision", {
                 `/agx_photoviewer_annotation_revision/revise/${this.attachment.id}`,
                 {method: "POST", body}
             );
-            const result = await response.json();
+            // E.g. a file too large or an expired session answer in HTML.
+            const result = await response.json().catch(() => ({
+                error: _t("The revision could not be uploaded."),
+            }));
             if (result.error) {
                 this.showError(result.error);
                 return;
