@@ -26,6 +26,18 @@ class BudgetSupportRequest(models.Model):
             "rejected": "set default",
         },
     )
+    # เลขที่หนังสือ — filled from the หนังสือ when it is numbered (see
+    # ``SarabunDocument._assign_register_number``), or typed in by hand when the
+    # request was signed on paper outside the system and approved via the
+    # manual fallback.
+    sarabun_document_number = fields.Char(
+        string="เลขที่หนังสือ",
+        copy=False,
+        index="trigram",
+        tracking=True,
+        help="Filled automatically when the e-Saraban หนังสือ is numbered; typed in "
+        "by hand when the request was approved on paper outside the system.",
+    )
 
     # --- hooks ---------------------------------------------------------
     def _get_sarabun_document_type(self):
@@ -233,3 +245,17 @@ class BudgetSupportRequest(models.Model):
             raise UserError(_("Only submitted requests can be approved."))
         self._check_no_live_sarabun_document()
         return super().action_approve()
+
+
+class SarabunDocument(models.Model):
+    _inherit = "sarabun.document"
+
+    def _assign_register_number(self):
+        """Mirror the issued number onto the originating support request
+        (sudo: the signer usually has no rights on the request)."""
+        res = super()._assign_register_number()
+        if self.origin_model == "budget.support.request" and self.origin_res_id:
+            self.env["budget.support.request"].sudo().browse(
+                self.origin_res_id
+            ).sarabun_document_number = self.name
+        return res

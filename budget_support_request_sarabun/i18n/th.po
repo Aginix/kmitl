@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-23 14:36+0000\n"
-"PO-Revision-Date: 2026-10-23 14:36+0000\n"
+"POT-Creation-Date: 2026-10-23 15:16+0000\n"
+"PO-Revision-Date: 2026-10-23 15:16+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -45,6 +45,15 @@ msgid "Budget Support Request"
 msgstr "คำขอรับการสนับสนุนงบประมาณ"
 
 #. module: budget_support_request_sarabun
+#: model:ir.model.fields,help:budget_support_request_sarabun.field_budget_support_request__sarabun_document_number
+msgid ""
+"Filled automatically when the e-Saraban หนังสือ is numbered; typed in by "
+"hand when the request was approved on paper outside the system."
+msgstr ""
+"ระบบเติมให้อัตโนมัติเมื่อหนังสือสารบรรณออกเลข "
+"กรอกเองเมื่อคำขออนุมัติด้วยหนังสือกระดาษนอกระบบ"
+
+#. module: budget_support_request_sarabun
 #: model:ir.model.fields,field_description:budget_support_request_sarabun.field_budget_support_request__sarabun_has_live_document
 msgid "Has Live หนังสือ"
 msgstr "มีหนังสือที่ยังดำเนินการอยู่"
@@ -71,7 +80,7 @@ msgstr ""
 #: code:addons/budget_support_request_sarabun/models/budget_support_request.py:0
 #, python-format
 msgid "Only submitted requests can be approved."
-msgstr "อนุมัติได้เฉพาะคำขอที่รออนุมัติเท่านั้น"
+msgstr "อนุมัติได้เฉพาะคำขอที่อยู่ในสถานะรอส่งขออนุมัติเท่านั้น"
 
 #. module: budget_support_request_sarabun
 #: model_terms:ir.ui.view,arch_db:budget_support_request_sarabun.view_budget_support_request_form_sarabun
@@ -84,6 +93,11 @@ msgstr "ปฏิเสธ"
 #: model_terms:ir.ui.view,arch_db:budget_support_request_sarabun.view_budget_support_request_search_sarabun
 msgid "Returned"
 msgstr "ตีกลับเพื่อแก้ไข"
+
+#. module: budget_support_request_sarabun
+#: model:ir.model,name:budget_support_request_sarabun.model_sarabun_document
+msgid "Sarabun Document (หนังสือ)"
+msgstr ""
 
 #. module: budget_support_request_sarabun
 #: model:ir.model.fields,field_description:budget_support_request_sarabun.field_budget_support_request__sarabun_document_count
@@ -277,6 +291,11 @@ msgstr ""
 #. module: budget_support_request_sarabun
 #: model_terms:ir.ui.view,arch_db:budget_support_request_sarabun.report_budget_support_request_body
 msgid "เลขที่คำขอ"
+msgstr ""
+
+#. module: budget_support_request_sarabun
+#: model:ir.model.fields,field_description:budget_support_request_sarabun.field_budget_support_request__sarabun_document_number
+msgid "เลขที่หนังสือ"
 msgstr ""
 
 #. module: budget_support_request_sarabun
