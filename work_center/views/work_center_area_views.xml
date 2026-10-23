@@ -32,7 +32,7 @@
     </record>
 
     <record id="work_center_area_action" model="ir.actions.act_window">
-        <field name="name">ระบบงาน</field>
+        <field name="name">Work Areas</field>
         <field name="res_model">work.center.area</field>
         <field name="view_mode">tree,form</field>
     </record>

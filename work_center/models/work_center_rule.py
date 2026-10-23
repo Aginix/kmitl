@@ -34,6 +34,7 @@ class WorkCenterRule(models.Model):
     sequence = fields.Integer(default=10)
     work_center_id = fields.Many2one(
         comodel_name="work.center",
+        string="Work Center",
         required=True,
         index=True,
         ondelete="cascade",
@@ -51,20 +52,29 @@ class WorkCenterRule(models.Model):
     model_name = fields.Char(related="model_id.model", store=True, index=True)
     domain = fields.Char(default="[]", required=True)
 
+    def _get_model(self):
+        """The document model of the rule, or a friendly error when the addon
+        that defines it is no longer installed."""
+        self.ensure_one()
+        if self.model_name not in self.env:
+            raise ValidationError(
+                _("Model %s is not installed.")
+                % (self.model_name or self.model_id.name)
+            )
+        return self.env[self.model_name]
+
     @api.constrains("work_center_id", "model_id", "domain")
     def _check_rule(self):
         for rule in self:
             wc = rule.work_center_id
             if wc.is_unassigned:
-                raise ValidationError(
-                    _("A rule cannot route to the 'ยังไม่มีศูนย์งาน' card.")
-                )
+                raise ValidationError(_("A rule cannot route to the Unassigned card."))
             if rule.model_id not in wc.area_id.model_ids:
                 raise ValidationError(
                     _("%(model)s is not a document model of work area %(area)s.")
                     % {"model": rule.model_id.name, "area": wc.area_id.name}
                 )
-            Model = self.env[rule.model_name]
+            Model = rule._get_model()
             if not issubclass(type(Model), self.pool["work.center.mixin"]):
                 raise ValidationError(
                     _("%s does not support work centers.") % rule.model_id.name
@@ -76,7 +86,7 @@ class WorkCenterRule(models.Model):
                 raise ValidationError(
                     _(
                         "%s has no operating unit, so it can only be routed to a "
-                        "work center without one (ส่วนกลาง)."
+                        "central work center (one without an operating unit)."
                     )
                     % rule.model_id.name
                 )
@@ -89,15 +99,22 @@ class WorkCenterRule(models.Model):
                 ) from e
 
     @api.model
-    def _match(self, record):
-        """Return the work center of the first rule matching ``record`` (which
-        may be a new, unsaved record), or an empty recordset."""
-        rules = self.search(
+    def _candidate_rules(self, model_name):
+        """The active rules of one document model, in match order. Searched
+        once per batch and passed to ``_match``."""
+        return self.search(
             [
-                ("model_name", "=", record._name),
+                ("model_name", "=", model_name),
                 ("work_center_id.active", "=", True),
             ]
         )
+
+    @api.model
+    def _match(self, record, rules=None):
+        """Return the work center of the first rule matching ``record`` (which
+        may be a new, unsaved record), or an empty recordset."""
+        if rules is None:
+            rules = self._candidate_rules(record._name)
         for rule in rules:
             if record.filtered_domain(rule._get_match_domain(record)):
                 return rule.work_center_id

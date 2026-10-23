@@ -18,7 +18,7 @@ class WorkCenter(models.Model):
     _inherit = ["mail.thread"]
     _order = "is_unassigned desc, sequence, id"
 
-    name = fields.Char(required=True, tracking=True)
+    name = fields.Char(required=True, translate=True, tracking=True)
     code = fields.Char(tracking=True)
     sequence = fields.Integer(default=10)
     active = fields.Boolean(default=True, tracking=True)
@@ -36,8 +36,9 @@ class WorkCenter(models.Model):
         index=True,
         ondelete="restrict",
         tracking=True,
-        help="Set: หน่วยงาน-level — routing rules only match documents of this "
-        "operating unit. Empty: ส่วนกลาง-level — rules match any operating unit.",
+        help="Set: the work center is at operating unit level — routing rules "
+        "only match documents of this operating unit. Empty: the work center "
+        "is central — its rules match any operating unit.",
     )
     member_ids = fields.Many2many(
         comodel_name="res.users",
@@ -50,13 +51,14 @@ class WorkCenter(models.Model):
     )
     company_id = fields.Many2one(
         comodel_name="res.company",
-        required=True,
         default=lambda self: self.env.company,
+        help="Leave empty to share the work center with every company.",
     )
     is_unassigned = fields.Boolean(
+        string="Unassigned Card",
         readonly=True,
         copy=False,
-        help="The synthetic 'ยังไม่มีศูนย์งาน' card of a work area: it counts "
+        help="The synthetic Unassigned card of a work area: it counts "
         "documents that have no work center. Documents never point to it.",
     )
     rule_ids = fields.One2many(
@@ -71,7 +73,7 @@ class WorkCenter(models.Model):
         help="Search helper: work centers whose area covers this model "
         "(ir.model is not readable by regular users).",
     )
-    counter_data = fields.Json(compute="_compute_counter_data")
+    counter_data = fields.Json(string="Counters", compute="_compute_counter_data")
 
     _sql_constraints = [
         (
@@ -85,7 +87,7 @@ class WorkCenter(models.Model):
     def _check_unassigned_central(self):
         if self.filtered(lambda wc: wc.is_unassigned and wc.operating_unit_id):
             raise ValidationError(
-                _("The 'ยังไม่มีศูนย์งาน' card cannot belong to an operating unit.")
+                _("The Unassigned card cannot belong to an operating unit.")
             )
 
     def _compute_document_model(self):
@@ -103,7 +105,7 @@ class WorkCenter(models.Model):
         if not self.env.context.get("work_center_area_unlink") and self.filtered(
             "is_unassigned"
         ):
-            raise UserError(_("The 'ยังไม่มีศูนย์งาน' card cannot be deleted."))
+            raise UserError(_("The Unassigned card cannot be deleted."))
         return super().unlink()
 
     # ------------------------------------------------------------------
@@ -154,6 +156,8 @@ class WorkCenter(models.Model):
                     }
                 )
         for wc in self:
+            # A Json field stores an empty list as False; the kanban template
+            # guards for it (``raw_value or []``).
             wc.counter_data = data[wc]
 
     def action_open_counter(self):

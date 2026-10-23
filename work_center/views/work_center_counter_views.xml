@@ -42,7 +42,7 @@
     </record>
 
     <record id="work_center_counter_action" model="ir.actions.act_window">
-        <field name="name">ตัวนับบนการ์ดศูนย์งาน</field>
+        <field name="name">Work Center Counters</field>
         <field name="res_model">work.center.counter</field>
         <field name="view_mode">tree,form</field>
     </record>
