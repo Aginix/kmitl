@@ -3,7 +3,7 @@
 {
     "name": "Web KMITL",
     "category": "KMITL",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.0.1",
     "author": "Aginix Technologies",
     "website": "https://github.com/Aginix/kmitl",
     "description": """
@@ -16,9 +16,7 @@ This module modifies the web addon to provide KMITL design and responsiveness.
     "auto_install": False,
     "data": [],
     "assets": {
-        'web.assets_frontend': [
-          "web_kmitl/static/src/scss/kmitl_theme.scss"
-        ],
+        "web.assets_frontend": ["web_kmitl/static/src/scss/kmitl_theme.scss"],
         "web._assets_primary_variables": [
             (
                 "after",
@@ -68,6 +66,7 @@ This module modifies the web addon to provide KMITL design and responsiveness.
             "web_kmitl/static/src/legacy/scss/form_view_mobile.scss",
             "web_kmitl/static/src/legacy/scss/modal_mobile.scss",
             "web_kmitl/static/src/views/**/*.scss",
+            "web_kmitl/static/src/scss/mail_message_action_list.scss",
         ],
     },
     "license": "OEEL-1",

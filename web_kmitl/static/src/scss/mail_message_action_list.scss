@@ -1,0 +1,10 @@
+// Odoo's 0.9rem is ~10.8px with the 12px root font size: icons are barely visible.
+.o_Message_actionListContainer .o_MessageActionList:not(.o-isDeviceSmall) {
+    font-size: 1.25rem;
+
+    // fa-lg has line-height .75em and the list is overflow-hidden: without
+    // vertical padding the glyphs are cropped at the top/bottom.
+    .o_MessageActionView {
+        padding-block: 0.25em;
+    }
+}
