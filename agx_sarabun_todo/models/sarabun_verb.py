@@ -13,6 +13,8 @@ class SarabunVerb(models.Model):
         string="Todo Category",
         compute="_compute_todo_category",
         inverse="_inverse_todo_category",
+        # A duplicated verb keeps the original's category (re-applied in create).
+        copy=True,
         help="How this verb's Todo clears: Execution only by acting at the หนังสือ; "
         "Acknowledgement (or blank) also by 'Mark as Read'. Blank Todos are not "
         "kept in the 'Completed by me' history. Applies to newly raised Todos.",
