@@ -76,14 +76,19 @@ class KmitlProject(models.Model):
     def create(self, vals_list):
         records = super().create(vals_list)
         records._subscribe_coordinator()
+        records._subscribe_manager()
         return records
 
     def write(self, vals):
-        if "coordinator_ids" not in vals:
+        if "coordinator_ids" not in vals and "manager_id" not in vals:
             return super().write(vals)
         previous = {rec: rec.coordinator_ids for rec in self}
+        previous_managers = {rec: rec.manager_id for rec in self}
         res = super().write(vals)
-        self._subscribe_coordinator()
+        if "coordinator_ids" in vals:
+            self._subscribe_coordinator()
+        if "manager_id" in vals:
+            self._subscribe_manager()
         for rec in self:
             # A removed coordinator loses access, so stop notifying them too —
             # unless they are still an owner (creator / หัวหน้าโครงการ).
@@ -95,6 +100,15 @@ class KmitlProject(models.Model):
             )
             if removed:
                 rec.message_unsubscribe(partner_ids=removed.partner_id.ids)
+            # A replaced / cleared หัวหน้าโครงการ stops following too, unless
+            # they still hold another owner role.
+            old_manager = previous_managers[rec]
+            if old_manager and old_manager != rec.manager_id:
+                old_user = old_manager.sudo().user_id
+                if old_user and old_user not in (
+                    rec.coordinator_ids | rec.creating_user_id
+                ):
+                    rec.message_unsubscribe(partner_ids=old_user.partner_id.ids)
         return res
 
     def _subscribe_coordinator(self):
@@ -111,6 +125,22 @@ class KmitlProject(models.Model):
             new_partners = partners - followers.partner_id
             if new_partners:
                 rec.message_subscribe(partner_ids=new_partners.ids)
+
+    def _subscribe_manager(self):
+        """Make หัวหน้าโครงการ a follower receiving status changes, adding the
+        status subtype to an existing follower rather than replacing its subtypes."""
+        subtype = self.env.ref("kmitl_project_coordinator.mt_kmitl_project_state")
+        for rec in self:
+            partner = rec.manager_id.sudo().user_id.partner_id
+            if not partner:
+                continue
+            follower = rec.message_follower_ids.filtered(
+                lambda f, p=partner: f.partner_id == p
+            )
+            if follower:
+                follower.sudo().subtype_ids = [(4, subtype.id)]
+            else:
+                rec.message_subscribe(partner_ids=partner.ids)
 
     def _track_subtype(self, init_values):
         self.ensure_one()
