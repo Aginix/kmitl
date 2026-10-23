@@ -73,6 +73,15 @@
                 duplicate="0"
                 class="o_kpbo_form"
             >
+                <header>
+                    <button
+                        name="action_open_project_form"
+                        type="object"
+                        string="กลับไปหน้าโครงการ"
+                        icon="fa-arrow-left"
+                        class="btn-secondary"
+                    />
+                </header>
                 <sheet>
                     <field name="state" invisible="1" />
                     <field name="company_id" invisible="1" />

@@ -83,6 +83,22 @@ class KmitlProject(models.Model):
         action["res_id"] = self.id
         return action
 
+    def action_open_project_form(self):
+        """Back to the project form from บัญชีโครงการ — also after a reload,
+        which leaves no breadcrumb. ``main`` resets the breadcrumbs so going
+        back and forth never stacks them."""
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_window",
+            "res_model": "kmitl.project",
+            "res_id": self.id,
+            "view_mode": "form",
+            "views": [
+                (self.env.ref("kmitl_project.view_kmitl_project_form").id, "form")
+            ],
+            "target": "main",
+        }
+
     def action_open_off_target_movements(self):
         action = self.action_open_budget_movements()
         action["context"] = {"search_default_off_target": 1}
