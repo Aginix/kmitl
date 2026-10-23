@@ -32,6 +32,13 @@ class TestSarabunTodoBridge(SarabunCommon):
             self.assertEqual(verb.activity_type_id.todo_category, "execution", key)
         self.assertEqual(self._verb("acknowledge").todo_category, "acknowledgement")
 
+    def test_seed_covers_admin_made_verbs(self):
+        """An admin-made verb existing at upgrade is seeded too, not only built-ins."""
+        verb = self.env["sarabun.verb"].create({"name": "ตรวจรับรอง", "gating": True})
+        self.assertFalse(verb.todo_category)
+        self.env["sarabun.verb"]._seed_todo_category()
+        self.assertEqual(verb.todo_category, "execution")
+
     def test_verb_category_writes_type(self):
         """A new verb starts uncategorised; setting it on the verb (as a Sarabun
         Manager, who has no write on mail.activity.type) lands on its type."""

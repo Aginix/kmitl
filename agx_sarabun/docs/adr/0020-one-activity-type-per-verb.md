@@ -16,16 +16,19 @@ to do. Since a verb's label *is* the human instruction (CONTEXT §Step verbs), *
 `sarabun.verb` now owns one `mail.activity.type`**, created and kept in sync by core.
 The sync runs one way, verb → type: the name, in every language, with no prefix; the
 active flag; and `res_model = sarabun.document`. A step raises its verb's type. Deleting
-a verb deletes its type, or archives it while an activity still points at it. The
+a verb deletes its type, or archives it while an activity still points at it; the
+type itself cannot be deleted while its verb exists (`ondelete="restrict"`), or the
+verb's steps would silently stop raising Todos. The
 icon is set once when the type is created; after that it and the other Odoo settings
 are edited on the type itself, which the verb form opens from a smart button.
 
 **The Todo category moves onto the verb, with no forced rule.** `agx_sarabun_todo`
 exposes `sarabun.verb.todo_category`, read from and written to the verb's type
 (sudo, because a Sarabun Manager edits verbs but has no right on activity types).
-Core no longer discriminates. The built-in verbs are seeded **once** with the category
-the old discriminator gave them, so behaviour is unchanged after the upgrade. New
-verbs start **blank**, and the admin decides. A blank Todo can be cleared by Mark as
+Core no longer discriminates. Every verb that exists when the bridge is installed or
+upgraded — built-in and admin-made alike — is seeded **once** with the category the
+old discriminator gave it, so behaviour is unchanged after the upgrade. Verbs created
+afterwards start **blank**, and the admin decides. A blank Todo can be cleared by Mark as
 Read and is not kept in "Completed by me".
 
 ## Considered options
@@ -45,7 +48,7 @@ Read and is not kept in "Completed by me".
   sarabun activities from `_action` / `_ack` to their step's verb type using raw SQL,
   so each open Todo keeps its stored category, and then archives the two old types
   (`todo.log` history still names them). `agx_sarabun_todo 16.0.1.1.0` seeds the
-  built-in categories.
+  category of every existing verb.
 - A change to a verb's category affects only Todos raised afterwards
   (`mail.activity.todo_category` follows only `activity_type_id`).
 - A behaviour beyond execution / acknowledgement (e.g. a new kind of Todo) is the

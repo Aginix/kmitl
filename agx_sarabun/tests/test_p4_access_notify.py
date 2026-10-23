@@ -2,8 +2,11 @@
 
 from unittest.mock import patch
 
+from psycopg2 import IntegrityError
+
 from odoo.exceptions import AccessError
 from odoo.tests.common import tagged
+from odoo.tools import mute_logger
 
 from odoo.addons.agx_sarabun.tests.common import SarabunCommon
 
@@ -160,6 +163,22 @@ class TestP4Access(SarabunCommon):
         verb.unlink()
         self.assertTrue(act_type.exists())
         self.assertFalse(act_type.active)
+
+    def test_verb_type_cannot_be_deleted_alone(self):
+        """The owned type can't be deleted under its verb (restrict) — the verb's
+        steps would otherwise silently stop raising Todos."""
+        act_type = self._verb("verify").activity_type_id
+        with self.assertRaises(IntegrityError), mute_logger("odoo.sql_db"):
+            with self.cr.savepoint():
+                act_type.unlink()
+
+    def test_verb_translation_dialog_syncs_type(self):
+        """The translation dialog bypasses write(); the type name still follows."""
+        verb = self.env["sarabun.verb"].create({"name": "ตรวจสอบเอกสาร"})
+        verb.update_field_translations("name", {"en_US": "Check documents"})
+        self.assertEqual(
+            verb.activity_type_id.with_context(lang="en_US").name, "Check documents"
+        )
 
     # -------------------------------------------- acting as a non-sender actor (ACL)
     def test_non_sender_actor_can_complete(self):

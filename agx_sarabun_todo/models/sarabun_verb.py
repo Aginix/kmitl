@@ -2,21 +2,6 @@ from odoo import api, fields, models
 
 from odoo.addons.mail_activity_todo.models.mail_activity import TODO_CATEGORIES
 
-# The nine built-in verbs, seeded once with the category the retired two-type
-# discriminator gave them (gating OR show_signature → execution) — ADR-0020.
-BUILTIN_VERBS = (
-    "verb_originate",
-    "verb_prepare",
-    "verb_acknowledge",
-    "verb_acknowledge_sign",
-    "verb_verify",
-    "verb_consider",
-    "verb_forward",
-    "verb_endorse",
-    "verb_sign_approve",
-    "verb_approve",
-)
-
 
 class SarabunVerb(models.Model):
     _inherit = "sarabun.verb"
@@ -53,9 +38,13 @@ class SarabunVerb(models.Model):
             verb.activity_type_id.sudo().todo_category = verb.todo_category
 
     @api.model
-    def _seed_builtin_todo_category(self):
-        for name in BUILTIN_VERBS:
-            verb = self.env.ref("agx_sarabun.%s" % name, raise_if_not_found=False)
-            if verb and verb.activity_type_id and not verb.todo_category:
-                acts = verb.gating or verb.show_signature
-                verb.todo_category = "execution" if acts else "acknowledgement"
+    def _seed_todo_category(self):
+        """Seed every existing verb (built-in AND admin-made, archived too) once with
+        the category the retired two-type discriminator gave it (gating OR
+        show_signature → execution) — ADR-0020. Verbs created later start blank."""
+        verbs = self.with_context(active_test=False).search([])
+        for verb in verbs.filtered("activity_type_id"):
+            if verb.todo_category:
+                continue
+            acts = verb.gating or verb.show_signature
+            verb.todo_category = "execution" if acts else "acknowledgement"

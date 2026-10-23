@@ -67,7 +67,9 @@ class SarabunVerb(models.Model):
         string="Activity Type",
         readonly=True,
         copy=False,
-        ondelete="set null",
+        # The type is owned by the verb: deleting it would silently stop the verb's
+        # steps raising Todos (_schedule_activities skips a verb without a type).
+        ondelete="restrict",
         help="The awaiting-action activity type this verb raises — created and kept "
         "in sync (name / active) automatically (ADR-0020).",
     )
@@ -96,6 +98,13 @@ class SarabunVerb(models.Model):
         )
         (types - in_use).unlink()
         in_use.write({"active": False})
+        return res
+
+    def _update_field_translations(self, field_name, translations, digest=None):
+        # The translation dialog writes the jsonb directly, bypassing write().
+        res = super()._update_field_translations(field_name, translations, digest)
+        if field_name == "name":
+            self._sync_activity_type()
         return res
 
     def _sync_activity_type(self):
