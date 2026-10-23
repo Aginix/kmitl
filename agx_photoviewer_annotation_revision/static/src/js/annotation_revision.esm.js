@@ -45,7 +45,8 @@ patch(AnnotationEditor.prototype, "agx_photoviewer_annotation_revision", {
                 "form-select form-select-sm o_agx_annotation_revisions"
             );
             select.title = _t("Revisions of this file");
-            for (const revision of revisions) {
+            // Latest first.
+            for (const revision of [...revisions].reverse()) {
                 const option = htmlElement(
                     "option",
                     "",
