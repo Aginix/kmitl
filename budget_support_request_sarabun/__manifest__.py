@@ -13,6 +13,7 @@
     ],
     "data": [
         "data/sarabun_budget_support_data.xml",
+        "reports/report_budget_support_request.xml",
         "views/budget_support_request_views.xml",
     ],
     # Wherever both budget_support_request and agx_sarabun are present the

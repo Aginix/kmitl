@@ -29,10 +29,13 @@ class BudgetSupportRequest(models.Model):
 
     # --- hooks ---------------------------------------------------------
     def _get_sarabun_document_type(self):
-        return self.env.ref(
-            "budget_support_request_sarabun.document_type_budget_support_request",
-            raise_if_not_found=False,
-        ) or super()._get_sarabun_document_type()
+        return (
+            self.env.ref(
+                "budget_support_request_sarabun.document_type_budget_support_request",
+                raise_if_not_found=False,
+            )
+            or super()._get_sarabun_document_type()
+        )
 
     def _sarabun_submit_guard(self):
         self.ensure_one()
@@ -40,25 +43,29 @@ class BudgetSupportRequest(models.Model):
 
     def _get_sarabun_subject(self):
         self.ensure_one()
-        return _(
-            "ขออนุมัติสนับสนุนงบประมาณ %(dept)s ประจำปีงบประมาณ พ.ศ. %(fy)s"
-        ) % {
+        return _("ขออนุมัติสนับสนุนงบประมาณ %(dept)s ประจำปีงบประมาณ พ.ศ. %(fy)s") % {
             "dept": self._sarabun_dim_name(self.department_analytic_id),
             "fy": self.account_fiscal_year_id.name or "",
         }
 
+    def _get_sarabun_body_template(self):
+        """The live คำขอ figures, rendered between the หนังสือ's เนื้อหา and the
+        signatures (agx_sarabun ADR-0015). Kept out of the editable ``content``
+        on purpose: ``content`` is seeded once at create and owned by the
+        drafter from then on, so a request revised after a ตีกลับ and re-sent on
+        the same หนังสือ would otherwise go out for signature still showing the
+        superseded amount."""
+        return "budget_support_request_sarabun.report_budget_support_request_body"
+
     def _get_sarabun_content(self):
+        """The editable บันทึกนำ seeding เนื้อหา — narrative only. Every
+        authoritative figure (amount, request number, fiscal year) renders live
+        from :meth:`_get_sarabun_body_template` instead."""
         self.ensure_one()
         body = _(
             "ด้วย%(dept)s มีความประสงค์ขอรับการสนับสนุนงบประมาณ "
-            "ประจำปีงบประมาณ พ.ศ. %(fy)s จำนวนเงิน %(amt)s บาท "
-            "เลขที่คำขอ %(no)s โดยมีเหตุผลความจำเป็นดังนี้"
-        ) % {
-            "dept": self._sarabun_dim_name(self.department_analytic_id),
-            "fy": self.account_fiscal_year_id.name or "",
-            "amt": "{:,.2f}".format(self.amount_requested),
-            "no": self.name or "",
-        }
+            "ตามรายละเอียดที่แนบท้ายนี้ โดยมีเหตุผลความจำเป็นดังนี้"
+        ) % {"dept": self._sarabun_dim_name(self.department_analytic_id)}
         return "<p>%s</p>%s" % (body, self.reason or "")
 
     @staticmethod
@@ -66,15 +73,16 @@ class BudgetSupportRequest(models.Model):
         name = (analytic.complete_name or analytic.name or "") if analytic else ""
         return name.replace(" / ", " ")
 
-    # --- submit: wrap super() to set content + enclose the attachments ---
+    # --- submit: wrap super() to enclose the attachments -----------------
     def action_submit_to_sarabun(self):
         action = super().action_submit_to_sarabun()
         if action and action.get("res_id"):
             document = self.env["sarabun.document"].browse(action["res_id"])
+            # Only the enclosures: the mixin's _prepare_sarabun_document_vals
+            # already seeds content + include_content from
+            # _get_sarabun_content() at create.
             document.sudo().write(
                 {
-                    "include_content": True,
-                    "content": self._get_sarabun_content(),
                     "enclosure_attachment_ids": [
                         (6, 0, self._copy_attachments_to_sarabun(document).ids)
                     ],
@@ -159,14 +167,9 @@ class BudgetSupportRequest(models.Model):
         for request in self:
             if request.state == "returned":
                 request.show_cancel_button = True
-                request.show_reset_button = (
-                    request.user_id == self.env.user or is_admin
-                )
+                request.show_reset_button = request.user_id == self.env.user or is_admin
             elif request.state == "rejected":
                 request.show_reset_button = is_manager or is_admin
-            request.show_approve_button = request.state == "submitted" and (
-                is_manager or is_admin
-            )
 
     # --- extra guards for the states this bridge introduces -------------
     def action_cancel(self):
@@ -201,6 +204,20 @@ class BudgetSupportRequest(models.Model):
             )
         return super().action_reset_to_draft()
 
+    def _check_no_live_sarabun_document(self):
+        """The manual Approve fallback must not run behind a หนังสือ that is
+        still around (a draft not yet sent, or one mid-circulation) — the
+        letter's own callbacks would later overwrite the approval (a ตีกลับ
+        would drag an approved, possibly already-fulfilled request back to
+        `returned`). Force the user to delete/void the หนังสือ first."""
+        if self.filtered("sarabun_has_live_document"):
+            raise UserError(
+                _(
+                    "มีหนังสือสารบรรณค้างอยู่ ไม่สามารถอนุมัติได้ "
+                    "กรุณาลบหรือยกเลิกหนังสือก่อนจึงจะอนุมัติด้วยตนเองได้"
+                )
+            )
+
     def action_approve(self):
         """Restricted to `submitted` — from `sent` a letter is already
         circulating (approving here would race with
@@ -208,4 +225,5 @@ class BudgetSupportRequest(models.Model):
         or revive a decided request through the back door."""
         if self.filtered(lambda r: r.state != "submitted"):
             raise UserError(_("Only submitted requests can be approved."))
+        self._check_no_live_sarabun_document()
         return super().action_approve()

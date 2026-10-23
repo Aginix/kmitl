@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- The หนังสือ's LIVE body (agx_sarabun ADR-0015): rendered between the
+         editable เนื้อหา and the endorsement block every time the document is
+         rendered, with the request as ``o``.
+
+         Every authoritative figure lives here and nowhere else. The seeded
+         ``content`` is owned by the drafter from the moment the letter is
+         created, so a request revised after a ตีกลับ and re-sent on the SAME
+         หนังสือ (agx_sarabun action_send accepts draft|returned) would
+         otherwise go out for signature carrying the superseded amount. -->
+    <template id="report_budget_support_request_body">
+        <!-- Bootstrap paints a 2px separator between thead and tbody, heavier
+             than the 1px cell borders around it. Flatten it so the table reads
+             at one intensity under the Sarabun layout. -->
+        <style>
+            .table-bordered > :not(:first-child) {
+                border-top-width: 1px !important;
+            }
+        </style>
+
+        <div class="my-4"/>
+        <table class="table table-bordered table-sm mb-4">
+            <tbody>
+                <tr>
+                    <td style="width:35%">เลขที่คำขอ</td>
+                    <td><span t-out="o.name or '-'"/></td>
+                </tr>
+                <tr>
+                    <td>ส่วนงานผู้ขอรับการสนับสนุน</td>
+                    <td>
+                        <span
+                            t-out="(o.department_analytic_id.complete_name or o.department_analytic_id.name or '-').replace(' / ', ' ')"
+                        />
+                    </td>
+                </tr>
+                <tr>
+                    <td>ปีงบประมาณ</td>
+                    <td><span t-out="o.account_fiscal_year_id.name or '-'"/></td>
+                </tr>
+                <tr>
+                    <td>จำนวนเงินที่ขอรับการสนับสนุน</td>
+                    <td class="text-end">
+                        <span
+                            t-out="o.amount_requested"
+                            t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"
+                        /> บาท
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </template>
+
+</odoo>

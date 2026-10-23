@@ -2,7 +2,7 @@ from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools import html2plaintext
 
-OFFICER_GROUP_XMLID = "budget_support_request.group_budget_support_officer"
+BUDDY_GROUP_XMLID = "budget_buddy.group_budget_buddy"
 FULFIL_ACTIVITY = "budget_support_request.mail_activity_support_fulfil"
 ACK_ACTIVITY = "budget_support_request.mail_activity_support_ack"
 
@@ -14,9 +14,8 @@ class BudgetSupportRequest(models.Model):
     The request only carries the *ask* (department, amount, reason, files);
     central chooses the funding source and fulfils it, after approval, with
     either a ``budget.transfer`` (โอน) or a ``budget.commitment`` (จอง) — see
-    ``CONTEXT.md``. ``_mail_post_access = "read"`` lets the notify-only
-    ``group_budget_support_officer`` (read, no write) still see and complete
-    the Todo scheduled on approval.
+    ``CONTEXT.md``. ``_mail_post_access = "read"`` keeps the fulfilment Todo
+    readable by anyone who can read the request, without requiring write.
     """
 
     _name = "budget.support.request"
@@ -58,7 +57,11 @@ class BudgetSupportRequest(models.Model):
         compute="_compute_analytic_id",
         inverse="_inverse_department_analytic",
         domain=[("root_plan_id.code", "=", "departments")],
-        store=False,
+        # Stored so the list/search view can search and group by the ส่วนงาน
+        # dimension (mirrors kmitl.project / procurement.plan) — read_group
+        # rejects non-stored fields and a non-stored leaf is silently dropped
+        # from the search domain.
+        store=True,
         tracking=True,
     )
     _analytic_keys = {"departments": "department_analytic_id"}
@@ -102,14 +105,23 @@ class BudgetSupportRequest(models.Model):
         tracking=True,
         help="Please explain why this budget support is needed.",
     )
-    attachment_ids = fields.Many2many(
+    # One2many on ``res_id`` (never a Many2many — mirrors
+    # budget_transfer_attachment): the ``many2many_binary`` widget uploads with
+    # ``res_id = 0`` while the record is still unsaved, and a Many2many would
+    # leave it at 0 forever, which makes ``ir.attachment.check()`` hide the file
+    # from everyone but the uploader (the approver included). The One2many
+    # inverse stamps ``res_id`` on save, so the link self-heals.
+    attachment_ids = fields.One2many(
         comodel_name="ir.attachment",
-        relation="budget_support_request_attachment_rel",
-        column1="request_id",
-        column2="attachment_id",
+        inverse_name="res_id",
         string="เอกสารแนบ",
+        domain=[("res_model", "=", "budget.support.request")],
     )
 
+    # Locked on purpose (CONTEXT.md ▸ Requester): the request stays attributed
+    # to whoever filed it, which is what makes "an approver may not approve
+    # their own request" meaningful — a reassignable requester would hand
+    # anyone a way around that check.
     user_id = fields.Many2one(
         string="ผู้ขอ",
         comodel_name="res.users",
@@ -117,6 +129,21 @@ class BudgetSupportRequest(models.Model):
         tracking=True,
         default=lambda self: self.env.user,
         required=True,
+        readonly=True,
+    )
+    officer_id = fields.Many2one(
+        string="เจ้าหน้าที่ Buddy ผู้รับผิดชอบ",
+        comodel_name="res.users",
+        compute="_compute_officer_id",
+        store=True,
+        readonly=False,
+        copy=False,
+        tracking=True,
+        domain=lambda self: [("groups_id", "in", self.env.ref(BUDDY_GROUP_XMLID).ids)],
+        help="The one central-office Buddy who will fulfil this request and who "
+        "receives the Todo when it is approved. Defaults (in draft) to the Buddy "
+        "covering this unit in the Buddy settings; the requesting unit may name "
+        "another.",
     )
     approver_id = fields.Many2one(
         string="Approved by",
@@ -160,9 +187,22 @@ class BudgetSupportRequest(models.Model):
     # overriding each field's attrs (mirrors ``budget.transfer.can_edit``).
     can_edit = fields.Boolean(compute="_compute_can_edit")
 
+    # True once the BSR number has been minted — the fiscal year is then frozen
+    # (it drives the number's year), even after a Reset to Draft or a ตีกลับ
+    # reopening the request (mirrors ``budget.transfer.fiscal_year_locked``).
+    fiscal_year_locked = fields.Boolean(compute="_compute_fiscal_year_locked")
+
     # ------------------------------------------------------------------
     # Computes
     # ------------------------------------------------------------------
+    @api.depends("name")
+    def _compute_fiscal_year_locked(self):
+        placeholders = {"New", _("New")}
+        for request in self:
+            request.fiscal_year_locked = bool(
+                request.name and request.name not in placeholders
+            )
+
     @api.depends("state", "account_fiscal_year_id")
     def _compute_name(self):
         """Mint the request number once it leaves draft (mirrors
@@ -184,6 +224,41 @@ class BudgetSupportRequest(models.Model):
                     .next_by_code("budget.support.request")
                 ) or _("New")
 
+    def _get_buddies(self):
+        """Buddies whose coverage rows match this request, primary first.
+        Evaluated on demand: a row's domain may read any field, so it cannot
+        sit behind a cache keyed on the unit alone (mirrors
+        ``budget_transfer_verify``)."""
+        self.ensure_one()
+        return self.env["budget.buddy"]._get_buddy_users(self)
+
+    def _buddy_can_read(self, user):
+        """Whether ``user``'s record rules let them read this request —
+        evaluated in memory so it also works on an unsaved record."""
+        self.ensure_one()
+        domain = self.env["ir.rule"].with_user(user)._compute_domain(self._name)
+        return not domain or bool(self.sudo().filtered_domain(domain))
+
+    def _get_assignable_buddies(self):
+        """Covering buddies who can actually read the request — a Buddy the OU
+        rule hides it from could never open the Todo, so never offer them."""
+        self.ensure_one()
+        return self._get_buddies().filtered(self._buddy_can_read)
+
+    @api.depends("department_analytic_id", "user_id", "amount_requested")
+    def _compute_officer_id(self):
+        """Default the Buddy from the coverage settings while in draft; a row's
+        domain may read any field, so the depends cover the usual ones. A Buddy
+        the settings still assign is kept, so editing the request does not undo
+        the unit's own pick."""
+        for request in self:
+            if request.state == "draft":
+                buddies = request._get_assignable_buddies()
+                if request.officer_id not in buddies:
+                    request.officer_id = buddies[:1]
+            else:
+                request.officer_id = request.officer_id
+
     @api.depends("state")
     def _compute_can_edit(self):
         for request in self:
@@ -204,7 +279,9 @@ class BudgetSupportRequest(models.Model):
             request.show_submit_button = request.state == "draft" and (
                 request.user_id == user or is_admin
             )
-            request.show_approve_button = request.state == "submitted"
+            request.show_approve_button = request.state == "submitted" and (
+                is_manager or is_admin
+            )
             can_fulfil = request.state in ("approved", "in_progress") and (
                 is_manager or is_admin
             )
@@ -214,9 +291,14 @@ class BudgetSupportRequest(models.Model):
                 is_manager or is_admin
             )
             request.show_cancel_button = request.state in ("draft", "submitted")
+            # Reopening past `submitted` is the Budget Manager's alone
+            # (CONTEXT.md ▸ Reopening).
             request.show_reset_button = (
                 request.state == "submitted" and (request.user_id == user or is_admin)
-            ) or (request.state == "cancelled" and (is_manager or is_admin))
+            ) or (
+                request.state in ("cancelled", "approved", "in_progress", "done")
+                and (is_manager or is_admin)
+            )
 
     # ------------------------------------------------------------------
     # Onchange
@@ -239,20 +321,35 @@ class BudgetSupportRequest(models.Model):
     # Workflow
     # ------------------------------------------------------------------
     def action_submit(self):
-        if not (
-            self.env.user.has_group("budget.group_budget_user")
-            or self.env.is_admin()
-        ):
+        user = self.env.user
+        is_admin = self.env.is_admin()
+        if not (user.has_group("budget.group_budget_user") or is_admin):
             raise UserError(_("Only Budget Users can submit a support request."))
+        for request in self:
+            if request.user_id != user and not is_admin:
+                raise UserError(
+                    _("Only the requester can submit their own support request.")
+                )
+            if not request.officer_id:
+                raise UserError(
+                    _(
+                        "กรุณาระบุเจ้าหน้าที่ Buddy ผู้รับผิดชอบ (ส่วนงาน %s "
+                        "ยังไม่มีเจ้าหน้าที่ Buddy ที่มีสิทธิ์เข้าถึงคำขอนี้ในการตั้งค่า)"
+                    )
+                    % (request.department_analytic_id.display_name or "-")
+                )
+            if not request._buddy_can_read(request.officer_id):
+                raise UserError(
+                    _("%s ไม่มีสิทธิ์เข้าถึงคำขอนี้ กรุณาเลือกเจ้าหน้าที่ Buddy คนอื่น")
+                    % request.officer_id.name
+                )
         self._validate_request_data()
         self.write({"state": "submitted"})
         return True
 
     def action_approve(self):
         is_admin = self.env.is_admin()
-        if not (
-            self.env.user.has_group("budget.group_budget_manager") or is_admin
-        ):
+        if not (self.env.user.has_group("budget.group_budget_manager") or is_admin):
             raise UserError(_("Only Budget Managers can approve support requests."))
         if not is_admin:
             for request in self:
@@ -299,9 +396,7 @@ class BudgetSupportRequest(models.Model):
 
     def action_done(self):
         is_admin = self.env.is_admin()
-        if not (
-            self.env.user.has_group("budget.group_budget_manager") or is_admin
-        ):
+        if not (self.env.user.has_group("budget.group_budget_manager") or is_admin):
             raise UserError(_("Only Budget Managers can close a support request."))
         if self.filtered(lambda r: r.state != "in_progress"):
             raise UserError(_("Only a request in progress can be marked done."))
@@ -314,31 +409,30 @@ class BudgetSupportRequest(models.Model):
         adds its own pre-approval states (e.g. ``sent``/``returned``) stays
         cancellable through here without needing to loosen this check."""
         if self.filtered(lambda r: r.state in ("approved", "in_progress", "done")):
-            raise UserError(
-                _("An approved or fulfilled request cannot be cancelled.")
-            )
+            raise UserError(_("An approved or fulfilled request cannot be cancelled."))
         self.write({"state": "cancelled"})
         return True
 
     def action_reset_to_draft(self):
-        """Only guards the states the base itself reaches (``submitted``,
-        ``cancelled``); a bridge introducing extra pre-approval states
-        (``sent``/``returned``/``rejected``) adds its own guards on top of
-        this, rather than this method blocking them outright."""
+        """The requester may take back their own `submitted` request; every
+        other state is the Budget Manager's to reopen. A bridge introducing
+        extra states (``sent``/``returned``/``rejected``) adds its own guards
+        on top — ``sent`` is refused outright by the e-Saraban bridge."""
         user = self.env.user
         is_manager = user.has_group("budget.group_budget_manager")
         is_admin = self.env.is_admin()
         for request in self:
-            if request.state == "submitted" and not (
-                request.user_id == user or is_admin
-            ):
-                raise UserError(
-                    _("Only the requester can reset a submitted request to draft.")
-                )
-            if request.state == "cancelled" and not (is_manager or is_admin):
-                raise UserError(
-                    _("Only Budget Managers can reset a cancelled request to draft.")
-                )
+            if request.state == "submitted":
+                if not (request.user_id == user or is_admin):
+                    raise UserError(
+                        _("Only the requester can reset a submitted request to draft.")
+                    )
+            elif request.state != "draft" and not (is_manager or is_admin):
+                # Everything past `submitted` — including a decided or already
+                # fulfilled request — is the Budget Manager's to reopen
+                # (CONTEXT.md ▸ Reopening). The allocations already made keep
+                # pointing at it; settling those is a separate act.
+                raise UserError(_("Only Budget Managers can reopen this request."))
         self.write({"state": "draft", "approver_id": False, "approval_date": False})
         return True
 
@@ -346,17 +440,21 @@ class BudgetSupportRequest(models.Model):
     # Validation
     # ------------------------------------------------------------------
     def _validate_request_data(self):
-        self.ensure_one()
-        if not self.department_analytic_id:
-            raise ValidationError(
-                _("Please select the requesting unit's department dimension.")
-            )
-        if not self.account_fiscal_year_id:
-            raise ValidationError(_("Please set the fiscal year."))
-        if self.amount_requested <= 0:
-            raise ValidationError(_("The requested amount must be greater than zero."))
-        if not (self.reason and html2plaintext(self.reason).strip()):
-            raise ValidationError(_("Please provide a reason/justification."))
+        """Validate every record in ``self`` — ``action_submit`` /
+        ``action_approve`` are multi-record capable."""
+        for request in self:
+            if not request.department_analytic_id:
+                raise ValidationError(
+                    _("Please select the requesting unit's department dimension.")
+                )
+            if not request.account_fiscal_year_id:
+                raise ValidationError(_("Please set the fiscal year."))
+            if request.amount_requested <= 0:
+                raise ValidationError(
+                    _("The requested amount must be greater than zero.")
+                )
+            if not (request.reason and html2plaintext(request.reason).strip()):
+                raise ValidationError(_("Please provide a reason/justification."))
 
     def action_view_transfers(self):
         self.ensure_one()
@@ -392,13 +490,14 @@ class BudgetSupportRequest(models.Model):
     # Hooks (bridges extend)
     # ------------------------------------------------------------------
     def _after_approved(self):
-        """Notify the read-only officer group that a request is ready to fulfil."""
-        officer_group = self.env.ref(OFFICER_GROUP_XMLID, raise_if_not_found=False)
-        if not officer_group:
-            return
-        for request in self:
-            for user in officer_group.users:
-                request.activity_schedule(FULFIL_ACTIVITY, user_id=user.id)
+        """Tell the one named Buddy that this request is ready to fulfil —
+        not the whole central office (CONTEXT.md ▸ Buddy)."""
+        for request in self.filtered("officer_id"):
+            request.activity_schedule(
+                FULFIL_ACTIVITY,
+                user_id=request.officer_id.id,
+                summary=_("จัดสรรงบประมาณตามคำขอ %s") % (request.name or ""),
+            )
 
     def _after_done(self):
         """Clear the officer's fulfilment Todo and notify the requester."""
@@ -409,24 +508,30 @@ class BudgetSupportRequest(models.Model):
     def _on_fulfilment_posted(self):
         """Move an approved request to in_progress once central has posted a
         transfer or reserved a commitment against it. Idempotent."""
-        self.filtered(lambda r: r.state == "approved").write(
-            {"state": "in_progress"}
-        )
+        self.filtered(lambda r: r.state == "approved").write({"state": "in_progress"})
 
     def _prepare_transfer_vals(self):
         """Default values for the draft ``budget.transfer`` opened by
-        :meth:`action_fulfil_transfer`. ``account_id`` on the TO line is left
+        :meth:`action_fulfil_transfer`. ``account_id`` on the destination line is left
         unset — it is a hard required field with no default, so it is filled
         in by central on the (unsaved) form rather than at creation time."""
         self.ensure_one()
         return {
-            "move_type": "entry",
+            # No ``move_type``: it is not on the transfer form, so default_get
+            # would never be asked for it — and budget.transfer.create already
+            # setdefaults it to "entry".
             "reason": html2plaintext(self.reason or ""),
             "date": self.date,
             "account_fiscal_year_id": self.account_fiscal_year_id.id,
-            "department_analytic_id": self.department_analytic_id.id,
+            # NO header department: on a budget.transfer the header IS the
+            # source (FROM lines hide the field and always take it), and a
+            # support request is central funding a unit — central picks its
+            # own source department here. Only the destination is known.
             "support_request_id": self.id,
-            "line_ids": [
+            # ``to_line_ids`` — NOT ``line_ids``: the transfer form view only
+            # carries the from/to authoring boxes, and ``default_get`` is only
+            # asked for fields the view contains.
+            "to_line_ids": [
                 (
                     0,
                     0,

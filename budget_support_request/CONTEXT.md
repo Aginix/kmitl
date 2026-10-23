@@ -25,10 +25,17 @@ Operating Unit is secondary (access/visibility only) and is stamped from the req
 default OU, later used as the **Beneficiary Unit** if the request is fulfilled by Reserve.
 _Avoid_: beneficiary (that is the OU role on the reservation), applicant
 
+**Requester (ผู้ขอ)**:
+The one person who filed the request. Not transferable — the request stays attributed to
+whoever raised it, which is what makes "an approver may not approve their own request"
+meaningful. A colleague filing on someone's behalf files it in their own name.
+_Avoid_: owner, responsible (the Buddy is the responsible party on central's side)
+
 **Fulfilment Method (วิธีจัดสรร — โอน / จอง)**:
-How an approved request is satisfied. **Transfer (โอน)** moves pool into the requester's
-own `department` dimension (a `budget.transfer`; the requester then owns and spends it
-freely). **Reserve (จอง)** creates a standalone ใบจองงบประมาณ (`budget.commitment`) with
+How an approved request is satisfied. **Transfer (โอน)** moves pool **out of central's own
+`department` dimension (the source) into the requester's (the destination)** — a support
+request is by definition central funding a unit, never the unit funding itself — so the
+requester then owns and spends it freely (a `budget.transfer`). **Reserve (จอง)** creates a standalone ใบจองงบประมาณ (`budget.commitment`) with
 the requester as **Beneficiary Unit**, keeping central's dimension on the slip; the
 requester draws it down through its own พ.1/disbursement. Central always chooses the
 funding source and dimensions; on Transfer the target department is the requester's, on
@@ -52,12 +59,15 @@ links to the generated document and moves to `in_progress` the moment that docum
 posted/reserved (not merely opened); central marks the request `done` by hand.
 _Avoid_: execute, allocate, "spawns a draft" (nothing is persisted until central saves)
 
-**Support Officer (เจ้าหน้าที่ส่วนกลาง, `group_budget_support_officer`)**:
-A notify-only role: members receive a Todo (`mail.activity`) when a request is approved so
-they know to fulfil it. The group grants read on the request (so the Todo opens) and
-nothing more — approving and fulfilling are the Budget Manager's. Membership is the
-"settings" for who gets pinged.
-_Avoid_: manager, approver (those are `budget.group_budget_manager`)
+**Buddy (เจ้าหน้าที่ Buddy ส่วนกลาง)**:
+The one central-office officer who looks after this request. The **same Buddy role as
+everywhere else in Budget** — the coverage settings (which Buddy looks after which ส่วนงาน)
+are shared, not re-declared here. Every request names exactly one, chosen by the requesting
+unit itself and pre-filled with the Buddy who covers that unit; naming one is part of filing
+the request, not an afterthought. The named Buddy — and only they — receive the Todo to
+fulfil it once the request is approved. Approving and fulfilling remain the Budget Manager's
+act; the Buddy is who gets told, and who the unit can chase.
+_Avoid_: support officer (there is no separate role — it is the Buddy), manager, approver
 
 **State lifecycle**:
 `draft → submitted → approved → in_progress → done`, plus `cancelled` / `rejected` (and,
@@ -68,3 +78,12 @@ the "has central acted yet?" signal. **`done`** = central manually closes the re
 (open-ended: many allocations may link back, so the system cannot know when it is complete);
 closing notifies the requester with a Todo.
 _Avoid_: posted (that is the transfer's term), fulfilled (use `done`)
+
+**Reopening (คืนสู่ร่าง)**:
+Putting a request back to `draft`. The requester may take back their own request while it is
+merely `submitted`; from every other state — including one already decided or fulfilled —
+reopening is a **Budget Manager's** act and theirs alone. Deliberately unguarded beyond
+that: a manager reopening a fulfilled request is assumed to know the allocations already made
+still point at it, and to settle those separately. Distinct from **cancelling**, which is
+refused outright once central has acted.
+_Avoid_: reset (English-only; say reopening), undo (nothing is unwound)

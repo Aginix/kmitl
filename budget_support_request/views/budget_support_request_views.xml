@@ -41,8 +41,10 @@
                         <group name="request_info" string="Request Information">
                             <field name="department_analytic_id" required="1" attrs="{'readonly': [('can_edit', '=', False)]}" options="{'no_create': True, 'no_open': True}"/>
                             <field name="date" attrs="{'readonly': [('can_edit', '=', False)]}"/>
-                            <field name="account_fiscal_year_id" attrs="{'readonly': [('can_edit', '=', False)]}"/>
-                            <field name="user_id" attrs="{'readonly': [('can_edit', '=', False)]}"/>
+                            <field name="fiscal_year_locked" invisible="1"/>
+                            <field name="account_fiscal_year_id" attrs="{'readonly': ['|', ('can_edit', '=', False), ('fiscal_year_locked', '=', True)]}"/>
+                            <field name="user_id"/>
+                            <field name="officer_id" required="1" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': [('can_edit', '=', False)]}"/>
                         </group>
                         <group name="amount_info" string="จำนวนเงิน">
                             <field name="amount_requested" widget="monetary" attrs="{'readonly': [('can_edit', '=', False)]}"/>
@@ -94,6 +96,7 @@
                 <field name="date"/>
                 <field name="department_analytic_id"/>
                 <field name="user_id"/>
+                <field name="officer_id" optional="show"/>
                 <field name="amount_requested" widget="monetary" sum="Total"/>
                 <field name="currency_id" invisible="1"/>
                 <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-warning="state == 'submitted'" decoration-success="state in ('approved', 'in_progress', 'done')" decoration-danger="state == 'cancelled'"/>
@@ -110,10 +113,12 @@
             <search string="Search Budget Support Requests">
                 <field name="name" string="Request Number"/>
                 <field name="user_id" string="ผู้ขอ"/>
+                <field name="officer_id" string="เจ้าหน้าที่ Buddy"/>
                 <field name="account_fiscal_year_id" string="Fiscal Year"/>
                 <field name="department_analytic_id" string="ส่วนงาน"/>
 
                 <filter name="my_requests" string="My Requests" domain="[('user_id', '=', uid)]"/>
+                <filter name="my_fulfilments" string="ที่ฉันรับผิดชอบ" domain="[('officer_id', '=', uid)]"/>
                 <separator/>
                 <filter name="draft" string="Draft" domain="[('state', '=', 'draft')]"/>
                 <filter name="pending_approval" string="Pending Approval" domain="[('state', '=', 'submitted')]"/>
@@ -127,6 +132,7 @@
                     <filter name="group_by_fiscal_year" string="Fiscal Year" domain="[]" context="{'group_by': 'account_fiscal_year_id'}"/>
                     <filter name="group_by_department" string="ส่วนงาน" domain="[]" context="{'group_by': 'department_analytic_id'}"/>
                     <filter name="group_by_user" string="ผู้ขอ" domain="[]" context="{'group_by': 'user_id'}"/>
+                    <filter name="group_by_officer" string="เจ้าหน้าที่ Buddy" domain="[]" context="{'group_by': 'officer_id'}"/>
                 </group>
             </search>
         </field>
