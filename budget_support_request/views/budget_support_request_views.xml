@@ -9,6 +9,8 @@
             <form string="Budget Support Request">
                 <header>
                     <button name="action_submit" type="object" string="Submit for Approval" class="btn-primary" attrs="{'invisible': [('show_submit_button', '=', False)]}"/>
+                    <button name="action_verify" type="object" string="ยืนยันตรวจสอบ" class="btn-primary" attrs="{'invisible': [('show_verify_button', '=', False)]}"/>
+                    <button name="action_open_verify_return_wizard" type="object" string="ส่งกลับแก้ไข" attrs="{'invisible': [('show_verify_return_button', '=', False)]}"/>
                     <button name="action_approve" type="object" string="Approve" class="btn-success" attrs="{'invisible': [('show_approve_button', '=', False)]}"/>
                     <button name="action_fulfil_transfer" type="object" string="จัดสรร → โอน" class="btn-primary" attrs="{'invisible': [('show_fulfil_transfer_button', '=', False)]}"/>
                     <button name="action_fulfil_reserve" type="object" string="จัดสรร → จอง" class="btn-primary" attrs="{'invisible': [('show_fulfil_reserve_button', '=', False)]}"/>
@@ -16,7 +18,7 @@
                     <button name="action_reset_to_draft" type="object" string="Reset to Draft" attrs="{'invisible': [('show_reset_button', '=', False)]}"/>
                     <button name="action_cancel" type="object" string="Cancel" attrs="{'invisible': [('show_cancel_button', '=', False)]}"/>
 
-                    <field name="state" widget="statusbar" statusbar_visible="draft,submitted,approved,in_progress,done"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,to_verify,submitted,approved,in_progress,done"/>
                 </header>
 
                 <sheet>
@@ -45,12 +47,18 @@
                             <field name="fiscal_year_locked" invisible="1"/>
                             <field name="account_fiscal_year_id" attrs="{'readonly': ['|', ('can_edit', '=', False), ('fiscal_year_locked', '=', True)]}"/>
                             <field name="user_id"/>
-                            <field name="officer_id" required="1" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': [('can_edit', '=', False)]}"/>
+                            <field name="can_edit_officer" invisible="1"/>
+                            <field name="officer_id" required="1" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': [('can_edit_officer', '=', False)]}"/>
                         </group>
                         <group name="amount_info" string="จำนวนเงิน">
                             <field name="amount_requested" widget="monetary" attrs="{'readonly': [('can_edit', '=', False)]}"/>
                             <field name="currency_id" invisible="1"/>
                             <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <group name="verify_meta" attrs="{'invisible': [('verify_date', '=', False)]}">
+                        <group>
+                            <field name="verify_date"/>
                         </group>
                     </group>
                     <group name="approval_meta" attrs="{'invisible': [('approver_id', '=', False)]}">
@@ -76,6 +84,8 @@
                 </div>
 
                 <field name="show_submit_button" invisible="1"/>
+                <field name="show_verify_button" invisible="1"/>
+                <field name="show_verify_return_button" invisible="1"/>
                 <field name="show_approve_button" invisible="1"/>
                 <field name="show_fulfil_transfer_button" invisible="1"/>
                 <field name="show_fulfil_reserve_button" invisible="1"/>
@@ -92,7 +102,7 @@
         <field name="name">budget.support.request.tree</field>
         <field name="model">budget.support.request</field>
         <field name="arch" type="xml">
-            <tree string="Budget Support Requests" decoration-info="state == 'draft'" decoration-warning="state == 'submitted'" decoration-success="state in ('approved', 'in_progress', 'done')" decoration-muted="state == 'cancelled'">
+            <tree string="Budget Support Requests" decoration-info="state == 'draft'" decoration-warning="state in ('to_verify', 'submitted')" decoration-success="state in ('approved', 'in_progress', 'done')" decoration-muted="state == 'cancelled'">
                 <field name="name"/>
                 <field name="date"/>
                 <field name="department_analytic_id"/>
@@ -101,7 +111,7 @@
                 <field name="officer_id" optional="show"/>
                 <field name="amount_requested" widget="monetary" sum="Total"/>
                 <field name="currency_id" invisible="1"/>
-                <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-warning="state == 'submitted'" decoration-success="state in ('approved', 'in_progress', 'done')" decoration-danger="state == 'cancelled'"/>
+                <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-warning="state in ('to_verify', 'submitted')" decoration-success="state in ('approved', 'in_progress', 'done')" decoration-danger="state == 'cancelled'"/>
                 <field name="company_id" groups="base.group_multi_company" optional="hide"/>
             </tree>
         </field>
@@ -121,8 +131,10 @@
 
                 <filter name="my_requests" string="My Requests" domain="[('user_id', '=', uid)]"/>
                 <filter name="my_fulfilments" string="ที่ฉันรับผิดชอบ" domain="[('officer_id', '=', uid)]"/>
+                <filter name="my_to_verify" string="รอฉันตรวจสอบ" domain="[('officer_id', '=', uid), ('state', '=', 'to_verify')]"/>
                 <separator/>
                 <filter name="draft" string="Draft" domain="[('state', '=', 'draft')]"/>
+                <filter name="to_verify" string="รอตรวจสอบ" domain="[('state', '=', 'to_verify')]"/>
                 <filter name="pending_approval" string="Pending Approval" domain="[('state', '=', 'submitted')]"/>
                 <filter name="approved" string="Approved" domain="[('state', '=', 'approved')]"/>
                 <filter name="in_progress" string="In Progress" domain="[('state', '=', 'in_progress')]"/>

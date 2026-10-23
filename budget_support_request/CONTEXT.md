@@ -75,12 +75,27 @@ are shared, not re-declared here. Every request names exactly one, chosen by the
 unit itself and pre-filled with the Buddy who covers that unit; naming one is part of filing
 the request, not an afterthought. The named Buddy — and only they — receive the Todo to
 fulfil it once the request is approved. Approving and fulfilling remain the Budget Manager's
-act; the Buddy is who gets told, and who the unit can chase.
+act; the Buddy is who gets told, and who the unit can chase. They are also the one who
+checks the request on its way out (see การตรวจสอบของ Buddy), so naming one is not a
+formality: it decides who holds the request between the unit and the อธิการบดี. The unit
+may hand it to a different Buddy right up until the check is done; an explicit pick is
+never silently reverted, even if the request bounces back to draft.
 _Avoid_: support officer (there is no separate role — it is the Buddy), manager, approver
 
+**การตรวจสอบของ Buddy (ตรวจสอบ / ส่งกลับแก้ไข)**:
+The step between the unit finishing its request and the request going out for approval.
+The unit confirms, and the request is then the Buddy's to read: they either **ยืนยันตรวจสอบ**,
+which releases it, or **ส่งกลับแก้ไข** with a reason, which returns it to the unit to fix —
+the request keeps its number either way. Nobody else can do either, and nothing downstream
+(no หนังสือ, no approval) can start until the Buddy has released it, so "the Buddy checks
+it" is a fact about the document rather than a request for a favour.
+_Avoid_: approve (the Buddy does not decide the money — the อธิการบดี does), review
+
 **State lifecycle**:
-`draft → submitted → approved → in_progress → done`, plus `cancelled` / `rejected` (and,
-with the e-Saraban bridge, `sent` / `returned`). **`approved`** = approved in principle,
+`draft → to_verify → submitted → approved → in_progress → done`, plus `cancelled` /
+`rejected` (and, with the e-Saraban bridge, `sent` / `returned`). **`to_verify`** = the unit
+is finished, the Buddy has not read it yet. **`submitted`** = released by the Buddy and
+ready for a หนังสือ. **`approved`** = approved in principle,
 central has not yet acted. **`in_progress`** = central has fulfilled at least one
 allocation (a linked `budget.transfer` posted or `budget.commitment` reserved) — this is
 the "has central acted yet?" signal. **`done`** = central manually closes the request

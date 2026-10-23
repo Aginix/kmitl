@@ -6,6 +6,8 @@ BUDDY_GROUP_XMLID = "budget_buddy.group_budget_buddy"
 # Central only supports units out of เงินรายได้ (the `sources` code), so the
 # request's แหล่งเงิน is fixed rather than asked for.
 SOURCE_REVENUE_CODE = "2"
+VERIFY_ACTIVITY = "budget_support_request.mail_activity_support_verify"
+CORRECT_ACTIVITY = "budget_support_request.mail_activity_support_correct"
 FULFIL_ACTIVITY = "budget_support_request.mail_activity_support_fulfil"
 ACK_ACTIVITY = "budget_support_request.mail_activity_support_ack"
 
@@ -40,6 +42,7 @@ class BudgetSupportRequest(models.Model):
     state = fields.Selection(
         selection=[
             ("draft", "Draft"),
+            ("to_verify", "รอตรวจสอบ"),
             ("submitted", "Submitted"),
             ("approved", "Approved"),
             ("in_progress", "In Progress"),
@@ -234,7 +237,12 @@ class BudgetSupportRequest(models.Model):
     transfer_count = fields.Integer(compute="_compute_fulfilment_counts")
     commitment_count = fields.Integer(compute="_compute_fulfilment_counts")
 
+    verify_date = fields.Datetime(
+        string="วันที่ตรวจสอบ", copy=False, readonly=True, tracking=True
+    )
     show_submit_button = fields.Boolean(compute="_compute_button_visibility")
+    show_verify_button = fields.Boolean(compute="_compute_button_visibility")
+    show_verify_return_button = fields.Boolean(compute="_compute_button_visibility")
     show_approve_button = fields.Boolean(compute="_compute_button_visibility")
     show_fulfil_transfer_button = fields.Boolean(compute="_compute_button_visibility")
     show_fulfil_reserve_button = fields.Boolean(compute="_compute_button_visibility")
@@ -248,6 +256,13 @@ class BudgetSupportRequest(models.Model):
     # ``returned`` letter — extends ``_compute_can_edit`` instead of
     # overriding each field's attrs (mirrors ``budget.transfer.can_edit``).
     can_edit = fields.Boolean(compute="_compute_can_edit")
+
+    # The Buddy stays changeable one state longer than the rest of the form:
+    # the request is theirs to check while it sits in `to_verify`, and a Buddy
+    # who turns out to be the wrong one has to be handed over without sending
+    # the whole request back. Its own flag (not `can_edit`) so widening it
+    # never unlocks the amount or the dimensions.
+    can_edit_officer = fields.Boolean(compute="_compute_can_edit_officer")
 
     # True once the BSR number has been minted — the fiscal year is then frozen
     # (it drives the number's year), even after a Reset to Draft or a ตีกลับ
@@ -309,15 +324,18 @@ class BudgetSupportRequest(models.Model):
 
     @api.depends("department_analytic_id", "user_id", "amount_requested")
     def _compute_officer_id(self):
-        """Default the Buddy from the coverage settings while in draft; a row's
-        domain may read any field, so the depends cover the usual ones. A Buddy
-        the settings still assign is kept, so editing the request does not undo
-        the unit's own pick."""
+        """Pre-fill the Buddy from the coverage settings, once, while the
+        request is still a draft and nobody has named one.
+
+        Deliberately narrower than ``budget_transfer_verify``, which re-points
+        the verifier whenever the settings stop covering them: here the unit
+        names the Buddy as part of filing, and the request can go back to draft
+        mid-flight (ส่งกลับแก้ไข). Re-defaulting would quietly hand it back to
+        the covering Buddy on every round trip, undoing a pick that was made on
+        purpose — and the Buddy who just reviewed it would lose it."""
         for request in self:
-            if request.state == "draft":
-                buddies = request._get_assignable_buddies()
-                if request.officer_id not in buddies:
-                    request.officer_id = buddies[:1]
+            if request.state == "draft" and not request.officer_id:
+                request.officer_id = request._get_assignable_buddies()[:1]
             else:
                 request.officer_id = request.officer_id
 
@@ -326,13 +344,19 @@ class BudgetSupportRequest(models.Model):
         for request in self:
             request.can_edit = request.state == "draft"
 
+    @api.depends("state")
+    def _compute_can_edit_officer(self):
+        for request in self:
+            request.can_edit_officer = request.state in ("draft", "to_verify")
+
     @api.depends("transfer_ids", "commitment_ids")
     def _compute_fulfilment_counts(self):
         for request in self:
             request.transfer_count = len(request.transfer_ids)
             request.commitment_count = len(request.commitment_ids)
 
-    @api.depends("state", "user_id")
+    @api.depends("state", "user_id", "officer_id")
+    @api.depends_context("uid")
     def _compute_button_visibility(self):
         user = self.env.user
         is_manager = user.has_group("budget.group_budget_manager")
@@ -340,6 +364,11 @@ class BudgetSupportRequest(models.Model):
         for request in self:
             request.show_submit_button = request.state == "draft" and (
                 request.user_id == user or is_admin
+            )
+            is_buddy = is_admin or request.officer_id == user
+            request.show_verify_button = request.state == "to_verify" and is_buddy
+            request.show_verify_return_button = (
+                request.state == "to_verify" and is_buddy
             )
             request.show_approve_button = request.state == "submitted" and (
                 is_manager or is_admin
@@ -352,11 +381,16 @@ class BudgetSupportRequest(models.Model):
             request.show_done_button = request.state == "in_progress" and (
                 is_manager or is_admin
             )
-            request.show_cancel_button = request.state in ("draft", "submitted")
+            request.show_cancel_button = request.state in (
+                "draft",
+                "to_verify",
+                "submitted",
+            )
             # Reopening past `submitted` is the Budget Manager's alone
             # (CONTEXT.md ▸ Reopening).
             request.show_reset_button = (
-                request.state == "submitted" and (request.user_id == user or is_admin)
+                request.state in ("to_verify", "submitted")
+                and (request.user_id == user or is_admin)
             ) or (
                 request.state in ("cancelled", "approved", "in_progress", "done")
                 and (is_manager or is_admin)
@@ -383,6 +417,9 @@ class BudgetSupportRequest(models.Model):
     # Workflow
     # ------------------------------------------------------------------
     def action_submit(self):
+        """ยืนยัน → ``to_verify``: the unit is done, the Buddy now checks it.
+        Only a verified request reaches ``submitted``, which is the state the
+        e-Saraban bridge will issue a หนังสือ from."""
         user = self.env.user
         is_admin = self.env.is_admin()
         if not (user.has_group("budget.group_budget_user") or is_admin):
@@ -406,13 +443,74 @@ class BudgetSupportRequest(models.Model):
                     % request.officer_id.name
                 )
         self._validate_request_data()
-        self.write({"state": "submitted"})
+        self.write({"state": "to_verify", "verify_date": False})
+        self.activity_feedback([CORRECT_ACTIVITY])
+        self._after_submitted()
+        return True
+
+    def _check_can_verify(self):
+        """Only the named Buddy (or an admin) checks the request."""
+        is_admin = self.env.is_admin()
+        for request in self:
+            if request.state != "to_verify":
+                raise UserError(
+                    _("Only a request waiting to be checked can be verified.")
+                )
+            if not (is_admin or request.officer_id == self.env.user):
+                raise UserError(
+                    _("Only %s, the Buddy named on this request, can check it.")
+                    % (request.officer_id.name or "-")
+                )
+
+    def action_verify(self):
+        """ยืนยันตรวจสอบ → ``submitted``. Re-runs the data checks: the request
+        may have been corrected since it was confirmed."""
+        self._check_can_verify()
+        self._validate_request_data()
+        self.write({"state": "submitted", "verify_date": fields.Datetime.now()})
+        self.sudo().activity_feedback([VERIFY_ACTIVITY])
+        return True
+
+    def action_open_verify_return_wizard(self):
+        self.ensure_one()
+        self._check_can_verify()
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("ส่งกลับแก้ไข"),
+            "res_model": "budget.support.request.verify.return.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {"default_request_id": self.id},
+        }
+
+    def _action_verify_return(self, reason):
+        """ส่งกลับแก้ไข: back to draft (the number is kept) with the Buddy's
+        reason, and a Todo telling the requester what to fix."""
+        self._check_can_verify()
+        for request in self:
+            request.message_post(
+                body=_("ส่งกลับแก้ไขโดย Buddy: %s") % reason,
+                subtype_xmlid="mail.mt_note",
+            )
+            request.sudo().activity_feedback([VERIFY_ACTIVITY], feedback=reason)
+        self.sudo().write({"state": "draft", "verify_date": False})
+        for request in self:
+            request.sudo().activity_schedule(
+                CORRECT_ACTIVITY,
+                user_id=request.user_id.id,
+                summary=_("แก้ไขคำขอรับการสนับสนุน %s") % (request.name or ""),
+                note=reason,
+            )
         return True
 
     def action_approve(self):
         is_admin = self.env.is_admin()
         if not (self.env.user.has_group("budget.group_budget_manager") or is_admin):
             raise UserError(_("Only Budget Managers can approve support requests."))
+        if self.filtered(lambda r: r.state != "submitted"):
+            # `to_verify` must go through the Buddy first; anything past
+            # `submitted` is already decided.
+            raise UserError(_("Only a checked request can be approved."))
         if not is_admin:
             for request in self:
                 if request.user_id == self.env.user:
@@ -473,6 +571,7 @@ class BudgetSupportRequest(models.Model):
         if self.filtered(lambda r: r.state in ("approved", "in_progress", "done")):
             raise UserError(_("An approved or fulfilled request cannot be cancelled."))
         self.write({"state": "cancelled"})
+        self.sudo().activity_unlink([VERIFY_ACTIVITY, CORRECT_ACTIVITY])
         return True
 
     def action_reset_to_draft(self):
@@ -551,6 +650,42 @@ class BudgetSupportRequest(models.Model):
     # ------------------------------------------------------------------
     # Hooks (bridges extend)
     # ------------------------------------------------------------------
+    def _after_submitted(self):
+        """Hand the request to its Buddy to check while it waits to go out.
+
+        An Execution Todo on purpose (it cannot be dismissed with Mark as
+        Read): it is cleared by the request moving on, in :meth:`write`.
+        ``sudo`` for the same reason as :meth:`_after_approved`."""
+        for request in self.filtered("officer_id"):
+            request.sudo().activity_schedule(
+                VERIFY_ACTIVITY,
+                user_id=request.officer_id.id,
+                summary=_("ตรวจสอบคำขอรับการสนับสนุน %s") % (request.name or ""),
+            )
+
+    def write(self, vals):
+        """Keep the Buddy's check Todo pointing at the right person, and drop
+        it once the request is no longer waiting in `to_verify` — whichever way
+        it leaves, including a cancel or a reopen that bypasses the two verify
+        actions."""
+        leaving = self.env[self._name]
+        reassigned = self.env[self._name]
+        if "state" in vals and vals["state"] != "to_verify":
+            leaving = self.filtered(lambda r: r.state == "to_verify")
+        if "officer_id" in vals:
+            reassigned = self.filtered(
+                lambda r: (
+                    r.state == "to_verify" and r.officer_id.id != vals["officer_id"]
+                )
+            )
+        res = super().write(vals)
+        if leaving:
+            leaving.sudo().activity_feedback([VERIFY_ACTIVITY])
+        for request in reassigned - leaving:
+            request.sudo().activity_feedback([VERIFY_ACTIVITY])
+            request._after_submitted()
+        return res
+
     def _after_approved(self):
         """Tell the one named Buddy that this request is ready to fulfil —
         not the whole central office (CONTEXT.md ▸ Buddy).

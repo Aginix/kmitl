@@ -15,6 +15,7 @@
         "security/ir.model.access.csv",
         "data/ir_sequence.xml",
         "data/mail_activity_type.xml",
+        "wizard/budget_support_request_verify_return_wizard_views.xml",
         "views/budget_support_request_views.xml",
         "views/budget_fulfilment_views.xml",
         "views/budget_support_request_menus.xml",
