@@ -23,18 +23,6 @@
                 <field name="transfer_name" invisible="1" />
                 <field name="transfer_date" invisible="1" />
                 <field name="transfer_user_id" invisible="1" />
-                <!-- The Inflow Sources (ADR-0011): pick where the money goes back. -->
-                <div
-                    class="o_kfa_note"
-                    attrs="{'invisible': ['|', ('step', '!=', 'input'), ('pool_found', '=', False)]}"
-                >
-                    <label for="source_id" />
-                    <field
-                        name="source_id"
-                        widget="radio"
-                        options="{'no_create': True}"
-                    />
-                </div>
                 <widget name="kmitl_floating_allocation" />
                 <div
                     class="o_kfa_note"

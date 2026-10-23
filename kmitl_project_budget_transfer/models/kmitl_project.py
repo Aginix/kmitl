@@ -12,6 +12,7 @@ FLOATING_RETURN_STATES = (
     "rejected",
     "in_progress",
     "complete",
+    "cancel",
 )
 
 
@@ -73,7 +74,9 @@ class KmitlProject(models.Model):
             .sudo()
             .search_count(
                 [
-                    ("state", "in", ("draft", "submitted")),
+                    # Not just draft/submitted: verify/e-Saraban bridges add
+                    # to_verify, sent and returned on the way to posting.
+                    ("state", "not in", ("posted", "cancelled", "rejected")),
                     (
                         "line_ids.kmitl_project_analytic_id",
                         "=",

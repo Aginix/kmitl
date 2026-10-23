@@ -136,3 +136,15 @@ class KmitlProject(models.Model):
         if self._has_open_disbursement():
             res.append(_("ใบขอเบิกที่ค้างดำเนินการอยู่"))
         return res
+
+    def _get_project_claims(self):
+        """The ใบขอเบิก total its cap holds within ``budget_amount``
+        (``_exceeds_project_budget``)."""
+        res = super()._get_project_claims()
+        disbursements = (
+            self.env["disbursement.request"]
+            .sudo()
+            .search([("kmitl_project_id", "=", self.id), ("state", "!=", "cancel")])
+        )
+        res.append((_("ใบขอเบิก"), sum(disbursements.mapped("amount_total"))))
+        return res

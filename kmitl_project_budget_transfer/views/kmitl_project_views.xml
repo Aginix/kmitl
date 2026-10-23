@@ -47,7 +47,7 @@
                     type="object"
                     icon="fa-undo"
                     groups="budget.group_budget_user"
-                    attrs="{'invisible': ['|', ('analytic_account_id', '=', False), ('state', 'not in', ('draft', 'to_verify', 'returned', 'rejected', 'in_progress', 'complete'))]}"
+                    attrs="{'invisible': ['|', ('analytic_account_id', '=', False), ('state', 'not in', ('draft', 'to_verify', 'returned', 'rejected', 'in_progress', 'complete', 'cancel'))]}"
                 />
             </xpath>
         </field>

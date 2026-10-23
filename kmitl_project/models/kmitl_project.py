@@ -788,6 +788,20 @@ class KmitlProject(models.Model):
         self.ensure_one()
         return []
 
+    def _get_project_claims(self):
+        """Hook: ``[(label, amount)]`` already claimed on the project's money,
+        each of which ``budget_amount`` must keep covering — a Floating Return
+        can only take what lies above the largest (ADR-0011). Base: what its
+        reservations obligated or consumed; the bridges add the totals their
+        own documents are capped by (พ.1, ใบขออนุมัติ, ใบขอเบิก)."""
+        self.ensure_one()
+        used = sum(
+            self.sudo()
+            .budget_commitment_ids.filtered(lambda c: c.state != "cancel")
+            .mapped("total_obligated")
+        )
+        return [(_("ผูกพัน/ตัดงบแล้ว"), used)]
+
     def _has_pending_project_transfer(self):
         """Hook: a transfer into or out of the project's dimension that has not
         posted or been cancelled yet (the budget-transfer bridge)."""
@@ -821,16 +835,61 @@ class KmitlProject(models.Model):
             self._project_ledger_sum(("obligate", "consume")), precision_digits=2
         )
 
-    def _get_held_money_reasons(self):
+    def _held_outside_target(self, account_id, distribution):
+        """Σ the net allocation at the project's dimension that sits anywhere but
+        the coordinate ``account_id`` + ``distribution``'s budget dimensions —
+        e.g. on a target the project was moved away from before ADR-0011."""
+        self.ensure_one()
+        if not self.analytic_account_id:
+            return 0.0
+        own = str(self.analytic_account_id.id)
+        target = set(distribution or {}) - {own}
+        lines = (
+            self.env["budget.move.line"]
+            .sudo()
+            .search(
+                [
+                    ("parent_state", "=", "posted"),
+                    ("move_type", "in", ["appropriation", "entry"]),
+                    ("kmitl_project_analytic_id", "=", self.analytic_account_id.id),
+                ]
+            )
+        )
+        return sum(
+            line.balance
+            for line in lines
+            if line.account_id.id != account_id
+            or set(line.analytic_distribution or {}) - {own} != target
+        )
+
+    def _get_held_money_reasons(self, target=None):
         """What makes the project hold money (Held Money, ADR-0011): a net
         allocation on any coordinate/fiscal year — wider than ``budget_amount``,
         which reads only the project's own coordinate — an unspent reservation,
-        or a transfer still on its way. Empty when it holds none."""
+        or a transfer still on its way. Empty when it holds none.
+
+        With ``target`` (``(budget_account_id, analytic_distribution)``) only the
+        allocation outside that coordinate counts: retargeting onto where the
+        money already sits strands nothing."""
         self.ensure_one()
         reasons = []
-        held = self._project_ledger_sum(("appropriation", "entry"))
+        if target:
+            held = self._held_outside_target(*target)
+        else:
+            held = self._project_ledger_sum(("appropriation", "entry"))
         if not float_is_zero(held, precision_digits=2):
-            reasons.append(_("มีงบประมาณค้างในมิติโครงการ %s บาท") % "{:,.2f}".format(held))
+            reason = _("มีงบประมาณค้างในมิติโครงการ %s บาท") % "{:,.2f}".format(held)
+            if not target:
+                # Only the project's own coordinate can be returned from.
+                stray = self._held_outside_target(
+                    self.budget_account_id.id, self.analytic_distribution
+                )
+                if not float_is_zero(stray, precision_digits=2):
+                    reason += _(
+                        " (ในจำนวนนี้ %s บาท อยู่ที่รหัสงบประมาณ/มิติเดิมของโครงการ "
+                        "กรุณาแก้รหัสงบประมาณ/มิติกลับให้ตรงกับที่เงินอยู่ก่อนโอนคืนงบลอย)"
+                    ) % "{:,.2f}".format(stray)
+            reasons.append(reason)
         reserved = sum(
             self.sudo()
             .budget_commitment_ids.filtered(lambda c: c.state != "cancel")
@@ -1287,7 +1346,14 @@ class KmitlProject(models.Model):
                     % rec.key
                 )
             # Money at the old target would be stranded there (ADR-0011).
-            reasons = rec._get_held_money_reasons()
+            reasons = rec._get_held_money_reasons(
+                target=(
+                    vals.get("budget_account_id", rec.budget_account_id.id),
+                    vals["analytic_distribution"]
+                    if "analytic_distribution" in vals
+                    else rec.analytic_distribution,
+                )
+            )
             if reasons:
                 raise UserError(
                     _(

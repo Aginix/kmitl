@@ -24,7 +24,7 @@ class BudgetTransfer(models.Model):
         string="โอนคืนงบลอย",
         readonly=True,
         copy=False,
-        help="โอนเงินจากมิติโครงการคืนแหล่งที่มาโดยตรงจากหน้าโครงการ "
+        help="โอนเงินจากมิติโครงการคืนเป็นเงินลอยที่รหัสงบประมาณ/มิติของโครงการ "
         "(ไม่ผ่านกระบวนการขออนุมัติโอนงบประมาณ)",
     )
     kmitl_project_id = fields.Many2one(

@@ -162,16 +162,28 @@ class KmitlProject(models.Model):
         ดึงกลับ for revision) still attached when the project is reset to draft or
         cancelled — otherwise ``sarabun_has_live_document`` keeps blocking a fresh
         submission. Completed (numbered, signed) and terminal docs are audit
-        records and are kept; only ``draft``/``returned`` docs — which never
-        consumed a register number — are removed (unlink cascades their routing
-        steps). The engine offers no withdraw for a non-circulating doc, so an
-        unlink is the supported discard here."""
+        records and are kept. agx_sarabun deletes only an un-numbered draft
+        (unlink cascades its routing steps); a ``returned`` doc already went out,
+        so it is voided the way ยกเลิกการส่ง does — the engine offers no withdraw
+        for a non-circulating doc — and kept as the audit record."""
         for project in self:
-            stale = project.sarabun_document_ids.filtered(
+            stale = project.sarabun_document_ids.sudo().filtered(
                 lambda d: d.state in ("draft", "returned")
             )
-            if stale:
-                stale.sudo().unlink()
+            deletable = stale.filtered(
+                lambda d: d.state == "draft" and not d.register_number_id
+            )
+            for document in stale - deletable:
+                document.routing_step_ids._clear_activities()
+                document.routing_step_ids.filtered(
+                    lambda s: s.state in ("waiting", "active")
+                ).write({"state": "skipped"})
+                document.state = "cancelled"
+                document._void_register("cancelled")
+                document.message_post(
+                    body=_("ยกเลิกหนังสือ เนื่องจากโครงการถูกรีเซ็ตเป็นร่างหรือถูกลบ")
+                )
+            deletable.unlink()
 
     def action_draft(self):
         res = super().action_draft()
@@ -184,11 +196,12 @@ class KmitlProject(models.Model):
         return res
 
     def _must_soft_delete(self):
-        """A หนังสือ that left draft/returned is an audit record pointing at the
-        project, so the project is soft-deleted rather than removed (ADR-0011)."""
+        """A หนังสือ that ever went out (anything but an un-numbered draft) is an
+        audit record pointing at the project, so the project is soft-deleted
+        rather than removed (ADR-0011)."""
         return super()._must_soft_delete() or bool(
             self.sarabun_document_ids.filtered(
-                lambda d: d.state not in ("draft", "returned")
+                lambda d: d.state != "draft" or d.register_number_id
             )
         )
 

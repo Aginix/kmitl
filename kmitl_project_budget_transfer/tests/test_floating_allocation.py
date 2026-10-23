@@ -279,18 +279,16 @@ class TestFloatingAllocation(TransactionCase):
             Wizard = Wizard.with_user(user)
         return Wizard.create({"project_id": project.id})
 
-    def test_return_goes_back_to_the_inflow_source(self):
+    def test_return_goes_back_to_the_project_floating_pool(self):
+        """The money goes back as Floating Budget at the project's own รหัสงบ +
+        four dimensions — not to wherever a transfer brought it from."""
         self._appropriate(100000)
         project = self._project()
-        allocation = self._allocate(project, 30000)
-        pool_from = allocation.transfer_id.line_ids.filtered(
-            lambda line: line.transfer_direction == "from"
-        )
+        self._allocate(project, 30000)
 
         wizard = self._return_wizard(project, self.budget_user)
-        self.assertEqual(len(wizard.source_ids), 1)
-        self.assertEqual(wizard.source_id.returnable, 30000)
-        self.assertEqual(wizard.amount, 30000)  # preset to the full amount
+        self.assertTrue(wizard.pool_found)
+        self.assertEqual(wizard.floating_available, 30000)
         wizard.amount = 10000
         wizard.action_next()
         wizard.action_confirm()
@@ -302,11 +300,30 @@ class TestFloatingAllocation(TransactionCase):
         to_line = transfer.line_ids.filtered(
             lambda line: line.transfer_direction == "to"
         )
-        self.assertEqual(to_line.account_id, pool_from.account_id)
-        self.assertEqual(to_line.analytic_distribution, pool_from.analytic_distribution)
+        self.assertEqual(to_line.account_id, project.budget_account_id)
+        self.assertEqual(
+            set(to_line.analytic_distribution),
+            set(project.analytic_distribution) - {str(project.analytic_account_id.id)},
+        )
         self.assertEqual(project.budget_amount, 20000)
-        # What was returned is no longer returnable.
-        self.assertEqual(self._return_wizard(project).source_id.returnable, 20000)
+        self.assertEqual(self._return_wizard(project).floating_available, 20000)
+
+    def test_return_to_parent_pool_never_nests(self):
+        """Money drawn from a pool at the parent activity goes back to that
+        pool; a new pool at the project's child activity would nest with it
+        (budget ADR-0016)."""
+        self._appropriate(50000, activity=self.activity_parent)
+        project = self._project(activity=self.activity_child)
+        self._allocate(project, 20000)
+        wizard = self._return_wizard(project)
+        wizard.amount = 20000
+        wizard.action_next()
+        wizard.action_confirm()
+        to_line = wizard.transfer_id.line_ids.filtered(
+            lambda line: line.transfer_direction == "to"
+        )
+        self.assertEqual(to_line.activity_analytic_id, self.activity_parent)
+        self.assertEqual(project.budget_amount, 0)
 
     def test_return_releases_the_reservation(self):
         self._appropriate(100000)
@@ -320,11 +337,29 @@ class TestFloatingAllocation(TransactionCase):
         self.assertEqual(commitment.available_to_obligate, 30000)
 
         wizard = self._return_wizard(project)
+        wizard.amount = 30000
         wizard.action_next()
         wizard.action_confirm()
         self.assertEqual(project.budget_amount, 0)
         self.assertEqual(commitment.available_to_obligate, 0)
         self.assertFalse(project._get_held_money_reasons())
+
+    def test_return_cap_drops_by_obligated_and_consumed(self):
+        """The unobligated reservation comes out with the return, but what is
+        obligated or consumed stays at the project."""
+        self._appropriate(100000)
+        project = self._project()
+        self._allocate(project, 30000)
+        self.env["kmitl.project.reserve.confirm"].create(
+            {"project_id": project.id}
+        ).action_confirm()
+        project.action_approve()
+        commitment = project.budget_commitment_ids
+        self.assertEqual(self._return_wizard(project).floating_available, 30000)
+        commitment._post_budget_event("obligate", 10000)
+        self.assertEqual(self._return_wizard(project).floating_available, 20000)
+        commitment._post_budget_event("consume", 4000)
+        self.assertEqual(self._return_wizard(project).floating_available, 20000)
 
     def test_return_above_returnable_raises(self):
         self._appropriate(100000)

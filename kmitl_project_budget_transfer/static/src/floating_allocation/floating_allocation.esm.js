@@ -24,8 +24,8 @@ function parseDims(json) {
 /**
  * จัดสรรงบประมาณ (งบลอย) — the body of the wizard (ADR-0009), also used by
  * its reverse, โอนคืนงบลอย (``direction`` = ``return``, ADR-0011), where the
- * ``pool_*`` fields describe the chosen Inflow Source and money flows from the
- * project to it.
+ * ``pool_*`` fields describe the project's own รหัสงบ + four dimensions without
+ * its project dimension, and money flows from the project to it.
  *
  * Renders the three steps from the wizard record: ``input`` (FROM the floating
  * pool → TO the project, side by side, with the amount typed here and the
@@ -126,8 +126,7 @@ export class FloatingAllocationWidget extends Component {
     }
 }
 
-FloatingAllocationWidget.template =
-    "kmitl_project_budget_transfer.FloatingAllocation";
+FloatingAllocationWidget.template = "kmitl_project_budget_transfer.FloatingAllocation";
 FloatingAllocationWidget.props = {...standardWidgetProps};
 
 registry

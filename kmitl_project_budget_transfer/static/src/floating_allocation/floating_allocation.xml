@@ -10,11 +10,10 @@
                     <t t-if="isReturn">
                         <h3>ไม่มีเงินที่โอนคืนงบลอยได้</h3>
                         <p t-if="isExhausted">
-                            เงินของโครงการถูกผูกพัน/ใช้จ่ายไปแล้ว หรือคืนแหล่งที่มาครบแล้ว
+                            เงินของโครงการถูกผูกพัน/ใช้จ่าย หรือกันไว้ให้ พ.1/ใบขออนุมัติ/ใบขอเบิกแล้ว หรือโอนคืนครบแล้ว
                         </p>
                         <p t-else="">
-                            ไม่พบใบโอนงบประมาณเข้าโครงการในปีงบประมาณของโครงการ<br
-                            />เงินที่ไม่ได้มาจากใบโอนต้องโอนออกด้วยใบโอนงบประมาณตามขั้นตอนปกติ
+                            โครงการยังไม่มีรหัสงบประมาณหรือมิติโครงการ
                         </p>
                     </t>
                     <t t-else="">
@@ -22,12 +21,12 @@
                     <h3 t-else="">ไม่พบเงินลอยสำหรับโครงการนี้</h3>
                     <p t-if="isExhausted">
                         เงินลอยที่พิกัดงบประมาณของโครงการคงเหลือ ฿<t
-                            t-esc="money(data.floating_available)"
-                        />
+                                t-esc="money(data.floating_available)"
+                            />
                     </p>
                     <p t-else="">
                         ยังไม่มีงบประมาณจัดสรร (เงินลอย) ที่พิกัดงบประมาณของโครงการ<br
-                        />หรือระดับที่ครอบพิกัดนี้
+                            />หรือระดับที่ครอบพิกัดนี้
                     </p>
                     </t>
                     <div class="o_kfa_coord">
@@ -97,7 +96,9 @@
                             />
                         </div>
                         <div class="o_kfa_hint">
-                            <t t-if="isOverAvailable"><t t-if="isReturn">เกินยอดที่โอนคืนได้</t><t
+                            <t t-if="isOverAvailable"><t
+                                    t-if="isReturn"
+                                >เกินยอดที่โอนคืนได้</t><t
                                     t-else=""
                                 >เกินเงินลอยคงเหลือ</t> ฿<t
                                     t-esc="money(data.floating_available)"
@@ -106,7 +107,9 @@
                                 t-elif="isReturn"
                                 href="#"
                                 t-on-click.prevent="onFillMax"
-                            >คืนทั้งหมด ฿<t t-esc="money(data.floating_available)" /></a>
+                            >คืนทั้งหมด ฿<t
+                                    t-esc="money(data.floating_available)"
+                                /></a>
                             <t t-elif="data.plan_total">แผนงบประมาณโครงการ ฿<t
                                     t-esc="money(data.plan_total)"
                                 /></t>
@@ -224,11 +227,11 @@
         </dl>
     </t>
 
-    <!-- The floating pool (allocation) or the chosen Inflow Source (return). -->
+    <!-- The floating pool (allocation) or the project's own coordinate it goes back to (return). -->
     <t t-name="kmitl_project_budget_transfer.PoolCard" owl="1">
         <div class="o_kfa_acct" t-att-class="{'o_kfa_acct_to': isReturn}">
             <div class="o_kfa_kicker" t-esc="kicker" />
-            <div class="o_kfa_title"><t t-if="isReturn">แหล่งที่มา (เงินลอย)</t><t
+            <div class="o_kfa_title"><t t-if="isReturn">เงินลอย (พิกัดของโครงการ)</t><t
                     t-else=""
                 >เงินลอย</t></div>
             <t t-call="kmitl_project_budget_transfer.Dims">
@@ -279,7 +282,7 @@
         <div class="o_kfa_row">
             <div class="o_kfa_row_label">ไป</div>
             <div class="o_kfa_row_value">
-                <t t-if="isReturn">แหล่งที่มา (เงินลอย)</t>
+                <t t-if="isReturn">เงินลอย (พิกัดของโครงการ)</t>
                 <t t-else="" t-esc="data.project_label" />
                 <small t-esc="budgetCode(toDims)" />
             </div>
