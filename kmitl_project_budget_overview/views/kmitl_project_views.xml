@@ -24,10 +24,11 @@
                         groups="kmitl_project.group_kmitl_project_user,budget.group_budget_viewer"
                     >
                         <div class="o_field_widget o_stat_info">
+                            <span class="o_stat_text">บัญชีโครงการ</span>
                             <span class="o_stat_value">
+                                <span class="fw-normal me-1">คงเหลือ</span>
                                 <field name="budget_remaining" />
                             </span>
-                            <span class="o_stat_text">คงเหลือ</span>
                         </div>
                     </button>
                 </button>
@@ -266,8 +267,8 @@
                                 <button
                                     name="action_open_budget_movements"
                                     type="object"
-                                    string="ค้นหา/กรองแบบละเอียด"
-                                    icon="fa-search"
+                                    string="ดูทั้งหมด"
+                                    icon="fa-list"
                                     class="btn-link p-0"
                                 />
                                 <div class="o_kpbo_total">

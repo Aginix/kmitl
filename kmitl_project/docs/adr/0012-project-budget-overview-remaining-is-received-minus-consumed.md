@@ -40,8 +40,9 @@ Movements, all in one place.
 5. **One list, one tab.** Most projects have a single inflow (the งบลอย allocation), so
    splitting inflows from ตัดงบ only adds a click. The full searchable list stays one link
    away.
-6. **The header งบลอย buttons stay.** Users have just learnt them. The page offers the
-   same buttons, opening the same wizards.
+6. **Money actions sit on the page.** จัดสรรงบประมาณ (งบลอย) also stays in the project
+   header, because users have just learnt it there. โอนคืนงบลอย lives only on the page,
+   next to the figures it changes. Both open the same wizards.
 7. **The page is a second form view of `kmitl.project`** with a small OWL summary widget,
    not a client action, so lists, buttons and the reload after a wizard closes are
    standard. The figures leave the project form, which keeps the coordinate and the
