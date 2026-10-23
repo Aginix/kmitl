@@ -15,7 +15,7 @@ replies — discussion belongs in the source record's chatter. A plain Comment i
 reviewer's mark and asks nothing of anyone; a Comment that asks for a fix is the pin of
 a Pinned Change request. _Avoid_: sticky note, remark, thread
 
-**Change request**, **Response**, **Assignee**: defined in Change Requests
+**Change request**, **Reply**, **Assignee**: defined in Change Requests
 (`agx_change_request/CONTEXT.md`). Only a Pinned Change request touches a file: its pin is
 a Comment of the file's Annotation layer.
 

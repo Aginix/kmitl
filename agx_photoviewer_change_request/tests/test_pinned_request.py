@@ -89,7 +89,7 @@ class TestPinnedRequest(TransactionCase):
             }
         )
         self.assertFalse(stamp["change_request"])
-        self.assertFalse(self.Request.search([("res_id", "=", self.holder.id)]))
+        self.assertFalse(self.holder._get_outstanding_change_requests())
 
     def test_pinned_request(self):
         pin = self._comment()
@@ -103,7 +103,7 @@ class TestPinnedRequest(TransactionCase):
         self.assertTrue(loaded["can_request"])
         self.assertEqual([r["id"] for r in loaded["requests"]], [request["id"]])
         # Answered and closed like any request; the pin shows its state.
-        self.Request.with_user(self.maker).request_respond(request["id"], "Fixed")
+        self.Request.with_user(self.maker).request_reply(request["id"], "Fixed")
         self.Request.with_user(self.reviewer).request_set_closed(request["id"], True)
         loaded = self.Annotation.with_user(self.maker).annotation_load(self.file.id)
         self.assertEqual(loaded["annotations"][0]["request"]["state"], "closed")

@@ -250,15 +250,25 @@ patch(AnnotationEditor.prototype, "agx_photoviewer_change_request", {
                 )
             );
         }
-        if (request.response) {
-            details.append(
+        const thread = htmlElement("div", "o_agx_annotation_request_thread");
+        for (const reply of request.replies) {
+            const item = htmlElement("div", "o_agx_annotation_request_reply");
+            item.classList.toggle(
+                "o_agx_annotation_request_reply_author",
+                reply.by_request_author
+            );
+            item.append(
                 htmlElement(
                     "div",
-                    "o_agx_annotation_popover_meta mt-1",
-                    `${request.response_name} · ${formatDate(request.response_date)}`
+                    "o_agx_annotation_popover_meta",
+                    `${reply.author_name} · ${formatDate(reply.date)}`
                 ),
-                htmlElement("div", "o_agx_annotation_popover_text", request.response)
+                htmlElement("div", "o_agx_annotation_popover_text", reply.body)
             );
+            thread.append(item);
+        }
+        if (request.replies.length) {
+            details.append(thread);
         }
         const actions = htmlElement("div", "o_agx_annotation_popover_actions");
         details.append(actions);
@@ -270,26 +280,27 @@ patch(AnnotationEditor.prototype, "agx_photoviewer_change_request", {
                 )
             );
         }
-        if (request.can_respond) {
+        if (request.can_reply) {
             actions.append(
-                button("btn-link p-0", _t("Respond"), () =>
-                    this.editResponse(request, details)
+                button("btn-link p-0", _t("Reply"), () =>
+                    this.editReply(request, details)
                 )
             );
         }
         return details;
     },
 
-    editResponse(request, details) {
+    editReply(request, details) {
         const textarea = htmlElement("textarea", "form-control form-control-sm mt-1");
         textarea.rows = 2;
-        textarea.value = request.response || "";
-        textarea.placeholder = _t("Fixed in the next revision, or why not...");
+        textarea.placeholder = _t("Fixed in the next revision, or a question...");
         const actions = htmlElement("div", "o_agx_annotation_popover_actions");
         actions.append(
-            button("btn-primary", _t("Save"), () =>
-                this.runRequest("request_respond", [request.id, textarea.value])
-            ),
+            button("btn-primary", _t("Send"), () => {
+                if (textarea.value.trim()) {
+                    this.runRequest("request_reply", [request.id, textarea.value]);
+                }
+            }),
             button("btn-secondary", _t("Cancel"), () =>
                 details.replaceWith(this.requestDetails(request))
             )

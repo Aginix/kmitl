@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-23 18:20+0000\n"
-"PO-Revision-Date: 2026-10-23 18:20+0000\n"
+"POT-Creation-Date: 2026-10-23 19:04+0000\n"
+"PO-Revision-Date: 2026-10-23 19:04+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -70,6 +70,8 @@ msgstr ""
 #. module: agx_photoviewer_change_request
 #. odoo-javascript
 #: code:addons/agx_photoviewer_change_request/static/src/js/annotation_change_request.esm.js:0
+#: code:addons/agx_photoviewer_change_request/static/src/js/annotation_change_request.esm.js:0
+#, python-format
 msgid "Change request · %s"
 msgstr "ข้อขอแก้ไข · %s"
 
@@ -101,8 +103,8 @@ msgstr "ชื่อไฟล์"
 #: code:addons/agx_photoviewer_change_request/static/src/js/annotation_change_request.esm.js:0
 #: code:addons/agx_photoviewer_change_request/static/src/js/annotation_change_request.esm.js:0
 #, python-format
-msgid "Fixed in the next revision, or why not..."
-msgstr "แก้แล้วในฉบับถัดไป หรือเหตุผลที่ไม่แก้..."
+msgid "Fixed in the next revision, or a question..."
+msgstr "แก้แล้วในฉบับถัดไป หรือถามกลับ..."
 
 #. module: agx_photoviewer_change_request
 #: model:ir.model.fields,help:agx_photoviewer_change_request.field_change_request__file_name
@@ -162,7 +164,7 @@ msgstr "เปิดอีกครั้ง"
 #: code:addons/agx_photoviewer_change_request/static/src/js/annotation_change_request.esm.js:0
 #: code:addons/agx_photoviewer_change_request/static/src/js/annotation_change_request.esm.js:0
 #, python-format
-msgid "Respond"
+msgid "Reply"
 msgstr "ตอบ"
 
 #. module: agx_photoviewer_change_request
@@ -178,8 +180,8 @@ msgstr "ฉบับ %s · หน้า %s · %s"
 #: code:addons/agx_photoviewer_change_request/static/src/js/annotation_change_request.esm.js:0
 #: code:addons/agx_photoviewer_change_request/static/src/js/annotation_change_request.esm.js:0
 #, python-format
-msgid "Save"
-msgstr "บันทึก"
+msgid "Send"
+msgstr "ส่ง"
 
 #. module: agx_photoviewer_change_request
 #. odoo-javascript

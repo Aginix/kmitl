@@ -128,7 +128,7 @@ export class ChangeRequestPanel extends Component {
             showAll: false,
             composer: null,
             editing: null,
-            responding: null,
+            replying: null,
             historyOf: null,
         });
         onWillStart(() => this.load(this.props));
@@ -154,7 +154,7 @@ export class ChangeRequestPanel extends Component {
             suggestions: data.suggestions,
             composer: null,
             editing: null,
-            responding: null,
+            replying: null,
             historyOf: null,
         });
         props.onChanged(
@@ -268,13 +268,16 @@ export class ChangeRequestPanel extends Component {
         });
     }
 
-    respond(request) {
-        this.state.responding = {id: request.id, text: request.response || ""};
+    reply(request) {
+        this.state.replying = {id: request.id, text: ""};
     }
 
-    saveResponse() {
-        const {id, text} = this.state.responding;
-        return this.run(this.orm.call(MODEL, "request_respond", [id, text]));
+    saveReply() {
+        const {id, text} = this.state.replying;
+        if (!text.trim()) {
+            return;
+        }
+        return this.run(this.orm.call(MODEL, "request_reply", [id, text]));
     }
 
     setClosed(request, closed) {

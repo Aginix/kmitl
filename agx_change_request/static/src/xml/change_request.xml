@@ -212,12 +212,20 @@
                     <t t-esc="request.assignees.map((user) => user.name).join(', ')" />
                 </div>
             </t>
-            <div t-if="request.response" class="o_cr_response">
-                <div class="text-muted">
-                    <t t-esc="request.response_name" /> ·
-                    <t t-esc="formatDate(request.response_date)" />
+            <div t-if="request.replies.length" class="o_cr_replies">
+                <div
+                    t-foreach="request.replies"
+                    t-as="reply"
+                    t-key="reply.id"
+                    class="o_cr_reply"
+                    t-att-class="{'o_cr_reply_author': reply.by_request_author}"
+                >
+                    <div class="text-muted">
+                        <t t-esc="reply.author_name" /> ·
+                        <t t-esc="formatDate(reply.date)" />
+                    </div>
+                    <div class="o_cr_reply_body" t-esc="reply.body" />
                 </div>
-                <div t-esc="request.response" />
             </div>
             <div t-if="request.state === 'closed'" class="o_cr_closed text-muted">
                 Closed by <t t-esc="request.closed_name" /> ·
@@ -226,23 +234,23 @@
             <div t-if="request.cancel_reason" class="o_cr_closed text-muted">
                 <t t-esc="request.cancel_reason" />
             </div>
-            <t t-if="state.responding and state.responding.id === request.id">
+            <t t-if="state.replying and state.replying.id === request.id">
                 <textarea
                     class="form-control form-control-sm mt-1"
                     rows="2"
-                    placeholder="Fixed in the next revision, or why not..."
-                    t-model="state.responding.text"
+                    placeholder="Fixed in the next revision, or a question..."
+                    t-model="state.replying.text"
                 />
                 <div class="o_cr_actions">
                     <button
                         type="button"
                         class="btn btn-sm btn-primary"
-                        t-on-click="saveResponse"
-                    >Save</button>
+                        t-on-click="saveReply"
+                    >Send</button>
                     <button
                         type="button"
                         class="btn btn-sm btn-secondary"
-                        t-on-click="() => state.responding = null"
+                        t-on-click="() => state.replying = null"
                     >Cancel</button>
                 </div>
             </t>
@@ -257,11 +265,11 @@
                     t-on-click="() => this.showPin(request)"
                 >Show on the file</button>
                 <button
-                    t-if="request.can_respond"
+                    t-if="request.can_reply"
                     type="button"
                     class="btn btn-link btn-sm p-0"
-                    t-on-click="() => this.respond(request)"
-                >Respond</button>
+                    t-on-click="() => this.reply(request)"
+                >Reply</button>
                 <t t-if="request.can_close">
                     <button
                         t-if="request.state === 'closed'"

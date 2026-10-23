@@ -6,7 +6,6 @@ from odoo.exceptions import AccessError, UserError
 from .change_request_mixin import OUTSTANDING
 
 ANSWER_ACTIVITY = "agx_change_request.mail_activity_change_request_answer"
-CHECK_ACTIVITY = "agx_change_request.mail_activity_change_request_check"
 
 
 class ChangeRequest(models.Model):
@@ -52,9 +51,9 @@ class ChangeRequest(models.Model):
         column2="user_id",
         string="Assignees",
     )
-    response = fields.Text()
-    response_uid = fields.Many2one(comodel_name="res.users", string="Responded by")
-    response_date = fields.Datetime(string="Responded on")
+    reply_ids = fields.One2many(
+        comodel_name="change.request.reply", inverse_name="request_id"
+    )
     closed_uid = fields.Many2one(comodel_name="res.users", string="Closed by")
     closed_date = fields.Datetime(string="Closed on")
     cancel_reason = fields.Text()
@@ -146,11 +145,7 @@ class ChangeRequest(models.Model):
                     "assignees": [
                         {"id": u.id, "name": u.name} for u in request.assignee_ids
                     ],
-                    "response": request.response or "",
-                    "response_name": request.response_uid.name or "",
-                    "response_date": fields.Datetime.to_string(request.response_date)
-                    if request.response_date
-                    else False,
+                    "replies": request.reply_ids._format(),
                     "closed_name": request.closed_uid.name or "",
                     "closed_date": fields.Datetime.to_string(request.closed_date)
                     if request.closed_date
@@ -158,7 +153,7 @@ class ChangeRequest(models.Model):
                     "cancel_reason": request.cancel_reason or "",
                     "previous_texts": request.previous_texts or [],
                     "is_own": is_own,
-                    "can_respond": not is_own and request.state in OUTSTANDING,
+                    "can_reply": request.state in OUTSTANDING,
                     "can_close": request.state in ("open", "answered", "closed")
                     and request._can_close(),
                     "pin": False,
@@ -289,42 +284,36 @@ class ChangeRequest(models.Model):
         chatter."""
         self._check_author()
         for request in self:
-            details = request._label()
-            if request.response:
-                details += " — " + _("Response: %s", request.response)
-            request._post_step(_("Change request deleted"), details)
+            request._post_step(_("Change request deleted"), request._label())
         self._clear_activities()
         self.unlink()
 
-    def _respond(self, response):
-        """Answer it: anyone who reads the record but its author."""
+    def _reply(self, body):
+        """Add a Reply: anyone who reads the record, its author included.
+
+        A reply from someone else answers the request; its author replying to
+        an answered one (e.g. "still missing") opens it again, giving the
+        Assignees their activity back. Nobody is notified otherwise.
+        """
         self.ensure_one()
-        if self.author_id == self.env.user:
-            raise AccessError(_("You cannot answer your own change request."))
         if self.state not in OUTSTANDING:
             raise UserError(_("This change request is no longer open."))
-        response = (response or "").strip()
-        if not response:
-            raise UserError(_("Write a response first."))
-        self.write(
-            {
-                "response": response,
-                "response_uid": self.env.uid,
-                "response_date": fields.Datetime.now(),
-                "state": "answered",
-            }
+        body = (body or "").strip()
+        if not body:
+            raise UserError(_("Write a reply first."))
+        self.env["change.request.reply"].sudo().create(
+            {"request_id": self.id, "author_id": self.env.uid, "body": body}
         )
-        self._clear_activities(ANSWER_ACTIVITY)
-        if not self.activity_ids:
-            self._schedule(
-                CHECK_ACTIVITY,
-                self.author_id,
-                _("Check the response to a change request"),
-            )
+        if self.author_id != self.env.user:
+            if self.state == "open":
+                self.state = "answered"
+            self._clear_activities(ANSWER_ACTIVITY)
+        elif self.state == "answered":
+            self.state = "open"
+            self._schedule_answer(self.assignee_ids)
         self._post_step(
-            _("Change request #%s answered", self.id),
-            _("%(text)s — Response: %(response)s", text=self.text, response=response),
-            partners=self.author_id.partner_id,
+            _("Reply to change request #%s", self.id),
+            _("%(text)s — %(reply)s", text=self.text, reply=body),
         )
 
     def _set_closed(self, closed):
@@ -436,9 +425,9 @@ class ChangeRequest(models.Model):
         return True
 
     @api.model
-    def request_respond(self, request_id, response):
+    def request_reply(self, request_id, body):
         request = self._get_request(request_id)
-        request._respond(response)
+        request._reply(body)
         return request._format()[0]
 
     @api.model

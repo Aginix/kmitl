@@ -6,8 +6,4 @@
         <field name="name">Answer a change request</field>
         <field name="icon">fa-exclamation-circle</field>
     </record>
-    <record id="mail_activity_change_request_check" model="mail.activity.type">
-        <field name="name">Check the response to a change request</field>
-        <field name="icon">fa-check-square-o</field>
-    </record>
 </odoo>

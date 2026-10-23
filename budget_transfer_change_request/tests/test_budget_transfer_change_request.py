@@ -35,7 +35,7 @@ class TestBudgetTransferChangeRequest(verify_tests.TestBudgetTransferVerify):
         with self.assertRaisesRegex(UserError, "ยอดโอนไม่ตรงกับตาราง"):
             transfer.with_user(self.buddy).action_verify()
         # Answered is still outstanding: its author has to close it.
-        self.env["change.request"].with_user(self.requestor).request_respond(
+        self.env["change.request"].with_user(self.requestor).request_reply(
             request["id"], "แก้แล้ว"
         )
         with self.assertRaises(UserError):

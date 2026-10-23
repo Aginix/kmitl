@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-23 18:20+0000\n"
-"PO-Revision-Date: 2026-10-23 18:20+0000\n"
+"POT-Creation-Date: 2026-10-23 19:04+0000\n"
+"PO-Revision-Date: 2026-10-23 19:04+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -36,8 +36,8 @@ msgstr ""
 #: code:addons/agx_change_request/models/change_request.py:0
 #: code:addons/agx_change_request/models/change_request.py:0
 #, python-format
-msgid "%(text)s — Response: %(response)s"
-msgstr "%(text)s — คำตอบ: %(response)s"
+msgid "%(text)s — %(reply)s"
+msgstr ""
 
 #. module: agx_change_request
 #. odoo-python
@@ -71,11 +71,7 @@ msgid "Answer a change request"
 msgstr "ตอบข้อขอแก้ไข"
 
 #. module: agx_change_request
-#. odoo-javascript
-#: code:addons/agx_change_request/static/src/js/change_request_panel.esm.js:0
-#: code:addons/agx_change_request/static/src/js/change_request_panel.esm.js:0
 #: model:ir.model.fields.selection,name:agx_change_request.selection__change_request__state__answered
-#, python-format
 msgid "Answered"
 msgstr "ตอบแล้ว"
 
@@ -102,8 +98,14 @@ msgstr "ผู้รับมอบหมาย"
 
 #. module: agx_change_request
 #: model:ir.model.fields,field_description:agx_change_request.field_change_request__author_id
+#: model:ir.model.fields,field_description:agx_change_request.field_change_request_reply__author_id
 msgid "Author"
 msgstr "ผู้ขอ"
+
+#. module: agx_change_request
+#: model:ir.model.fields,field_description:agx_change_request.field_change_request_reply__body
+msgid "Body"
+msgstr "ข้อความ"
 
 #. module: agx_change_request
 #. odoo-javascript
@@ -123,11 +125,7 @@ msgid "Cancel Reason"
 msgstr "เหตุผลที่ยกเลิก"
 
 #. module: agx_change_request
-#. odoo-javascript
-#: code:addons/agx_change_request/static/src/js/change_request_panel.esm.js:0
-#: code:addons/agx_change_request/static/src/js/change_request_panel.esm.js:0
 #: model:ir.model.fields.selection,name:agx_change_request.selection__change_request__state__cancelled
-#, python-format
 msgid "Cancelled"
 msgstr "ยกเลิก"
 
@@ -141,6 +139,11 @@ msgstr "ข้อขอแก้ไข"
 #: model:ir.model,name:agx_change_request.model_change_request_mixin
 msgid "Change Request Mixin"
 msgstr ""
+
+#. module: agx_change_request
+#: model:ir.model,name:agx_change_request.model_change_request_reply
+msgid "Change Request Reply"
+msgstr "การตอบข้อขอแก้ไข"
 
 #. module: agx_change_request
 #. odoo-python
@@ -181,14 +184,6 @@ msgstr "เปิดข้อขอแก้ไข #%(id)s อีกครั้
 #, python-format
 msgid "Change request #%(id)s: %(text)s"
 msgstr "ข้อขอแก้ไข #%(id)s: %(text)s"
-
-#. module: agx_change_request
-#. odoo-python
-#: code:addons/agx_change_request/models/change_request.py:0
-#: code:addons/agx_change_request/models/change_request.py:0
-#, python-format
-msgid "Change request #%s answered"
-msgstr "ตอบข้อขอแก้ไข #%s"
 
 #. module: agx_change_request
 #. odoo-python
@@ -243,15 +238,6 @@ msgid "Change requests"
 msgstr "ข้อขอแก้ไข"
 
 #. module: agx_change_request
-#. odoo-python
-#: code:addons/agx_change_request/models/change_request.py:0
-#: code:addons/agx_change_request/models/change_request.py:0
-#: model:mail.activity.type,name:agx_change_request.mail_activity_change_request_check
-#, python-format
-msgid "Check the response to a change request"
-msgstr "ตรวจคำตอบข้อขอแก้ไข"
-
-#. module: agx_change_request
 #. odoo-javascript
 #: code:addons/agx_change_request/static/src/xml/change_request.xml:0
 #: code:addons/agx_change_request/static/src/xml/change_request.xml:0
@@ -262,11 +248,7 @@ msgid "Close"
 msgstr "ปิด"
 
 #. module: agx_change_request
-#. odoo-javascript
-#: code:addons/agx_change_request/static/src/js/change_request_panel.esm.js:0
-#: code:addons/agx_change_request/static/src/js/change_request_panel.esm.js:0
 #: model:ir.model.fields.selection,name:agx_change_request.selection__change_request__state__closed
-#, python-format
 msgid "Closed"
 msgstr "ปิดแล้ว"
 
@@ -286,11 +268,13 @@ msgstr "ปิดเมื่อ"
 
 #. module: agx_change_request
 #: model:ir.model.fields,field_description:agx_change_request.field_change_request__create_uid
+#: model:ir.model.fields,field_description:agx_change_request.field_change_request_reply__create_uid
 msgid "Created by"
 msgstr "สร้างโดย"
 
 #. module: agx_change_request
 #: model:ir.model.fields,field_description:agx_change_request.field_change_request__create_date
+#: model:ir.model.fields,field_description:agx_change_request.field_change_request_reply__create_date
 msgid "Created on"
 msgstr "สร้างเมื่อ"
 
@@ -312,6 +296,7 @@ msgstr "ลบข้อขอแก้ไขนี้? ข้อความจ�
 
 #. module: agx_change_request
 #: model:ir.model.fields,field_description:agx_change_request.field_change_request__display_name
+#: model:ir.model.fields,field_description:agx_change_request.field_change_request_reply__display_name
 msgid "Display Name"
 msgstr "ชื่อที่แสดง"
 
@@ -352,8 +337,8 @@ msgstr "มีการแก้ไข — ดูข้อความเดิ�
 #: code:addons/agx_change_request/static/src/xml/change_request.xml:0
 #: code:addons/agx_change_request/static/src/xml/change_request.xml:0
 #, python-format
-msgid "Fixed in the next revision, or why not..."
-msgstr "แก้แล้วในฉบับถัดไป หรือเหตุผลที่ไม่แก้..."
+msgid "Fixed in the next revision, or a question..."
+msgstr "แก้แล้วในฉบับถัดไป หรือถามกลับ..."
 
 #. module: agx_change_request
 #. odoo-javascript
@@ -373,21 +358,25 @@ msgstr "ซ่อนที่ปิดและยกเลิกแล้ว"
 
 #. module: agx_change_request
 #: model:ir.model.fields,field_description:agx_change_request.field_change_request__id
+#: model:ir.model.fields,field_description:agx_change_request.field_change_request_reply__id
 msgid "ID"
 msgstr ""
 
 #. module: agx_change_request
 #: model:ir.model.fields,field_description:agx_change_request.field_change_request____last_update
+#: model:ir.model.fields,field_description:agx_change_request.field_change_request_reply____last_update
 msgid "Last Modified on"
 msgstr "แก้ไขล่าสุดเมื่อ"
 
 #. module: agx_change_request
 #: model:ir.model.fields,field_description:agx_change_request.field_change_request__write_uid
+#: model:ir.model.fields,field_description:agx_change_request.field_change_request_reply__write_uid
 msgid "Last Updated by"
 msgstr "อัปเดตล่าสุดโดย"
 
 #. module: agx_change_request
 #: model:ir.model.fields,field_description:agx_change_request.field_change_request__write_date
+#: model:ir.model.fields,field_description:agx_change_request.field_change_request_reply__write_date
 msgid "Last Updated on"
 msgstr "อัปเดตล่าสุดเมื่อ"
 
@@ -464,11 +453,7 @@ msgid "Only its author can close a change request."
 msgstr "ข้อขอแก้ไขปิดได้เฉพาะผู้ขอ"
 
 #. module: agx_change_request
-#. odoo-javascript
-#: code:addons/agx_change_request/static/src/js/change_request_panel.esm.js:0
-#: code:addons/agx_change_request/static/src/js/change_request_panel.esm.js:0
 #: model:ir.model.fields.selection,name:agx_change_request.selection__change_request__state__open
-#, python-format
 msgid "Open"
 msgstr "เปิดอยู่"
 
@@ -500,25 +485,55 @@ msgstr "เปิดอีกครั้ง"
 
 #. module: agx_change_request
 #. odoo-javascript
+#: code:addons/agx_change_request/static/src/xml/change_request.xml:0
+#: code:addons/agx_change_request/static/src/xml/change_request.xml:0
+#: model:ir.model.fields,field_description:agx_change_request.field_change_request__reply_ids
+#, python-format
+msgid "Reply"
+msgstr "ตอบ"
+
+#. module: agx_change_request
+#. odoo-python
+#: code:addons/agx_change_request/models/change_request.py:0
+#: code:addons/agx_change_request/models/change_request.py:0
+#, python-format
+msgid "Reply to change request #%s"
+msgstr "ตอบข้อขอแก้ไข #%s"
+
+#. module: agx_change_request
+#: model:ir.model.fields,field_description:agx_change_request.field_change_request_reply__request_id
+msgid "Request"
+msgstr "ข้อขอแก้ไข"
+
+#. module: agx_change_request
+#. odoo-javascript
 #: code:addons/agx_change_request/static/src/js/change_request_panel.esm.js:0
+#: code:addons/agx_change_request/static/src/js/change_request_panel.esm.js:0
+#, python-format
 msgid "Request answered"
 msgstr "ตอบแล้ว"
 
 #. module: agx_change_request
 #. odoo-javascript
 #: code:addons/agx_change_request/static/src/js/change_request_panel.esm.js:0
+#: code:addons/agx_change_request/static/src/js/change_request_panel.esm.js:0
+#, python-format
 msgid "Request cancelled"
 msgstr "ยกเลิก"
 
 #. module: agx_change_request
 #. odoo-javascript
 #: code:addons/agx_change_request/static/src/js/change_request_panel.esm.js:0
+#: code:addons/agx_change_request/static/src/js/change_request_panel.esm.js:0
+#, python-format
 msgid "Request closed"
 msgstr "ปิดแล้ว"
 
 #. module: agx_change_request
 #. odoo-javascript
 #: code:addons/agx_change_request/static/src/js/change_request_panel.esm.js:0
+#: code:addons/agx_change_request/static/src/js/change_request_panel.esm.js:0
+#, python-format
 msgid "Request open"
 msgstr "เปิดอยู่"
 
@@ -527,41 +542,16 @@ msgstr "เปิดอยู่"
 #: code:addons/agx_change_request/static/src/xml/change_request.xml:0
 #: code:addons/agx_change_request/static/src/xml/change_request.xml:0
 #, python-format
-msgid "Respond"
-msgstr "ตอบ"
-
-#. module: agx_change_request
-#: model:ir.model.fields,field_description:agx_change_request.field_change_request__response_uid
-msgid "Responded by"
-msgstr "ผู้ตอบ"
-
-#. module: agx_change_request
-#: model:ir.model.fields,field_description:agx_change_request.field_change_request__response_date
-msgid "Responded on"
-msgstr "วันที่ตอบ"
-
-#. module: agx_change_request
-#: model:ir.model.fields,field_description:agx_change_request.field_change_request__response
-msgid "Response"
-msgstr "คำตอบ"
-
-#. module: agx_change_request
-#. odoo-python
-#: code:addons/agx_change_request/models/change_request.py:0
-#: code:addons/agx_change_request/models/change_request.py:0
-#, python-format
-msgid "Response: %s"
-msgstr "คำตอบ: %s"
+msgid "Save"
+msgstr "บันทึก"
 
 #. module: agx_change_request
 #. odoo-javascript
 #: code:addons/agx_change_request/static/src/xml/change_request.xml:0
 #: code:addons/agx_change_request/static/src/xml/change_request.xml:0
-#: code:addons/agx_change_request/static/src/xml/change_request.xml:0
-#: code:addons/agx_change_request/static/src/xml/change_request.xml:0
 #, python-format
-msgid "Save"
-msgstr "บันทึก"
+msgid "Send"
+msgstr "ส่ง"
 
 #. module: agx_change_request
 #. odoo-javascript
@@ -639,8 +629,8 @@ msgstr "ต้องการให้แก้ไขหรือชี้แจ
 #: code:addons/agx_change_request/models/change_request.py:0
 #: code:addons/agx_change_request/models/change_request.py:0
 #, python-format
-msgid "Write a response first."
-msgstr "กรุณาเขียนคำตอบก่อน"
+msgid "Write a reply first."
+msgstr "กรุณาพิมพ์ข้อความตอบก่อน"
 
 #. module: agx_change_request
 #. odoo-python
@@ -649,14 +639,6 @@ msgstr "กรุณาเขียนคำตอบก่อน"
 #, python-format
 msgid "Write the change request first."
 msgstr "กรุณาเขียนข้อขอแก้ไขก่อน"
-
-#. module: agx_change_request
-#. odoo-python
-#: code:addons/agx_change_request/models/change_request.py:0
-#: code:addons/agx_change_request/models/change_request.py:0
-#, python-format
-msgid "You cannot answer your own change request."
-msgstr "ตอบข้อขอแก้ไขของตนเองไม่ได้"
 
 #. module: agx_change_request
 #. odoo-javascript

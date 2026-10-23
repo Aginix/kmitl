@@ -117,7 +117,7 @@
     }
 
     .o_cr_text,
-    .o_cr_response div:last-child,
+    .o_cr_reply_body,
     .o_cr_history {
         white-space: pre-line;
         overflow-wrap: anywhere;
@@ -138,12 +138,26 @@
         padding-left: 1rem;
     }
 
-    .o_cr_response {
+    .o_cr_replies {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
         margin-top: 0.25rem;
+    }
+
+    .o_cr_reply {
         padding: 0.25rem 0.5rem;
+        margin-right: 1.5rem;
         border-radius: 0.25rem;
         background-color: $gray-100;
         font-size: 0.9em;
+
+        // The requester's own replies sit on the other side.
+        &.o_cr_reply_author {
+            margin-right: 0;
+            margin-left: 1.5rem;
+            background-color: rgba($primary, 0.08);
+        }
     }
 
     .o_cr_actions {

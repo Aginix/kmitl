@@ -4,7 +4,7 @@ Change Requests
 
 Whoever checks a record asks its maker to fix or explain something, and follows
 each request until its author is satisfied. See ``CONTEXT.md`` (Change request,
-Response, Assignee) and ``docs/adr/0001``.
+Reply, Assignee) and ``docs/adr/0001``.
 
 * A model takes Change requests by inheriting ``change.request.mixin`` besides
   ``mail.thread`` and ``mail.activity.mixin``. Its form then gets a **Change
@@ -16,9 +16,11 @@ Response, Assignee) and ``docs/adr/0001``.
   reopens it. Administrators, and whoever the record's module allows
   (``_change_request_can_close_on_behalf``), may close one on the author's
   behalf.
-* **Assignees** get an activity to answer a request while it is open; once it is
-  answered its author gets one to check the response. Every step is posted on
-  the record's chatter as it happens.
+* Each request carries a conversation of **replies**: a reply from someone else
+  answers it, its author replying to an answered one opens it again.
+* **Assignees** get an activity to answer a request while it is open; its
+  author gets none. Every step and reply is posted on the record's chatter as
+  it happens.
 * Outstanding requests (open or answered) never hold up a record by
   themselves; its module may refuse a step while
   ``record._get_outstanding_change_requests()`` is not empty.

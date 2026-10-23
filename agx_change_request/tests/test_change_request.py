@@ -3,7 +3,6 @@ from odoo.exceptions import AccessError, UserError
 from odoo.tests.common import TransactionCase, new_test_user, tagged
 
 ANSWER = "agx_change_request.mail_activity_change_request_answer"
-CHECK = "agx_change_request.mail_activity_change_request_check"
 
 
 class RequestHolder(models.Model):
@@ -93,17 +92,37 @@ class TestChangeRequest(TransactionCase):
         self.assertEqual(self.holder.message_ids[0].author_id, self.reviewer.partner_id)
         self.assertIn(self.maker.partner_id, self.holder.message_ids[0].partner_ids)
 
-        # Its author cannot answer it; anyone else who reads the record can.
-        with self.assertRaises(AccessError):
-            self.Request.with_user(self.reviewer).request_respond(made["id"], "Done")
-        answered = self.Request.with_user(self.other).request_respond(
+        # Anyone who reads the record replies; a reply from someone else
+        # answers it, clears the Assignee's activity and gives the author none.
+        answered = self.Request.with_user(self.other).request_reply(
             made["id"], "Fixed in revision 2"
         )
         self.assertEqual(answered["state"], "answered")
         self.assertFalse(self._activities(made["id"], ANSWER))
-        self.assertEqual(self._activities(made["id"], CHECK).user_id, self.reviewer)
+        self.assertFalse(
+            self.env["mail.activity"].search([("change_request_id", "=", made["id"])])
+        )
         # Answered is still outstanding.
         self.assertEqual(self._count(), 1)
+        # The author replying to an answered request opens it again: the
+        # conversation goes on, the Assignee gets the activity back.
+        reopened = self.Request.with_user(self.reviewer).request_reply(
+            made["id"], "Line 3 is still wrong"
+        )
+        self.assertEqual(reopened["state"], "open")
+        self.assertEqual(self._activities(made["id"], ANSWER).user_id, self.maker)
+        answered = self.Request.with_user(self.maker).request_reply(
+            made["id"], "Fixed line 3 too"
+        )
+        self.assertEqual(answered["state"], "answered")
+        self.assertEqual(
+            [(r["body"], r["by_request_author"]) for r in answered["replies"]],
+            [
+                ("Fixed in revision 2", False),
+                ("Line 3 is still wrong", True),
+                ("Fixed line 3 too", False),
+            ],
+        )
 
         # Only its author (or someone on their behalf) closes it.
         with self.assertRaises(AccessError):
@@ -117,6 +136,8 @@ class TestChangeRequest(TransactionCase):
         )
         self.assertEqual(self._count(), 0)
 
+        with self.assertRaises(UserError):
+            self.Request.with_user(self.maker).request_reply(made["id"], "Again")
         # Reopening gives the Assignees their activity back.
         reopened = self.Request.with_user(self.reviewer).request_set_closed(
             made["id"], False
@@ -137,7 +158,7 @@ class TestChangeRequest(TransactionCase):
 
     def test_edit_and_delete_any_time(self):
         made = self._make()
-        self.Request.with_user(self.maker).request_respond(made["id"], "Done")
+        self.Request.with_user(self.maker).request_reply(made["id"], "Done")
         with self.assertRaises(AccessError):
             self.Request.with_user(self.maker).request_update(made["id"], {"text": "x"})
         edited = self.Request.with_user(self.reviewer).request_update(
