@@ -127,7 +127,7 @@ class WorkAcceptance(models.Model):
         self.message_post(
             body=_(
                 'Disbursement Request <a href="%(link)s">%(name)s</a> created.'
-            ) % {"link": dr_link, "name": disbursement.name},
+            ) % {"link": dr_link, "name": disbursement.display_name},
             subtype_xmlid="mail.mt_note",
         )
             

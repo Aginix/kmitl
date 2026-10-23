@@ -86,6 +86,7 @@ class TestPayeeBankWizard(TwoApproverCommon):
                 action,
                 [(0, 0, {"partner_id": stranger.id, "bank_id": self.bank.id, "acc_number": "5"})],
             ).action_apply()
-        dr.state = "submitted"
+        # Any state past draft; cancel skips the dimensions constraint.
+        dr.state = "cancel"
         with self.assertRaises(UserError):
             dr.action_open_partner_bank_wizard()

@@ -45,16 +45,22 @@ class DisbursementRequest(models.Model):
         return super().write(vals)
 
     def _check_direct_claim_right(self):
-        """Only users granted ตั้งเบิกตรง may tick or untick it."""
+        """Only users granted ตั้งเบิกตรง may tick, untick or submit it."""
         if not self.env.su and not self.env.user.has_group(
             "disbursement_direct_claim.group_disbursement_direct_claim"
         ):
             raise AccessError(
-                _("Only users with the Direct Claim right may set or clear it.")
+                _(
+                    "Only users with the Direct Claim right may set, clear or "
+                    "submit a direct claim."
+                )
             )
 
     def action_submit(self):
         for record in self.filtered(lambda r: r.is_direct_claim and r.state == "draft"):
+            # It skips the head's e-Saraban signature: the right, not just
+            # the tick, decides who may send it on.
+            record._check_direct_claim_right()
             record._check_direct_claim_memo()
         res = super().action_submit()
         # The external memo already carries the head's signature.

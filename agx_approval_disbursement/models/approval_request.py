@@ -229,7 +229,7 @@ class ApprovalRequest(models.Model):
             self.message_post(
                 body=_(
                     "Disbursement %(dr_name)s created successfully.",
-                    dr_name=disbursement.name,
+                    dr_name=disbursement.display_name,
                 ),
                 message_type="comment",
             )

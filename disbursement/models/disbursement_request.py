@@ -1129,6 +1129,17 @@ class DisbursementRequest(models.Model):
             raise UserError(_("Only cancelled requests can be deleted."))
         return super().unlink()
 
+    def name_get(self):
+        # A draft has no number until its first submit (``_assign_number``).
+        # A plain loop: _() finds the language from this frame's ``self``.
+        result = []
+        for rec in self:
+            name = rec.name
+            if not name or name == "/":
+                name = _("Draft Request #%s") % (rec._origin.id or "")
+            result.append((rec.id, name))
+        return result
+
     def _compute_access_url(self):
         """Compute the portal URL for the disbursement request."""
         super()._compute_access_url()

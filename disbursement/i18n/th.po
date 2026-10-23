@@ -401,6 +401,13 @@ msgid "Draft"
 msgstr "ฉบับร่าง"
 
 #. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_request.py:0
+#, python-format
+msgid "Draft Request #%s"
+msgstr "ใบขอเบิกฉบับร่าง #%s"
+
+#. module: disbursement
 #: model:ir.model,name:disbursement.model_exception_rule
 msgid "Exception Rule"
 msgstr ""

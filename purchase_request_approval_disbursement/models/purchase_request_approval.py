@@ -257,7 +257,7 @@ class PurchaseRequestApproval(models.Model):
             )
             % {
                 "dr_link": dr_link,
-                "dr_name": disbursement_request.name,
+                "dr_name": disbursement_request.display_name,
                 "pa_link": pa_link,
                 "pa_name": self.name,
             },
@@ -270,7 +270,7 @@ class PurchaseRequestApproval(models.Model):
         message = _(
             "Billing %(dr_name)s for %(pa_name)s created successfully, waiting for operation."
         ) % {
-            "dr_name": disbursement_request.name,
+            "dr_name": disbursement_request.display_name,
             "pa_name": self.name,
         }
 

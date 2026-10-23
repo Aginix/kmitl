@@ -79,6 +79,11 @@ class TestRequestForm(TwoApproverCommon):
         form.department_analytic_id = self.dept
         form.fund_analytic_id = self.fund
         form.activity_analytic_id = self.activity
+        if "budget_account_id" in self.DR._fields:
+            # Required on the form once disbursement_budget is installed.
+            form.budget_account_id = self.env["budget.account"].create(
+                {"code": "DIM01", "name": "Dim Test", "budget_type": "expense"}
+            )
         dr = form.save()
         self.assertEqual(
             set(dr.analytic_distribution),
@@ -172,9 +177,10 @@ class TestRequesterActions(TwoApproverCommon):
 
     def test_only_officer_cancels_an_approved_request(self):
         dr = self._make_verified_dr()
+        # Approved as superuser: this is about who may cancel afterwards.
         with self._patch_final_approval():
-            dr.with_user(self.finance).action_approve_finance()
-            dr.with_user(self.rector).action_approve()
+            dr.action_approve_finance()
+            dr.action_approve()
         self.assertEqual(dr.state, "approved")
         with self.assertRaises(UserError):
             dr.with_user(self.requester).action_cancel()

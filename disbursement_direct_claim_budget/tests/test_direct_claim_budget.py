@@ -139,7 +139,7 @@ class TestDirectClaimBudget(BudgetLedgerCommon):
         self.assertEqual(dr.state, "draft")
         self.assertIn(
             self.env.ref(
-                "disbursement_budget.excep_disbursement_direct_claim_budget_available"
+                "disbursement_direct_claim_budget.excep_disbursement_direct_claim_budget_available"
             ),
             dr.exception_ids,
         )

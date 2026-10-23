@@ -134,3 +134,13 @@ class TestDirectClaim(TwoApproverCommon):
         self.assertEqual(dr.memo_number, "อว 7201/7")
         with self.assertRaises(AccessError):
             dr.with_user(plain).is_direct_claim = False
+        # Nor may they send someone else's direct claim on.
+        dr.write({"memo_number": "อว 7201/8", "sign_date": date(2026, 10, 1)})
+        self.env["ir.attachment"].create(
+            {"name": "memo.pdf", "res_model": dr._name, "res_id": dr.id, "raw": b"%PDF"}
+        )
+        with self._no_exceptions():
+            with self.assertRaises(AccessError):
+                dr.with_user(plain).action_submit()
+            dr.with_user(granted).action_submit()
+        self.assertEqual(dr.state, "signed")
