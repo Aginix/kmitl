@@ -72,7 +72,8 @@ class TestP1DataModel(SarabunCommon):
 
     def test_enclosure_uploaded_before_save_is_adopted(self):
         """A file uploaded while the หนังสือ is unsaved (res_id=0) is stamped on save,
-        so recipients can read it; one owned by another record is left alone."""
+        so recipients can read it; one owned by another record is replaced by a copy
+        the หนังสือ owns, and the original owner keeps its file."""
         orphan = self.env["ir.attachment"].create(
             {"name": "ก่อนบันทึก.pdf", "res_model": "sarabun.document", "res_id": 0}
         )
@@ -84,6 +85,25 @@ class TestP1DataModel(SarabunCommon):
         doc.enclosure_attachment_ids = [(6, 0, (orphan | owned).ids)]
         self.assertEqual(orphan.res_id, doc.id)
         self.assertEqual(owned.res_id, other.id)
+        self.assertNotIn(owned, doc.enclosure_attachment_ids)
+        self.assertEqual(
+            sorted(doc.enclosure_attachment_ids.mapped("name")),
+            ["ก่อนบันทึก.pdf", "ของเดิม.pdf"],
+        )
+        self.assertEqual(set(doc.enclosure_attachment_ids.mapped("res_id")), {doc.id})
+
+    def test_duplicated_document_owns_its_enclosures(self):
+        """A duplicate (e.g. ส่งใหม่ after rejection) gets its own enclosure copies,
+        so its new recipients don't depend on rights to the original หนังสือ."""
+        doc = self._make_doc()
+        att = self.env["ir.attachment"].create(
+            {"name": "แนบ.pdf", "res_model": "sarabun.document", "res_id": doc.id}
+        )
+        doc.enclosure_attachment_ids = [(6, 0, att.ids)]
+        new_doc = doc.copy()
+        self.assertEqual(doc.enclosure_attachment_ids, att)
+        self.assertEqual(new_doc.enclosure_attachment_ids.mapped("name"), ["แนบ.pdf"])
+        self.assertEqual(new_doc.enclosure_attachment_ids.res_id, new_doc.id)
 
     def test_from_record_numbering_must_be_auto(self):
         """from_record documents register automatically — non-auto modes are rejected."""
