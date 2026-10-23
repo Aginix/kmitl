@@ -1,0 +1,117 @@
+$request-open: #fb8c00;
+$request-answered: #1e88e5;
+$request-closed: #43a047;
+$request-cancelled: #9e9e9e;
+
+// Outstanding Change requests on an attachment (form widget, chatter); sits left of
+// the annotation count badge.
+.o_agx_annotation_request_badge {
+    position: absolute;
+    bottom: 2px;
+    left: 2px;
+    z-index: 1;
+    padding: 0 4px;
+    font-size: 11px;
+    font-weight: bold;
+    line-height: 16px;
+    color: #fff;
+    white-space: nowrap;
+    pointer-events: none;
+    background: $request-open;
+    border-radius: 8px;
+}
+
+// A Change request pin wears a ring in the colour of its state.
+.o_agx_annotation_layer .o_agx_annotation_request circle {
+    stroke-width: 4;
+}
+
+.o_agx_annotation_layer .o_agx_annotation_request_open circle {
+    stroke: $request-open;
+}
+
+.o_agx_annotation_layer .o_agx_annotation_request_answered circle {
+    stroke: $request-answered;
+}
+
+.o_agx_annotation_layer .o_agx_annotation_request_closed circle {
+    stroke: $request-closed;
+}
+
+.o_agx_annotation_layer .o_agx_annotation_request_cancelled circle {
+    stroke: $request-cancelled;
+}
+
+.o_agx_annotation_request_toggle {
+    display: flex;
+    align-items: center;
+    margin-top: 4px;
+    font-size: 12px;
+}
+
+.o_agx_annotation_request_details {
+    margin-top: 6px;
+    padding-top: 4px;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.o_agx_annotation_request_state {
+    display: inline-block;
+    padding: 0 6px;
+    font-size: 11px;
+    color: #fff;
+    border-radius: 8px;
+
+    &.o_agx_annotation_request_open {
+        background: $request-open;
+    }
+
+    &.o_agx_annotation_request_answered {
+        background: $request-answered;
+    }
+
+    &.o_agx_annotation_request_closed {
+        background: $request-closed;
+    }
+
+    &.o_agx_annotation_request_cancelled {
+        background: $request-cancelled;
+    }
+}
+
+.o_agx_annotation_request_assignees {
+    max-height: 120px;
+    margin-top: 4px;
+    overflow-y: auto;
+    font-size: 12px;
+}
+
+// Side panel of the outstanding Change requests on every revision.
+.o_agx_annotation_requests {
+    flex: 0 0 260px;
+    overflow-y: auto;
+    font-size: 12px;
+    background: #fff;
+    border-left: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+.o_agx_annotation_requests_title {
+    padding: 6px 8px;
+    font-weight: bold;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+.o_agx_annotation_requests_item {
+    padding: 6px 8px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+
+    // Pinned on another revision of the file.
+    &.o_agx_annotation_requests_elsewhere {
+        background: #f8f9fa;
+    }
+}
+
+.o_agx_annotation_requests_empty {
+    padding: 6px 8px;
+    color: #6c757d;
+}
