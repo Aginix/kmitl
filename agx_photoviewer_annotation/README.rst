@@ -14,9 +14,6 @@ an image or a PDF inside the photo viewer of ``agx_photoviewer``.
   the file itself is never modified (``docs/adr/0001``). Everyone who can read
   the attachment sees all marks and may add some; only the author changes or
   removes a mark, and drags their own comment pins to move them.
-* The module of a record may lock the annotations of its files, e.g. once the
-  record is done, by overriding ``_annotation_is_locked`` on its model (never
-  locked by default). A locked layer can still be viewed and exported.
 * The eye button hides every mark to show the file as it was uploaded;
   annotating is off meanwhile.
 * **Download with annotations** builds a PDF of the file with the marks drawn
@@ -27,8 +24,9 @@ an image or a PDF inside the photo viewer of ``agx_photoviewer``.
   fields, the chatter and the viewer's thumbnail strip.
 
 See ``agx_photoviewer_annotation_history`` to browse the past changes of a file.
-See ``agx_photoviewer_annotation_review`` for change requests and revisions of a
-file.
+See ``agx_photoviewer_annotation_revision`` to upload corrected revisions of a
+file, and ``agx_change_request`` (with ``agx_photoviewer_change_request``) to pin
+change requests on it.
 
 PDF pages are drawn with the pdf.js library of ``web`` instead of its viewer
 (``docs/adr/0002``): text search, the sidebar and printing from the viewer are

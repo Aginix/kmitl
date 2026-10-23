@@ -167,8 +167,9 @@ class IrAttachmentAnnotation(models.Model):
 
     @api.model
     def _is_layer_locked(self, attachment):
-        record = self._get_holder_record(attachment)
-        return bool(record) and record._annotation_is_locked()
+        """Whether nobody may add, change or remove annotations on
+        ``attachment`` any more; never by default, extensions say when."""
+        return False
 
     @api.model
     def _check_layer_open(self, attachment):

@@ -5,7 +5,7 @@ from PIL import Image
 from reportlab.pdfgen import canvas
 
 from odoo import fields, models
-from odoo.exceptions import AccessError, UserError, ValidationError
+from odoo.exceptions import AccessError, ValidationError
 from odoo.tests.common import TransactionCase, new_test_user, tagged
 from odoo.tools.pdf import PdfFileReader
 
@@ -35,10 +35,6 @@ class AnnotationHolder(models.Model):
 
     name = fields.Char()
     attachment_ids = fields.Many2many("ir.attachment")
-    locked = fields.Boolean()
-
-    def _annotation_is_locked(self):
-        return self.locked
 
 
 @tagged("post_install", "-at_install")
@@ -183,41 +179,6 @@ class TestAnnotation(TransactionCase):
         )
         self.assertEqual(holder.message_ids[0].author_id, self.user_a.partner_id)
         self.assertIn("first.png", holder.message_ids[0].body)
-
-    def test_locked_layer(self):
-        self._register_holder()
-        holder = self.env["test.annotation.holder"].create({"name": "Holder"})
-        image = self.env["ir.attachment"].create(
-            {
-                "name": "locked.png",
-                "raw": _png(),
-                "mimetype": "image/png",
-                "res_model": "test.annotation.holder",
-                "res_id": holder.id,
-            }
-        )
-        Annotation = self.Annotation.with_user(self.user_a)
-        values = {
-            "attachment_id": image.id,
-            "kind": "check",
-            "geometry": {"x": 0.5, "y": 0.5},
-        }
-        saved = Annotation.annotation_save(values)
-        self.assertFalse(Annotation.annotation_load(image.id)["locked"])
-
-        holder.locked = True
-        loaded = Annotation.annotation_load(image.id)
-        self.assertTrue(loaded["locked"])
-        self.assertEqual(len(loaded["annotations"]), 1)
-        # Nobody changes a Locked layer, its authors included.
-        with self.assertRaises(UserError):
-            Annotation.annotation_save(values)
-        with self.assertRaises(UserError):
-            Annotation.annotation_save({"id": saved["id"], "color": "#000000"})
-        with self.assertRaises(UserError):
-            Annotation.annotation_delete(saved["id"])
-        # ... but it can still be exported.
-        self.assertTrue(self.Annotation._export_pdf(image.sudo()))
 
     def test_cascade_on_attachment_unlink(self):
         saved = self._save(self.user_a)
