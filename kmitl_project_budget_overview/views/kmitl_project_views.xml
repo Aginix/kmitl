@@ -34,17 +34,26 @@
                 <button name="action_open_budget_commitments" position="replace" />
                 <!-- The figures live in บัญชีโครงการ; the form keeps the
                      coordinate and the estimate. -->
-                <field name="budget_amount" position="attributes">
+                <xpath
+                    expr="//group[@name='budget']/field[@name='budget_amount']"
+                    position="attributes"
+                >
                     <attribute name="invisible">1</attribute>
-                </field>
-                <field name="budget_reserved" position="attributes">
+                </xpath>
+                <xpath
+                    expr="//group[@name='budget']/field[@name='budget_reserved']"
+                    position="attributes"
+                >
                     <attribute name="attrs">{}</attribute>
                     <attribute name="invisible">1</attribute>
-                </field>
-                <field name="budget_remaining" position="attributes">
+                </xpath>
+                <xpath
+                    expr="//group[@name='budget']/field[@name='budget_remaining']"
+                    position="attributes"
+                >
                     <attribute name="attrs">{}</attribute>
                     <attribute name="invisible">1</attribute>
-                </field>
+                </xpath>
             </data>
         </field>
     </record>
@@ -66,11 +75,13 @@
             >
                 <sheet>
                     <field name="state" invisible="1" />
+                    <field name="company_id" invisible="1" />
                     <field name="analytic_account_id" invisible="1" />
                     <field name="budget_estimate" invisible="1" />
                     <field name="budget_amount" invisible="1" />
                     <field name="budget_reserved" invisible="1" />
                     <field name="budget_consumed" invisible="1" />
+                    <field name="budget_reserved_total" invisible="1" />
                     <field name="budget_unreserved" invisible="1" />
                     <field name="budget_commitment_count" invisible="1" />
                     <field name="budget_off_target_count" invisible="1" />
@@ -141,7 +152,7 @@
                         <div
                             class="alert alert-warning mb-2"
                             role="alert"
-                            attrs="{'invisible': ['|', '|', ('state', '!=', 'in_progress'), ('budget_reserved', '=', 0), ('budget_unreserved', '=', 0)]}"
+                            attrs="{'invisible': ['|', '|', ('state', '!=', 'in_progress'), ('budget_reserved_total', '=', 0), ('budget_unreserved', '=', 0)]}"
                         >
                             <strong>ได้รับแต่ยังไม่ได้จอง <field
                                     name="budget_unreserved"

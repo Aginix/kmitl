@@ -31,7 +31,7 @@ export class BudgetOverviewSummary extends Component {
     get unreserved() {
         // Only a gap once the project has reserved and is spending.
         const d = this.data;
-        if (d.state !== "in_progress" || d.budget_reserved <= 0) {
+        if (d.state !== "in_progress" || d.budget_reserved_total <= 0) {
             return 0;
         }
         return Math.min(d.budget_unreserved, Math.max(d.budget_remaining, 0));

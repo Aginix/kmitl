@@ -28,10 +28,19 @@ class KmitlProject(models.Model):
         compute="_compute_account_movement_summary",
         groups=MOVEMENT_GROUPS,
     )
+    # What the reservation still holds (budget's จองเงิน, ``total_reserved``),
+    # not its approved cap ``budget_reserved``: closing returns the leftover.
+    budget_reserved_total = fields.Float(
+        string="จองแล้ว",
+        digits="Product Price",
+        compute="_compute_budget_unreserved",
+        compute_sudo=True,
+    )
     budget_unreserved = fields.Float(
         string="ได้รับแต่ยังไม่ได้จอง",
         digits="Product Price",
         compute="_compute_budget_unreserved",
+        compute_sudo=True,
         help="ยอดที่ได้รับจัดสรรเกินยอดจอง เช่น จัดสรรเพิ่มหลังเริ่มเบิกจ่าย",
     )
 
@@ -54,8 +63,14 @@ class KmitlProject(models.Model):
 
     def _compute_budget_unreserved(self):
         for rec in self:
+            reserved = sum(
+                rec.budget_commitment_ids.filtered(
+                    lambda c: c.state != "cancel"
+                ).mapped("total_reserved")
+            )
+            rec.budget_reserved_total = reserved
             rec.budget_unreserved = max(
-                float_round(rec.budget_amount - rec.budget_reserved, 2), 0.0
+                float_round(rec.budget_amount - reserved, 2), 0.0
             )
 
     def action_open_budget_overview(self):
