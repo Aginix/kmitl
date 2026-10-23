@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_work_center_area_user,work_center_area_user,model_work_center_area,base.group_user,1,0,0,0
+access_work_center_area_manager,work_center_area_manager,model_work_center_area,group_work_center_manager,1,1,1,1
+access_work_center_user,work_center_user,model_work_center,base.group_user,1,0,0,0
+access_work_center_manager,work_center_manager,model_work_center,group_work_center_manager,1,1,1,1
+access_work_center_counter_user,work_center_counter_user,model_work_center_counter,base.group_user,1,0,0,0
+access_work_center_counter_manager,work_center_counter_manager,model_work_center_counter,group_work_center_manager,1,1,1,1
+access_work_center_rule_manager,work_center_rule_manager,model_work_center_rule,group_work_center_manager,1,1,1,1
+access_ir_model_work_center_manager,ir_model_work_center_manager,base.model_ir_model,group_work_center_manager,1,0,0,0
