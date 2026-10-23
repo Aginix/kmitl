@@ -126,8 +126,19 @@ function decorateThumbnail(attachment, thumbnail) {
 
 export class AnnotationEditor {
     constructor(attachment, page) {
-        this.attachment = attachment;
         this.page = page;
+        this.reset(attachment);
+    }
+
+    /**
+     * State of the editor of `attachment`; extensions add theirs.
+     */
+    reset(attachment) {
+        this.attachment = attachment;
+        this.left = false;
+        this.marksHidden = false;
+        // Identifies this load: a switch makes the previous one stale.
+        this.loading = {};
         this.sheets = [];
         this.annotations = [];
         this.drawing = false;
@@ -147,15 +158,20 @@ export class AnnotationEditor {
     }
 
     async start() {
-        const [data] = await Promise.all([
+        const loading = this.loading;
+        const [data, source] = await Promise.all([
             this.call("annotation_load", this.attachment.id),
             this.loadSource(),
         ]);
-        if (this.left) {
+        if (this.left || loading !== this.loading) {
             // The viewer moved on while the file was loading.
-            this.pdf?.destroy();
+            source.pdf?.destroy();
             return;
         }
+        this.pdf = source.pdf;
+        this.sheets = source.sheets;
+        // What annotation_load returned, extensions included.
+        this.data = data;
         this.checksum = data.checksum;
         // A Locked layer is shown, never changed.
         this.locked = data.locked;
@@ -164,35 +180,40 @@ export class AnnotationEditor {
         this.redraw();
     }
 
+    /**
+     * Load the file's pages: {sheets, pdf}.
+     */
     async loadSource() {
+        const sheets = [];
         if (isPdf(this.attachment)) {
             await loadJS(PDFJS);
             const pdfjsLib = window.pdfjsLib;
             pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJS_WORKER;
-            this.pdf = await pdfjsLib.getDocument({url: getUrl(this.attachment)})
+            const pdf = await pdfjsLib.getDocument({url: getUrl(this.attachment)})
                 .promise;
-            for (let number = 1; number <= this.pdf.numPages; number++) {
-                const pdfPage = await this.pdf.getPage(number);
+            for (let number = 1; number <= pdf.numPages; number++) {
+                const pdfPage = await pdf.getPage(number);
                 // The viewport applies /Rotate: geometry is relative to the
                 // page as displayed.
                 const viewport = pdfPage.getViewport({scale: 1});
-                this.sheets.push({
+                sheets.push({
                     number,
                     pdfPage,
                     baseWidth: viewport.width,
                     ratio: viewport.height / viewport.width,
                 });
             }
-        } else {
-            const image = new Image();
-            image.src = getUrl(this.attachment);
-            await image.decode();
-            this.sheets.push({
-                number: 1,
-                image,
-                ratio: image.naturalHeight / image.naturalWidth || 1,
-            });
+            return {sheets, pdf};
         }
+        const image = new Image();
+        image.src = getUrl(this.attachment);
+        await image.decode();
+        sheets.push({
+            number: 1,
+            image,
+            ratio: image.naturalHeight / image.naturalWidth || 1,
+        });
+        return {sheets, pdf: null};
     }
 
     // ---------------------------------------------------------------- DOM
@@ -225,7 +246,7 @@ export class AnnotationEditor {
                 htmlElement(
                     "div",
                     "o_agx_annotation_locked alert alert-info m-0 py-1 px-2",
-                    _t("Annotations on this file are locked.")
+                    this.lockedNotice()
                 )
             );
         }
@@ -457,6 +478,23 @@ export class AnnotationEditor {
      */
     canAnnotate() {
         return !this.locked && !this.marksHidden;
+    }
+
+    lockedNotice() {
+        return _t("Annotations on this file are locked.");
+    }
+
+    /**
+     * Show another file, e.g. another revision of this one, in the same
+     * place: the current one is left as if the viewer moved on.
+     */
+    async switchAttachment(attachment) {
+        this.leave();
+        this.reset(attachment);
+        this.page.replaceChildren(
+            htmlElement("i", "fa fa-spin fa-spinner fa-2x m-auto")
+        );
+        await this.start();
     }
 
     refreshDrawButton() {
@@ -1082,6 +1120,13 @@ export class AnnotationEditor {
         }
     }
 
+    /**
+     * Values of the extra inputs extensions add to the comment form.
+     */
+    commentFormValues() {
+        return {};
+    }
+
     showComment(annotation) {
         const popover = this.popover;
         const date = formatDateTime(deserializeDateTime(annotation.create_date));
@@ -1129,11 +1174,12 @@ export class AnnotationEditor {
             if (!text) {
                 return;
             }
+            const values = {text, ...this.commentFormValues()};
             this.closePopover();
             if (annotation.id) {
-                await this.update(annotation, {text});
+                await this.update(annotation, values);
             } else {
-                await this.add({...annotation, text});
+                await this.add({...annotation, ...values});
             }
         });
         cancel.addEventListener("click", () =>
@@ -1146,6 +1192,19 @@ export class AnnotationEditor {
 
     // ------------------------------------------------------------ storage
 
+    /**
+     * What is sent to create the annotation `values` describes.
+     */
+    annotationValues(values) {
+        return {
+            page: values.page,
+            kind: values.kind,
+            geometry: values.geometry,
+            color: values.color,
+            text: values.text || false,
+        };
+    }
+
     call(method, ...args) {
         return call(method, args, {annotation_session: this.sessionKey});
     }
@@ -1157,11 +1216,7 @@ export class AnnotationEditor {
         try {
             const saved = await this.call("annotation_save", {
                 attachment_id: this.attachment.id,
-                page: values.page,
-                kind: values.kind,
-                geometry: values.geometry,
-                color: values.color,
-                text: values.text || false,
+                ...this.annotationValues(values),
             });
             Object.assign(draft, saved);
         } catch (error) {

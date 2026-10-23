@@ -88,6 +88,13 @@ function buildChanges(changes) {
 }
 
 patch(AnnotationEditor.prototype, "agx_photoviewer_annotation_history", {
+    reset() {
+        this._super(...arguments);
+        // The History belongs to the file shown.
+        this.historyChange = null;
+        this.historyChanges = [];
+    },
+
     buildToolbar() {
         const toolbar = this._super(...arguments);
         this.historyButton = htmlElement("button", "btn btn-sm btn-light");

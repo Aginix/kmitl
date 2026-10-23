@@ -148,6 +148,9 @@ upfront.
   draw, highlight and comment directly on an image or PDF attachment inside the photo
   viewer; marks are an overlay stored beside the untouched file, exportable on demand as
   an annotated PDF.
+  - **`agx_photoviewer_annotation_review`** (no own glossary — part of this context):
+    add-on for Change requests (answered by the maker, closed by the reviewer) and
+    Revisions of an annotated file (ADR-0003).
 - [Photo Viewer — Annotation History](./agx_photoviewer_annotation_history/CONTEXT.md) —
   a side panel listing who added, changed or removed marks on a file in each visit, and
   drawing the layer as any of those Changes left it.

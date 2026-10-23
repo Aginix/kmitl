@@ -27,6 +27,8 @@ an image or a PDF inside the photo viewer of ``agx_photoviewer``.
   fields, the chatter and the viewer's thumbnail strip.
 
 See ``agx_photoviewer_annotation_history`` to browse the past changes of a file.
+See ``agx_photoviewer_annotation_review`` for change requests and revisions of a
+file.
 
 PDF pages are drawn with the pdf.js library of ``web`` instead of its viewer
 (``docs/adr/0002``): text search, the sidebar and printing from the viewer are

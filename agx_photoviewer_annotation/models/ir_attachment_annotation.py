@@ -275,16 +275,26 @@ class IrAttachmentAnnotation(models.Model):
         )
         if comments:
             body += Markup("<ul>%s</ul>") % Markup("").join(
-                Markup("<li>%s</li>")
-                % _("Page %(page)s: %(text)s", page=comment.page, text=comment.text)
+                Markup("<li>%s</li>") % comment._session_note_comment_line()
                 for comment in comments
             )
+        body += self._session_note_extra(attachment)
         record.message_post(
             body=body,
             subtype_xmlid="mail.mt_note",
             author_id=self.env.user.partner_id.id,
         )
         return True
+
+    def _session_note_comment_line(self):
+        """Text of the line listing this Comment in the Session note."""
+        self.ensure_one()
+        return _("Page %(page)s: %(text)s", page=self.page, text=self.text)
+
+    @api.model
+    def _session_note_extra(self, attachment):
+        """Markup appended to the Session note of ``attachment``."""
+        return Markup("")
 
     # ------------------------------------------------------------------
     # Annotated export
