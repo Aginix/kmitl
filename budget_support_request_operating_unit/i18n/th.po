@@ -1,0 +1,41 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* budget_support_request_operating_unit
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-23 14:36+0000\n"
+"PO-Revision-Date: 2026-10-23 14:36+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: budget_support_request_operating_unit
+#: model:ir.model,name:budget_support_request_operating_unit.model_budget_commitment
+msgid "Budget Commitment"
+msgstr "จองงบประมาณ"
+
+#. module: budget_support_request_operating_unit
+#: model:ir.model,name:budget_support_request_operating_unit.model_budget_support_request
+msgid "Budget Support Request"
+msgstr "คำขอรับการสนับสนุนงบประมาณ"
+
+#. module: budget_support_request_operating_unit
+#: model:ir.model.fields,field_description:budget_support_request_operating_unit.field_budget_support_request__operating_unit_id
+msgid "Operating Unit"
+msgstr "หน่วยงาน (OU)"
+
+#. module: budget_support_request_operating_unit
+#: model:ir.model.fields,help:budget_support_request_operating_unit.field_budget_support_request__operating_unit_id
+msgid ""
+"The requesting unit's Operating Unit — used for visibility/access only "
+"(decision 1, CONTEXT.md); the department dimension is what actually drives "
+"fulfilment."
+msgstr ""
+"หน่วยงาน (OU) ของหน่วยงานผู้ขอ — ใช้กำหนดการมองเห็น/สิทธิ์การเข้าถึงเท่านั้น"
+" การจัดสรรงบประมาณใช้ส่วนงาน (มิติ) ที่ระบุในคำขอ"
