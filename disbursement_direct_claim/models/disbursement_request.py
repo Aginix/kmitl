@@ -38,11 +38,21 @@ class DisbursementRequest(models.Model):
         return records
 
     def write(self, vals):
+        unticked = self.browse()
         if "is_direct_claim" in vals and self.filtered(
             lambda r: r.is_direct_claim != bool(vals["is_direct_claim"])
         ):
             self._check_direct_claim_right()
-        return super().write(vals)
+            if not vals["is_direct_claim"]:
+                unticked = self.filtered(
+                    lambda r: r.is_direct_claim and not r.returned_for_edit
+                )
+        res = super().write(vals)
+        # The typed memo date would otherwise stand in for the head's
+        # signature, which action_sign stamps only when empty.
+        if unticked and "sign_date" not in vals:
+            unticked.sign_date = False
+        return res
 
     def _check_direct_claim_right(self):
         """Only users granted ตั้งเบิกตรง may tick, untick or submit it."""
@@ -78,10 +88,6 @@ class DisbursementRequest(models.Model):
         if not self.attachment_ids:
             raise UserError(_("A direct claim needs the memo attached to the request."))
 
-    def action_draft(self):
+    def _keep_sign_date_on_draft(self):
         # The memo's own date survives a reset; core clears the stamped one.
-        typed = {r: r.sign_date for r in self if r.is_direct_claim}
-        res = super().action_draft()
-        for record, sign_date in typed.items():
-            record.sign_date = sign_date
-        return res
+        return self.is_direct_claim or super()._keep_sign_date_on_draft()

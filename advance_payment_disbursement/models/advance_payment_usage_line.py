@@ -31,7 +31,7 @@ class AdvancePaymentUsageLine(models.Model):
     def _compute_source_display(self):
         for line in self:
             if line.disbursement_request_id:
-                line.source_display = line.disbursement_request_id.name
+                line.source_display = line.disbursement_request_id.display_name
             else:
                 line.source_display = "บันทึกการใช้เงิน"
 

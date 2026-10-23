@@ -546,7 +546,8 @@ class BudgetMove(models.Model):
         # An approved ตั้งเบิกตรง disbursement request posts / cancels its own
         # direct consumption: its approval chain is the gate (disbursement
         # ADR-0005). Only the right is waived — the pool check still runs.
-        if self.env.context.get("budget_direct_consume_by_document"):
+        # Sudo too: a context key alone can be sent by any RPC client.
+        if self.env.su and self.env.context.get("budget_direct_consume_by_document"):
             return
         if not self.env.user.has_group("budget.group_budget_manager"):
             raise ValidationError(

@@ -60,6 +60,13 @@ class DisbursementPartnerBankWizard(models.TransientModel):
                 raise UserError(
                     _("%s is not a payee of this request.") % row.partner_id.display_name
                 )
+            # Edited under sudo: the account must be this payee's own.
+            owner = row.bank_account_id.sudo().partner_id
+            if row.bank_account_id and owner != row.partner_id:
+                raise UserError(
+                    _("%s is not a bank account of this payee.")
+                    % row.bank_account_id.display_name
+                )
             if not row.bank_account_id and not row.bank_id:
                 raise UserError(_("Choose the bank of the new account %s.") % row.acc_number)
             vals = {

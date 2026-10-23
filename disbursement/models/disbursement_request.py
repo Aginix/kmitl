@@ -1116,13 +1116,20 @@ class DisbursementRequest(models.Model):
                 )
             record.state = "draft"
             # Signed again on the next round.
-            record.sign_date = False
+            if not record._keep_sign_date_on_draft():
+                record.sign_date = False
             record.exception_ids = False
             record.main_exception_id = False
             record.ignore_exception = False
         self._reset_verification()
         self._reset_approval()
         return True
+
+    def _keep_sign_date_on_draft(self):
+        """A request returned for correction keeps the head's signature: it is
+        resubmitted straight to verification (``action_resubmit_verification``)."""
+        self.ensure_one()
+        return self.returned_for_edit
 
     def unlink(self):
         if self.filtered(lambda r: r.state != "cancel"):
@@ -1149,7 +1156,7 @@ class DisbursementRequest(models.Model):
     def _get_report_base_filename(self):
         """Return the base filename for the report."""
         self.ensure_one()
-        return f"Disbursement Request-{self.name}"
+        return f"Disbursement Request-{self.display_name}"
 
     @api.model
     def _get_masked_acc_number(self, acc_number):

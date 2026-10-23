@@ -39,6 +39,12 @@ msgstr "%s ไม่ใช่ผู้รับเงินของใบขอ
 #. module: disbursement_partner_bank
 #: code:addons/disbursement_partner_bank/wizards/disbursement_partner_bank_wizard.py:0
 #, python-format
+msgid "%s is not a bank account of this payee."
+msgstr "%s ไม่ใช่บัญชีธนาคารของผู้รับเงินรายนี้"
+
+#. module: disbursement_partner_bank
+#: code:addons/disbursement_partner_bank/wizards/disbursement_partner_bank_wizard.py:0
+#, python-format
 msgid "Choose the bank of the new account %s."
 msgstr "กรุณาเลือกธนาคารของบัญชีใหม่ %s"
 

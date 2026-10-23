@@ -98,7 +98,7 @@ class DisbursementRequest(models.Model):
             body=_(
                 'The disbursement request <a href="%(link)s" target="_blank">\'%(name)s\'</a> has been linked to this record.'
             )
-            % {"name": self.name, "link": link},
+            % {"name": self.display_name, "link": link},
             subtype_xmlid="mail.mt_comment",
         )
 
@@ -107,7 +107,7 @@ class DisbursementRequest(models.Model):
         link = f"/web#id={self.id}&model={self._name}&view_type=form"
         self.budget_commitment_id.message_post(
             body=_("The disbursement request '%(name)s' has been unlinked.")
-            % {"name": self.name},
+            % {"name": self.display_name},
             subtype_xmlid="mail.mt_comment",
         )
 
