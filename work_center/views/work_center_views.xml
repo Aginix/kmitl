@@ -35,7 +35,7 @@
                         <h1>
                             <field
                                 name="name"
-                                placeholder="เช่น ศูนย์งานภาควิชาไฟฟ้า"
+                                placeholder="e.g. Electrical Engineering Work Center"
                             />
                         </h1>
                     </div>
@@ -103,12 +103,12 @@
                 <field name="member_ids" />
                 <filter
                     name="my_work_centers"
-                    string="ศูนย์งานของฉัน"
+                    string="My Work Centers"
                     domain="['|', ('member_ids', 'in', [uid]), ('is_unassigned', '=', True)]"
                 />
                 <filter
                     name="central"
-                    string="ส่วนกลาง"
+                    string="Central"
                     domain="[('operating_unit_id', '=', False), ('is_unassigned', '=', False)]"
                 />
                 <separator />
@@ -135,7 +135,8 @@
 
     <!-- Overview: one card per work center, a configurable list of counters
          on each (work.center.counter). Each counter row is an object button
-         passing its counter id through the button context. -->
+         passing its counter id through the button context. ``counter_data`` is
+         a Json field, which stores an empty list as False, hence ``or []``. -->
     <record id="work_center_view_kanban" model="ir.ui.view">
         <field name="name">work.center.kanban</field>
         <field name="model">work.center</field>
@@ -158,7 +159,7 @@
                                         <i
                                             t-if="record.is_unassigned.raw_value"
                                             class="fa fa-inbox me-1"
-                                            title="ยังไม่มีศูนย์งาน"
+                                            title="Unassigned"
                                         />
                                         <field name="name" />
                                     </div>
@@ -170,7 +171,7 @@
                             <div class="container o_kanban_card_content">
                                 <div
                                     class="row"
-                                    t-foreach="record.counter_data.raw_value"
+                                    t-foreach="record.counter_data.raw_value or []"
                                     t-as="counter"
                                     t-key="counter.id"
                                 >
@@ -183,10 +184,12 @@
                                             <t t-esc="counter.name" />
                                         </a>
                                     </div>
-                                    <div
-                                        t-attf-class="col-3 text-end #{counter.count ? 'fw-bold' : 'text-muted'}"
-                                    >
-                                        <t t-esc="counter.count" />
+                                    <div class="col-3 text-end">
+                                        <span
+                                            t-attf-class="#{counter.color ? 'badge ' + kanban_color(counter.color) : ''} #{counter.count ? 'fw-bold' : 'text-muted'}"
+                                        >
+                                            <t t-esc="counter.count" />
+                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -199,7 +202,7 @@
                                     type="edit"
                                     class="float-end"
                                     groups="work_center.group_work_center_manager"
-                                    title="ตั้งค่า"
+                                    title="Configure"
                                 >
                                     <i class="fa fa-cog" />
                                 </a>
@@ -211,11 +214,13 @@
         </field>
     </record>
 
+    <!-- The kanban is the overview; bridges reuse it with their area in the
+         domain. Here it is the entry view of the configuration menu. -->
     <record id="work_center_action" model="ir.actions.act_window">
-        <field name="name">ศูนย์งาน</field>
+        <field name="name">Work Centers</field>
         <field name="res_model">work.center</field>
-        <field name="view_mode">tree,form</field>
-        <field name="context">{'search_default_group_area': 1}</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="context">{}</field>
     </record>
 
 </odoo>
