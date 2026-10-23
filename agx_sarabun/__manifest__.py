@@ -1,7 +1,7 @@
 {
     "name": "e-Sarabun",
     "summary": "Electronic Correspondence Management System (สารบรรณอิเล็กทรอนิกส์)",
-    "version": "16.0.7.1.6",
+    "version": "16.0.7.2.0",
     "category": "KMITL/Correspondence",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
@@ -19,7 +19,6 @@
         "security/security.xml",
         "security/ir.model.access.csv",
         # Master data
-        "data/sarabun_activity_data.xml",
         "data/sarabun_verb_data.xml",
         "data/sarabun_addressee_prefix_data.xml",
         "data/sarabun_document_type.xml",
