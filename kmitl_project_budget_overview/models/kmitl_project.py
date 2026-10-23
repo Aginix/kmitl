@@ -1,4 +1,4 @@
-from odoo import _, fields, models
+from odoo import fields, models
 from odoo.tools import float_round
 
 MOVEMENT_GROUPS = "kmitl_project.group_kmitl_project_user,budget.group_budget_viewer"
@@ -74,20 +74,14 @@ class KmitlProject(models.Model):
             )
 
     def action_open_budget_overview(self):
-        """Open บัญชีโครงการ (ADR-0012) — this project in its budget overview view."""
+        """Open บัญชีโครงการ (ADR-0012) — this project in its overview view,
+        through a stored action so a page reload stays on it."""
         self.ensure_one()
-        view = self.env.ref(
-            "kmitl_project_budget_overview.view_kmitl_project_budget_overview_form"
+        action = self.env["ir.actions.act_window"]._for_xml_id(
+            "kmitl_project_budget_overview.action_kmitl_project_budget_overview"
         )
-        return {
-            "type": "ir.actions.act_window",
-            "name": _("บัญชีโครงการ"),
-            "res_model": "kmitl.project",
-            "res_id": self.id,
-            "view_mode": "form",
-            "views": [(view.id, "form")],
-            "target": "current",
-        }
+        action["res_id"] = self.id
+        return action
 
     def action_open_off_target_movements(self):
         action = self.action_open_budget_movements()

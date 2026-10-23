@@ -20,7 +20,7 @@
                         type="object"
                         class="oe_stat_button"
                         icon="fa-book"
-                        attrs="{'invisible': [('state', '=', 'draft')]}"
+                        attrs="{'invisible': [('analytic_account_id', '=', False)]}"
                         groups="kmitl_project.group_kmitl_project_user,budget.group_budget_viewer"
                     >
                         <div class="o_field_widget o_stat_info">
@@ -262,7 +262,7 @@
                                     class="btn-link p-0"
                                 />
                                 <div class="o_kpbo_total">
-                                    รวมรายการที่ผ่านแล้ว (= คงเหลือ)
+                                    คงเหลือ
                                     <field name="budget_remaining" class="d-inline" />
                                 </div>
                             </div>
@@ -271,6 +271,15 @@
                 </sheet>
             </form>
         </field>
+    </record>
+
+    <!-- A stored action keeps บัญชีโครงการ in the URL across a reload. -->
+    <record id="action_kmitl_project_budget_overview" model="ir.actions.act_window">
+        <field name="name">บัญชีโครงการ</field>
+        <field name="res_model">kmitl.project</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_kmitl_project_budget_overview_form" />
+        <field name="target">current</field>
     </record>
 
 </odoo>
