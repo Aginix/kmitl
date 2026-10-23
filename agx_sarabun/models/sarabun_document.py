@@ -414,7 +414,40 @@ class SarabunDocument(models.Model):
         docs = super().create(vals_list)
         for doc in docs:
             doc._ensure_originator_step()
+        docs._adopt_enclosures()
         return docs
+
+    def write(self, vals):
+        res = super().write(vals)
+        if "enclosure_attachment_ids" in vals:
+            self._adopt_enclosures()
+        return res
+
+    def _adopt_enclosures(self):
+        """Keep every enclosure owned by its own หนังสือ, so whoever can read the
+        หนังสือ can open its files (``ir.attachment.check()`` defers to the owner).
+
+        - Orphans (``res_id=0``: uploaded by the many2many_binary widget before the
+          หนังสือ was first saved, readable only by the uploader) are stamped.
+        - Files owned by another record (e.g. linked by ``action_duplicate_to_draft``
+          from the rejected หนังสือ) are replaced by a copy owned by this one — the
+          original owner keeps its file."""
+        for doc in self:
+            enclosures = doc.enclosure_attachment_ids.sudo()
+            orphans = enclosures.filtered(lambda a: not a.res_id)
+            if orphans:
+                orphans.write({"res_model": self._name, "res_id": doc.id})
+            foreign = enclosures - orphans
+            foreign = foreign.filtered(
+                lambda a: (a.res_model, a.res_id) != (self._name, doc.id)
+            )
+            if foreign:
+                commands = [(3, a.id) for a in foreign]
+                commands += [
+                    (4, a.copy({"res_model": self._name, "res_id": doc.id}).id)
+                    for a in foreign
+                ]
+                doc.sudo().write({"enclosure_attachment_ids": commands})
 
     # === Computes ===
     @api.depends("state")
