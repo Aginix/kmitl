@@ -141,6 +141,14 @@ class TestWorkCenter(TransactionCase):
         doc.partner_id = self.other_dept
         self.assertEqual(doc.work_center_id, self.wc_dept)
 
+    def test_stamped_when_leaving_draft_at_once(self):
+        """The compute is lazy: a document created and submitted in the same
+        transaction must still carry the work center of its draft state."""
+        doc = self._doc(partner_id=self.dept.id)
+        doc.state = "done"
+        self.env.invalidate_all()
+        self.assertEqual(doc.work_center_id, self.wc_dept)
+
     def test_manual_edit_after_draft_kept(self):
         doc = self._doc(partner_id=self.dept.id)
         doc.state = "done"
@@ -220,8 +228,11 @@ class TestWorkCenter(TransactionCase):
 
     @staticmethod
     def _count(work_center, counter):
+        # A Json field stores an empty list as False.
         return next(
-            c["count"] for c in work_center.counter_data if c["id"] == counter.id
+            c["count"]
+            for c in (work_center.counter_data or [])
+            if c["id"] == counter.id
         )
 
     def test_counters(self):
@@ -248,4 +259,28 @@ class TestWorkCenter(TransactionCase):
                 "operating_unit_ids": [(6, 0, self.ou_a.ids)],
             }
         )
-        self.assertEqual(self.wc_dept.with_user(user).counter_data, [])
+        self.assertFalse(self.wc_dept.with_user(user).counter_data)
+
+    def test_counter_data_empty_without_counters(self):
+        """A Json field keeps an empty list as False; the kanban guards for it."""
+        self.assertFalse(self.wc_dept.counter_data)
+
+    # ------------------------------------------------------------------
+    # Area
+    # ------------------------------------------------------------------
+    def test_unassigned_card_has_no_company(self):
+        self.assertFalse(self.area.unassigned_work_center_id.company_id)
+
+    def test_model_belongs_to_one_area_only(self):
+        with self.assertRaises(ValidationError):
+            self.env["work.center.area"].create(
+                {
+                    "name": "Other Area",
+                    "code": "test_area_2",
+                    "model_ids": [(6, 0, self.doc_model.ids)],
+                }
+            )
+
+    def test_area_with_work_centers_cannot_be_deleted(self):
+        with self.assertRaises(UserError):
+            self.area.unlink()

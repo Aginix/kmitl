@@ -45,6 +45,17 @@ existing per-state rights.
   moving is a plain field edit.
 - **Rules win in draft (no pin)**: simpler, but silently undoes a deliberate choice.
   Rejected.
+- **Generalise one of the four ordered-rule engines already in the repo**
+  (`budget.buddy`, `purchase.buddy`, `disbursement.assignment.rule`,
+  `finance.assignment.rule`): tempting, because `work.center.rule` is a fifth list of
+  "first row whose condition matches wins". Rejected for now because all four resolve to
+  a **`res.users`** and are explicitly advisory, while a ศูนย์งาน is an **organisational
+  unit** that owns the document — a different noun with a different lifetime (a buddy
+  may be recomputed at any state; a ศูนย์งาน freezes at draft). Extracting a shared base
+  was also already weighed and rejected once, in
+  [purchase ADR-0013](../../../docs/adr/0013-pa-assigned-to-is-assigned-officer-from-purchase-buddy.md),
+  on the cost of the xmlid pre-migration. Once ศูนย์งาน proves out, the merge goes the
+  other way: derive the officer **from** the ศูนย์งาน.
 
 ## Consequences
 
@@ -65,6 +76,11 @@ existing per-state rights.
   relational field (dotted paths fall back to a database check and may be stale in an
   unsaved form); a document returned to draft is routable again but only moves when a
   routing field is edited.
-- Assigned Officer (`procurement_assignment_kmitl`), the disbursement/finance assignment
-  rules and `budget_buddy` are left untouched; if ศูนย์งาน proves out it is meant to
-  replace them.
+- The live assignment mechanisms are left untouched: `purchase_request_verifier`
+  (ผู้ยืนยันตรวจสอบ on พ.1), `purchase_request_approval_buddy` (เจ้าหน้าที่ผู้รับผิดชอบ
+  on พจ.1, from `purchase.buddy`), `budget_transfer_verify` (from `budget.buddy`),
+  `disbursement_assignment_kmitl` and `finance_kmitl_assignment`. If ศูนย์งาน proves out
+  it is meant to replace them. (`procurement_assignment_kmitl`, the Assigned Officer
+  module an earlier draft of this ADR named, has since been removed from the repo.)
+- This module is the core only. Each work area arrives as its own bridge module that
+  seeds the area, inherits the mixin on its documents and adds the overview menu.

@@ -4,7 +4,7 @@
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "Productivity",
-    "summary": "ศูนย์งาน: stamp documents with the unit that owns and tracks them, "
+    "summary": "Stamp documents with the unit that owns and tracks them, "
     "with a per-area overview of configurable counters",
     "depends": [
         "mail",
@@ -17,6 +17,7 @@
         "views/work_center_rule_views.xml",
         "views/work_center_counter_views.xml",
         "views/work_center_area_views.xml",
+        "views/work_center_menus.xml",
     ],
     "installable": True,
     "license": "LGPL-3",

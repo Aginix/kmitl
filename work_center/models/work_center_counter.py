@@ -43,6 +43,11 @@ class WorkCenterCounter(models.Model):
                     _("%(model)s is not a document model of work area %(area)s.")
                     % {"model": counter.model_id.name, "area": counter.area_id.name}
                 )
+            if counter.model_name not in self.env:
+                raise ValidationError(
+                    _("Model %s is not installed.")
+                    % (counter.model_name or counter.model_id.name)
+                )
             Model = self.env[counter.model_name]
             try:
                 expression.expression(counter._get_domain(), Model)
