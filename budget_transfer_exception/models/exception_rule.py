@@ -30,9 +30,5 @@ class ExceptionRule(models.Model):
                 "budget_transfer_check_tag_account_mismatch",
                 "Budget Transfer: Pool Tag matches the budget account type",
             ),
-            (
-                "budget_transfer_check_duplicate_lines",
-                "Budget Transfer: no duplicate lines",
-            ),
         ],
     )

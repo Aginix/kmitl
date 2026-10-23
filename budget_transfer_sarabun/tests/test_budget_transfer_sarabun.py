@@ -86,6 +86,7 @@ class TestBudgetTransferSarabun(TransactionCase):
         cls.requestor = new_test_user(
             env,
             login="btr_sb_requestor",
+            email="btr_sb_requestor@example.com",
             name="ผู้ขอโอนงบ",
             groups="base.group_user,budget.group_budget_user",
         )
@@ -100,6 +101,7 @@ class TestBudgetTransferSarabun(TransactionCase):
         cls.approver_user = new_test_user(
             env,
             login="btr_sb_approver",
+            email="btr_sb_approver@example.com",
             name="ผู้อนุมัติโอนงบ",
             groups="base.group_user,agx_sarabun.group_sarabun_user",
         )
@@ -171,8 +173,7 @@ class TestBudgetTransferSarabun(TransactionCase):
         transfer = self._submitted_transfer()
         document = self._submit(transfer)
         self.assertTrue(document)
-        self.assertIn(transfer.name, document.subject)
-        self.assertTrue(document.content)
+        self.assertIn(transfer.name, document.content)
         self.assertTrue(
             document.enclosure_attachment_ids,
             "the printed แบบ งปม.303 must be enclosed",
@@ -234,8 +235,8 @@ class TestBudgetTransferSarabun(TransactionCase):
         self.assertTrue(transfer.can_edit)
 
     def test_resend_from_returned_rechecks_lines(self):
-        # The line policies aren't constraints — a revision made while returned
-        # must be re-checked before the letter goes back out.
+        # A revision made while returned must be re-checked before the letter
+        # goes back out (unbalanced FROM/TO is a hard check in every install).
         transfer = self._submitted_transfer()
         document = self._submit(transfer)
         document.with_user(self.requestor).action_send()
@@ -247,22 +248,8 @@ class TestBudgetTransferSarabun(TransactionCase):
         )
         transfer.invalidate_recordset()
         self.assertEqual(transfer.state, "returned")
-        from_line = transfer.from_line_ids
-        duplicate = {
-            "transfer_direction": "from",
-            "account_id": self.src.id,
-            "amount": 500,
-            "department_analytic_id": self.dept_analytic.id,
-            "activity_analytic_id": self.activity.id,
-            "fund_analytic_id": self.fund.id,
-        }
         transfer.write(
-            {
-                "line_ids": [
-                    Command.update(from_line.id, {"amount": 500}),
-                    Command.create(duplicate),
-                ]
-            }
+            {"line_ids": [Command.update(transfer.from_line_ids.id, {"amount": 500})]}
         )
         with self.assertRaises(ValidationError):
             document.with_user(self.requestor).action_send()
@@ -342,6 +329,7 @@ class TestBudgetTransferSarabun(TransactionCase):
         manager = new_test_user(
             self.env,
             login="btr_sb_manager",
+            email="btr_sb_manager@example.com",
             name="ผจก โอนงบ",
             groups="base.group_user,budget.group_budget_manager",
         )
@@ -440,6 +428,7 @@ class TestBudgetTransferSarabun(TransactionCase):
         manager = new_test_user(
             self.env,
             login="btr_sb_manager3",
+            email="btr_sb_manager3@example.com",
             name="ผจก โอนงบ 3",
             groups="base.group_user,budget.group_budget_manager",
         )
@@ -462,6 +451,7 @@ class TestBudgetTransferSarabun(TransactionCase):
         manager = new_test_user(
             self.env,
             login="btr_sb_manager2",
+            email="btr_sb_manager2@example.com",
             name="ผจก โอนงบ 2",
             groups="base.group_user,budget.group_budget_manager",
         )
