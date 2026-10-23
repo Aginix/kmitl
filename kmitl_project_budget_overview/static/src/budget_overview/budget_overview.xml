@@ -14,22 +14,7 @@
                     </div>
                     <div t-else="" class="o_kpbo_sub">ยังไม่ได้ตั้งงบประมาณโครงการ</div>
                 </div>
-                <div class="o_kpbo_op">›</div>
-                <div class="o_kpbo_kpi">
-                    <div class="o_kpbo_label">จองแล้ว</div>
-                    <div
-                        class="o_kpbo_value"
-                        t-esc="money(data.budget_reserved_total)"
-                    />
-                    <div class="o_kpbo_sub">
-                        <t
-                            t-if="data.budget_reserved_total"
-                        >จองเมื่อโครงการได้รับอนุมัติ</t>
-                        <t t-elif="data.budget_reserved">คืนเงินจองแล้ว</t>
-                        <t t-else="">ยังไม่ได้จอง</t>
-                    </div>
-                </div>
-                <div class="o_kpbo_op">›</div>
+                <div class="o_kpbo_op">−</div>
                 <div class="o_kpbo_kpi">
                     <div class="o_kpbo_label">เบิกจ่ายแล้ว</div>
                     <div class="o_kpbo_value" t-esc="money(data.budget_consumed)" />

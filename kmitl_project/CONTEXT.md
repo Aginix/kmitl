@@ -57,7 +57,7 @@ The project's read-only list of every budget movement on its dimension, one row 
 _Avoid_: Funding Summary / เงินสนับสนุนที่ได้รับ (the earlier, inflow-only version of this list); budget move / ledger (this is a project-level view, not access to `budget.move`)
 
 **Project Budget Overview (บัญชีโครงการ)**:
-The one place a project's budget is followed and moved: its figures (**Project Budget** received, reserved, consumed and **Project Budget Remaining**, against the **Project Budget Estimate**), its **Project Budget Movements**, its reservation and the money actions open to the viewer. It covers the **budget** side only — everything that passes through the budget engine; whether a spending document has actually been paid is shown only as that document's status, never as a movement.
+The one place a project's budget is followed and moved: its figures (**Project Budget** received − consumed = **Project Budget Remaining**, against the **Project Budget Estimate**), its **Project Budget Movements**, its reservation and the money actions open to the viewer. It covers the **budget** side only — everything that passes through the budget engine; whether a spending document has actually been paid is shown only as that document's status, never as a movement.
 _Avoid_: GL / general-ledger account, bank account (บัญชีธนาคาร) — "บัญชี" here is the project's budget book, not accounting; Project Account (in Odoo "account" reads as accounting); ledger (the project's users still have no access to `budget.move`)
 
 **Movement Kind (ประเภทการเคลื่อนไหว)**:

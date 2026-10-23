@@ -17,8 +17,12 @@ Movements, all in one place.
    called บัญชีโครงการ because users understand that name best, even though "บัญชี" is
    not the GL here. In code and docs it is the Project Budget Overview: in Odoo,
    "account" reads as accounting.
-2. **Four figures:** ได้รับจัดสรร (Project Budget), จองแล้ว, เบิกจ่ายแล้ว and
-   **คงเหลือ**. Warnings appear only when they apply: a transfer still in progress, money
+2. **Three figures:** ได้รับจัดสรร (Project Budget) − เบิกจ่ายแล้ว = **คงเหลือ**, laid
+   out as the formula. The reservation is not shown as a figure: on real data it only
+   restates the state (0 before approval, the whole Project Budget while in progress,
+   since allocations top the reservation up, and 0 once closing returns it), and
+   between received and consumed it suggested คงเหลือ came from it. Budget viewers
+   open the reservation itself. Warnings appear only when they apply: a transfer still in progress, money
    received but not reserved (a top-up after spending started, ADR-0009), a missing
    reservation, leftover money held after closing, and off-target rows. Obligated (always
    0, budget ADR-0017) and the พ.1 planning headroom are not shown.
