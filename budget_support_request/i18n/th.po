@@ -564,7 +564,7 @@ msgstr "เฉพาะผู้ขอเท่านั้นที่ยืน
 #: model:ir.ui.menu,name:budget_support_request.action_budget_support_requests_pending_menu
 #: model_terms:ir.ui.view,arch_db:budget_support_request.view_budget_support_request_search
 msgid "Pending Approval"
-msgstr "รออนุมัติ"
+msgstr "รอส่งขออนุมัติ"
 
 #. module: budget_support_request
 #: model:ir.model.fields,help:budget_support_request.field_budget_support_request__reason
@@ -703,7 +703,7 @@ msgstr "ยืนยันคำขอ"
 #. module: budget_support_request
 #: model:ir.model.fields.selection,name:budget_support_request.selection__budget_support_request__state__submitted
 msgid "Submitted"
-msgstr "รออนุมัติ"
+msgstr "รอส่งขออนุมัติ"
 
 #. module: budget_support_request
 #: model:ir.model.fields,field_description:budget_support_request.field_budget_commitment__support_request_id
