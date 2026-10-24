@@ -4,10 +4,9 @@ Routing the **work** on a ใบขอเบิก (DR) through a configured cha
 own state no longer says which step it is at — the **station** does. Decisions
 captured during design; this file is a glossary, not a specification.
 
-> **Status: design in progress.** The terms below are settled. The DR's state machine,
-> the authority model and the migration are not. This context supersedes
-> `work_center` ADR-0001's "owning unit" reading for the DR — that ADR has not been
-> rewritten yet.
+> **Status: design in progress.** The terms below are settled. Stations are
+> `work.center` records: the station engine lives in `work_center` (its ADR-0002, which
+> supersedes the "owning unit" ADR-0001), and this module only plugs the DR into it.
 
 ## Language
 
@@ -87,5 +86,6 @@ _Avoid_: chatter, tracking (those record field changes, not custody).
 
 - **Member** — `work_center/CONTEXT.md` defines a member as someone who merely
   *follows* a ศูนย์งาน ("grants no access and restricts no action"). Here a station
-  member is someone who may *act*, within their role. Resolved for the DR in favour of
-  acting; the `work_center` glossary is still to be rewritten.
+  member is someone who may *act*, within their role. Resolved in favour of acting, for
+  every document: a station *is* a `work.center` (work_center ADR-0002). The
+  `work_center` glossary is still to be rewritten to match.
