@@ -42,6 +42,14 @@ act can be skipped by forwarding with a reason. Adding a station never needs a n
 adding a kind of act does. _Avoid_: method (the developer's word for it), permission
 (allowing an act at a station does not give anyone the right to perform it), step.
 
+**สมาชิกสถานี (Station member)**: Someone who may act on a DR while it sits at that
+station — but only the acts their role already entitles them to. Membership **narrows,
+never grants**: it says "this DR at this desk is yours", while the role says "you may
+approve DRs at all". A station with no members is open to everyone holding the role.
+Members are also the people who forward and divert a DR from their station.
+_Avoid_: approver (a role), assignee (Assignment picks one member), Member in the
+`work_center` sense (focus only — see Flagged ambiguities).
+
 **การมอบหมาย (Assignment)**: Choosing **which officer inside a station** handles the
 DR, once it has arrived there. A separate concern from routing, with its own rules
 (`disbursement.assignment.rule`) — routing picks the station, assignment picks the
@@ -67,3 +75,10 @@ when it arrived, when it left, who moved it and by which act. It is what answers
 held this last week" and "where does it rejoin the route after a divert"; neither the
 station pointer alone nor work center membership can answer either.
 _Avoid_: chatter, tracking (those record field changes, not custody).
+
+## Flagged ambiguities
+
+- **Member** — `work_center/CONTEXT.md` defines a member as someone who merely
+  *follows* a ศูนย์งาน ("grants no access and restricts no action"). Here a station
+  member is someone who may *act*, within their role. Resolved for the DR in favour of
+  acting; the `work_center` glossary is still to be rewritten.
