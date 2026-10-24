@@ -1,0 +1,39 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* partner_student_kmitl
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: partner_student_kmitl
+#: model:ir.model.constraint,message:partner_student_kmitl.constraint_res_partner_student_code_uniq
+msgid "A student ID can belong to one contact only."
+msgstr "รหัสนักศึกษานี้มีอยู่ในผู้ติดต่ออื่นแล้ว"
+
+#. module: partner_student_kmitl
+#: model:ir.model.fields,field_description:partner_student_kmitl.field_res_partner__student_curriculum
+msgid "Curriculum"
+msgstr "หลักสูตร"
+
+#. module: partner_student_kmitl
+#: model:ir.model.fields,field_description:partner_student_kmitl.field_res_partner__student_faculty
+msgid "Faculty"
+msgstr "คณะ"
+
+#. module: partner_student_kmitl
+#: model:ir.model.fields,field_description:partner_student_kmitl.field_res_partner__is_student
+msgid "Is Student"
+msgstr "เป็นนักศึกษา"
+
+#. module: partner_student_kmitl
+#: model:ir.model.fields,field_description:partner_student_kmitl.field_res_partner__student_code
+#: model_terms:ir.ui.view,arch_db:partner_student_kmitl.view_res_partner_filter
+msgid "Student ID"
+msgstr "รหัสนักศึกษา"
