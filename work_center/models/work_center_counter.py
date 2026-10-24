@@ -6,12 +6,12 @@ from .work_center_rule import eval_domain
 
 
 class WorkCenterCounter(models.Model):
-    """A number shown on every work center card of an area, e.g. 'เอกสารรอตรวจสอบ'.
+    """A number shown on every station card of an area, e.g. 'เอกสารรอตรวจสอบ'.
     Counts the card's documents of ``model_id`` matching ``domain``; clicking it
     opens that list. Seeded by the bridges, editable by the admin."""
 
     _name = "work.center.counter"
-    _description = "Work Center Counter"
+    _description = "Station Counter"
     _order = "sequence, id"
 
     name = fields.Char(required=True, translate=True)

@@ -5,7 +5,7 @@
          to the bridge modules, which know where their work area is at home. -->
     <menuitem
         id="menu_work_center_root"
-        name="Work Center"
+        name="Stations"
         parent="base.menu_administration"
         sequence="90"
         groups="work_center.group_work_center_manager"
@@ -23,6 +23,12 @@
         sequence="20"
     />
     <menuitem
+        id="menu_work_center_route"
+        parent="menu_work_center_root"
+        action="work_center_route_action"
+        sequence="25"
+    />
+    <menuitem
         id="menu_work_center_rule"
         parent="menu_work_center_root"
         action="work_center_rule_action"
@@ -33,6 +39,18 @@
         parent="menu_work_center_root"
         action="work_center_counter_action"
         sequence="40"
+    />
+    <menuitem
+        id="menu_work_center_act"
+        parent="menu_work_center_root"
+        action="work_center_act_action"
+        sequence="50"
+    />
+    <menuitem
+        id="menu_work_center_visit"
+        parent="menu_work_center_root"
+        action="work_center_visit_action"
+        sequence="60"
     />
 
 </odoo>

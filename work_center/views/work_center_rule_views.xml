@@ -57,15 +57,16 @@
     </record>
 
     <record id="work_center_rule_action" model="ir.actions.act_window">
-        <field name="name">Work Center Routing Rules</field>
+        <field name="name">Station Routing Rules</field>
         <field name="res_model">work.center.rule</field>
         <field name="view_mode">tree,form</field>
         <field name="context">{'search_default_group_model': 1}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">Create a routing rule</p>
             <p>
-                Rules of one document model are tried in order; the first whose
-                condition matches a draft document puts it on its work center.
+                When a document reaches a route line with several candidate
+                stations, the rules of its model are tried in order and the
+                first whose condition matches picks the station.
             </p>
         </field>
     </record>

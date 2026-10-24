@@ -22,19 +22,21 @@ def eval_domain(env, domain):
 
 
 class WorkCenterRule(models.Model):
-    """Routing rule: a document of ``model_id`` matching ``domain`` belongs to
-    ``work_center_id``. Rules of one model form a single ordered list across all
-    work centers; the first match (by sequence) wins. A หน่วยงาน-level work
-    center implicitly adds ``operating_unit = its OU`` to its rules."""
+    """Routing rule: chooses which candidate station of a route line takes the
+    document, evaluated when the document arrives at that line. A document of
+    ``model_id`` matching ``domain`` goes to ``work_center_id``. Rules of one
+    model form a single ordered list across all stations; the first match (by
+    sequence) wins. A หน่วยงาน-level station implicitly adds
+    ``operating_unit = its OU`` to its rules."""
 
     _name = "work.center.rule"
-    _description = "Work Center Routing Rule"
+    _description = "Station Routing Rule"
     _order = "sequence, id"
 
     sequence = fields.Integer(default=10)
     work_center_id = fields.Many2one(
         comodel_name="work.center",
-        string="Work Center",
+        string="Station",
         required=True,
         index=True,
         ondelete="cascade",
@@ -77,7 +79,7 @@ class WorkCenterRule(models.Model):
             Model = rule._get_model()
             if not issubclass(type(Model), self.pool["work.center.mixin"]):
                 raise ValidationError(
-                    _("%s does not support work centers.") % rule.model_id.name
+                    _("%s does not support stations.") % rule.model_id.name
                 )
             if (
                 wc.operating_unit_id
@@ -86,7 +88,7 @@ class WorkCenterRule(models.Model):
                 raise ValidationError(
                     _(
                         "%s has no operating unit, so it can only be routed to a "
-                        "central work center (one without an operating unit)."
+                        "central station (one without an operating unit)."
                     )
                     % rule.model_id.name
                 )
@@ -111,7 +113,7 @@ class WorkCenterRule(models.Model):
 
     @api.model
     def _match(self, record, rules=None):
-        """Return the work center of the first rule matching ``record`` (which
+        """Return the station of the first rule matching ``record`` (which
         may be a new, unsaved record), or an empty recordset."""
         if rules is None:
             rules = self._candidate_rules(record._name)
