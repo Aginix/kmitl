@@ -184,6 +184,21 @@ class DisbursementRequest(models.Model):
         self.ensure_one()
         return self.env["account.account"]
 
+    def _budget_account_default_account(self):
+        """GL account sharing the budget code: the account a new line starts
+        with. The user may still pick another one."""
+        self.ensure_one()
+        if not self.budget_account_id.code:
+            return self.env["account.account"]
+        return self.env["account.account"].search(
+            [
+                ("code", "=", self.budget_account_id.code),
+                ("company_id", "=", (self.company_id or self.env.company).id),
+                ("deprecated", "=", False),
+            ],
+            limit=1,
+        )
+
     def _fill_budget_account_account_on_lines(self):
         for rec in self:
             if not rec.is_budget_account_product_expense:

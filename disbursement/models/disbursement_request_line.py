@@ -175,7 +175,7 @@ class DisbursementRequestLine(models.Model):
 
     @api.onchange("account_id")
     def _onchange_account_id(self):
-        if self.account_id and not self.name:
+        if self.account_id:
             self.name = self.account_id.name
 
     # -------------------------------------------------------------------------
