@@ -6,7 +6,7 @@ class BudgetTransferVerifyReturnWizard(models.TransientModel):
 
     reason = fields.Text(required=False)
     outstanding_requests = fields.Text(
-        string="ข้อขอแก้ไขที่ค้างอยู่",
+        string="ข้อแก้ไขที่ค้างอยู่",
         compute="_compute_outstanding_requests",
     )
 

@@ -60,7 +60,7 @@ msgstr "ยกเลิก"
 #. module: agx_photoviewer_change_request
 #: model:ir.model,name:agx_photoviewer_change_request.model_change_request
 msgid "Change Request"
-msgstr "ข้อขอแก้ไข"
+msgstr "ข้อแก้ไข"
 
 #. module: agx_photoviewer_change_request
 #: model:ir.model,name:agx_photoviewer_change_request.model_change_request_mixin
@@ -73,7 +73,7 @@ msgstr ""
 #: code:addons/agx_photoviewer_change_request/static/src/js/annotation_change_request.esm.js:0
 #, python-format
 msgid "Change request · %s"
-msgstr "ข้อขอแก้ไข · %s"
+msgstr "ข้อแก้ไข · %s"
 
 #. module: agx_photoviewer_change_request
 #. odoo-javascript
@@ -83,7 +83,7 @@ msgstr "ข้อขอแก้ไข · %s"
 #: code:addons/agx_photoviewer_change_request/static/src/js/annotation_change_request.esm.js:0
 #, python-format
 msgid "Change requests"
-msgstr "ข้อขอแก้ไข"
+msgstr "ข้อแก้ไข"
 
 #. module: agx_photoviewer_change_request
 #. odoo-javascript
@@ -117,12 +117,12 @@ msgstr "ชื่อไฟล์ที่ปักหมุด เก็บไ�
 #: code:addons/agx_photoviewer_change_request/static/src/js/annotation_change_request.esm.js:0
 #, python-format
 msgid "No outstanding change requests."
-msgstr "ไม่มีข้อขอแก้ไขที่ค้างอยู่"
+msgstr "ไม่มีข้อแก้ไขที่ค้างอยู่"
 
 #. module: agx_photoviewer_change_request
 #: model:ir.model.fields,field_description:agx_photoviewer_change_request.field_ir_attachment__outstanding_request_count
 msgid "Outstanding Request Count"
-msgstr "จำนวนข้อขอแก้ไขที่ค้างอยู่"
+msgstr "จำนวนข้อแก้ไขที่ค้างอยู่"
 
 #. module: agx_photoviewer_change_request
 #. odoo-javascript
@@ -134,7 +134,7 @@ msgstr "จำนวนข้อขอแก้ไขที่ค้างอย
 #: code:addons/agx_photoviewer_change_request/static/src/xml/request_badge.xml:0
 #, python-format
 msgid "Outstanding change requests"
-msgstr "ข้อขอแก้ไขที่ค้างอยู่"
+msgstr "ข้อแก้ไขที่ค้างอยู่"
 
 #. module: agx_photoviewer_change_request
 #: model:ir.model.fields,field_description:agx_photoviewer_change_request.field_change_request__page
@@ -194,7 +194,7 @@ msgstr "ดูตำแหน่ง"
 #. module: agx_photoviewer_change_request
 #: model:ir.model.fields,help:agx_photoviewer_change_request.field_change_request__annotation_id
 msgid "The Comment pinning this request on a file."
-msgstr "ความคิดเห็นที่ปักหมุดข้อขอแก้ไขนี้บนไฟล์"
+msgstr "ความคิดเห็นที่ปักหมุดข้อแก้ไขนี้บนไฟล์"
 
 #. module: agx_photoviewer_change_request
 #. odoo-python
@@ -210,9 +210,9 @@ msgstr "ไฟล์ต้นทาง %s ที่ปักหมุดไว�
 #: code:addons/agx_photoviewer_change_request/models/ir_attachment_annotation.py:0
 #, python-format
 msgid "The files of this document take no change requests."
-msgstr "ไฟล์ของเอกสารนี้ปักข้อขอแก้ไขไม่ได้"
+msgstr "ไฟล์ของเอกสารนี้ปักข้อแก้ไขไม่ได้"
 
 #. module: agx_photoviewer_change_request
 #: model:ir.model.fields,help:agx_photoviewer_change_request.field_change_request__attachment_id
 msgid "The revision of the file the request is pinned on."
-msgstr "ฉบับของไฟล์ที่ปักหมุดข้อขอแก้ไขไว้"
+msgstr "ฉบับของไฟล์ที่ปักหมุดข้อแก้ไขไว้"

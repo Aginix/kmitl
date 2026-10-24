@@ -34,10 +34,7 @@ class BudgetTransfer(models.Model):
             lines = transfer._outstanding_change_request_lines()
             if lines:
                 raise UserError(
-                    _(
-                        "ยังมีข้อขอแก้ไขที่ค้างอยู่ใน %(name)s "
-                        "ต้องปิดให้ครบก่อนยืนยันตรวจสอบ:\n%(lines)s"
-                    )
+                    _("ยังมีข้อแก้ไขที่ค้างอยู่ใน %(name)s ต้องปิดให้ครบก่อนยืนยันตรวจสอบ:\n%(lines)s")
                     % {"name": transfer.name, "lines": "\n".join(lines)}
                 )
         return super().action_verify()
@@ -49,10 +46,10 @@ class BudgetTransfer(models.Model):
         lines = self._outstanding_change_request_lines()
         reason = (reason or "").strip()
         if not reason and not lines:
-            raise UserError(_("กรุณาระบุเหตุผลที่ส่งกลับแก้ไข หรือสร้างข้อขอแก้ไข"))
+            raise UserError(_("กรุณาระบุเหตุผลที่ส่งกลับแก้ไข หรือสร้างข้อแก้ไข"))
         if lines:
             # As HTML: the chatter note and the To-Do keep one line per request.
             reason = plaintext2html(
-                "\n".join(filter(None, [reason, _("ข้อขอแก้ไขที่ค้างอยู่:")] + lines))
+                "\n".join(filter(None, [reason, _("ข้อแก้ไขที่ค้างอยู่:")] + lines))
             )
         return super()._action_verify_return(reason)

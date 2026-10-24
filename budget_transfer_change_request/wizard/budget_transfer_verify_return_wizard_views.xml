@@ -17,7 +17,7 @@
                 >{'required': [('outstanding_requests', '=', False)]}</attribute>
                 <attribute
                     name="placeholder"
-                >ระบุสิ่งที่ต้องแก้ไข (ไม่บังคับเมื่อมีข้อขอแก้ไขที่ค้างอยู่)...</attribute>
+                >ระบุสิ่งที่ต้องแก้ไข (ไม่บังคับเมื่อมีข้อแก้ไขที่ค้างอยู่)...</attribute>
             </field>
             <field name="reason" position="before">
                 <field

@@ -6,7 +6,7 @@ of its files. Only records whose module takes Change requests have them.
 
 ## Language
 
-**Change request (ข้อขอแก้ไข)**: A request on a record, made by anyone who can read it,
+**Change request (ข้อแก้ไข)**: A request on a record, made by anyone who can read it,
 asking the maker to fix or explain something. Not made by default: most of what a
 reviewer writes or draws is just the trace of their review, and only Change requests are
 followed up. Every step of one — made, edited, assigned, answered, closed, reopened,

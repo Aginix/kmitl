@@ -53,7 +53,7 @@ msgstr "%s ไม่มีสิทธิ์อ่านเอกสารนี
 #: code:addons/agx_change_request/models/change_request.py:0
 #, python-format
 msgid "A change request cannot be empty."
-msgstr "ข้อขอแก้ไขต้องไม่ว่าง"
+msgstr "ข้อแก้ไขต้องไม่ว่าง"
 
 #. module: agx_change_request
 #: model:ir.model,name:agx_change_request.model_mail_activity
@@ -68,7 +68,7 @@ msgstr "กิจกรรม"
 #: model:mail.activity.type,name:agx_change_request.mail_activity_change_request_answer
 #, python-format
 msgid "Answer a change request"
-msgstr "ตอบข้อขอแก้ไข"
+msgstr "ตอบข้อแก้ไข"
 
 #. module: agx_change_request
 #: model:ir.model.fields.selection,name:agx_change_request.selection__change_request__state__answered
@@ -133,7 +133,7 @@ msgstr "ยกเลิก"
 #: model:ir.model,name:agx_change_request.model_change_request
 #: model:ir.model.fields,field_description:agx_change_request.field_mail_activity__change_request_id
 msgid "Change Request"
-msgstr "ข้อขอแก้ไข"
+msgstr "ข้อแก้ไข"
 
 #. module: agx_change_request
 #: model:ir.model,name:agx_change_request.model_change_request_mixin
@@ -143,7 +143,7 @@ msgstr ""
 #. module: agx_change_request
 #: model:ir.model,name:agx_change_request.model_change_request_reply
 msgid "Change Request Reply"
-msgstr "การตอบข้อขอแก้ไข"
+msgstr "การตอบข้อแก้ไข"
 
 #. module: agx_change_request
 #. odoo-python
@@ -151,7 +151,7 @@ msgstr "การตอบข้อขอแก้ไข"
 #: code:addons/agx_change_request/models/change_request.py:0
 #, python-format
 msgid "Change request #%(id)s closed"
-msgstr "ปิดข้อขอแก้ไข #%(id)s"
+msgstr "ปิดข้อแก้ไข #%(id)s"
 
 #. module: agx_change_request
 #. odoo-python
@@ -159,7 +159,7 @@ msgstr "ปิดข้อขอแก้ไข #%(id)s"
 #: code:addons/agx_change_request/models/change_request.py:0
 #, python-format
 msgid "Change request #%(id)s closed on behalf of %(author)s"
-msgstr "ปิดข้อขอแก้ไข #%(id)s แทน %(author)s"
+msgstr "ปิดข้อแก้ไข #%(id)s แทน %(author)s"
 
 #. module: agx_change_request
 #. odoo-python
@@ -167,7 +167,7 @@ msgstr "ปิดข้อขอแก้ไข #%(id)s แทน %(author)s"
 #: code:addons/agx_change_request/models/change_request.py:0
 #, python-format
 msgid "Change request #%(id)s reopened"
-msgstr "เปิดข้อขอแก้ไข #%(id)s อีกครั้ง"
+msgstr "เปิดข้อแก้ไข #%(id)s อีกครั้ง"
 
 #. module: agx_change_request
 #. odoo-python
@@ -175,7 +175,7 @@ msgstr "เปิดข้อขอแก้ไข #%(id)s อีกครั้
 #: code:addons/agx_change_request/models/change_request.py:0
 #, python-format
 msgid "Change request #%(id)s reopened on behalf of %(author)s"
-msgstr "เปิดข้อขอแก้ไข #%(id)s อีกครั้งแทน %(author)s"
+msgstr "เปิดข้อแก้ไข #%(id)s อีกครั้งแทน %(author)s"
 
 #. module: agx_change_request
 #. odoo-python
@@ -183,7 +183,7 @@ msgstr "เปิดข้อขอแก้ไข #%(id)s อีกครั้
 #: code:addons/agx_change_request/models/change_request.py:0
 #, python-format
 msgid "Change request #%(id)s: %(text)s"
-msgstr "ข้อขอแก้ไข #%(id)s: %(text)s"
+msgstr "ข้อแก้ไข #%(id)s: %(text)s"
 
 #. module: agx_change_request
 #. odoo-python
@@ -191,7 +191,7 @@ msgstr "ข้อขอแก้ไข #%(id)s: %(text)s"
 #: code:addons/agx_change_request/models/change_request.py:0
 #, python-format
 msgid "Change request #%s assigned"
-msgstr "มอบหมายข้อขอแก้ไข #%s"
+msgstr "มอบหมายข้อแก้ไข #%s"
 
 #. module: agx_change_request
 #. odoo-python
@@ -199,7 +199,7 @@ msgstr "มอบหมายข้อขอแก้ไข #%s"
 #: code:addons/agx_change_request/models/change_request.py:0
 #, python-format
 msgid "Change request #%s cancelled"
-msgstr "ยกเลิกข้อขอแก้ไข #%s"
+msgstr "ยกเลิกข้อแก้ไข #%s"
 
 #. module: agx_change_request
 #. odoo-python
@@ -207,7 +207,7 @@ msgstr "ยกเลิกข้อขอแก้ไข #%s"
 #: code:addons/agx_change_request/models/change_request.py:0
 #, python-format
 msgid "Change request #%s edited"
-msgstr "แก้ไขข้อขอแก้ไข #%s"
+msgstr "แก้ไขข้อแก้ไข #%s"
 
 #. module: agx_change_request
 #. odoo-python
@@ -215,7 +215,7 @@ msgstr "แก้ไขข้อขอแก้ไข #%s"
 #: code:addons/agx_change_request/models/change_request.py:0
 #, python-format
 msgid "Change request deleted"
-msgstr "ลบข้อขอแก้ไข"
+msgstr "ลบข้อแก้ไข"
 
 #. module: agx_change_request
 #. odoo-python
@@ -223,7 +223,7 @@ msgstr "ลบข้อขอแก้ไข"
 #: code:addons/agx_change_request/models/change_request.py:0
 #, python-format
 msgid "Change request made"
-msgstr "สร้างข้อขอแก้ไข"
+msgstr "สร้างข้อแก้ไข"
 
 #. module: agx_change_request
 #. odoo-javascript
@@ -235,7 +235,7 @@ msgstr "สร้างข้อขอแก้ไข"
 #: code:addons/agx_change_request/static/src/xml/change_request.xml:0
 #, python-format
 msgid "Change requests"
-msgstr "ข้อขอแก้ไข"
+msgstr "ข้อแก้ไข"
 
 #. module: agx_change_request
 #. odoo-javascript
@@ -292,7 +292,7 @@ msgstr "ลบ"
 #: code:addons/agx_change_request/static/src/js/change_request_panel.esm.js:0
 #, python-format
 msgid "Delete this change request? Its text stays in the document's chatter."
-msgstr "ลบข้อขอแก้ไขนี้? ข้อความจะยังอยู่ในแชตเตอร์ของเอกสาร"
+msgstr "ลบข้อแก้ไขนี้? ข้อความจะยังอยู่ในแชตเตอร์ของเอกสาร"
 
 #. module: agx_change_request
 #: model:ir.model.fields,field_description:agx_change_request.field_change_request__display_name
@@ -314,7 +314,7 @@ msgstr "โมเดลเอกสาร"
 #: model:ir.model.fields,help:agx_change_request.field_change_request__previous_texts
 msgid "Earlier texts of an Edited request, oldest first: [{text, date}, ...]."
 msgstr ""
-"ข้อความก่อนหน้าของข้อขอแก้ไขที่ถูกแก้ เรียงจากเก่าสุด: [{text, date}, ...]"
+"ข้อความก่อนหน้าของข้อแก้ไขที่ถูกแก้ เรียงจากเก่าสุด: [{text, date}, ...]"
 
 #. module: agx_change_request
 #. odoo-javascript
@@ -402,7 +402,7 @@ msgstr "ใหม่"
 #: code:addons/agx_change_request/static/src/xml/change_request.xml:0
 #, python-format
 msgid "No outstanding change requests."
-msgstr "ไม่มีข้อขอแก้ไขที่ค้างอยู่"
+msgstr "ไม่มีข้อแก้ไขที่ค้างอยู่"
 
 #. module: agx_change_request
 #. odoo-python
@@ -426,7 +426,7 @@ msgstr "ทั้งเอกสาร"
 #: code:addons/agx_change_request/models/change_request.py:0
 #, python-format
 msgid "Only a closed change request can be reopened."
-msgstr "เปิดอีกครั้งได้เฉพาะข้อขอแก้ไขที่ปิดแล้ว"
+msgstr "เปิดอีกครั้งได้เฉพาะข้อแก้ไขที่ปิดแล้ว"
 
 #. module: agx_change_request
 #. odoo-python
@@ -434,7 +434,7 @@ msgstr "เปิดอีกครั้งได้เฉพาะข้อข
 #: code:addons/agx_change_request/models/change_request.py:0
 #, python-format
 msgid "Only an open or answered change request can be closed."
-msgstr "ปิดได้เฉพาะข้อขอแก้ไขที่เปิดอยู่หรือตอบแล้ว"
+msgstr "ปิดได้เฉพาะข้อแก้ไขที่เปิดอยู่หรือตอบแล้ว"
 
 #. module: agx_change_request
 #. odoo-python
@@ -442,7 +442,7 @@ msgstr "ปิดได้เฉพาะข้อขอแก้ไขที่
 #: code:addons/agx_change_request/models/change_request.py:0
 #, python-format
 msgid "Only its author can change a change request."
-msgstr "ข้อขอแก้ไขแก้ได้เฉพาะผู้ขอ"
+msgstr "ข้อแก้ไขแก้ได้เฉพาะผู้ขอ"
 
 #. module: agx_change_request
 #. odoo-python
@@ -450,7 +450,7 @@ msgstr "ข้อขอแก้ไขแก้ได้เฉพาะผู้
 #: code:addons/agx_change_request/models/change_request.py:0
 #, python-format
 msgid "Only its author can close a change request."
-msgstr "ข้อขอแก้ไขปิดได้เฉพาะผู้ขอ"
+msgstr "ข้อแก้ไขปิดได้เฉพาะผู้ขอ"
 
 #. module: agx_change_request
 #: model:ir.model.fields.selection,name:agx_change_request.selection__change_request__state__open
@@ -460,7 +460,7 @@ msgstr "เปิดอยู่"
 #. module: agx_change_request
 #: model:ir.model.fields,field_description:agx_change_request.field_change_request_mixin__change_request_count
 msgid "Outstanding Change Requests"
-msgstr "ข้อขอแก้ไขที่ค้างอยู่"
+msgstr "ข้อแก้ไขที่ค้างอยู่"
 
 #. module: agx_change_request
 #: model:ir.model.fields,field_description:agx_change_request.field_change_request__previous_texts
@@ -498,12 +498,12 @@ msgstr "ตอบ"
 #: code:addons/agx_change_request/models/change_request.py:0
 #, python-format
 msgid "Reply to change request #%s"
-msgstr "ตอบข้อขอแก้ไข #%s"
+msgstr "ตอบข้อแก้ไข #%s"
 
 #. module: agx_change_request
 #: model:ir.model.fields,field_description:agx_change_request.field_change_request_reply__request_id
 msgid "Request"
-msgstr "ข้อขอแก้ไข"
+msgstr "ข้อแก้ไข"
 
 #. module: agx_change_request
 #. odoo-javascript
@@ -582,7 +582,7 @@ msgstr "ข้อความ"
 #. module: agx_change_request
 #: model:ir.model.fields,help:agx_change_request.field_mail_activity__change_request_id
 msgid "The Change request this activity asks to answer or to check."
-msgstr "ข้อขอแก้ไขที่กิจกรรมนี้ให้ตอบหรือตรวจคำตอบ"
+msgstr "ข้อแก้ไขที่กิจกรรมนี้ให้ตอบหรือตรวจคำตอบ"
 
 #. module: agx_change_request
 #. odoo-python
@@ -590,7 +590,7 @@ msgstr "ข้อขอแก้ไขที่กิจกรรมนี้ใ
 #: code:addons/agx_change_request/models/change_request.py:0
 #, python-format
 msgid "This change request is no longer open."
-msgstr "ข้อขอแก้ไขนี้ไม่ได้เปิดอยู่แล้ว"
+msgstr "ข้อแก้ไขนี้ไม่ได้เปิดอยู่แล้ว"
 
 #. module: agx_change_request
 #. odoo-python
@@ -598,7 +598,7 @@ msgstr "ข้อขอแก้ไขนี้ไม่ได้เปิดอ
 #: code:addons/agx_change_request/models/change_request.py:0
 #, python-format
 msgid "This change request no longer exists."
-msgstr "ไม่พบข้อขอแก้ไขนี้แล้ว"
+msgstr "ไม่พบข้อแก้ไขนี้แล้ว"
 
 #. module: agx_change_request
 #. odoo-python
@@ -614,7 +614,7 @@ msgstr "เอกสารนี้ไม่มีอยู่แล้ว"
 #: code:addons/agx_change_request/models/change_request.py:0
 #, python-format
 msgid "This kind of document takes no change requests."
-msgstr "เอกสารประเภทนี้ไม่รับข้อขอแก้ไข"
+msgstr "เอกสารประเภทนี้ไม่รับข้อแก้ไข"
 
 #. module: agx_change_request
 #. odoo-javascript
@@ -638,7 +638,7 @@ msgstr "กรุณาพิมพ์ข้อความตอบก่อน
 #: code:addons/agx_change_request/models/change_request.py:0
 #, python-format
 msgid "Write the change request first."
-msgstr "กรุณาเขียนข้อขอแก้ไขก่อน"
+msgstr "กรุณาเขียนข้อแก้ไขก่อน"
 
 #. module: agx_change_request
 #. odoo-javascript

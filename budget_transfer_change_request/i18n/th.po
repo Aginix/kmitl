@@ -36,19 +36,19 @@ msgstr "การโอนงบประมาณ — Buddy ส่งกลั�
 #. module: budget_transfer_change_request
 #: model:ir.model.fields,field_description:budget_transfer_change_request.field_budget_transfer__change_request_count
 msgid "Outstanding Change Requests"
-msgstr "ข้อขอแก้ไขที่ค้างอยู่"
+msgstr "ข้อแก้ไขที่ค้างอยู่"
 
 #. module: budget_transfer_change_request
 #. odoo-python
 #: code:addons/budget_transfer_change_request/models/budget_transfer.py:0
 #: code:addons/budget_transfer_change_request/models/budget_transfer.py:0
 #, python-format
-msgid "กรุณาระบุเหตุผลที่ส่งกลับแก้ไข หรือสร้างข้อขอแก้ไข"
+msgid "กรุณาระบุเหตุผลที่ส่งกลับแก้ไข หรือสร้างข้อแก้ไข"
 msgstr ""
 
 #. module: budget_transfer_change_request
 #: model:ir.model.fields,field_description:budget_transfer_change_request.field_budget_transfer_verify_return_wizard__outstanding_requests
-msgid "ข้อขอแก้ไขที่ค้างอยู่"
+msgid "ข้อแก้ไขที่ค้างอยู่"
 msgstr ""
 
 #. module: budget_transfer_change_request
@@ -56,7 +56,7 @@ msgstr ""
 #: code:addons/budget_transfer_change_request/models/budget_transfer.py:0
 #: code:addons/budget_transfer_change_request/models/budget_transfer.py:0
 #, python-format
-msgid "ข้อขอแก้ไขที่ค้างอยู่:"
+msgid "ข้อแก้ไขที่ค้างอยู่:"
 msgstr ""
 
 #. module: budget_transfer_change_request
@@ -65,13 +65,13 @@ msgstr ""
 #: code:addons/budget_transfer_change_request/models/budget_transfer.py:0
 #, python-format
 msgid ""
-"ยังมีข้อขอแก้ไขที่ค้างอยู่ใน %(name)s ต้องปิดให้ครบก่อนยืนยันตรวจสอบ:\n"
+"ยังมีข้อแก้ไขที่ค้างอยู่ใน %(name)s ต้องปิดให้ครบก่อนยืนยันตรวจสอบ:\n"
 "%(lines)s"
 msgstr ""
 
 #. module: budget_transfer_change_request
 #: model_terms:ir.ui.view,arch_db:budget_transfer_change_request.view_budget_transfer_verify_return_wizard_form
-msgid "ระบุสิ่งที่ต้องแก้ไข (ไม่บังคับเมื่อมีข้อขอแก้ไขที่ค้างอยู่)..."
+msgid "ระบุสิ่งที่ต้องแก้ไข (ไม่บังคับเมื่อมีข้อแก้ไขที่ค้างอยู่)..."
 msgstr ""
 
 #. module: budget_transfer_change_request
