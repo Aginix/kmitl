@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <template id="report_disbursement_request" inherit_id="disbursement.report_disbursement_request">
-        <xpath expr="//tr[hasclass('o_field_source_analytic_id')]" position="after">
+    <template id="report_disbursement_request" inherit_id="disbursement_pdf.report_disbursement_request">
+        <xpath expr="//tr[hasclass('o_field_source_analytic_id')]" position="before">
             <tr class="o_field_budget_commitment_id">
                 <td>เลขที่ใบจองงบประมาณ</td>
                 <td>
@@ -11,7 +11,7 @@
         </xpath>
         <xpath expr="//tr[hasclass('o_field_activity_analytic_id')]" position="after">
             <tr class="o_field_budget_account_id">
-                <td>รหัสงบประมาณค่าใช้จ่าย</td>
+                <td>รหัสค่าใช้จ่าย</td>
                 <td>
                     <span t-field="o.budget_account_id" />
                 </td>
