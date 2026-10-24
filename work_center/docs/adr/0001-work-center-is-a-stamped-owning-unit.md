@@ -1,6 +1,6 @@
 # A ศูนย์งาน is a stamped owning unit, routed only while draft
 
-Every work area (พัสดุ, การเงิน, งบ) needs to split the work of one Operating Unit by
+Every work area (การเงิน, งบประมาณ, …) needs to split the work of one Operating Unit by
 document data — a คณะ split by ภาควิชา, plus central units. We model this as a
 **ศูนย์งาน** (`work.center`) **stored on the document** (`work_center_id`, via
 `work.center.mixin`), chosen by ordered **routing rules** (`work.center.rule`: document
@@ -12,9 +12,9 @@ existing per-state rights.
 
 ## Why
 
-- **Ownership must not move.** A พ.1 from ภาควิชาไฟฟ้า stays ภาคไฟฟ้า's work through
-  ส่งตรวจ → ยืนยัน → จองงบ; re-routing it to whoever acts next (the MRP station reading)
-  would make the ภาควิชา lose track of its own documents.
+- **Ownership must not move.** A request raised by ภาควิชาไฟฟ้า stays ภาคไฟฟ้า's work
+  through ส่งตรวจ → ยืนยัน → จองงบ; re-routing it to whoever acts next (the MRP station
+  reading) would make the ภาควิชา lose track of its own documents.
 - **Stamped, not a live lens.** A live domain would silently move in-flight documents
   whenever an admin edits a rule, allow a document to sit in two ศูนย์งาน or none
   without anyone noticing, and could not express "this one was put elsewhere by hand". A
@@ -45,15 +45,15 @@ existing per-state rights.
   moving is a plain field edit.
 - **Rules win in draft (no pin)**: simpler, but silently undoes a deliberate choice.
   Rejected.
-- **Generalise one of the four ordered-rule engines already in the repo**
-  (`budget.buddy`, `purchase.buddy`, `disbursement.assignment.rule`,
-  `finance.assignment.rule`): tempting, because `work.center.rule` is a fifth list of
-  "first row whose condition matches wins". Rejected for now because all four resolve to
-  a **`res.users`** and are explicitly advisory, while a ศูนย์งาน is an **organisational
-  unit** that owns the document — a different noun with a different lifetime (a buddy
-  may be recomputed at any state; a ศูนย์งาน freezes at draft). Extracting a shared base
-  was also already weighed and rejected once, in
-  [purchase ADR-0013](../../../docs/adr/0013-pa-assigned-to-is-assigned-officer-from-purchase-buddy.md),
+- **Generalise one of the ordered-rule engines already in the repo** (the buddy coverage
+  tables such as `budget.buddy`, and the assignment rules `disbursement.assignment.rule`
+  and `finance.assignment.rule`): tempting, because `work.center.rule` is one more list
+  of "first row whose condition matches wins". Rejected for now because every one of
+  them resolves to a **`res.users`** and is explicitly advisory, while a ศูนย์งาน is an
+  **organisational unit** that owns the document — a different noun with a different
+  lifetime (a buddy may be recomputed at any state; a ศูนย์งาน freezes at draft).
+  Extracting a shared base was also already weighed and rejected once, in
+  [repo ADR-0013](../../../docs/adr/0013-pa-assigned-to-is-assigned-officer-from-purchase-buddy.md),
   on the cost of the xmlid pre-migration. Once ศูนย์งาน proves out, the merge goes the
   other way: derive the officer **from** the ศูนย์งาน.
 
@@ -76,11 +76,12 @@ existing per-state rights.
   relational field (dotted paths fall back to a database check and may be stale in an
   unsaved form); a document returned to draft is routable again but only moves when a
   routing field is edited.
-- The live assignment mechanisms are left untouched: `purchase_request_verifier`
-  (ผู้ยืนยันตรวจสอบ on พ.1), `purchase_request_approval_buddy` (เจ้าหน้าที่ผู้รับผิดชอบ
-  on พจ.1, from `purchase.buddy`), `budget_transfer_verify` (from `budget.buddy`),
-  `disbursement_assignment_kmitl` and `finance_kmitl_assignment`. If ศูนย์งาน proves out
-  it is meant to replace them. (`procurement_assignment_kmitl`, the Assigned Officer
-  module an earlier draft of this ADR named, has since been removed from the repo.)
-- This module is the core only. Each work area arrives as its own bridge module that
-  seeds the area, inherits the mixin on its documents and adds the overview menu.
+- The live assignment mechanisms are left untouched — the designated-verifier and buddy
+  fields on the documents that have them, `budget_transfer_verify` (from
+  `budget.buddy`), `disbursement_assignment_kmitl` and `finance_kmitl_assignment`. If
+  ศูนย์งาน proves out it is meant to replace them. (`procurement_assignment_kmitl`, the
+  Assigned Officer module an earlier draft of this ADR named, has since been removed
+  from the repo.)
+- This module is the core only: it ships no document type and no work area of its own.
+  Each work area arrives as its own bridge module that seeds the area, inherits the
+  mixin on its documents and adds the overview menu.
