@@ -201,9 +201,9 @@ upfront.
   (ADR-0005).
 - **Procurement Plan → Budget**: the plan reserves what it has **received** at its own
   dimension (procurement_plan ADR-0003), not its วงเงินตามแผน. Its purchase requests —
-  many, capped at that received budget (procurement_plan ADR-0004, superseding ADR-0006's
+  many, capped at that received budget (procurement_plan ADR-0004, superseding budget ADR-0006's
   one-active rule) — and the disbursement requests that flow from their purchase orders
-  draw that one shared commitment down (obligate+consume per DR) (ADR-0004). The plan is
+  draw that one shared commitment down (obligate+consume per DR) (budget ADR-0004). The plan is
   closed by hand once nothing is open, returning the unspent reservation (คืนจอง); it
   never auto-closes (procurement_plan ADR-0005). The disbursements are created and
   operated on the PO, not the plan; the plan only **tracks** them, linking each งวด to
