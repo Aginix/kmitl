@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.form (partner_student_kmitl)</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base_setup.res_config_settings_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='integration']" position="inside">
+                <div class="col-12 col-lg-6 o_setting_box" id="kmitl_student_catalog" groups="base.group_system">
+                    <div class="o_setting_right_pane">
+                        <span class="o_form_label">KMITL Student Catalog</span>
+                        <div class="text-muted">
+                            Names and faculties of students paid by student ID
+                        </div>
+                        <div class="content-group mt16">
+                            <div class="row">
+                                <label for="kmitl_student_api_url" class="col-lg-3 o_light_label" />
+                                <field name="kmitl_student_api_url" />
+                            </div>
+                            <div class="row">
+                                <label for="kmitl_student_api_key" class="col-lg-3 o_light_label" />
+                                <field name="kmitl_student_api_key" password="True" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>
