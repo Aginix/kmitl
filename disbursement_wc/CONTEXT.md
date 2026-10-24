@@ -23,7 +23,11 @@ a unit that owns a document for life — a station is passed through), โต๊
 the steps whose act happens on another document (posting the bill, closing the
 e-payment file, posting the JV) are outside the circuit and belong to the
 ขั้นการชำระ. Leaving the circuit backwards — sending the DR to its maker to fix —
-returns it to ฉบับร่าง and is a different act from Divert, which stays inside. Leaving
+returns it to ฉบับร่าง and is a different act from Divert, which stays inside. When the
+maker sends it again it re-enters at the **first station of the route**, without a new
+head-of-department signature: a correction is checked again from the start, but is not
+circulated through e-Saraban a second time. A desk that only needs something small
+fixed should divert to the station that can fix it instead of sending the DR back. Leaving
 it forwards — out of the last station — makes the DR **เสร็จสิ้น (done)**: every desk has
 done its part. That says nothing about the money, which the ขั้นการชำระ tracks on its
 own. _Avoid_: workflow, lifecycle (the DR has more life than the circuit), "done means
