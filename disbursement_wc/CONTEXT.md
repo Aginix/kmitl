@@ -1,4 +1,4 @@
-# Disbursement Work Center (สถานีงานใบขอเบิก)
+# Disbursement Stations (สถานีของใบขอเบิก)
 
 Routing the **work** on a ใบขอเบิก (DR) through a configured chain of desks. The DR's
 own state no longer says which step it is at — the **station** does. Decisions
@@ -15,8 +15,8 @@ captured during design; this file is a glossary, not a specification.
 not of a person: "the DR is at สถานีหมวดตรวจ" says nothing about which officer has it.
 A DR is at exactly one station at a time. A station is also only ever a place where a person
 acts **on the DR**: a step performed on another document is not a station.
-_Avoid_: ศูนย์งาน in its `work_center` ADR-0001 sense (the unit that owns a document for
-its whole life — the DR's station moves), โต๊ะของคน, queue.
+_Avoid_: ศูนย์งาน (the old name, which still carries work_center ADR-0001's meaning of
+a unit that owns a document for life — a station is passed through), โต๊ะของคน, queue.
 
 **วงจร (Circuit)**: The stretch of a DR's life that stations route, from หมวดตรวจ to
 อนุมัติจ่าย. A station exists only where a **person presses something on the DR itself**;

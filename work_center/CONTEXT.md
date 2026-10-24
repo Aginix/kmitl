@@ -1,4 +1,11 @@
-# Work Center (ศูนย์งาน)
+# Work Center (สถานี)
+
+> **Superseded in part by [ADR-0002](docs/adr/0002-a-work-center-is-a-station.md).** A
+> `work.center` is now a **สถานี** — a desk a document passes through — not the unit that
+> owns it for life. The canonical Thai word is **สถานี**; "ศูนย์งาน" is retired because it
+> carries the old meaning. The entries below still describe the owning-unit reading and
+> are to be rewritten with the station engine; until then `disbursement_wc/CONTEXT.md`
+> is the up-to-date glossary for stations, members, routes and the visit log.
 
 A cross-cutting way to divide work inside an organisation by the data on the documents
 themselves — "เอกสารที่ส่วนงานผู้ขอเป็นภาควิชาไฟฟ้า เป็นงานของศูนย์งานภาคไฟฟ้า". Each
