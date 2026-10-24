@@ -11,13 +11,22 @@
                 <field name="needs_target" invisible="1" />
                 <field name="is_return" invisible="1" />
                 <field name="step_target_mode" invisible="1" />
+                <field name="step_show_signature" invisible="1" />
                 <group>
                     <field name="target_name" string="Step" readonly="1" />
                     <field name="step_verb" options="{'no_open': True}" />
                     <field name="sign_date_display" />
                     <field name="disposition" />
-                    <label for="note" />
-                    <div name="comment">
+                    <!-- A non-signing verb (show_signature ✗, e.g. ตรวจเอกสาร) writes no
+                         เกษียน on complete; a ตีกลับ / ปฏิเสธ still needs its reason. -->
+                    <label
+                        for="note"
+                        attrs="{'invisible': [('disposition', '=', 'complete'), ('step_show_signature', '=', False)]}"
+                    />
+                    <div
+                        name="comment"
+                        attrs="{'invisible': [('disposition', '=', 'complete'), ('step_show_signature', '=', False)]}"
+                    >
                         <field
                             name="note"
                             attrs="{'required': [('disposition', '=', 'reject')]}"
