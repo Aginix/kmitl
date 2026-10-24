@@ -24,8 +24,11 @@ its whole life — the DR's station moves), โต๊ะของคน, queue.
 the steps whose act happens on another document (posting the bill, closing the
 e-payment file, posting the JV) are outside the circuit and belong to the
 ขั้นการชำระ. Leaving the circuit backwards — sending the DR to its maker to fix —
-returns it to ฉบับร่าง and is a different act from Divert, which stays inside.
-_Avoid_: workflow, lifecycle (the DR has more life than the circuit).
+returns it to ฉบับร่าง and is a different act from Divert, which stays inside. Leaving
+it forwards — out of the last station — makes the DR **เสร็จสิ้น (done)**: every desk has
+done its part. That says nothing about the money, which the ขั้นการชำระ tracks on its
+own. _Avoid_: workflow, lifecycle (the DR has more life than the circuit), "done means
+paid".
 
 **ขั้นการชำระ (Settlement stage)**: The DR's second axis — none → billed → settled →
 booked — saying how far the money has got. It is **derived from the bills and vouchers
