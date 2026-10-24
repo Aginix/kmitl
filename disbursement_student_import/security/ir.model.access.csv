@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_disbursement_student_import_user,disbursement.student.import.user,model_disbursement_student_import,disbursement.group_disbursement_user,1,1,1,1
+access_disbursement_student_import_line_user,disbursement.student.import.line.user,model_disbursement_student_import_line,disbursement.group_disbursement_user,1,1,1,1

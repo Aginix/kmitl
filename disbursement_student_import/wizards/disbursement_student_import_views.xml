@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="disbursement_student_import_form" model="ir.ui.view">
+        <field name="name">disbursement.student.import.form</field>
+        <field name="model">disbursement.student.import</field>
+        <field name="arch" type="xml">
+            <form string="Import Students">
+                <field name="request_id" invisible="1" />
+                <field name="company_id" invisible="1" />
+                <field name="state" invisible="1" />
+                <div attrs="{'invisible': [('state', '!=', 'upload')]}">
+                    <p class="text-muted">One row per payment: student ID, amount, bank, account number, national ID (when taxed) and description. A student already in Odoo keeps their name; a new one is named from the KMITL student catalog (when connected). Lines are added to the request, never replaced.</p>
+                    <button
+                        name="action_download_template"
+                        string="Download the import template"
+                        type="object"
+                        icon="fa-download"
+                        class="btn-link ps-0"
+                    />
+                </div>
+                <group attrs="{'invisible': [('state', '!=', 'upload')]}">
+                    <field name="product_id" options="{'no_create': True}" />
+                    <field name="file" filename="filename" />
+                    <field name="filename" invisible="1" />
+                </group>
+                <div attrs="{'invisible': [('state', '!=', 'preview')]}">
+                    <group col="4">
+                        <field name="amount_ready" />
+                        <field name="count_ready" />
+                        <field name="count_warning" />
+                        <field name="count_skip" />
+                    </group>
+                    <field name="line_ids" nolabel="1" readonly="1">
+                        <tree
+                            decoration-danger="status == 'skip'"
+                            decoration-warning="status == 'warning'"
+                        >
+                            <field name="row_number" />
+                            <field name="student_code" />
+                            <field name="student_name" />
+                            <field name="amount" sum="Total" />
+                            <field name="bank_name" />
+                            <field name="acc_number" />
+                            <field name="vat" optional="hide" />
+                            <field name="description" optional="hide" />
+                            <field name="status" widget="badge"
+                                decoration-success="status == 'ready'"
+                                decoration-warning="status == 'warning'"
+                                decoration-danger="status == 'skip'"
+                            />
+                            <field name="message" />
+                        </tree>
+                    </field>
+                </div>
+                <footer>
+                    <button
+                        name="action_check"
+                        string="Check"
+                        type="object"
+                        class="btn-primary"
+                        attrs="{'invisible': [('state', '!=', 'upload')]}"
+                    />
+                    <button
+                        name="action_import"
+                        string="Import"
+                        type="object"
+                        class="btn-primary"
+                        attrs="{'invisible': ['|', ('state', '!=', 'preview'), ('count_ready', '=', 0)]}"
+                    />
+                    <button
+                        name="action_back"
+                        string="Back"
+                        type="object"
+                        class="btn-secondary"
+                        attrs="{'invisible': [('state', '!=', 'preview')]}"
+                    />
+                    <button string="Cancel" class="btn-secondary" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>
