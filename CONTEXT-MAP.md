@@ -117,6 +117,14 @@ upfront.
   by **Cash Route** (`kmitl.cash.route`), one row per (paying account × sources of
   funds); a row naming no intermediate account means "pays directly", a missing row is a
   setup gap.
+- [KMITL Student](./partner_student_kmitl/CONTEXT.md) — a student as an Odoo contact,
+  keyed by the institute's **Student ID** and named from the **Student catalog**
+  (ทะเบียนนักศึกษา สจล.) API; the catalog supplies identity only, never a bank account
+  or a national ID.
+- [Disbursement — Student List Import](./disbursement_student_import/CONTEXT.md) —
+  appends one line per row of a requester's Excel list (scholarships, TA pay) to a draft
+  นักศึกษา-type disbursement request; unknown students are **skipped rows**, never a
+  rejected list.
 - [Advance Payment](./advance_payment/CONTEXT.md) — employee cash-advance loans
   (สัญญายืมเงิน); a single-disbursement loan to one borrower, tracked from request
   through clearing to closure. A borrower may hold only one active agreement at a time,
@@ -277,6 +285,12 @@ upfront.
   surfaced as a non-blocking warning at Submit. Scoped to vouchers raised from a
   disbursement request; the budget ledger and the bank reconciliation view are both
   untouched by design (`disbursement_cash_movement_kmitl` ADR-0001/0002).
+- **Student List Import → Disbursement / KMITL Student**: the import resolves each row to a
+  **Student** (by Student ID, then national ID, else created from the **Student
+  catalog**), adds or reuses the row's bank account on that contact, and appends an
+  ordinary request line paying them — the request's own **Payee** rules apply unchanged,
+  and downstream finance still raises one voucher per payee (`partner_student_kmitl`
+  ADR-0001).
 - **Budget ↔ Operating Units (cross-OU reservation)**: a standalone `budget.commitment`
   (ใบจองงบประมาณ) may be reserved by one OU (the **Owning Unit** / funder — normally
   central) _for_ another (the **Beneficiary Unit** — the requesting unit); both OUs see

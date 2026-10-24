@@ -1,0 +1,337 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* disbursement_student_import
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: disbursement_student_import
+#: code:addons/disbursement_student_import/wizards/disbursement_student_import.py:0
+#, python-format
+msgid "%(count)s students imported from %(file)s, %(amount)s in total."
+msgstr "นำเข้านักศึกษา %(count)s รายจาก %(file)s รวม %(amount)s บาท"
+
+#. module: disbursement_student_import
+#: code:addons/disbursement_student_import/wizards/disbursement_student_import.py:0
+#, python-format
+msgid "%s is not a student contact"
+msgstr "%s ไม่ใช่ผู้ติดต่อประเภทนักศึกษา"
+
+#. module: disbursement_student_import
+#: model:ir.model.fields,field_description:disbursement_student_import.field_disbursement_student_import_line__acc_number
+#: code:addons/disbursement_student_import/wizards/disbursement_student_import.py:0
+#, python-format
+msgid "Account Number"
+msgstr "เลขที่บัญชี"
+
+#. module: disbursement_student_import
+#: model:ir.model.fields,field_description:disbursement_student_import.field_disbursement_student_import_line__amount
+#: code:addons/disbursement_student_import/wizards/disbursement_student_import.py:0
+#, python-format
+msgid "Amount"
+msgstr "จำนวนเงิน"
+
+#. module: disbursement_student_import
+#: model:ir.model.fields,field_description:disbursement_student_import.field_disbursement_student_import__amount_ready
+msgid "Amount to Import"
+msgstr "ยอดเงินที่จะนำเข้า"
+
+#. module: disbursement_student_import
+#: model_terms:ir.ui.view,arch_db:disbursement_student_import.disbursement_student_import_form
+msgid "Back"
+msgstr "ย้อนกลับ"
+
+#. module: disbursement_student_import
+#: model:ir.model.fields,field_description:disbursement_student_import.field_disbursement_student_import_line__bank_name
+#: code:addons/disbursement_student_import/wizards/disbursement_student_import.py:0
+#, python-format
+msgid "Bank"
+msgstr "ธนาคาร"
+
+#. module: disbursement_student_import
+#: model:ir.model.fields,field_description:disbursement_student_import.field_disbursement_student_import_line__partner_bank_id
+msgid "Bank Account"
+msgstr "บัญชีธนาคาร"
+
+#. module: disbursement_student_import
+#: model:ir.model.fields,field_description:disbursement_student_import.field_disbursement_student_import_line__bank_id
+msgid "Bank Record"
+msgstr "ธนาคาร (ในระบบ)"
+
+#. module: disbursement_student_import
+#: code:addons/disbursement_student_import/wizards/disbursement_student_import.py:0
+#, python-format
+msgid "Bank of the new account not recognised"
+msgstr "ไม่พบธนาคารของบัญชีใหม่"
+
+#. module: disbursement_student_import
+#: model_terms:ir.ui.view,arch_db:disbursement_student_import.disbursement_student_import_form
+msgid "Cancel"
+msgstr "ยกเลิก"
+
+#. module: disbursement_student_import
+#: code:addons/disbursement_student_import/wizards/disbursement_student_import.py:0
+#, python-format
+msgid "Cannot read the file; upload the Excel import template."
+msgstr "อ่านไฟล์ไม่ได้ กรุณาอัปโหลดไฟล์ Excel ตามแบบฟอร์มนำเข้า"
+
+#. module: disbursement_student_import
+#: model_terms:ir.ui.view,arch_db:disbursement_student_import.disbursement_student_import_form
+msgid "Check"
+msgstr "ตรวจสอบ"
+
+#. module: disbursement_student_import
+#: code:addons/disbursement_student_import/wizards/disbursement_student_import.py:0
+#, python-format
+msgid "Choose the expense item."
+msgstr "กรุณาเลือกรายการค่าใช้จ่าย"
+
+#. module: disbursement_student_import
+#: model:ir.model.fields,field_description:disbursement_student_import.field_disbursement_student_import_line__student_curriculum
+msgid "Curriculum"
+msgstr "หลักสูตร"
+
+#. module: disbursement_student_import
+#: model:ir.model.fields,field_description:disbursement_student_import.field_disbursement_student_import_line__description
+#: code:addons/disbursement_student_import/wizards/disbursement_student_import.py:0
+#, python-format
+msgid "Description"
+msgstr "รายละเอียด"
+
+#. module: disbursement_student_import
+#: model_terms:ir.ui.view,arch_db:disbursement_student_import.disbursement_student_import_form
+msgid "Download the import template"
+msgstr "ดาวน์โหลดแบบฟอร์มนำเข้า"
+
+#. module: disbursement_student_import
+#: model:ir.model.fields,field_description:disbursement_student_import.field_disbursement_student_import__file
+msgid "Excel File"
+msgstr "ไฟล์ Excel"
+
+#. module: disbursement_student_import
+#: model:ir.model.fields,field_description:disbursement_student_import.field_disbursement_student_import__product_id
+msgid "Expense Item"
+msgstr "รายการค่าใช้จ่าย"
+
+#. module: disbursement_student_import
+#: model:ir.model.fields,field_description:disbursement_student_import.field_disbursement_student_import_line__student_faculty
+msgid "Faculty"
+msgstr "คณะ"
+
+#. module: disbursement_student_import
+#: model_terms:ir.ui.view,arch_db:disbursement_student_import.disbursement_student_import_form
+msgid "Import"
+msgstr "นำเข้า"
+
+#. module: disbursement_student_import
+#: code:addons/disbursement_student_import/models/disbursement_request.py:0
+#: code:addons/disbursement_student_import/wizards/disbursement_student_import.py:0
+#: model_terms:ir.ui.view,arch_db:disbursement_student_import.disbursement_student_import_form
+#: model_terms:ir.ui.view,arch_db:disbursement_student_import.view_disbursement_request_form
+#, python-format
+msgid "Import Students"
+msgstr "นำเข้ารายชื่อนักศึกษา"
+
+#. module: disbursement_student_import
+#: model:ir.model,name:disbursement_student_import.model_disbursement_student_import
+msgid "Import Students into a Disbursement Request"
+msgstr "นำเข้ารายชื่อนักศึกษาในใบขอเบิก"
+
+#. module: disbursement_student_import
+#: model:ir.model.fields,field_description:disbursement_student_import.field_disbursement_student_import_line__message
+msgid "Message"
+msgstr "ข้อความ"
+
+#. module: disbursement_student_import
+#: model:ir.model.fields,field_description:disbursement_student_import.field_disbursement_student_import_line__student_name
+msgid "Name"
+msgstr "ชื่อ"
+
+#. module: disbursement_student_import
+#: model:ir.model.fields,field_description:disbursement_student_import.field_disbursement_student_import_line__vat
+#: code:addons/disbursement_student_import/wizards/disbursement_student_import.py:0
+#, python-format
+msgid "National ID"
+msgstr "เลขบัตรประชาชน"
+
+#. module: disbursement_student_import
+#: code:addons/disbursement_student_import/wizards/disbursement_student_import.py:0
+#, python-format
+msgid "National ID %s is not valid and is not saved"
+msgstr "เลขบัตรประชาชน %s ไม่ถูกต้อง จึงไม่บันทึก"
+
+#. module: disbursement_student_import
+#: code:addons/disbursement_student_import/wizards/disbursement_student_import.py:0
+#, python-format
+msgid "National ID differs from the one on record (kept)"
+msgstr "เลขบัตรประชาชนไม่ตรงกับในระบบ (คงค่าเดิม)"
+
+#. module: disbursement_student_import
+#: code:addons/disbursement_student_import/wizards/disbursement_student_import.py:0
+#, python-format
+msgid "No amount"
+msgstr "ไม่มีจำนวนเงิน"
+
+#. module: disbursement_student_import
+#: code:addons/disbursement_student_import/wizards/disbursement_student_import.py:0
+#, python-format
+msgid "No bank account"
+msgstr "ไม่มีบัญชีธนาคาร"
+
+#. module: disbursement_student_import
+#: code:addons/disbursement_student_import/wizards/disbursement_student_import.py:0
+#, python-format
+msgid "No national ID for the withholding tax certificate"
+msgstr "ไม่มีเลขบัตรประชาชนสำหรับออกหนังสือรับรองการหักภาษี ณ ที่จ่าย"
+
+#. module: disbursement_student_import
+#: code:addons/disbursement_student_import/wizards/disbursement_student_import.py:0
+#, python-format
+msgid "No row is ready to import."
+msgstr "ไม่มีแถวที่พร้อมนำเข้า"
+
+#. module: disbursement_student_import
+#: code:addons/disbursement_student_import/wizards/disbursement_student_import.py:0
+#, python-format
+msgid "No student ID"
+msgstr "ไม่มีรหัสนักศึกษา"
+
+#. module: disbursement_student_import
+#: model_terms:ir.ui.view,arch_db:disbursement_student_import.disbursement_student_import_form
+msgid ""
+"One row per payment: student ID, amount, bank, account number, national ID "
+"(when taxed) and description. A student already in Odoo keeps their name; a "
+"new one is named from the KMITL student catalog. Lines are added to the "
+"request, never replaced."
+msgstr ""
+"หนึ่งแถวต่อหนึ่งรายการจ่าย: รหัสนักศึกษา จำนวนเงิน ธนาคาร เลขที่บัญชี "
+"เลขบัตรประชาชน (กรณีมีภาษี) และรายละเอียด นักศึกษาที่มีในระบบแล้วใช้ชื่อเดิม"
+" ส่วนรายใหม่ใช้ชื่อจากทะเบียนนักศึกษา สจล. รายการจะถูกเพิ่มต่อท้าย "
+"ไม่แทนที่รายการเดิม"
+
+#. module: disbursement_student_import
+#: model:ir.model.fields.selection,name:disbursement_student_import.selection__disbursement_student_import__state__preview
+msgid "Preview"
+msgstr "ตรวจสอบ"
+
+#. module: disbursement_student_import
+#: model:ir.model.fields,field_description:disbursement_student_import.field_disbursement_student_import__count_ready
+#: model:ir.model.fields.selection,name:disbursement_student_import.selection__disbursement_student_import_line__status__ready
+msgid "Ready"
+msgstr "พร้อมนำเข้า"
+
+#. module: disbursement_student_import
+#: model:ir.model.fields,field_description:disbursement_student_import.field_disbursement_student_import_line__row_number
+#: code:addons/disbursement_student_import/wizards/disbursement_student_import.py:0
+msgid "Row"
+msgstr "แถว"
+
+#. module: disbursement_student_import
+#: code:addons/disbursement_student_import/wizards/disbursement_student_import.py:0
+#, python-format
+msgid "Row %(row)s %(code)s: %(message)s"
+msgstr "แถว %(row)s %(code)s: %(message)s"
+
+#. module: disbursement_student_import
+#: model:ir.model.fields,field_description:disbursement_student_import.field_disbursement_student_import__line_ids
+msgid "Rows"
+msgstr "รายการ"
+
+#. module: disbursement_student_import
+#: code:addons/disbursement_student_import/wizards/disbursement_student_import.py:0
+#, python-format
+msgid "Rows skipped:"
+msgstr "แถวที่ข้าม:"
+
+#. module: disbursement_student_import
+#: model:ir.model.fields,field_description:disbursement_student_import.field_disbursement_student_import__count_skip
+#: model:ir.model.fields.selection,name:disbursement_student_import.selection__disbursement_student_import_line__status__skip
+msgid "Skipped"
+msgstr "ข้าม"
+
+#. module: disbursement_student_import
+#: model:ir.model.fields,field_description:disbursement_student_import.field_disbursement_student_import_line__partner_id
+msgid "Student"
+msgstr "นักศึกษา"
+
+#. module: disbursement_student_import
+#: model:ir.model.fields,field_description:disbursement_student_import.field_disbursement_student_import_line__student_code
+#: code:addons/disbursement_student_import/wizards/disbursement_student_import.py:0
+#, python-format
+msgid "Student ID"
+msgstr "รหัสนักศึกษา"
+
+#. module: disbursement_student_import
+#: code:addons/disbursement_student_import/wizards/disbursement_student_import.py:0
+#, python-format
+msgid "Student ID appears more than once"
+msgstr "รหัสนักศึกษาซ้ำ"
+
+#. module: disbursement_student_import
+#: code:addons/disbursement_student_import/wizards/disbursement_student_import.py:0
+#, python-format
+msgid "Student ID not found in the KMITL student catalog"
+msgstr "ไม่พบรหัสนักศึกษาในทะเบียนนักศึกษา สจล."
+
+#. module: disbursement_student_import
+#: model:ir.model,name:disbursement_student_import.model_disbursement_student_import_line
+msgid "Student List Import Row"
+msgstr "แถวนำเข้ารายชื่อนักศึกษา"
+
+#. module: disbursement_student_import
+#: code:addons/disbursement_student_import/wizards/disbursement_student_import.py:0
+#, python-format
+msgid "Students"
+msgstr "นักศึกษา"
+
+#. module: disbursement_student_import
+#: code:addons/disbursement_student_import/wizards/disbursement_student_import.py:0
+#, python-format
+msgid "Students can only be imported into a draft request paying students."
+msgstr ""
+"นำเข้ารายชื่อนักศึกษาได้เฉพาะใบขอเบิกสถานะร่างที่ประเภทผู้รับเงินเป็นนักศึกษา"
+
+#. module: disbursement_student_import
+#: code:addons/disbursement_student_import/wizards/disbursement_student_import.py:0
+#, python-format
+msgid "The file has no student rows."
+msgstr "ไม่มีรายชื่อนักศึกษาในไฟล์"
+
+#. module: disbursement_student_import
+#: model_terms:ir.ui.view,arch_db:disbursement_student_import.disbursement_student_import_form
+msgid "Total"
+msgstr "รวม"
+
+#. module: disbursement_student_import
+#: model:ir.model.fields.selection,name:disbursement_student_import.selection__disbursement_student_import__state__upload
+msgid "Upload"
+msgstr "อัปโหลด"
+
+#. module: disbursement_student_import
+#: code:addons/disbursement_student_import/wizards/disbursement_student_import.py:0
+#, python-format
+msgid "Upload the Excel file."
+msgstr "กรุณาอัปโหลดไฟล์ Excel"
+
+#. module: disbursement_student_import
+#: model:ir.model.fields.selection,name:disbursement_student_import.selection__disbursement_student_import_line__status__warning
+msgid "Warning"
+msgstr "มีคำเตือน"
+
+#. module: disbursement_student_import
+#: model:ir.model.fields,field_description:disbursement_student_import.field_disbursement_student_import__count_warning
+msgid "With Warnings"
+msgstr "มีคำเตือน"
+
+#. module: disbursement_student_import
+#: code:addons/disbursement_student_import/wizards/disbursement_student_import.py:0
+#, python-format
+msgid "an Excel file"
+msgstr "ไฟล์ Excel"
