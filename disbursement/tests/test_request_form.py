@@ -186,6 +186,9 @@ class TestRequesterActions(TwoApproverCommon):
             dr.with_user(self.requester).action_cancel()
         dr.with_user(self.officer).action_cancel()
         self.assertEqual(dr.state, "cancel")
+        # Approved once: kept for the audit trail.
+        with self.assertRaises(UserError):
+            dr.unlink()
 
     def test_only_a_cancelled_request_is_deleted(self):
         dr = self._make_verified_dr().with_user(self.requester)

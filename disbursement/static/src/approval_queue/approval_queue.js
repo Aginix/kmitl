@@ -141,9 +141,12 @@ export class ApprovalQueue extends Component {
             DR_FIELDS,
             { order: "date desc, id desc" }
         );
-        // note is an Html field: render it, don't escape it.
+        // note is an Html field: render it, don't escape it. A cleared
+        // editor leaves "<p><br></p>": no text and no image is no note.
         for (const dr of this.state.requests) {
-            dr.note = dr.note && markup(dr.note);
+            const body = new DOMParser().parseFromString(dr.note || "", "text/html").body;
+            const empty = !body.textContent.trim() && !body.querySelector("img");
+            dr.note = !empty && markup(dr.note);
         }
         const ids = this.state.requests.map((dr) => dr.id);
         this.state.selectedIds = this.state.selectedIds.filter((id) =>

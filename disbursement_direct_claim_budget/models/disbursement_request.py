@@ -44,6 +44,23 @@ class DisbursementRequest(models.Model):
             return
         if not self.budget_account_id:
             raise UserError(_("A direct claim needs a budget code before approval."))
+        move = self.env["budget.move"].sudo().create(self._prepare_direct_consume_vals())
+        move.action_review()
+        move.with_context(budget_direct_consume_by_document=True).action_post()
+        self.budget_direct_move_id = move
+        self.budget_consumed_amount = self.amount_total
+        self.budget_consumed_date = fields.Datetime.now()
+        self.message_post(
+            body=_("Budget consumed directly: %(amount)s (%(move)s)")
+            % {"amount": self.amount_total, "move": move.name},
+            subtype_xmlid="mail.mt_note",
+        )
+
+    def _prepare_direct_consume_vals(self):
+        """The direct consumption of this request's amount on its own
+        dimensions and budget code — posted on approval, checked unsaved on
+        Submit."""
+        self.ensure_one()
         dims = self.env["budget.controller"]._parse_dimensions(
             self.analytic_distribution
         )
@@ -84,42 +101,23 @@ class DisbursementRequest(models.Model):
             ) or self.user_id.sudo().default_operating_unit_id
             if unit:
                 vals["operating_unit_id"] = unit.id
-        move = Move.create(vals)
-        move.action_review()
-        move.with_context(budget_direct_consume_by_document=True).action_post()
-        self.budget_direct_move_id = move
-        self.budget_consumed_amount = self.amount_total
-        self.budget_consumed_date = fields.Datetime.now()
-        self.message_post(
-            body=_("Budget consumed directly: %(amount)s (%(move)s)")
-            % {"amount": self.amount_total, "move": move.name},
-            subtype_xmlid="mail.mt_note",
-        )
+        return vals
 
     def _direct_claim_budget_shortfall(self):
         """Whether the pool cannot cover this direct claim without a
-        reservation — the Submit pre-check; the posting re-checks it on the
-        final approval. A linked reservation is checked on approval instead."""
+        reservation — the Submit pre-check. It runs the posting's own check
+        (budget.move.line._check_direct_consume) on the unsaved move, so the
+        two cannot disagree; the posting re-checks on the final approval. A
+        linked reservation is checked on approval instead."""
         self.ensure_one()
-        if (
-            self.budget_commitment_id
-            or not self.budget_account_id
-            or self.env["ir.config_parameter"]
-            .sudo()
-            .get_param("budget.allow_negative", False)
-        ):
+        if self.budget_commitment_id or not self.budget_account_id:
             return False
-        available = (
-            self.env["budget.controller"]
-            .sudo()
-            .get_available(
-                self.budget_account_id.id,
-                self.analytic_distribution,
-                self.account_fiscal_year_id.id,
-                self.company_id.id,
-            )
-        )
-        return self.currency_id.compare_amounts(available, self.amount_total) < 0
+        move = self.env["budget.move"].sudo().new(self._prepare_direct_consume_vals())
+        try:
+            move.line_ids._check_direct_consume()
+        except UserError:
+            return True
+        return False
 
     def _on_cancel(self):
         for rec in self:

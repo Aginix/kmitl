@@ -131,7 +131,7 @@
         </t>
 
         <!-- Notes -->
-        <div class="row" t-if="o.note">
+        <div class="row" t-if="o._has_description()">
             <div class="col">
                 <strong>รายละเอียด:</strong>
                 <div t-out="o.note"/>

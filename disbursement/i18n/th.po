@@ -408,6 +408,13 @@ msgid "Draft Request #%s"
 msgstr "ใบขอเบิกฉบับร่าง #%s"
 
 #. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_request.py:0
+#, python-format
+msgid "A request that was approved cannot be deleted, even once cancelled."
+msgstr "ใบขอเบิกที่เคยอนุมัติแล้วลบไม่ได้ แม้จะยกเลิกแล้วก็ตาม"
+
+#. module: disbursement
 #: model:ir.model,name:disbursement.model_exception_rule
 msgid "Exception Rule"
 msgstr ""

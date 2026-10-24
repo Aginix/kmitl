@@ -3,6 +3,7 @@
 import logging
 
 from odoo import _, api, fields, models
+from odoo.tools import is_html_empty
 from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
@@ -1134,7 +1135,26 @@ class DisbursementRequest(models.Model):
     def unlink(self):
         if self.filtered(lambda r: r.state != "cancel"):
             raise UserError(_("Only cancelled requests can be deleted."))
+        # Its budget moves and bills refer to it: keep it for the audit trail.
+        # The final approval's signature row survives a cancel (archived).
+        if (
+            self.env["disbursement.request.signature"]
+            .sudo()
+            .with_context(active_test=False)
+            .search_count(
+                [("request_id", "in", self.ids), ("step", "=", "rector_approve")]
+            )
+        ):
+            raise UserError(
+                _("A request that was approved cannot be deleted, even once cancelled.")
+            )
         return super().unlink()
+
+    def _has_description(self):
+        """Whether รายละเอียด holds content: a cleared Html editor leaves
+        ``<p><br></p>`` behind (for templates rendered without is_html_empty)."""
+        self.ensure_one()
+        return not is_html_empty(self.note)
 
     def name_get(self):
         # A draft has no number until its first submit (``_assign_number``).
