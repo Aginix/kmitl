@@ -28,8 +28,9 @@ Features
 * Click a Todo to jump straight to its source document.
 * A header button and footer link open the full Todo app for the remainder
   (``Showing N of M`` when more than 100 Todos exist).
-* The activity **systray** routes here too: clicking it opens the Todos page
-  inside Discuss rather than the backend list.
+* The activity **systray** lists the newest Todos (not app groups) with the
+  same detail; clicking one opens its source document directly, and "View all"
+  opens the Todos page inside Discuss.
 * Live refresh via the existing ``mail_activity_todo`` bus notification.
 * Selecting a mailbox/channel automatically leaves the Todo view, and vice
   versa — they are never highlighted at once.
