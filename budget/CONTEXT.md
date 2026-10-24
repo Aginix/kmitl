@@ -104,6 +104,10 @@ _Avoid_: reserve/จอง (that locks money in the commitment ledger, a differe
 The in-year movement on the pool = Current Budget − Initial Appropriation = supplementary appropriations + net transfers. Shown as its own column between (1) and (a).
 _Avoid_: change, revision
 
+**Budget Reversal (กลับรายการ)**:
+Correcting a posted budget move made in error — a Budget Transfer, or an appropriation/entry keyed by hand — with a **new** budget move that offsets it, while the original stays posted, so both stand in the Budget Ledger as the audit trail. The reversal starts as a draft prefilled with the original's lines negated, may be edited freely (a partial reversal is a smaller one), and posts like any budget move — no Buddy check and no e-Saraban letter. It may not take back money its pool no longer has free: what was reserved there must be returned first. An original may be reversed several times; it reads **กลับรายการแล้ว** once its posted reversals net it to zero on every coordinate, **กลับรายการบางส่วน** before that, and it cannot be reset to draft while a reversal of it is live. A reversal is never itself reversed. A ใบจัดสรรงบประมาณ itself has no กลับรายการ. ([ADR-0020](./docs/adr/0020-budget-reversal-editable-draft-move.md))
+_Avoid_: Reset to Draft (un-posts the original and leaves no trace), คืนจอง (returns a reservation's leftover — a different operation), cancelling a Commitment Event (whose offsetting move is an internal ledger reversal, not a กลับรายการ)
+
 ### Disbursement side (`budget.commitment`)
 
 A commitment holds one cap and a log of **Commitment Events** (its lines); each event posts to the Budget Ledger. The three operations are **independent primitives** — a flow may fire them at different times (procurement instalments) or together (PO disbursement).
