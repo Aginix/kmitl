@@ -10,9 +10,13 @@ class DisbursementRequest(models.Model):
 
     def _get_sarabun_subject(self):
         source_name = (self.source_analytic_id.complete_name or "").replace(" / ", "")
-        department_name = (self.department_analytic_id.complete_name or "").replace(" / ", "")
+        department_name = (self.department_analytic_id.complete_name or "").replace(
+            " / ", ""
+        )
         fy_name = self.account_fiscal_year_id.name or ""
-        return f"ขออนุมัติเบิกเงิน{source_name} {department_name} ประจำปีงบประมาณ พ.ศ. {fy_name}"
+        return (
+            f"ขออนุมัติเบิกเงิน{source_name} {department_name} ประจำปีงบประมาณ พ.ศ. {fy_name}"
+        )
 
     def _prepare_sarabun_document_vals(self):
         vals = super()._prepare_sarabun_document_vals()
@@ -27,12 +31,16 @@ class DisbursementRequest(models.Model):
     # Every e-Saraban callback moves the หนังสือ off ``circulating`` before it
     # calls back, so this only stops the manual action.
     def _check_no_circulating_sarabun(self):
-        documents = self.env["sarabun.document"].sudo().search(
-            [
-                ("origin_model", "=", self._name),
-                ("origin_res_id", "in", self.ids),
-                ("state", "=", "circulating"),
-            ]
+        documents = (
+            self.env["sarabun.document"]
+            .sudo()
+            .search(
+                [
+                    ("origin_model", "=", self._name),
+                    ("origin_res_id", "in", self.ids),
+                    ("state", "=", "circulating"),
+                ]
+            )
         )
         if documents:
             # Not named: a หนังสือ has no number until its issuing sign.
@@ -96,22 +104,32 @@ class DisbursementRequest(models.Model):
         return super()._on_sarabun_cancelled(document)
 
     def _get_sarabun_document_type(self):
-        return self.env.ref(
-            "disbursement_sarabun.document_type_disbursement_request",
-            raise_if_not_found=False,
-        ) or super()._get_sarabun_document_type()
+        return (
+            self.env.ref(
+                "disbursement_sarabun.document_type_disbursement_request",
+                raise_if_not_found=False,
+            )
+            or super()._get_sarabun_document_type()
+        )
 
     def _get_sarabun_body_template(self):
         return "disbursement_sarabun.report_disbursement_request_body"
 
     def _get_sarabun_content(self):
+        """The editable เนื้อหา, seeded once at submit: the opening paragraph,
+        then the request's รายละเอียด. Edited on the หนังสือ from then on; the
+        tables render live (``_get_sarabun_body_template``)."""
         self.ensure_one()
         o = self.with_context(lang="th_TH")
         source_name = (o.source_analytic_id.complete_name or "").replace(" / ", "")
         dept_name = (o.department_analytic_id.complete_name or "").replace(" / ", "")
         fy_name = self.account_fiscal_year_id.name or ""
-        return (
+        content = (
             f"<p style='text-indent: 2em;'>ด้วย{dept_name} "
             "สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง "
-            f"มีความประสงค์ขอเบิกเงิน{source_name} ประจำปีงบประมาณ พ.ศ. {fy_name} ตามรายละเอียดดังนี้</p>"
+            f"มีความประสงค์ขอเบิกเงิน{source_name} ประจำปีงบประมาณ พ.ศ. {fy_name}</p>"
         )
+        if self._has_description():
+            # str(): ``note`` is Markup, whose __radd__ would escape ``content``.
+            content += str(self.note)
+        return content

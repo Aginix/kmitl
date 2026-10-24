@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Add a แผนจัดซื้อจัดจ้าง row as the last row of the ใบขอเบิก PDF's budget
+         table, shown only when the request carries a procurement plan. -->
+    <template id="report_disbursement_request_procurement_plan" inherit_id="disbursement_pdf.report_disbursement_request">
+        <xpath expr="//table[hasclass('budget')]/tbody" position="inside">
+            <tr class="o_field_procurement_plan_analytic_id" t-if="o.procurement_plan_analytic_id">
+                <td>แผนจัดซื้อจัดจ้าง</td>
+                <td>
+                    <span t-field="o.procurement_plan_analytic_id"/>
+                </td>
+            </tr>
+        </xpath>
+    </template>
+
+</odoo>

@@ -32,7 +32,6 @@ class DisbursementRequest(models.Model):
         "analytic.mixin",
         "mail.thread",
         "mail.activity.mixin",
-        "portal.mixin",
         "base.exception",
         # Thai signature date formatting on the printed signature block.
         "thai.date.mixin",
@@ -314,9 +313,7 @@ class DisbursementRequest(models.Model):
     verifier_id = fields.Many2one(
         "res.users", string="Verified By", copy=False, readonly=True
     )
-    verify_date = fields.Datetime(
-        string="Verified On", copy=False, readonly=True
-    )
+    verify_date = fields.Datetime(string="Verified On", copy=False, readonly=True)
 
     finance_approver_id = fields.Many2one(
         "res.users", string="Finance Director", copy=False, readonly=True
@@ -520,9 +517,7 @@ class DisbursementRequest(models.Model):
 
     @api.model
     def _get_popup_action(self):
-        action = self.env.ref(
-            "disbursement.action_disbursement_exception_confirm"
-        )
+        action = self.env.ref("disbursement.action_disbursement_exception_confirm")
         return action
 
     # -------------------------------------------------------------------------
@@ -573,9 +568,7 @@ class DisbursementRequest(models.Model):
     def _check_has_tax_company(self):
         for rec in self:
             if not rec.has_tax and rec.partner_type_id.company_type == "company":
-                raise ValidationError(
-                    _("A request paid to a company must be taxable.")
-                )
+                raise ValidationError(_("A request paid to a company must be taxable."))
 
     @api.onchange("has_tax")
     def _onchange_has_tax(self):
@@ -655,9 +648,7 @@ class DisbursementRequest(models.Model):
             date = fields.Date.to_date(
                 vals.get("date") or fields.Date.context_today(self)
             )
-            company = Company.browse(
-                vals.get("company_id") or self.env.company.id
-            )
+            company = Company.browse(vals.get("company_id") or self.env.company.id)
             if not vals.get("account_fiscal_year_id"):
                 fy = self._default_fiscal_year(date, company)
                 vals["account_fiscal_year_id"] = fy.id if fy else False
@@ -700,13 +691,15 @@ class DisbursementRequest(models.Model):
         fy_year = prefix.split("/")[1]
         seq_code = f"disbursement.request.{fy_year}"
         if not Sequence.search([("code", "=", seq_code)], limit=1):
-            Sequence.create({
-                "name": f"Disbursement Request {fy_year}",
-                "code": seq_code,
-                "prefix": prefix,
-                "padding": 4,
-                "number_increment": 1,
-            })
+            Sequence.create(
+                {
+                    "name": f"Disbursement Request {fy_year}",
+                    "code": seq_code,
+                    "prefix": prefix,
+                    "padding": 4,
+                    "number_increment": 1,
+                }
+            )
         return Sequence.next_by_code(seq_code) or "/"
 
     @api.depends(
@@ -721,16 +714,10 @@ class DisbursementRequest(models.Model):
             request_lines = request.line_ids
 
             # Check company rounding method
-            if (
-                request.company_id.tax_calculation_rounding_method
-                == "round_globally"
-            ):
+            if request.company_id.tax_calculation_rounding_method == "round_globally":
                 # More accurate: compute all lines together
                 tax_results = self.env["account.tax"]._compute_taxes(
-                    [
-                        line._convert_to_tax_base_line_dict()
-                        for line in request_lines
-                    ]
+                    [line._convert_to_tax_base_line_dict() for line in request_lines]
                 )
                 totals = tax_results["totals"].get(request.currency_id, {})
                 amount_untaxed = totals.get("amount_untaxed", 0.0)
@@ -768,16 +755,15 @@ class DisbursementRequest(models.Model):
     def _onchange_analytic_distribution(self):
         """When change analytic_distribution set analytic distribution on all request lines"""
         if self.analytic_distribution:
-            self.line_ids.update(
-                {"analytic_distribution": self.analytic_distribution}
-            )
+            self.line_ids.update({"analytic_distribution": self.analytic_distribution})
 
     def _inverse_analytic_distribution(self):
         """When set analytic_distribution set analytic distribution on all request lines"""
         for request in self:
             if request.analytic_distribution:
                 request.line_ids.write(
-                    {"analytic_distribution": request.analytic_distribution})
+                    {"analytic_distribution": request.analytic_distribution}
+                )
 
     def action_submit(self):
         """Submit request for approval"""
@@ -786,8 +772,10 @@ class DisbursementRequest(models.Model):
                 raise UserError(_("Only draft requests can be submitted."))
             if not record.line_ids:
                 raise UserError(
-                    _("Cannot submit a disbursement request with no lines. "
-                      "Please add at least one line.")
+                    _(
+                        "Cannot submit a disbursement request with no lines. "
+                        "Please add at least one line."
+                    )
                 )
             if record.detect_exceptions() and not record.ignore_exception:
                 return record._popup_exceptions()
@@ -835,8 +823,10 @@ class DisbursementRequest(models.Model):
         for record in self:
             if record.state != "verified" or record.approval_state != "pending_finance":
                 raise UserError(
-                    _("Only a verified request awaiting the Finance Director "
-                      "can be approved at this step.")
+                    _(
+                        "Only a verified request awaiting the Finance Director "
+                        "can be approved at this step."
+                    )
                 )
             record.finance_approver_id = self.env.user
             record.finance_approve_date = fields.Datetime.now()
@@ -859,8 +849,10 @@ class DisbursementRequest(models.Model):
         for record in self:
             if record.state != "verified" or record.approval_state != "pending_rector":
                 raise UserError(
-                    _("Only a request awaiting the Rector-delegated approval "
-                      "can be approved.")
+                    _(
+                        "Only a request awaiting the Rector-delegated approval "
+                        "can be approved."
+                    )
                 )
             record._on_final_approval()
             record.state = "approved"
@@ -945,12 +937,8 @@ class DisbursementRequest(models.Model):
         """
         self.ensure_one()
         if self.approval_state not in ("pending_finance", "pending_rector"):
-            raise UserError(
-                _("Only a request awaiting approval can be rejected.")
-            )
-        self.activity_unlink(
-            [DR_APPROVE_FINANCE_ACTIVITY, DR_APPROVE_RECTOR_ACTIVITY]
-        )
+            raise UserError(_("Only a request awaiting approval can be rejected."))
+        self.activity_unlink([DR_APPROVE_FINANCE_ACTIVITY, DR_APPROVE_RECTOR_ACTIVITY])
         self.approval_state = "rejected"
         self.approval_reject_reason = reason
         if self.user_id:
@@ -960,9 +948,8 @@ class DisbursementRequest(models.Model):
                 note=reason or "",
             )
         self.message_post(
-            body=_(
-                "<p><b>Approval rejected</b></p><p>Reason: <b>%s</b></p>"
-            ) % (reason or _("no reason given")),
+            body=_("<p><b>Approval rejected</b></p><p>Reason: <b>%s</b></p>")
+            % (reason or _("no reason given")),
             subtype_xmlid="mail.mt_comment",
         )
         return True
@@ -972,19 +959,19 @@ class DisbursementRequest(models.Model):
         Director step."""
         self.ensure_one()
         if self.approval_state != "rejected":
-            raise UserError(
-                _("Only a rejected request can be re-sent for approval.")
-            )
+            raise UserError(_("Only a rejected request can be re-sent for approval."))
         self.activity_feedback([DR_REJECTED_ACTIVITY])
         self._archive_signatures(["finance_approve", "rector_approve"])
-        self.write({
-            "finance_approver_id": False,
-            "finance_approve_date": False,
-            "rector_approver_id": False,
-            "rector_approve_date": False,
-            "approval_reject_reason": False,
-            "approval_state": "pending_finance",
-        })
+        self.write(
+            {
+                "finance_approver_id": False,
+                "finance_approve_date": False,
+                "rector_approver_id": False,
+                "rector_approve_date": False,
+                "approval_reject_reason": False,
+                "approval_state": "pending_finance",
+            }
+        )
         self._schedule_approval_todo(
             FINANCE_DIRECTOR_GROUP, DR_APPROVE_FINANCE_ACTIVITY
         )
@@ -1003,15 +990,21 @@ class DisbursementRequest(models.Model):
         self.ensure_one()
         user = self.env.user
         employee = user.sudo().employee_id
-        return self.env["disbursement.request.signature"].sudo().create({
-            "request_id": self.id,
-            "step": step,
-            "signed_by_id": user.id,
-            "signed_date": fields.Datetime.now(),
-            "signed_name": employee.name or user.name,
-            "signed_position_name": employee.job_title or "",
-            "signed_signature": employee.signature or False,
-        })
+        return (
+            self.env["disbursement.request.signature"]
+            .sudo()
+            .create(
+                {
+                    "request_id": self.id,
+                    "step": step,
+                    "signed_by_id": user.id,
+                    "signed_date": fields.Datetime.now(),
+                    "signed_name": employee.name or user.name,
+                    "signed_position_name": employee.job_title or "",
+                    "signed_signature": employee.signature or False,
+                }
+            )
+        )
 
     def _archive_signatures(self, steps):
         """Archive the signature rows for ``steps`` on these requests.
@@ -1019,10 +1012,12 @@ class DisbursementRequest(models.Model):
         Called wherever the workflow clears the matching who-did-it stamp, so a
         superseded round stops printing while its history survives (ADR-0002).
         """
-        self.env["disbursement.request.signature"].sudo().search([
-            ("request_id", "in", self.ids),
-            ("step", "in", steps),
-        ]).write({"active": False})
+        self.env["disbursement.request.signature"].sudo().search(
+            [
+                ("request_id", "in", self.ids),
+                ("step", "in", steps),
+            ]
+        ).write({"active": False})
 
     def _schedule_approval_todo(self, group_xmlid, act_type_xmlid):
         """Push an execution Todo to every member of ``group_xmlid`` so the
@@ -1058,20 +1053,24 @@ class DisbursementRequest(models.Model):
         to_reset = self.filtered(lambda r: r.approval_state != "none")
         if not to_reset:
             return
-        to_reset.activity_unlink([
-            DR_APPROVE_FINANCE_ACTIVITY,
-            DR_APPROVE_RECTOR_ACTIVITY,
-            DR_REJECTED_ACTIVITY,
-        ])
+        to_reset.activity_unlink(
+            [
+                DR_APPROVE_FINANCE_ACTIVITY,
+                DR_APPROVE_RECTOR_ACTIVITY,
+                DR_REJECTED_ACTIVITY,
+            ]
+        )
         to_reset._archive_signatures(["finance_approve", "rector_approve"])
-        to_reset.write({
-            "approval_state": "none",
-            "finance_approver_id": False,
-            "finance_approve_date": False,
-            "rector_approver_id": False,
-            "rector_approve_date": False,
-            "approval_reject_reason": False,
-        })
+        to_reset.write(
+            {
+                "approval_state": "none",
+                "finance_approver_id": False,
+                "finance_approve_date": False,
+                "rector_approver_id": False,
+                "rector_approve_date": False,
+                "approval_reject_reason": False,
+            }
+        )
 
     # -------------------------------------------------------------------------
     # Workflow hooks (overridden by disbursement_budget)
@@ -1096,9 +1095,7 @@ class DisbursementRequest(models.Model):
         )
         for record in self:
             if record.state == "cancel":
-                raise UserError(
-                    _("Cannot cancel an already cancelled request.")
-                )
+                raise UserError(_("Cannot cancel an already cancelled request."))
             if record.state not in PRE_APPROVAL_STATES and not officer:
                 raise UserError(
                     _("Only a disbursement officer can cancel an approved request.")
@@ -1113,7 +1110,9 @@ class DisbursementRequest(models.Model):
         for record in self:
             if record.state not in ("submitted", "signed", "verified", "cancel"):
                 raise UserError(
-                    _("Only submitted, signed, verified, or cancelled requests can be reset to draft.")
+                    _(
+                        "Only submitted, signed, verified, or cancelled requests can be reset to draft."
+                    )
                 )
             record.state = "draft"
             # Signed again on the next round.
@@ -1167,17 +1166,6 @@ class DisbursementRequest(models.Model):
             result.append((rec.id, name))
         return result
 
-    def _compute_access_url(self):
-        """Compute the portal URL for the disbursement request."""
-        super()._compute_access_url()
-        for request in self:
-            request.access_url = f"/my/disbursement/{request.id}"
-
-    def _get_report_base_filename(self):
-        """Return the base filename for the report."""
-        self.ensure_one()
-        return f"Disbursement Request-{self.display_name}"
-
     @api.model
     def _get_masked_acc_number(self, acc_number):
         """Mask a bank account number, keeping the first 3 and last 4 digits."""
@@ -1187,15 +1175,5 @@ class DisbursementRequest(models.Model):
             return acc
         keep = set(digit_positions[:3]) | set(digit_positions[-4:])
         return "".join(
-            c if (not c.isdigit() or i in keep) else "X"
-            for i, c in enumerate(acc)
+            c if (not c.isdigit() or i in keep) else "X" for i, c in enumerate(acc)
         )
-
-    def open_preview(self):
-        """Open preview in portal."""
-        self.ensure_one()
-        return {
-            "type": "ir.actions.act_url",
-            "target": "new",
-            "url": self.get_portal_url(),
-        }
