@@ -41,7 +41,7 @@ The manual act that finishes a plan (→ จัดซื้อจัดจ้า
 _Avoid_: done / auto-close, cancel
 
 **Plan Deletion (ลบแผน)**:
-The single way to take a plan out of use. A plan with no **Ledger Footprint** is deleted for good together with its analytic account; one with a footprint that has never spent is **soft-deleted** — it becomes ยกเลิก and both it and its analytic account are archived, and resetting it to draft brings both back with the same number. A plan that has spent cannot be deleted; it is closed instead. Waits until the plan holds no **Held Money** and has no open purchase request or disbursement. A numbered plan may be deleted only by plan managers. See [ADR-0005](./docs/adr/0005-plan-close-and-deletion-follow-project.md).
+The single way to take a plan out of use. A plan with no **Ledger Footprint** is deleted for good together with its analytic account; one with a footprint that has never spent is **soft-deleted** — it becomes ยกเลิก and both it and its analytic account are archived, and resetting it to draft brings both back with the same number. A plan that has spent cannot be deleted; it is closed instead. Waits until the plan holds no **Held Money** and has no open purchase request, purchase order or disbursement request. A numbered plan may be deleted only by plan managers. See [ADR-0005](./docs/adr/0005-plan-close-and-deletion-follow-project.md).
 _Avoid_: cancel as a separate act (ยกเลิก is only the state a soft-deleted plan ends in)
 
 **Ledger Footprint (ประวัติในบัญชีงบประมาณ)**:
