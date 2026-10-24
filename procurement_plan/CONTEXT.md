@@ -51,7 +51,7 @@ _Avoid_: balance (a footprint can exist even when every figure nets to 0)
 ### Money at the plan (budget layers)
 
 **Plan Budget (งบที่ได้รับการจัดสรร, `budget_amount`)**:
-The amount the plan has actually **received** at its own dimension — the net of every posted budget movement carrying its `procurement_plan` dim. Read from the budget ledger, never typed. It is what the plan reserves and what caps its purchase requests. See [ADR-0003](./docs/adr/0003-plan-reserves-received-not-plan-amount.md).
+The amount the plan has actually **received** at its own dimension — the net of the posted allocation, transfer and budget-entry lines (`appropriation` / `entry` buckets) carrying its `procurement_plan` dim — reserve, obligate and consume events are not counted. Read from the budget ledger, never typed. It is what the plan reserves and what caps its purchase requests. See [ADR-0003](./docs/adr/0003-plan-reserves-received-not-plan-amount.md).
 _Avoid_: Plan Amount / วงเงินตามแผน (the ask, a different quantity)
 
 **Plan Budget Remaining (งบคงเหลือ)**:
