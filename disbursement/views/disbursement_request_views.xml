@@ -385,7 +385,13 @@
                                     <!-- No no_open: the user opens the partner from here
                                          to add a missing bank account. -->
                                     <field name="partner_id" required="1" />
-                                    <field name="partner_bank_id" optional="show" />
+                                    <!-- Accounts are managed through the payee bank wizard
+                                         (disbursement_partner_bank), not from here. -->
+                                    <field
+                                        name="partner_bank_id"
+                                        optional="show"
+                                        options="{'no_open': True, 'no_create': True, 'no_edit': True}"
+                                    />
                                     <field name="product_id" />
                                     <!-- Kept loaded: the product onchange fills the
                                          description and the quantity defaults to 1. -->
@@ -423,7 +429,7 @@
                                         optional="show"
                                         attrs="{'column_invisible': [('parent.has_tax', '=', False)]}"
                                     />
-                                    <field name="price_total" />
+                                    <field name="price_total" optional="hide" />
                                     <field name="company_id" invisible="1" />
                                     <field name="currency_id" invisible="1" />
                                 </tree>
