@@ -86,6 +86,7 @@ class TestBudgetTransferSarabun(TransactionCase):
         cls.requestor = new_test_user(
             env,
             login="btr_sb_requestor",
+            email="btr_sb_requestor@example.com",
             name="ผู้ขอโอนงบ",
             groups="base.group_user,budget.group_budget_user",
         )
@@ -100,6 +101,7 @@ class TestBudgetTransferSarabun(TransactionCase):
         cls.approver_user = new_test_user(
             env,
             login="btr_sb_approver",
+            email="btr_sb_approver@example.com",
             name="ผู้อนุมัติโอนงบ",
             groups="base.group_user,agx_sarabun.group_sarabun_user",
         )
@@ -171,8 +173,7 @@ class TestBudgetTransferSarabun(TransactionCase):
         transfer = self._submitted_transfer()
         document = self._submit(transfer)
         self.assertTrue(document)
-        self.assertIn(transfer.name, document.subject)
-        self.assertTrue(document.content)
+        self.assertIn(transfer.name, document.content)
         self.assertTrue(
             document.enclosure_attachment_ids,
             "the printed แบบ งปม.303 must be enclosed",
@@ -234,8 +235,8 @@ class TestBudgetTransferSarabun(TransactionCase):
         self.assertTrue(transfer.can_edit)
 
     def test_resend_from_returned_rechecks_lines(self):
-        # The line policies aren't constraints — a revision made while returned
-        # must be re-checked before the letter goes back out.
+        # A revision made while returned must be re-checked before the letter
+        # goes back out (unbalanced FROM/TO is a hard check in every install).
         transfer = self._submitted_transfer()
         document = self._submit(transfer)
         document.with_user(self.requestor).action_send()
@@ -247,22 +248,8 @@ class TestBudgetTransferSarabun(TransactionCase):
         )
         transfer.invalidate_recordset()
         self.assertEqual(transfer.state, "returned")
-        from_line = transfer.from_line_ids
-        duplicate = {
-            "transfer_direction": "from",
-            "account_id": self.src.id,
-            "amount": 500,
-            "department_analytic_id": self.dept_analytic.id,
-            "activity_analytic_id": self.activity.id,
-            "fund_analytic_id": self.fund.id,
-        }
         transfer.write(
-            {
-                "line_ids": [
-                    Command.update(from_line.id, {"amount": 500}),
-                    Command.create(duplicate),
-                ]
-            }
+            {"line_ids": [Command.update(transfer.from_line_ids.id, {"amount": 500})]}
         )
         with self.assertRaises(ValidationError):
             document.with_user(self.requestor).action_send()
@@ -342,6 +329,7 @@ class TestBudgetTransferSarabun(TransactionCase):
         manager = new_test_user(
             self.env,
             login="btr_sb_manager",
+            email="btr_sb_manager@example.com",
             name="ผจก โอนงบ",
             groups="base.group_user,budget.group_budget_manager",
         )
@@ -368,10 +356,102 @@ class TestBudgetTransferSarabun(TransactionCase):
         with self.assertRaises(UserError):
             transfer.action_reset_to_draft()
 
+    def test_reset_to_draft_discards_draft_letter(self):
+        # The ร่าง หนังสือ snapshotted the old data — reset must discard it so
+        # the re-confirmed transfer issues a fresh one.
+        transfer = self._submitted_transfer()
+        document = self._submit(transfer)
+        transfer.with_user(self.requestor).action_reset_to_draft()
+        self.assertEqual(transfer.state, "draft")
+        self.assertFalse(document.exists())
+        transfer.invalidate_recordset()
+        self.assertFalse(transfer.sarabun_has_live_document)
+
+    def test_send_blocked_while_transfer_not_submitted(self):
+        # A returned letter can't be discarded — sending it for a transfer that
+        # was reset to draft must be refused until the transfer is re-confirmed.
+        transfer = self._submitted_transfer()
+        document = self._submit(transfer)
+        document.with_user(self.requestor).action_send()
+        self._gating_step(document).act_on_step(
+            "return",
+            {"note": "ขอข้อมูลเพิ่ม", "destination": "sender_restart"},
+            actor=self.approver_user,
+        )
+        transfer.invalidate_recordset()
+        transfer.with_user(self.requestor).action_reset_to_draft()
+        self.assertEqual(transfer.state, "draft")
+        with self.assertRaises(UserError):
+            document.with_user(self.requestor).action_send()
+        self.assertEqual(transfer.state, "draft")
+        self.assertEqual(document.state, "returned")
+
+    def _returned(self, transfer, document):
+        document.with_user(self.requestor).action_send()
+        self._gating_step(document).act_on_step(
+            "return",
+            {"note": "ขอข้อมูลเพิ่ม", "destination": "sender_restart"},
+            actor=self.approver_user,
+        )
+        transfer.invalidate_recordset()
+        self.assertEqual(transfer.state, "returned")
+
+    def test_cancel_returned_transfer_voids_letter(self):
+        # Cancelling a returned transfer must not strand its letter (a returned
+        # letter can't be withdrawn or deleted, and re-sending is blocked).
+        transfer = self._submitted_transfer()
+        document = self._submit(transfer)
+        self._returned(transfer, document)
+        transfer.with_user(self.requestor).action_cancel()
+        self.assertEqual(transfer.state, "cancelled")
+        self.assertEqual(document.state, "cancelled")
+        transfer.invalidate_recordset()
+        self.assertFalse(transfer.sarabun_has_live_document)
+
+    def test_recall_does_not_revive_a_decided_transfer(self):
+        # An admin reset of the letter fires _on_sarabun_recalled — it must not
+        # flip a posted transfer back to an editable `returned`.
+        transfer = self._submitted_transfer()
+        document = self._submit(transfer)
+        document.with_user(self.requestor).action_send()
+        self._gating_step(document).act_on_step(
+            "complete", None, actor=self.approver_user
+        )
+        transfer.invalidate_recordset()
+        self.assertEqual(transfer.state, "posted")
+        transfer._on_sarabun_recalled(document)
+        self.assertEqual(transfer.state, "posted")
+
+    def test_reset_posted_transfer_allows_a_new_letter(self):
+        # Once a posted transfer is reset, its completed letter is history — a
+        # re-confirmed transfer must be able to issue a fresh one.
+        manager = new_test_user(
+            self.env,
+            login="btr_sb_manager3",
+            email="btr_sb_manager3@example.com",
+            name="ผจก โอนงบ 3",
+            groups="base.group_user,budget.group_budget_manager",
+        )
+        transfer = self._submitted_transfer()
+        document = self._submit(transfer)
+        document.with_user(self.requestor).action_send()
+        self._gating_step(document).act_on_step(
+            "complete", None, actor=self.approver_user
+        )
+        transfer.invalidate_recordset()
+        self.assertEqual(transfer.state, "posted")
+        transfer.with_user(manager).action_reset_to_draft()
+        transfer.with_user(self.requestor).action_submit()
+        transfer.invalidate_recordset()
+        self.assertFalse(transfer.sarabun_has_live_document)
+        new_document = self._submit(transfer)
+        self.assertNotEqual(new_document, document)
+
     def test_reset_to_draft_from_rejected_requires_manager(self):
         manager = new_test_user(
             self.env,
             login="btr_sb_manager2",
+            email="btr_sb_manager2@example.com",
             name="ผจก โอนงบ 2",
             groups="base.group_user,budget.group_budget_manager",
         )
