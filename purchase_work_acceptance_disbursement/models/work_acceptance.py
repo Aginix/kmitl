@@ -128,8 +128,6 @@ class WorkAcceptanceLine(models.Model):
 
     def _prepare_disbursement_line_vals(self):
         """Convert WA line to disbursement request line vals."""
-        # ดึง account จาก product เหมือน PO line
-        account = self.product_id._get_disbursement_expense_account()
         # ดึง analytic จาก PO line ที่ link อยู่ (ถ้ามี)
         analytic = (
             self.purchase_line_id.analytic_distribution
@@ -145,7 +143,6 @@ class WorkAcceptanceLine(models.Model):
         return {
             "name": self.name,
             "amount": self.product_qty * self.price_unit,
-            "account_id": account.id if account else False,
             "tax_ids": [(6, 0, tax_ids)],
             "analytic_distribution": analytic,
         }

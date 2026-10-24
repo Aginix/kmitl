@@ -58,7 +58,7 @@
                 <field name="budget_account_id" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '!=', 'draft')]}" required="1" force_save="1" />
                 <!-- Loaded (hidden) so the line list can hide the
                      account column via parent. -->
-                <field name="is_budget_account_product_expense" invisible="1" />
+                <field name="is_line_account_locked" invisible="1" />
             </field>
             <xpath expr="//group[@name='dates']" position="inside">
                 <field name="budget_consumed_date" string="Budget Consumed / Disbursed On" widget="date" />
@@ -70,7 +70,7 @@
                  automatically, so the whole column is hidden and only
                  ordinary disbursements pick an account by hand. -->
             <xpath expr="//field[@name='line_ids']/tree/field[@name='account_id']" position="attributes">
-                <attribute name="attrs">{'column_invisible': [('parent.is_budget_account_product_expense', '=', True)], 'required': [('parent.is_budget_account_product_expense', '=', False)]}</attribute>
+                <attribute name="attrs">{'column_invisible': [('parent.is_line_account_locked', '=', True)], 'required': [('parent.is_line_account_locked', '=', False)]}</attribute>
             </xpath>
         </field>
     </record>

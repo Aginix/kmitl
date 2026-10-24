@@ -19,13 +19,13 @@ if self.budget_account_id.procurement_plan and not self.procurement_plan_analyti
         <field name="active" eval="True" />
     </record>
 
-    <!-- A procurement-plan budget code drives the line account automatically
-         from the expense account of budget.account.product_id. If that account
-         cannot be resolved the lines stay blank — block on submit with a clear
-         message instead of a raw "account required" error. -->
+    <!-- A procurement-plan budget code drives the line account automatically:
+         the GL account sharing the budget code. If there is none the lines
+         stay blank — block on submit with a clear message instead of a raw
+         "account required" error. -->
     <record id="excep_disbursement_procurement_no_product" model="exception.rule">
         <field name="name">รหัสงบประมาณงบลงทุนยังไม่ได้ผูกรหัสบัญชี</field>
-        <field name="description">รหัสงบประมาณค่าใช้จ่ายเป็นประเภททำแผนจัดซื้อจัดจ้าง แต่ยังไม่ได้ผูกสินค้า (product) ที่มีรหัสบัญชี จึงกำหนดรหัสบัญชีให้บรรทัดใบขอเบิกไม่ได้</field>
+        <field name="description">รหัสงบประมาณค่าใช้จ่ายเป็นประเภททำแผนจัดซื้อจัดจ้าง แต่ไม่มีรหัสบัญชีที่ตรงกับรหัสงบประมาณ จึงกำหนดรหัสบัญชีให้บรรทัดใบขอเบิกไม่ได้</field>
         <field name="sequence">71</field>
         <field name="model">disbursement.request</field>
         <field name="exception_type">by_py_code</field>

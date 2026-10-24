@@ -8,7 +8,6 @@
     "depends": [
         "procurement_plan_budget",
         "disbursement_budget",
-        "budget_product",
         "disbursement_pdf",
     ],
     "data": [

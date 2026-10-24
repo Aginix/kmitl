@@ -48,14 +48,15 @@ class DisbursementRequest(models.Model):
         states=DisbursementRequestBase.READONLY_STATES,
     )
 
-    # True when the budget code drives the line account itself (see
-    # ``_budget_account_line_account``): the account column is then hidden and
-    # stamped automatically. False for ordinary disbursements, where the user
-    # picks an account per line. Bridges that own such budget codes contribute to
-    # this single flag so the line list has one condition to key on.
-    is_budget_account_product_expense = fields.Boolean(
-        string="Account Derived From Budget Account",
-        compute="_compute_is_budget_account_product_expense",
+    # True when the line account is locked to the budget code's own account
+    # (see ``_budget_account_default_account``): the account column is then
+    # hidden and stamped automatically. False for ordinary disbursements, where
+    # lines start on that account and the user may pick another. Bridges that
+    # own such budget codes contribute to this single flag so the line list has
+    # one condition to key on.
+    is_line_account_locked = fields.Boolean(
+        string="Line Account Locked to Budget Code",
+        compute="_compute_is_line_account_locked",
     )
 
     budget_consumed_amount = fields.Monetary(
@@ -162,31 +163,25 @@ class DisbursementRequest(models.Model):
     # -------------------------------------------------------------------------
     # Budget-account driven line account
     # -------------------------------------------------------------------------
-    # Some budget codes carry their own GL account (through the product bound by
-    # budget_product), so the user must not pick it by hand. A bridge that owns
-    # such codes raises ``is_budget_account_product_expense`` and returns the
-    # account from ``_budget_account_line_account``; the stamping itself lives
-    # here and runs at ORM level, so it also lands on requests created
-    # programmatically and on fields the interactive onchange cannot reach (the
-    # account column is hidden).
+    # A line's GL account is the one sharing the request's budget code: lines
+    # start on it and the user may pick another. For some budget codes the user
+    # must not pick it by hand: a bridge that owns such codes raises
+    # ``is_line_account_locked`` and the account is then stamped on every line
+    # at ORM level, so it also lands on requests created programmatically and on
+    # fields the interactive onchange cannot reach (the account column is
+    # hidden).
     # A bridge overriding the compute declares the dependency it actually reads
     # (its own budget-code flag); Odoo merges ``@api.depends`` across every class
     # in the MRO that defines the method, so the base dependency below always
     # holds on top of it.
     @api.depends("budget_account_id")
-    def _compute_is_budget_account_product_expense(self):
+    def _compute_is_line_account_locked(self):
         for rec in self:
-            rec.is_budget_account_product_expense = False
-
-    def _budget_account_line_account(self):
-        """Account every line must carry, or an empty recordset when the user
-        picks the account by hand. Overridden per budget-code type."""
-        self.ensure_one()
-        return self.env["account.account"]
+            rec.is_line_account_locked = False
 
     def _budget_account_default_account(self):
-        """GL account sharing the budget code: the account a new line starts
-        with. The user may still pick another one."""
+        """GL account sharing the budget code: the account every line starts
+        with."""
         self.ensure_one()
         if not self.budget_account_id.code:
             return self.env["account.account"]
@@ -201,14 +196,14 @@ class DisbursementRequest(models.Model):
 
     def _fill_budget_account_account_on_lines(self):
         for rec in self:
-            if not rec.is_budget_account_product_expense:
+            if not rec.is_line_account_locked:
                 continue
             # The account follows the budget code unconditionally, blank
             # included: the account column is hidden for these codes — so
             # keeping the previous code's account would silently book the
             # expense against the wrong account with no way for the user to
             # correct it. A blank account is refused on submit.
-            account = rec._budget_account_line_account()
+            account = rec._budget_account_default_account()
             for line in rec.line_ids.filtered(lambda l: l.account_id != account):
                 line.account_id = account
                 if not line.name:

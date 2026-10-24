@@ -18,13 +18,13 @@ if self.budget_account_id.is_project and not self.kmitl_project_analytic_id:
         <field name="active" eval="True" />
     </record>
 
-    <!-- A project budget code drives the line account automatically from the
-         expense account of budget.account.product_id (see disbursement_request).
-         If that account cannot be resolved the lines stay blank — block on
-         submit with a clear message instead of a raw "account required" error. -->
+    <!-- A project budget code drives the line account automatically: the GL
+         account sharing the budget code. If there is none the lines stay
+         blank — block on submit with a clear message instead of a raw
+         "account required" error. -->
     <record id="excep_disbursement_project_no_product" model="exception.rule">
         <field name="name">รหัสงบประมาณโครงการยังไม่ได้ผูกรหัสบัญชี</field>
-        <field name="description">รหัสงบประมาณค่าใช้จ่ายเป็นประเภทโครงการ แต่ยังไม่ได้ผูกสินค้า (product) ที่มีรหัสบัญชี จึงกำหนดรหัสบัญชีให้บรรทัดใบขอเบิกไม่ได้</field>
+        <field name="description">รหัสงบประมาณค่าใช้จ่ายเป็นประเภทโครงการ แต่ไม่มีรหัสบัญชีที่ตรงกับรหัสงบประมาณ จึงกำหนดรหัสบัญชีให้บรรทัดใบขอเบิกไม่ได้</field>
         <field name="sequence">61</field>
         <field name="model">disbursement.request</field>
         <field name="exception_type">by_py_code</field>

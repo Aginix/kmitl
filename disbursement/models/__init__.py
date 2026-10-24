@@ -4,7 +4,6 @@ from . import disbursement_request
 from . import disbursement_request_line
 from . import disbursement_request_signature
 from . import exception_rule
-from . import product_product
 # Imported after disbursement_request so its return / re-verification workflow
 # overrides sit on top of the base model in the method resolution order.
 from . import disbursement_return

@@ -7,9 +7,7 @@ loads (and Odoo drops the old columns and makes ``account_id`` NOT NULL):
 1. lines without an account take their product's expense account (product,
    then product category — what the old product onchange filled in), else the
    account sharing the product's code (budget-code products carry the GL code
-   and often have no expense account; same rule as
-   ``product.product._get_disbursement_expense_account``, which is not loaded
-   yet here);
+   and often have no expense account);
 2. ``amount`` is created and filled with ``quantity * price_unit``, the
    untaxed amount the line was worth before.
 """

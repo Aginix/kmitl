@@ -50,18 +50,12 @@ class DisbursementRequest(models.Model):
             rec.analytic_distribution = distribution if distribution else False
 
     # For procurement-plan expenses the line account is not chosen by hand — it is the
-    # expense account of the product bound to the budget account
-    # (budget_product). Hand both to the disbursement hooks, which hide the
-    # account column and stamp it on every line at ORM level. A code whose
-    # account cannot be resolved leaves the lines blank and is refused on submit
-    # by the excep_disbursement_procurement_no_product rule.
+    # GL account sharing the budget code. Raising the flag makes the
+    # disbursement hooks hide the account column and stamp it on every line at
+    # ORM level. A code with no such account leaves the lines blank and is
+    # refused on submit by the excep_disbursement_procurement_no_product rule.
     @api.depends("budget_account_id.procurement_plan")
-    def _compute_is_budget_account_product_expense(self):
-        super()._compute_is_budget_account_product_expense()
+    def _compute_is_line_account_locked(self):
+        super()._compute_is_line_account_locked()
         for rec in self.filtered("is_procurement_plan_expense"):
-            rec.is_budget_account_product_expense = True
-
-    def _budget_account_line_account(self):
-        if self.is_procurement_plan_expense:
-            return self.budget_account_id.product_id._get_disbursement_expense_account()
-        return super()._budget_account_line_account()
+            rec.is_line_account_locked = True

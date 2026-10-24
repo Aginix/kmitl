@@ -8,7 +8,6 @@
     "depends": [
         "kmitl_project",
         "disbursement_budget",
-        "budget_product",
         "disbursement_pdf",
     ],
     "data": [
@@ -21,6 +20,6 @@
     "installable": True,
     # Glue module: surface the project's disbursements automatically whenever both
     # sides are present (disbursement_pdf is pulled in, not a trigger).
-    "auto_install": ["kmitl_project", "disbursement_budget", "budget_product"],
+    "auto_install": ["kmitl_project", "disbursement_budget"],
     "license": "LGPL-3",
 }
