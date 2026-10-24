@@ -39,10 +39,12 @@ class KmitlStudentCatalog(models.AbstractModel):
         ).rstrip("/")
         key = params.get_param("partner_student_kmitl_api.api_key")
         if not key:
+            # Configuration detail stays in the log, not in front of users.
+            _logger.warning("KMITL student catalog: no API key set")
             raise UserError(
                 _(
-                    "The KMITL student catalog API key is not set "
-                    "(Settings > General Settings > Integrations)."
+                    "The KMITL student catalog is not connected, "
+                    "please contact your administrator."
                 )
             )
         found = {}
@@ -59,10 +61,7 @@ class KmitlStudentCatalog(models.AbstractModel):
             except (requests.RequestException, ValueError) as error:
                 _logger.warning("KMITL student catalog lookup failed: %s", error)
                 raise UserError(
-                    _(
-                        "Cannot reach the KMITL student catalog, please try again later.\n%s"
-                    )
-                    % error
+                    _("Cannot reach the KMITL student catalog, please try again later.")
                 ) from error
             # The spec wraps the list in {"students": [...]}; the live API
             # answers a bare list.
