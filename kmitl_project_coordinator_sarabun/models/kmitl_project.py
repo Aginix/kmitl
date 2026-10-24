@@ -57,7 +57,9 @@ class KmitlProject(models.Model):
     def _sync_sarabun_owner_followers(self, previous_partners=None):
         """Make the project's owners followers of its หนังสือ — the follower read
         rule lets them open it (ADR-0013) — and unsubscribe owners who were
-        removed, except the หนังสือ's sender."""
+        removed from the still-open หนังสือ, except its sender. A finished
+        หนังสือ (completed / rejected / cancelled) keeps them: they stay able to
+        read what was decided while they owned the project."""
         for rec in self:
             documents = rec._all_sarabun_documents()
             if not documents:
@@ -66,7 +68,9 @@ class KmitlProject(models.Model):
             documents.message_subscribe(partner_ids=owners.ids)
             removed = (previous_partners or owners.browse()) - owners
             if removed:
-                for document in documents:
+                for document in documents.filtered(
+                    lambda d: d.state not in ("completed", "rejected", "cancelled")
+                ):
                     document.message_unsubscribe(
                         partner_ids=(removed - document.sender_user_id.partner_id).ids
                     )

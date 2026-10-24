@@ -28,3 +28,9 @@ class TestOwnerFollowers(KmitlProjectCoordinatorCommon):
         self.project.coordinator_ids = [Command.set(self.stranger.ids)]
         self.assertIn(self.stranger.partner_id, self.document.message_partner_ids)
         self.assertNotIn(self.coordinator.partner_id, self.document.message_partner_ids)
+
+    def test_removed_owner_keeps_finished_document(self):
+        self.document.state = "completed"
+        self.project.coordinator_ids = [Command.set(self.stranger.ids)]
+        self.assertIn(self.coordinator.partner_id, self.document.message_partner_ids)
+        self.assertIn(self.stranger.partner_id, self.document.message_partner_ids)
