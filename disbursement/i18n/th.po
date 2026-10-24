@@ -401,6 +401,20 @@ msgid "Draft"
 msgstr "ฉบับร่าง"
 
 #. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_request.py:0
+#, python-format
+msgid "Draft Request #%s"
+msgstr "ใบขอเบิกฉบับร่าง #%s"
+
+#. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_request.py:0
+#, python-format
+msgid "A request that was approved cannot be deleted, even once cancelled."
+msgstr "ใบขอเบิกที่เคยอนุมัติแล้วลบไม่ได้ แม้จะยกเลิกแล้วก็ตาม"
+
+#. module: disbursement
 #: model:ir.model,name:disbursement.model_exception_rule
 msgid "Exception Rule"
 msgstr ""
@@ -546,7 +560,7 @@ msgstr ""
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__main_exception_id
 msgid "Main Exception"
-msgstr ""
+msgstr "ข้อยกเว้นหลัก"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__message_has_error
@@ -665,6 +679,7 @@ msgstr "จำนวน"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__partner_bank_id
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request_line__partner_bank_id
 msgid "Recipient Bank"
 msgstr "บัญชีธนาคารผู้รับ"
 
@@ -819,7 +834,7 @@ msgstr ""
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request_line__price_unit
 msgid "Unit Price"
-msgstr "ราคา"
+msgstr "จำนวนเงิน"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__amount_untaxed
@@ -1274,8 +1289,15 @@ msgstr "สำรองจ่าย"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__note
-msgid "Note"
-msgstr "หมายเหตุ"
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+msgid "Description"
+msgstr "รายละเอียด"
+
+#. module: disbursement
+#. odoo-javascript
+#: code:addons/disbursement/static/src/approval_queue/approval_queue.js:0
+msgid "Details"
+msgstr "รายละเอียด"
 
 #. module: disbursement
 #. odoo-python
@@ -1915,3 +1937,68 @@ msgstr "ผู้รับเงินต่อไปนี้ไม่ใช่
 #, python-format
 msgid "Set a payee type on %s before raising a disbursement request."
 msgstr "กรุณาระบุประเภทผู้รับเงินของ %s ก่อนสร้างใบขอเบิก"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__memo_number
+msgid "Memo Number"
+msgstr "เลขที่หนังสือ"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__has_tax
+msgid "Taxable"
+msgstr "มีภาษี"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__partner_type_company_type
+msgid "Payee Company Type"
+msgstr "ลักษณะประเภทผู้รับเงิน"
+
+#. module: disbursement
+#: code:addons/disbursement/models/disbursement_request.py:0
+msgid "A request paid to a company must be taxable."
+msgstr "ใบขอเบิกที่จ่ายให้บริษัทต้องมีภาษี"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__sign_date
+msgid "Head Signed On"
+msgstr "วันที่หน่วยงานลงนาม"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+msgid "Dates"
+msgstr "วันที่"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+msgid "Verification Date"
+msgstr "วันที่ตรวจสอบ"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+msgid "Request Approved On"
+msgstr "วันที่อนุมัติใบขอเบิก"
+
+#. module: disbursement
+#: code:addons/disbursement/models/disbursement_request.py:0
+msgid "Only a disbursement officer can cancel an approved request."
+msgstr "ใบขอเบิกที่อนุมัติแล้วยกเลิกได้เฉพาะเจ้าหน้าที่การเงินเท่านั้น"
+
+#. module: disbursement
+#: code:addons/disbursement/models/disbursement_request.py:0
+msgid "Only cancelled requests can be deleted."
+msgstr "ลบได้เฉพาะใบขอเบิกที่ยกเลิกแล้วเท่านั้น"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+msgid "Cancel this disbursement request?"
+msgstr "ยืนยันการยกเลิกใบขอเบิกนี้?"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request_line__partner_id
+msgid "Partner"
+msgstr "ผู้รับเงิน"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+msgid "<span class=\"o_stat_text\">Preview</span>"
+msgstr "<span class=\"o_stat_text\">ตัวอย่าง</span>"

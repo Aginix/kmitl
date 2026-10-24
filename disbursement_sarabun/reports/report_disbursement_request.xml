@@ -131,10 +131,10 @@
         </t>
 
         <!-- Notes -->
-        <div class="row" t-if="o.note">
+        <div class="row" t-if="o._has_description()">
             <div class="col">
-                <strong>หมายเหตุ:</strong>
-                <span class="ms-2" t-out="o.note"/>
+                <strong>รายละเอียด:</strong>
+                <div t-out="o.note"/>
             </div>
         </div>
     </template>

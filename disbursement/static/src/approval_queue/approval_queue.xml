@@ -165,7 +165,8 @@
                                             </div>
                                         </div>
                                         <div t-if="dr.note" class="mb-2">
-                                            <strong><t t-esc="labels.note"/>:</strong> <t t-esc="dr.note"/>
+                                            <strong><t t-esc="labels.note"/>:</strong>
+                                            <div t-out="dr.note"/>
                                         </div>
                                         <table class="table table-sm table-bordered mb-0 bg-white">
                                             <thead>

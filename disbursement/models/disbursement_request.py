@@ -3,6 +3,7 @@
 import logging
 
 from odoo import _, api, fields, models
+from odoo.tools import is_html_empty
 from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
@@ -18,6 +19,10 @@ DR_APPROVE_FINANCE_ACTIVITY = "disbursement.mail_activity_dr_approve_finance"
 DR_APPROVE_RECTOR_ACTIVITY = "disbursement.mail_activity_dr_approve_rector"
 # Pushed to the requester when an approver rejects the request.
 DR_REJECTED_ACTIVITY = "disbursement.mail_activity_dr_rejected"
+# Up to the final approval a request may still be reset to draft or cancelled
+# by its requester, and its description edited; past it only the finance
+# officers may cancel it.
+PRE_APPROVAL_STATES = ("draft", "submitted", "signed", "verified")
 
 
 class DisbursementRequest(models.Model):
@@ -78,6 +83,12 @@ class DisbursementRequest(models.Model):
         states=READONLY_STATES,
     )
 
+    # Loaded on the form so มีภาษี can be locked for a company payee type.
+    partner_type_company_type = fields.Selection(
+        related="partner_type_id.company_type",
+        string="Payee Company Type",
+    )
+
     payee_display = fields.Char(
         string="Payees",
         compute="_compute_payee_display",
@@ -103,9 +114,43 @@ class DisbursementRequest(models.Model):
         states=READONLY_STATES,
     )
 
-    note = fields.Text(
-        string="Note",
+    # เลขที่หนังสือ: stamped by disbursement_sarabun when e-Saraban issues the
+    # หนังสือ's number; typed from the memo on a direct claim
+    # (disbursement_direct_claim).
+    memo_number = fields.Char(
+        string="Memo Number",
+        tracking=True,
+        copy=False,
+        index=True,
         states=READONLY_STATES,
+    )
+
+    # วันที่หน่วยงานลงนาม: stamped when the request turns ``signed`` (the head's
+    # e-Saraban signature) unless already set — a direct claim types the date
+    # of its external memo (disbursement_direct_claim).
+    sign_date = fields.Date(
+        string="Head Signed On",
+        tracking=True,
+        copy=False,
+        states=READONLY_STATES,
+    )
+
+    # มีภาษี: off clears VAT and WHT from every line and hides the tax columns.
+    has_tax = fields.Boolean(
+        string="Taxable",
+        default=True,
+        tracking=True,
+        states=READONLY_STATES,
+    )
+
+    # Still editable until the request is approved.
+    note = fields.Html(
+        string="Description",
+        states={
+            state: modifier
+            for state, modifier in READONLY_STATES.items()
+            if state not in PRE_APPROVAL_STATES
+        },
     )
 
     company_id = fields.Many2one(
@@ -391,21 +436,30 @@ class DisbursementRequest(models.Model):
                     % ", ".join(sorted(missing))
                 )
 
+    # Also onchange handlers (as in receipt_kmitl): the form sends the hidden
+    # analytic_distribution with the dimensions on save, so it must already
+    # hold them — else its stale value wins over these inverses and the
+    # dimensions typed by hand are lost. One field per handler: reassigning
+    # the distribution recomputes every dimension field.
+    @api.onchange("activity_analytic_id")
     def _inverse_activity_analytic(self):
         """Update distribution when activity changes"""
         for line in self:
             line._update_analytic_distribution("activities")
 
+    @api.onchange("department_analytic_id")
     def _inverse_department_analytic(self):
         """Update distribution when department changes"""
         for line in self:
             line._update_analytic_distribution("departments")
 
+    @api.onchange("fund_analytic_id")
     def _inverse_fund_analytic(self):
         """Update distribution when fund changes"""
         for line in self:
             line._update_analytic_distribution("funds")
 
+    @api.onchange("source_analytic_id")
     def _inverse_source_analytic(self):
         """Update distribution when source changes"""
         for line in self:
@@ -503,6 +557,39 @@ class DisbursementRequest(models.Model):
                 }
             }
 
+    # -------------------------------------------------------------------------
+    # Taxable (มีภาษี)
+    # -------------------------------------------------------------------------
+    @api.onchange("payment_type", "partner_type_id")
+    def _onchange_has_tax_default(self):
+        """A company is always taxed; an advance or a prepayment starts out
+        untaxed (the user may tick it back)."""
+        if self.partner_type_id.company_type == "company":
+            self.has_tax = True
+        elif self.payment_type in ("advance", "prepaid"):
+            self.has_tax = False
+
+    @api.constrains("has_tax", "partner_type_id")
+    def _check_has_tax_company(self):
+        for rec in self:
+            if not rec.has_tax and rec.partner_type_id.company_type == "company":
+                raise ValidationError(
+                    _("A request paid to a company must be taxable.")
+                )
+
+    @api.onchange("has_tax")
+    def _onchange_has_tax(self):
+        if not self.has_tax:
+            self.line_ids.update({"tax_ids": [(5, 0, 0)], "wht_tax_id": False})
+
+    def _clear_untaxed_lines(self):
+        """Keep programmatic creates/writes consistent with ``has_tax``."""
+        lines = self.filtered(lambda r: not r.has_tax).line_ids.filtered(
+            lambda l: l.tax_ids or l.wht_tax_id
+        )
+        if lines:
+            lines.write({"tax_ids": [(5, 0, 0)], "wht_tax_id": False})
+
     @api.model
     def _get_payee_type(self, partner):
         """The type a request paying ``partner`` must carry — for bridges that
@@ -560,12 +647,9 @@ class DisbursementRequest(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
-        """Override create to generate the sequence number.
-
-        The DR name follows the pattern DR/<fy>/<padding> (e.g. DR/69/0001),
-        mirroring the per-fiscal-year scheme that purchase_request_sequence_kmitl
-        uses. A dedicated ir.sequence is created on first use per fiscal year.
-        """
+        """Default the fiscal year. The number is not drawn here but on submit
+        (``_assign_number``): a draft stays "/" so abandoned drafts leave no
+        gaps in the DR/<fy>/ sequence."""
         Company = self.env["res.company"]
         for vals in vals_list:
             date = fields.Date.to_date(
@@ -577,18 +661,15 @@ class DisbursementRequest(models.Model):
             if not vals.get("account_fiscal_year_id"):
                 fy = self._default_fiscal_year(date, company)
                 vals["account_fiscal_year_id"] = fy.id if fy else False
-            if vals.get("name") and vals["name"] != "/":
-                continue
 
-            vals["name"] = self._next_number(
-                self.env["account.fiscal.year"].browse(vals["account_fiscal_year_id"]),
-                date,
-            )
-
-        return super().create(vals_list)
+        records = super().create(vals_list)
+        records._clear_untaxed_lines()
+        return records
 
     def write(self, vals):
         res = super().write(vals)
+        if "has_tax" in vals or "line_ids" in vals:
+            self._clear_untaxed_lines()
         if vals.get("account_fiscal_year_id"):
             # The number follows the year: a draft moved to another year gets
             # that year's next number.
@@ -597,6 +678,13 @@ class DisbursementRequest(models.Model):
                 if rec.name.startswith("DR/") and not rec.name.startswith(prefix):
                     rec.name = rec._next_number(rec.account_fiscal_year_id, rec.date)
         return res
+
+    def _assign_number(self):
+        """Draw the DR/<fy>/<nnnn> number on first submit, mirroring the
+        per-fiscal-year scheme of purchase_request_sequence_kmitl. A request
+        reset to draft keeps its number."""
+        for rec in self.filtered(lambda r: not r.name or r.name == "/"):
+            rec.name = rec._next_number(rec.account_fiscal_year_id, rec.date)
 
     @api.model
     def _number_prefix(self, fiscal_year, date):
@@ -703,6 +791,7 @@ class DisbursementRequest(models.Model):
                 )
             if record.detect_exceptions() and not record.ignore_exception:
                 return record._popup_exceptions()
+            record._assign_number()
             record.state = "submitted"
         return True
 
@@ -712,6 +801,8 @@ class DisbursementRequest(models.Model):
             if record.state != "submitted":
                 raise UserError(_("Only submitted requests can be signed."))
             record.state = "signed"
+            if not record.sign_date:
+                record.sign_date = fields.Date.context_today(record)
         return True
 
     def action_validate(self):
@@ -1000,10 +1091,17 @@ class DisbursementRequest(models.Model):
         Bridge modules override this to add bill/payment-specific guards
         and cleanup (cancel draft bills, block on posted bills/payments).
         """
+        officer = self.env.su or self.env.user.has_group(
+            "disbursement.group_disbursement_officer"
+        )
         for record in self:
             if record.state == "cancel":
                 raise UserError(
                     _("Cannot cancel an already cancelled request.")
+                )
+            if record.state not in PRE_APPROVAL_STATES and not officer:
+                raise UserError(
+                    _("Only a disbursement officer can cancel an approved request.")
                 )
             record._on_cancel()
             record.state = "cancel"
@@ -1018,12 +1116,56 @@ class DisbursementRequest(models.Model):
                     _("Only submitted, signed, verified, or cancelled requests can be reset to draft.")
                 )
             record.state = "draft"
+            # Signed again on the next round.
+            if not record._keep_sign_date_on_draft():
+                record.sign_date = False
             record.exception_ids = False
             record.main_exception_id = False
             record.ignore_exception = False
         self._reset_verification()
         self._reset_approval()
         return True
+
+    def _keep_sign_date_on_draft(self):
+        """A request returned for correction keeps the head's signature: it is
+        resubmitted straight to verification (``action_resubmit_verification``)."""
+        self.ensure_one()
+        return self.returned_for_edit
+
+    def unlink(self):
+        if self.filtered(lambda r: r.state != "cancel"):
+            raise UserError(_("Only cancelled requests can be deleted."))
+        # Its budget moves and bills refer to it: keep it for the audit trail.
+        # The final approval's signature row survives a cancel (archived).
+        if (
+            self.env["disbursement.request.signature"]
+            .sudo()
+            .with_context(active_test=False)
+            .search_count(
+                [("request_id", "in", self.ids), ("step", "=", "rector_approve")]
+            )
+        ):
+            raise UserError(
+                _("A request that was approved cannot be deleted, even once cancelled.")
+            )
+        return super().unlink()
+
+    def _has_description(self):
+        """Whether รายละเอียด holds content: a cleared Html editor leaves
+        ``<p><br></p>`` behind (for templates rendered without is_html_empty)."""
+        self.ensure_one()
+        return not is_html_empty(self.note)
+
+    def name_get(self):
+        # A draft has no number until its first submit (``_assign_number``).
+        # A plain loop: _() finds the language from this frame's ``self``.
+        result = []
+        for rec in self:
+            name = rec.name
+            if not name or name == "/":
+                name = _("Draft Request #%s") % (rec._origin.id or "")
+            result.append((rec.id, name))
+        return result
 
     def _compute_access_url(self):
         """Compute the portal URL for the disbursement request."""
@@ -1034,7 +1176,7 @@ class DisbursementRequest(models.Model):
     def _get_report_base_filename(self):
         """Return the base filename for the report."""
         self.ensure_one()
-        return f"Disbursement Request-{self.name}"
+        return f"Disbursement Request-{self.display_name}"
 
     @api.model
     def _get_masked_acc_number(self, acc_number):

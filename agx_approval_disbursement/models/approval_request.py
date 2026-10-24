@@ -1,5 +1,6 @@
 from odoo import Command, _, api, fields, models
 from odoo.exceptions import UserError
+from odoo.tools import plaintext2html
 
 
 class ApprovalRequest(models.Model):
@@ -32,12 +33,20 @@ class ApprovalRequest(models.Model):
         self.ensure_one()
         return self._disbursement_pick_request(self.disbursement_request_ids)
 
+    def _disbursement_note(self):
+        """The DR's Html note from ``description`` — Text here, Html when
+        agx_approval_description_html is installed."""
+        self.ensure_one()
+        if not self.description or self._fields["description"].type == "html":
+            return self.description
+        return plaintext2html(self.description)
+
     def _disbursement_apply_correction(self, dr):
         """Push the corrected recipient bank, description and disbursement
         evidence onto the still-signed DR. The banner/To-Do/state bookkeeping
         is handled generically by disbursement.request._apply_source_correction."""
         self.ensure_one()
-        dr.note = self.description
+        dr.note = self._disbursement_note()
         allocs = self.allocation_ids.filtered("partner_bank_id")
         for line in dr.line_ids:
             candidates = allocs.filtered(lambda a: a.partner_id == line.partner_id)
@@ -169,7 +178,7 @@ class ApprovalRequest(models.Model):
                 Command.create(alloc._prepare_disbursement_request_line_vals())
                 for alloc in allocations
             ],
-            "note": self.description,
+            "note": self._disbursement_note(),
             "budget_commitment_id": self.budget_commitment_id.id,
             "budget_account_id": self.budget_account_id.id,
             "analytic_distribution": self.analytic_distribution,
@@ -220,7 +229,7 @@ class ApprovalRequest(models.Model):
             self.message_post(
                 body=_(
                     "Disbursement %(dr_name)s created successfully.",
-                    dr_name=disbursement.name,
+                    dr_name=disbursement.display_name,
                 ),
                 message_type="comment",
             )

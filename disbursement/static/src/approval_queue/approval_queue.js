@@ -2,8 +2,8 @@
 
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
-import { _t } from "@web/core/l10n/translation";
-import { Component, useState, onWillStart } from "@odoo/owl";
+import { _lt, _t } from "@web/core/l10n/translation";
+import { Component, markup, useState, onWillStart } from "@odoo/owl";
 import { MultiRecordSelect } from "./multi_record_select";
 
 const DR_FIELDS = [
@@ -31,16 +31,17 @@ const FILTER_FIELDS = {
 };
 
 // The two approver stages, keyed by the client action's context.approval_stage.
+// _lt: this runs at module load, before the translations are fetched.
 const STAGES = {
     finance: {
         state: "pending_finance",
         method: "action_approve_finance",
-        title: _t("Awaiting Finance Director approval"),
+        title: _lt("Awaiting Finance Director approval"),
     },
     rector: {
         state: "pending_rector",
         method: "action_approve",
-        title: _t("Awaiting Rector-delegated approval"),
+        title: _lt("Awaiting Rector-delegated approval"),
     },
 };
 
@@ -88,7 +89,7 @@ export class ApprovalQueue extends Component {
             source: _t("Source"),
             fund: _t("Fund"),
             activity: _t("Activity"),
-            note: _t("Note"),
+            note: _t("Details"),
             open: _t("Open"),
             fiscalYear: _t("Fiscal Year"),
             dateFrom: _t("Date From"),
@@ -140,6 +141,13 @@ export class ApprovalQueue extends Component {
             DR_FIELDS,
             { order: "date desc, id desc" }
         );
+        // note is an Html field: render it, don't escape it. A cleared
+        // editor leaves "<p><br></p>": no text and no image is no note.
+        for (const dr of this.state.requests) {
+            const body = new DOMParser().parseFromString(dr.note || "", "text/html").body;
+            const empty = !body.textContent.trim() && !body.querySelector("img");
+            dr.note = !empty && markup(dr.note);
+        }
         const ids = this.state.requests.map((dr) => dr.id);
         this.state.selectedIds = this.state.selectedIds.filter((id) =>
             ids.includes(id)

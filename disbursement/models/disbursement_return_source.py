@@ -2,6 +2,7 @@
 
 from odoo import _, fields, models
 from odoo.exceptions import UserError
+from odoo.tools import plaintext2html
 
 # Generic return/correction To-Do activity types (data/mail_activity_type_data.xml).
 # Matched by activity_type_id (language-independent), so resolution works
@@ -117,7 +118,7 @@ class DisbursementReturnSourceMixin(models.AbstractModel):
         bookkeeping is handled by the DR side (``_apply_source_correction``)."""
         self.ensure_one()
         if self.disbursement_return_note:
-            dr.note = self.disbursement_return_note
+            dr.note = plaintext2html(self.disbursement_return_note)
         if self.disbursement_return_bank_id:
             dr.line_ids.write(
                 {"partner_bank_id": self.disbursement_return_bank_id.id}

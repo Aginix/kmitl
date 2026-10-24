@@ -1300,6 +1300,7 @@ class SarabunDocument(models.Model):
         # ลงวันที่ = the day the number is issued (the ลงนามในใบปะหน้า sign), so ที่ and
         # ลงวันที่ share one ปีงบ — the counter is bucketed on the same day (ADR-0017).
         self.date = fields.Date.context_today(self)
+        self._call_origin("_on_sarabun_numbered", self)
 
     def _void_register(self, reason):
         """Void the register number as a permanent gap (เลขยกเลิก) — never reissued.

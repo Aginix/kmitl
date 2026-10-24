@@ -7,10 +7,12 @@
         <field name="arch" type="xml">
             <tree string="Disbursement Requests">
                 <field name="name" />
+                <field name="memo_number" optional="hide" />
                 <field name="partner_type_id" optional="show" />
                 <field name="payee_display" />
                 <field name="user_id" optional="show" />
-                <field name="date" />
+                <field name="date" optional="hide" />
+                <field name="sign_date" optional="show" />
                 <field name="account_fiscal_year_id" options="{'no_open': True}" />
                 <field name="amount_total" />
                 <field
@@ -106,14 +108,22 @@
                         string="Reset to draft"
                         type="object"
                         class="btn btn-secondary"
-                        attrs="{'invisible': [('state', 'not in', ('submitted', 'signed', 'cancel'))]}"
-                        groups="disbursement.group_disbursement_manager"
+                        attrs="{'invisible': [('state', 'not in', ('submitted', 'signed', 'verified', 'cancel'))]}"
                     />
                     <button
                         name="action_cancel"
                         string="Cancel"
                         type="object"
-                        attrs="{'invisible': ['|', ('state', '=', 'cancel'), ('pipeline_status', 'in', ('bill_posted', 'payment_draft', 'payment_posted', 'done'))]}"
+                        confirm="Cancel this disbursement request?"
+                        attrs="{'invisible': [('state', 'not in', ('draft', 'submitted', 'signed', 'verified'))]}"
+                    />
+                    <!-- Past the final approval: finance officers only. -->
+                    <button
+                        name="action_cancel"
+                        string="Cancel"
+                        type="object"
+                        confirm="Cancel this disbursement request?"
+                        attrs="{'invisible': ['|', ('state', 'in', ('draft', 'submitted', 'signed', 'verified', 'cancel')), ('pipeline_status', 'in', ('bill_posted', 'payment_draft', 'payment_posted', 'done'))]}"
                         groups="disbursement.group_disbursement_officer"
                     />
                     <field name="state" invisible="1" />
@@ -223,7 +233,8 @@
                             name="disbursement_information"
                             string="Disbursement Information"
                         >
-                            <field name="date" />
+                            <!-- Not used: the dates that matter are in the Dates group. -->
+                            <field name="date" invisible="1" />
                             <field
                                 name="payment_type"
                                 widget="radio"
@@ -236,7 +247,15 @@
                                 name="partner_type_id"
                                 options="{'no_create': True, 'no_open': True}"
                             />
-                            <field name="note" />
+                            <!-- Stamped by e-Saraban (disbursement_sarabun); a
+                                 direct claim types it (disbursement_direct_claim). -->
+                            <field name="memo_number" readonly="1" />
+                            <field name="partner_type_company_type" invisible="1" />
+                            <field
+                                name="has_tax"
+                                attrs="{'readonly': ['|', ('partner_type_company_type', '=', 'company'), ('state', '!=', 'draft')]}"
+                                force_save="1"
+                            />
                         </group>
                         <group
                             id="budget"
@@ -275,6 +294,29 @@
                             <field name="analytic_distribution" invisible="1" />
                             <field name="currency_id" invisible="1" />
                         </group>
+                    </group>
+
+                    <!-- The request's content, before its metadata; rich text,
+                         so full width rather than squeezed into a column. -->
+                    <group name="description" string="Description">
+                        <field name="note" nolabel="1" colspan="2" />
+                    </group>
+
+                    <group>
+                        <!-- One date per step. -->
+                        <group id="dates" name="dates" string="Dates">
+                            <field name="sign_date" readonly="1" />
+                            <field
+                                name="verify_date"
+                                string="Verification Date"
+                                widget="date"
+                            />
+                            <field
+                                name="rector_approve_date"
+                                string="Request Approved On"
+                                widget="date"
+                            />
+                        </group>
                         <group
                             id="other_information"
                             name="other_information"
@@ -298,10 +340,6 @@
                                 attrs="{'invisible': [('verifier_id', '=', False)]}"
                             />
                             <field
-                                name="verify_date"
-                                attrs="{'invisible': [('verifier_id', '=', False)]}"
-                            />
-                            <field
                                 name="finance_approver_id"
                                 attrs="{'invisible': [('finance_approver_id', '=', False)]}"
                             />
@@ -311,10 +349,6 @@
                             />
                             <field
                                 name="rector_approver_id"
-                                attrs="{'invisible': [('rector_approver_id', '=', False)]}"
-                            />
-                            <field
-                                name="rector_approve_date"
                                 attrs="{'invisible': [('rector_approver_id', '=', False)]}"
                             />
                             <field
@@ -351,15 +385,28 @@
                                     <!-- No no_open: the user opens the partner from here
                                          to add a missing bank account. -->
                                     <field name="partner_id" required="1" />
-                                    <field name="partner_bank_id" optional="show" />
+                                    <!-- Accounts are managed through the payee bank wizard
+                                         (disbursement_partner_bank), not from here. -->
+                                    <field
+                                        name="partner_bank_id"
+                                        optional="show"
+                                        options="{'no_open': True, 'no_create': True, 'no_edit': True}"
+                                    />
                                     <field name="product_id" />
                                     <!-- Kept loaded: the product onchange fills the
                                          description and the quantity defaults to 1. -->
                                     <field name="name" invisible="1" />
                                     <field name="quantity" invisible="1" />
                                     <field name="price_unit" />
-                                    <field name="tax_ids" widget="many2many_tags" />
-                                    <field name="wht_tax_id" />
+                                    <field
+                                        name="tax_ids"
+                                        widget="many2many_tags"
+                                        attrs="{'column_invisible': [('parent.has_tax', '=', False)]}"
+                                    />
+                                    <field
+                                        name="wht_tax_id"
+                                        attrs="{'column_invisible': [('parent.has_tax', '=', False)]}"
+                                    />
                                     <field name="account_id" optional="hide" />
                                     <field
                                         name="analytic_distribution"
@@ -368,10 +415,21 @@
                                         readonly="1"
                                         optional="hide"
                                     />
-                                    <field name="price_subtotal" />
-                                    <field name="price_tax" optional="show" />
-                                    <field name="amount_wht" optional="show" />
-                                    <field name="price_total" />
+                                    <field
+                                        name="price_subtotal"
+                                        attrs="{'column_invisible': [('parent.has_tax', '=', False)]}"
+                                    />
+                                    <field
+                                        name="price_tax"
+                                        optional="show"
+                                        attrs="{'column_invisible': [('parent.has_tax', '=', False)]}"
+                                    />
+                                    <field
+                                        name="amount_wht"
+                                        optional="show"
+                                        attrs="{'column_invisible': [('parent.has_tax', '=', False)]}"
+                                    />
+                                    <field name="price_total" optional="hide" />
                                     <field name="company_id" invisible="1" />
                                     <field name="currency_id" invisible="1" />
                                 </tree>
@@ -386,7 +444,10 @@
                                     attrs="{'invisible': [('amount_tax', '=', 0)]}"
                                 />
                                 <field name="amount_total" />
-                                <field name="amount_wht" />
+                                <field
+                                    name="amount_wht"
+                                    attrs="{'invisible': [('has_tax', '=', False)]}"
+                                />
                                 <field
                                     name="amount_net"
                                     class="oe_subtotal_footer_separator"
@@ -394,7 +455,11 @@
                             </group>
                             <div class="oe_clear" />
                         </page>
-                        <page string="WHT" name="wht">
+                        <page
+                            string="WHT"
+                            name="wht"
+                            attrs="{'invisible': [('has_tax', '=', False)]}"
+                        >
                             <field name="wht_line_ids" nolabel="1">
                                 <tree create="0" delete="0" edit="0">
                                     <field name="partner_id" string="Disburser" />
@@ -455,6 +520,7 @@
         <field name="arch" type="xml">
             <search string="Disbursement Requests">
                 <field name="name" string="Name" />
+                <field name="memo_number" />
                 <field
                     name="line_ids"
                     string="Payee"
