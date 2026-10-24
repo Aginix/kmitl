@@ -43,9 +43,13 @@ class ResPartner(models.Model):
         """``{student_code: contact}`` for the students already on a contact:
         by student ID, else by national ID on a student contact without one
         (ADR 0001). Two searches however many codes; never creates."""
+        # Archived contacts too: the student ID stays unique among them. Back
+        # in the caller's env, so their bank_ids etc. still skip archived rows.
         found = {
             partner.student_code: partner
-            for partner in self.search([("student_code", "in", list(vat_by_code))])
+            for partner in self.with_context(active_test=False)
+            .search([("student_code", "in", list(vat_by_code))])
+            .with_env(self.env)
         }
         code_by_vat = {
             vat: code for code, vat in vat_by_code.items() if vat and code not in found
