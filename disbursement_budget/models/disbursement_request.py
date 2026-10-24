@@ -58,6 +58,21 @@ class DisbursementRequest(models.Model):
         compute="_compute_is_budget_account_product_expense",
     )
 
+    # Budget control is installed and the request has a source document, but
+    # the money is not the institute's to spend — returning a supplier's own
+    # security deposit, say — so there is nothing to consume. A source bridge
+    # that owns such documents raises this; it is never set by hand. Visible
+    # rather than silent: the approver has to know their signature moved no
+    # budget. See ADR-0001. Distinct from a Stand-alone request, which has no
+    # source document either.
+    is_non_budget = fields.Boolean(
+        string="No Budget Consumed",
+        compute="_compute_is_non_budget",
+        store=True,
+        help="This request consumes no budget, so approving it posts no "
+        "consumption. Set by the kind of document the request was raised from.",
+    )
+
     budget_consumed_amount = fields.Monetary(
         string="Budget Consumed",
         currency_field="currency_id",
@@ -174,6 +189,14 @@ class DisbursementRequest(models.Model):
     # in the MRO that defines the method, so the base dependency below always
     # holds on top of it.
     @api.depends("budget_account_id")
+    # A bridge overriding this declares the dependency it actually reads; Odoo
+    # merges @api.depends across every class in the MRO, so this base one holds
+    # on top of it.
+    @api.depends("budget_commitment_id")
+    def _compute_is_non_budget(self):
+        for rec in self:
+            rec.is_non_budget = False
+
     def _compute_is_budget_account_product_expense(self):
         for rec in self:
             rec.is_budget_account_product_expense = False
@@ -220,6 +243,15 @@ class DisbursementRequest(models.Model):
         would be cancelled out by the consume in the same instant anyway.
         """
         self.ensure_one()
+        if self.is_non_budget:
+            self.message_post(
+                body=_(
+                    "Approved without consuming any budget: the money is not "
+                    "the institute's to spend."
+                ),
+                subtype_xmlid="mail.mt_note",
+            )
+            return
         # Idempotent: a request returned to verification (approved -> signed)
         # keeps its consumption, so re-approving must not double-cut the budget.
         if self._has_own_budget_obligation():

@@ -565,8 +565,8 @@ msgstr ""
 
 #. module: receipt_kmitl
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt_line__account_id
-msgid "Income Account"
-msgstr "บัญชีรายได้"
+msgid "Account"
+msgstr "บัญชี"
 
 #. module: receipt_kmitl
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt__message_is_follower
@@ -681,8 +681,8 @@ msgstr ""
 #. odoo-python
 #: code:addons/receipt_kmitl/models/receipt_kmitl.py:0
 #, python-format
-msgid "Line '%s' has no income account."
-msgstr "รายการ '%s' ยังไม่ได้ระบุบัญชีรายได้"
+msgid "Line '%s' has no account."
+msgstr "รายการ '%s' ยังไม่ได้ระบุบัญชี"
 
 #. module: receipt_kmitl
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt__line_ids
@@ -1526,13 +1526,41 @@ msgstr ""
 
 #. module: receipt_kmitl
 #: model_terms:ir.ui.view,arch_db:receipt_kmitl.report_receipt_kmitl_document
-msgid "ใบเสร็จรับเงิน"
-msgstr ""
-
-#. module: receipt_kmitl
-#: model_terms:ir.ui.view,arch_db:receipt_kmitl.report_receipt_kmitl_document
 msgid ""
 "ได้รับเงินจำนวนดังกล่าวข้างต้นไว้เป็นการถูกต้องแล้ว\n"
 "                        <br/>\n"
 "                        Received the amount stated above"
 msgstr ""
+
+#. module: receipt_kmitl
+#: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt__receipt_kind
+#: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt_remittance__receipt_kind
+#: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_receipt_kmitl_search
+#: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_receipt_remittance_search
+msgid "Receipt Kind"
+msgstr "ประเภทใบเสร็จ"
+
+#. module: receipt_kmitl
+#: model:ir.model.fields.selection,name:receipt_kmitl.selection__kmitl_receipt__receipt_kind__revenue
+#: model:ir.model.fields.selection,name:receipt_kmitl.selection__kmitl_receipt_remittance__receipt_kind__revenue
+#: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_receipt_kmitl_search
+msgid "Revenue"
+msgstr "รายได้"
+
+#. module: receipt_kmitl
+#. odoo-python
+#: code:addons/receipt_kmitl/models/receipt_kmitl.py:0
+#, python-format
+msgid ""
+"Selected receipts are of different kinds. A remittance covers one kind of "
+"receipt only."
+msgstr "ใบเสร็จที่เลือกเป็นคนละประเภทกัน รายงานนำส่งหนึ่งใบรวมใบเสร็จได้ประเภทเดียวเท่านั้น"
+
+#. module: receipt_kmitl
+#. odoo-python
+#: code:addons/receipt_kmitl/models/receipt_remittance.py:0
+#, python-format
+msgid ""
+"Receipt %s is not of this remittance's kind. A remittance covers one kind of "
+"receipt only."
+msgstr "ใบเสร็จ %s ไม่ตรงประเภทกับรายงานนำส่งนี้ รายงานนำส่งหนึ่งใบรวมใบเสร็จได้ประเภทเดียวเท่านั้น"

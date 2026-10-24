@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- is_create_invoice is the base module's dead flag: its only consumers are
+         the Guarantee / Return Guarantee pickers on account.move, which
+         account_move_views.xml in this module hides outright. is_monetary
+         replaces it and is the one KMITL configures. -->
+    <record id="view_purchase_guarantee_type_tree" model="ir.ui.view">
+        <field name="name">purchase.guarantee.type.tree.kmitl</field>
+        <field name="model">purchase.guarantee.type</field>
+        <field
+            name="inherit_id"
+            ref="l10n_th_gov_purchase_guarantee.purchase_guarantee_type_tree_view"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='is_create_invoice']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='is_create_invoice']" position="after">
+                <field name="is_monetary" />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_purchase_guarantee_type_form" model="ir.ui.view">
+        <field name="name">purchase.guarantee.type.form.kmitl</field>
+        <field name="model">purchase.guarantee.type</field>
+        <field
+            name="inherit_id"
+            ref="l10n_th_gov_purchase_guarantee.purchase_guarantee_type_form_view"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='is_create_invoice']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='is_create_invoice']" position="after">
+                <field name="is_monetary" />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_purchase_guarantee_type_search" model="ir.ui.view">
+        <field name="name">purchase.guarantee.type.search.kmitl</field>
+        <field name="model">purchase.guarantee.type</field>
+        <field
+            name="inherit_id"
+            ref="l10n_th_gov_purchase_guarantee.purchase_guarantee_type_search_view"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='archived']" position="before">
+                <filter
+                    name="monetary"
+                    string="Received as Money"
+                    domain="[('is_monetary', '=', True)]"
+                />
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

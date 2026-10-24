@@ -126,6 +126,19 @@ upfront.
   Receipt Remittance (รายงานนำส่งคลัง) that treasury posts, generating one journal entry
   per receipt with a Remit to Treasury (นำเงินส่งคลัง) leg into the payment method's
   deposit account, alongside the 6D dimensions on every line.
+- [Purchase Guarantee](./purchase_guarantee_kmitl/CONTEXT.md) — the security
+  deposits (**หลักประกัน**) a supplier lodges to back a bid or a contract. Keeps
+  apart the two words the English model names cross: the **Guarantee Kind**
+  (`purchase.guarantee.method`, ประเภท — bid or contract, and the deposit
+  account its money sits on) and the **Guarantee Form** (`purchase.guarantee.type`,
+  รูปแบบ — cash/transfer or a bank letter). Only a **monetary** form is receipted
+  and booked; a bank letter is recorded and watched for expiry.
+  - **`purchase_guarantee_receipt_kmitl`** — issues the **ใบเสร็จรับเงินหลักประกัน**
+    when the money arrives: a `kmitl.receipt` of kind *Guarantee* in its own
+    `RG/` register, posted through the ordinary remittance workflow.
+  - **`purchase_guarantee_disbursement`** ([ADR](./purchase_guarantee_disbursement/docs/adr/0001-a-guarantee-is-returned-through-a-disbursement.md))
+    — sends it back as a **ใบขอเบิกคืนหลักประกัน**, a disbursement request that
+    consumes no budget because the money was never the institute's.
 - [HR Employee Academic Standing Thailand](./hr_employee_academic_standing_thailand/CONTEXT.md)
   — the Thai academic **คำนำหน้าชื่อทางวิชาการ** (title prefix) computed onto every
   employee from academic standing, rank, profession, rank nobility and a hand-set **ดร.

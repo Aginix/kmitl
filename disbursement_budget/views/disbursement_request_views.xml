@@ -8,6 +8,7 @@
         <field name="arch" type="xml">
             <field name="main_exception_id" position="after">
                 <field name="budget_commitment_id" optional="hide" />
+                <field name="is_non_budget" optional="hide" />
             </field>
         </field>
     </record>
@@ -39,6 +40,9 @@
             </header>
             <field name="account_fiscal_year_id" position="after">
                 <field name="budget_commitment_id" />
+                <!-- Only ever shown when raised: on an ordinary request there
+                     is nothing to say. -->
+                <field name="is_non_budget" readonly="1" attrs="{'invisible': [('is_non_budget', '=', False)]}" />
             </field>
             <!-- The linked commitment carries the dimensions: lock them once set. -->
             <field name="source_analytic_id" position="attributes">

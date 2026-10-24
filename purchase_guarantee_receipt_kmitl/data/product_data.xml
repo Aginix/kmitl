@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+    A product that is not a thing — it is the deposit-liability account wearing a
+    product costume, the same shape as budget_product's ค่าปรับ. Both accounts are
+    only a fallback: the receipt line and the return disbursement line are both
+    stamped from purchase.guarantee.method.account_id, which the treasury office
+    configures per kind of guarantee.
+-->
+<odoo>
+
+    <record id="product_guarantee" model="product.template">
+        <field name="name">เงินหลักประกัน</field>
+        <field name="type">service</field>
+        <field name="purchase_ok" eval="True"/>
+        <field name="sale_ok" eval="False"/>
+        <field name="list_price">0.0</field>
+        <field
+            name="property_account_income_id"
+            model="account.account"
+            search="[('code', '=', '2150000006')]"
+        />
+        <field
+            name="property_account_expense_id"
+            model="account.account"
+            search="[('code', '=', '2150000006')]"
+        />
+    </record>
+
+</odoo>

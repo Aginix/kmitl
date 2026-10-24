@@ -44,6 +44,15 @@ code (รหัสงบประมาณค่าใช้จ่าย), consu
 reversed on cancel. Optional — provided by `disbursement_budget` (see ADR 0003).
 _Avoid_: Budget check (that is the availability check inside the budget module).
 
+**Exempt from budget control** (ยกเว้นการควบคุมงบประมาณ):
+A request that *is* under budget control and *does* have a source document, but
+whose money is not the institute's to spend — returning a supplier's own
+security deposit — so the final approval consumes nothing (`is_non_budget`).
+Set by the kind of document it was raised from, never by hand. Provided by
+`disbursement_budget` (see its ADR 0001).
+_Avoid_: Stand-alone (that one has no source document either), Off-budget
+(นอกงบประมาณ names a *source of funds*, not the absence of one).
+
 **Stand-alone request** (ใบขอเบิกแบบอิสระ):
 A DR raised without budget control and without a source document — only the
 request itself, its payees and its financial dimensions.
