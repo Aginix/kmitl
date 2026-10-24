@@ -12,6 +12,11 @@ class PurchaseRequestApprovalLine(models.Model):
         ondelete="cascade",
         index=True,
     )
+    request_line_id = fields.Many2one(
+        "purchase.request.line",
+        ondelete="set null",
+        index=True,
+    )
     product_id = fields.Many2one("product.product")
     name = fields.Text(string="Description")
     product_qty = fields.Float(string="Quantity")
