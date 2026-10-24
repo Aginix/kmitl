@@ -21,6 +21,12 @@ msgstr "นำเข้านักศึกษา %(count)s รายจาก 
 #. module: disbursement_student_import
 #: code:addons/disbursement_student_import/wizards/disbursement_student_import.py:0
 #, python-format
+msgid "%s is archived"
+msgstr "%s ถูกเก็บถาวรแล้ว"
+
+#. module: disbursement_student_import
+#: code:addons/disbursement_student_import/wizards/disbursement_student_import.py:0
+#, python-format
 msgid "%s is not a student contact"
 msgstr "%s ไม่ใช่ผู้ติดต่อประเภทนักศึกษา"
 
@@ -30,6 +36,12 @@ msgstr "%s ไม่ใช่ผู้ติดต่อประเภทนั
 #, python-format
 msgid "Account Number"
 msgstr "เลขที่บัญชี"
+
+#. module: disbursement_student_import
+#: code:addons/disbursement_student_import/wizards/disbursement_student_import.py:0
+#, python-format
+msgid "Account is archived or belongs to another company"
+msgstr "บัญชีถูกเก็บถาวรหรือเป็นของบริษัทอื่น"
 
 #. module: disbursement_student_import
 #: model:ir.model.fields,field_description:disbursement_student_import.field_disbursement_student_import_line__amount

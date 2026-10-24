@@ -230,7 +230,9 @@ class DisbursementStudentImport(models.TransientModel):
                 skip.append(_("No student ID"))
             elif partner:
                 vals["student_name"] = partner.name
-                if partner.partner_type_id != student_type:
+                if not partner.active:
+                    skip.append(_("%s is archived") % partner.display_name)
+                elif partner.partner_type_id != student_type:
                     skip.append(_("%s is not a student contact") % partner.display_name)
             elif code in looked_up:
                 vals.update(looked_up[code])
@@ -253,7 +255,12 @@ class DisbursementStudentImport(models.TransientModel):
                     lambda b, acc=acc: b.sanitized_acc_number == acc
                 )[:1]
                 vals["partner_bank_id"] = account.id
-                if not account and not bank:
+                taken = partner.with_context(active_test=False).bank_ids.mapped(
+                    "sanitized_acc_number"
+                )
+                if not account and acc in taken:
+                    skip.append(_("Account is archived or belongs to another company"))
+                elif not account and not bank:
                     skip.append(_("Bank of the new account not recognised"))
             elif accounts:
                 vals["partner_bank_id"] = accounts[:1].id
