@@ -22,6 +22,11 @@
                 <attribute name="invisible">1</attribute>
             </xpath>
 
+            <!-- The head returns through Sarabun (see _on_sarabun_returned) -->
+            <xpath expr="//button[@name='action_return_head_open_wizard']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
             <!-- Sarabun smart button -->
             <xpath expr="//div[@name='button_box']" position="inside">
                 <button name="action_view_sarabun_documents"

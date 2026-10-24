@@ -1915,3 +1915,48 @@ msgstr "ผู้รับเงินต่อไปนี้ไม่ใช่
 #, python-format
 msgid "Set a payee type on %s before raising a disbursement request."
 msgstr "กรุณาระบุประเภทผู้รับเงินของ %s ก่อนสร้างใบขอเบิก"
+
+#. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_return.py:0
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form_return
+msgid "Return to Requester"
+msgstr "ตีกลับให้ผู้ขอเบิก"
+
+#. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_return.py:0
+#, python-format
+msgid "Only a submitted request can be returned to the requester."
+msgstr "ตีกลับให้ผู้ขอเบิกได้เฉพาะใบที่ส่งแล้ว (สถานะ submitted) เท่านั้น"
+
+#. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_return.py:0
+#, python-format
+msgid ""
+"<p><b>Returned to the requester</b></p>"
+"<p>Returned by the head and reset to draft so it can be corrected and "
+"submitted again.<br/>Reason: <b>%s</b></p>"
+msgstr ""
+"<p><b>ตีกลับให้ผู้ขอเบิก</b></p>"
+"<p>หัวหน้าส่วนงานตีกลับและรีเซ็ตเป็นฉบับร่าง เพื่อให้แก้ไขแล้วส่งใหม่"
+"<br/>เหตุผล: <b>%s</b></p>"
+
+#. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_return.py:0
+msgid "Returned by the head"
+msgstr "หัวหน้าส่วนงานตีกลับ"
+
+#. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/wizards/return_request_wizard.py:0
+#, python-format
+msgid "Unknown return step: %s"
+msgstr "ไม่รู้จักขั้นตอนการตีกลับ: %s"
+
+#. module: disbursement
+#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_return_request_wizard__mode__head
+msgid "Head"
+msgstr "หัวหน้าส่วนงาน"

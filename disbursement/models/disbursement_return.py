@@ -15,7 +15,7 @@ _ACT_REVERIFY_XMLID = "disbursement.mail_activity_dr_reverify"
 class DisbursementRequest(models.Model):
     """Return / re-verification workflow on the DR.
 
-    Two flows live here, both independent of who (if anyone) is the responsible
+    Three flows live here, all independent of who (if anyone) is the responsible
     verification officer -- the ``disbursement_assignment_kmitl`` addon layers
     officer assignment on top and overrides ``_verification_officer`` so the
     To-Dos below reach the assigned officer instead of the creator:
@@ -23,7 +23,12 @@ class DisbursementRequest(models.Model):
     * return-for-correction: a signed request goes back to ``draft`` for the
       creator to fix and resubmit (``action_resubmit_verification``);
     * return-to-verification: a verified/approved request goes back to
-      ``signed`` for the officer to re-check.
+      ``signed`` for the officer to re-check;
+    * return-from-head: a submitted request goes back to ``draft`` before the
+      head has signed it.
+
+    ``_return_step_handler`` maps the wizard's mode onto these, and is where
+    add-ons contribute the steps of their own phase.
     """
 
     _inherit = "disbursement.request"
@@ -116,6 +121,64 @@ class DisbursementRequest(models.Model):
         self.returned_for_edit = False
         self.state = "signed"
         self.message_post(body=_("Corrected and returned to verification."))
+
+    # -- return from the head (submitted -> draft) -----------------------
+    def _return_step_handler(self, mode):
+        """The method the return wizard runs for ``mode``, or None if unknown.
+
+        A table on the model rather than an if/else in the wizard, so an add-on
+        can contribute its own steps by extending it instead of overriding the
+        wizard."""
+        return {
+            "edit": self._action_return_for_edit,
+            "verification": self._action_return_to_verification,
+            "head": self._action_return_from_head,
+        }.get(mode)
+
+    def _return_wizard_action(self, name, mode):
+        """The act_window opening the reason wizard for the ``mode`` step."""
+        self.ensure_one()
+        return {
+            "name": name,
+            "type": "ir.actions.act_window",
+            "res_model": "disbursement.return.request.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {"default_request_id": self.id, "default_mode": mode},
+        }
+
+    def action_return_head_open_wizard(self):
+        """Open the reason wizard for the head returning a submitted request to
+        the requester."""
+        return self._return_wizard_action(_("Return to Requester"), "head")
+
+    def _action_return_from_head(self, reason):
+        """Send a submitted request back to the requester before it is signed.
+
+        Unlike ``_action_return_for_edit`` this leaves ``returned_for_edit``
+        unset: the head has not signed yet, so the requester resubmits through
+        the normal Submit and the head signs the corrected request."""
+        self.ensure_one()
+        if self.state != "submitted":
+            raise UserError(
+                _("Only a submitted request can be returned to the requester.")
+            )
+        self.action_draft()
+        self.message_post(
+            body=_(
+                "<p><b>Returned to the requester</b></p>"
+                "<p>Returned by the head and reset to draft so it can be "
+                "corrected and submitted again.<br/>Reason: <b>%s</b></p>"
+            ) % reason,
+            subtype_xmlid="mail.mt_comment",
+        )
+        if self.user_id:
+            self.activity_schedule(
+                RETURN_ACTIVITY_XMLID,
+                user_id=self.user_id.id,
+                summary=_("Returned by the head"),
+                note=reason,
+            )
 
     # -- return to verification (approver / accounting -> officer) -------
     def action_return_verification_open_wizard(self):

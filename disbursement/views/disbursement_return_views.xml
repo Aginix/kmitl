@@ -8,6 +8,14 @@
         <field name="arch" type="xml">
             <xpath expr="//header/button[@name='action_submit']" position="before">
                 <button
+                    name="action_return_head_open_wizard"
+                    type="object"
+                    string="Return to Requester"
+                    class="btn-warning"
+                    groups="disbursement.group_disbursement_head"
+                    attrs="{'invisible': [('state', '!=', 'submitted')]}"
+                />
+                <button
                     name="action_return_open_wizard"
                     type="object"
                     string="Return"
