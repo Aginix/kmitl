@@ -10,7 +10,7 @@ patch(Many2ManyBinaryField.prototype, "agx_photoviewer.Many2ManyBinaryField", {
         if (!ev.target.closest('[role="button"]')) {
             // Also cancels the download / new tab of the wrapped links.
             ev.preventDefault();
-            openPhotoViewer(this.files, file);
+            openPhotoViewer(this.files, file, this.env);
         }
     },
 });

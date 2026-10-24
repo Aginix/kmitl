@@ -7,10 +7,13 @@ import {registry} from "@web/core/registry";
 /**
  * Renderers open non-image files inside the viewer modal; files without a
  * matching renderer show an "unsupported" message. Other modules add
- * entries here: {match(attachment) => bool, render(attachment, page)}.
+ * entries here: {match(attachment) => bool, render(attachment, page, context)}.
  * `render` replaces the content of `page` (which shows a spinner until
- * then); it may return a promise. An attachment is a plain
- * {id, name, mimetype, accessToken} object.
+ * then); it may return a promise. Optionally, `headerButton` ({title, text,
+ * click(attachment, context)}) replaces the Download button and
+ * `thumbnail(attachment)` returns the node shown in the thumbnail strip. An
+ * attachment is a plain {id, name, mimetype, accessToken, type, url} object;
+ * `context` is {env, close()}, `close` closing the viewer.
  */
 export const photoviewerRenderers = registry.category("agx_photoviewer.renderers");
 
@@ -47,7 +50,8 @@ export function getUrl(attachment, download = false) {
 }
 
 export function isImage(attachment) {
-    return IMAGE_MIMETYPES.includes(attachment.mimetype);
+    // A link's mimetype is guessed from its name or URL, not from a stored file.
+    return attachment.type !== "url" && IMAGE_MIMETYPES.includes(attachment.mimetype);
 }
 
 export function getRenderer(attachment) {
@@ -66,12 +70,20 @@ const unsupportedRenderer = {
 const downloadButton = {
     title: _t("Download"),
     text: DOWNLOAD_ICON,
-    click(viewer) {
+    click(attachment) {
         const link = document.createElement("a");
-        link.href = getUrl(viewer.images[viewer.index].attachment, true);
+        link.href = getUrl(attachment, true);
         link.click();
     },
 };
+
+function getHeaderButton(item) {
+    return (item.renderer && item.renderer.headerButton) || downloadButton;
+}
+
+function getContext(viewer, state) {
+    return {env: state.env, close: () => viewer.close()};
+}
 
 function createThumbnails(viewer) {
     const strip = document.createElement("div");
@@ -90,13 +102,15 @@ function createThumbnails(viewer) {
         },
         {passive: false}
     );
-    viewer.images.forEach(({attachment}, index) => {
+    viewer.images.forEach(({attachment, renderer}, index) => {
         const thumbnail = document.createElement("button");
         thumbnail.type = "button";
         thumbnail.className = "o_agx_photoviewer_thumbnail";
         thumbnail.title = attachment.name || "";
         thumbnail.addEventListener("click", () => viewer.jumpTo(index));
-        if (isImage(attachment)) {
+        if (renderer && renderer.thumbnail) {
+            thumbnail.append(renderer.thumbnail(attachment));
+        } else if (isImage(attachment)) {
             const image = document.createElement("img");
             image.loading = "lazy";
             const token = attachment.accessToken
@@ -178,6 +192,10 @@ function showItem(viewer, state) {
             inline: "center",
         });
     }
+    const button = modal[0].querySelector(".photoviewer-button-download");
+    const {title, text} = getHeaderButton(item);
+    button.title = title;
+    button.innerHTML = text;
     if (!item.renderer) {
         modal.removeClass("o_agx_photoviewer_embed");
         state.container.replaceChildren();
@@ -190,7 +208,9 @@ function showItem(viewer, state) {
     page.className = "o_agx_photoviewer_page";
     page.innerHTML = '<i class="fa fa-spin fa-spinner fa-2x m-auto"></i>';
     state.container.replaceChildren(page);
-    Promise.resolve(item.renderer.render(item.attachment, page)).catch((error) => {
+    Promise.resolve(
+        item.renderer.render(item.attachment, page, getContext(viewer, state))
+    ).catch((error) => {
         console.error(error);
         page.innerHTML = `<div class="m-auto text-center p-3">${escape(
             _t("This file cannot be previewed.")
@@ -199,9 +219,10 @@ function showItem(viewer, state) {
 }
 
 /**
- * Open `current` in the viewer, navigating through the `attachments` in order.
+ * Open `current` in the viewer, navigating through the `attachments` in order;
+ * `env` is handed to the renderers.
  */
-export function openPhotoViewer(attachments, current) {
+export function openPhotoViewer(attachments, current, env) {
     const items = attachments.map((attachment) => ({
         src: isImage(attachment) ? getUrl(attachment) : "",
         title: escape(attachment.name || ""),
@@ -211,14 +232,25 @@ export function openPhotoViewer(attachments, current) {
             : getRenderer(attachment) || unsupportedRenderer,
     }));
     const hasFiles = items.some((item) => item.renderer);
-    const state = {hasFiles};
+    const state = {hasFiles, env};
     return new window.PhotoViewer(items, {
         index: Math.max(
             items.findIndex((item) => item.attachment.id === current.id),
             0
         ),
         headerToolbar: ["download", "maximize", "close"],
-        customButtons: {download: downloadButton},
+        customButtons: {
+            download: {
+                ...downloadButton,
+                click(viewer) {
+                    const item = viewer.images[viewer.index];
+                    getHeaderButton(item).click(
+                        item.attachment,
+                        getContext(viewer, state)
+                    );
+                },
+            },
+        },
         // Files need a stable, roomy modal; images alone fit the modal to
         // the picture. The initial size doubles as the minimum size, so it
         // is lowered again in the first `beforeChange`.

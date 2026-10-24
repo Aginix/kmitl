@@ -1,0 +1,9 @@
+// Same footprint as the mimetype icon of a file.
+.o_attachment_link_icon.o_image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: $o-brand-primary;
+    background-image: none;
+}

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+    <t t-inherit="web.Many2ManyBinaryField" t-inherit-mode="extension" owl="1">
+        <xpath expr="//div[hasclass('oe_add')]" position="inside">
+            <button
+                t-if="canAttachLink()"
+                type="button"
+                class="btn btn-secondary o_attach_link ms-1"
+                data-tooltip="Attach Link"
+                t-on-click="onAttachLinkClick"
+            >
+                <span class="fa fa-link" aria-label="Attach Link" /> Link
+            </button>
+        </xpath>
+    </t>
+
+    <t
+        t-inherit="web.Many2ManyBinaryField.attachment_preview"
+        t-inherit-mode="extension"
+        owl="1"
+    >
+        <!-- The row's classes are in t-attf-class, out of reach of hasclass(). -->
+        <xpath expr="//div[hasclass('o_attachment_wrap')]/.." position="attributes">
+            <attribute name="t-on-click">(ev) => this.onLinkClick(ev, file)</attribute>
+        </xpath>
+        <xpath expr="//span[hasclass('o_image')]" position="attributes">
+            <attribute name="t-if">file.type !== 'url'</attribute>
+        </xpath>
+        <xpath expr="//span[hasclass('o_image')]" position="after">
+            <span
+                t-else=""
+                class="o_image o_attachment_link_icon fa fa-link"
+                role="img"
+                aria-label="Link"
+            />
+        </xpath>
+    </t>
+
+</templates>

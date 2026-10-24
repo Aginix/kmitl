@@ -22,4 +22,14 @@ Other file types can be added by registering a renderer::
         render: (attachment, page) => { /* replace the page content */ },
     });
 
-See ``agx_photoviewer_filetypes`` for PDF, video, Word, Excel and PowerPoint.
+``render`` also receives a ``context`` ``{env, close}`` (``close()`` closes the
+viewer). A renderer may also replace the Download button and its thumbnail::
+
+        headerButton: {title: "...", text: "<svg>...</svg>", click: (attachment, context) => {}},
+        thumbnail: (attachment) => node,
+
+Links (``url`` attachments) open only when a renderer matches them, and never
+show as images.
+
+See ``agx_photoviewer_filetypes`` for PDF, video, Word, Excel and PowerPoint, and
+``agx_photoviewer_links`` for YouTube, Google Drive, Odoo and web links.
