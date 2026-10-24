@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl). -->
+<templates xml:space="preserve">
+    <t t-inherit="web.ListRenderer.RecordRow" t-inherit-mode="extension" owl="1">
+        <xpath expr="//t[@t-if=&quot;column.type === 'button_group'&quot;]//ViewButton" position="attributes">
+            <attribute name="onClick">isX2Many and record.isVirtual ? (() => this.onPayeeBankVirtualRowClick(record, button)) : ''</attribute>
+        </xpath>
+    </t>
+</templates>

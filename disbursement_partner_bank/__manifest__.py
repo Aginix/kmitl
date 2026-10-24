@@ -14,6 +14,12 @@
         "wizards/disbursement_partner_bank_wizard_views.xml",
         "views/disbursement_request_views.xml",
     ],
+    "assets": {
+        "web.assets_backend": [
+            "disbursement_partner_bank/static/src/js/list_renderer.esm.js",
+            "disbursement_partner_bank/static/src/xml/list_renderer.xml",
+        ],
+    },
     "installable": True,
     "auto_install": False,
 }

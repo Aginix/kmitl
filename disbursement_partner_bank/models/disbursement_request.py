@@ -14,7 +14,15 @@ class DisbursementRequest(models.Model):
         self.ensure_one()
         if self.state != "draft":
             raise UserError(_("Bank accounts can only be managed on a draft request."))
-        partners = partners or self.line_ids.partner_id
+        partners = (
+            partners
+            # A line not saved yet opens the wizard from the request
+            # (static/src/js/list_renderer.esm.js).
+            or self.env["res.partner"].browse(
+                self.env.context.get("payee_bank_partner_ids") or []
+            )
+            or self.line_ids.partner_id
+        )
         # A requester cannot read every bank field as itself (base grants
         # group_user read only); the rows are prefilled under sudo.
         banks = partners.sudo().bank_ids.filtered(
