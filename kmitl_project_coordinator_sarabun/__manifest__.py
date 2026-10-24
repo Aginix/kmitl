@@ -2,7 +2,7 @@
     "name": "KMITL Project — Coordinator × e-Saraban",
     "summary": "Only the project's owners (manager, coordinators, creator) "
     "or project officers may raise the project approval e-Saraban document",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.0.1",
     "category": "Project",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",

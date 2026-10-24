@@ -180,8 +180,8 @@ Who may **read** a หนังสือ — its **sender** (`sender_user_id`), 
 _Avoid_: "active-or-completed actors" as the key (the key is the reach ledger — a recipient row — which also covers waiting-then-reached and survives archiving); losing read when a หนังสือ is returned/reset (read persists across attempts — ADR-0013); gating the report/preview on origin-record access (the หนังสือ's own ACL governs — ADR-0007)
 
 **เกี่ยวข้อง (Involved)**:
-The precise membership that grants read: a user who **holds or has held a recipient row** on any step of the หนังสือ (active or archived). It is the read set minus the sender and manager-see-all. A **follower** (mail.thread) is **not** involved — following grants no record read; involvement comes only from the route.
-_Avoid_: treating a chatter follower as involved; equating "involved" with "currently has an active step" (a past actor stays involved)
+The precise membership that grants read: a user who **holds or has held a recipient row** on any step of the หนังสือ (active or archived). It is the read set minus the sender and manager-see-all. A **follower** (mail.thread) is **not** involved, but **may read** the หนังสือ and its Route (read-only, ADR-0013 amendment): sharing = add a follower. Following never grants write and never enters `reached_user_ids`.
+_Avoid_: treating a chatter follower as involved (a follower reads, but is not on the reach ledger); equating "involved" with "currently has an active step" (a past actor stays involved)
 
 **เอกสารของตนเอง (Own document)**:
 A user's *own* หนังสือ = the ones they **sent** (`sender_user_id`) — not `create_uid`, not the originator routing step. A เจ้าหน้าที่ธุรการ who ร่าง on behalf and presses ส่ง is the owner (read/write); the downstream signer is only an actor (reads via the route).
