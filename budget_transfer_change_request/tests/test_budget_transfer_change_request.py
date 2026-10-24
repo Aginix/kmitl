@@ -9,8 +9,8 @@ from odoo.addons.budget_transfer_verify.tests import (
 
 @tagged("post_install", "-at_install")
 class TestBudgetTransferChangeRequest(verify_tests.TestBudgetTransferVerify):
-    """The Buddy details what to fix as Change requests; ยืนยันตรวจสอบ waits
-    until none is outstanding (reuses the Buddy Verification fixtures)."""
+    """The Buddy details what to fix as Change requests (reuses the Buddy
+    Verification fixtures)."""
 
     @classmethod
     def setUpClass(cls):
@@ -28,23 +28,6 @@ class TestBudgetTransferChangeRequest(verify_tests.TestBudgetTransferVerify):
             .with_user(user or self.buddy)
             .request_create(transfer._name, transfer.id, text, [])
         )
-
-    def test_verify_waits_for_outstanding_requests(self):
-        transfer = self._submitted_for_verify()
-        request = self._ask(transfer)
-        with self.assertRaisesRegex(UserError, "ยอดโอนไม่ตรงกับตาราง"):
-            transfer.with_user(self.buddy).action_verify()
-        # Answered is still outstanding: its author has to close it.
-        self.env["change.request"].with_user(self.requestor).request_reply(
-            request["id"], "แก้แล้ว"
-        )
-        with self.assertRaises(UserError):
-            transfer.with_user(self.buddy).action_verify()
-        self.env["change.request"].with_user(self.buddy).request_set_closed(
-            request["id"], True
-        )
-        transfer.with_user(self.buddy).action_verify()
-        self.assertEqual(transfer.state, "submitted")
 
     def test_covering_buddy_closes_on_behalf(self):
         transfer = self._submitted_for_verify()

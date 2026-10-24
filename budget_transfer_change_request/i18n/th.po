@@ -60,16 +60,6 @@ msgid "ข้อแก้ไขที่ค้างอยู่:"
 msgstr ""
 
 #. module: budget_transfer_change_request
-#. odoo-python
-#: code:addons/budget_transfer_change_request/models/budget_transfer.py:0
-#: code:addons/budget_transfer_change_request/models/budget_transfer.py:0
-#, python-format
-msgid ""
-"ยังมีข้อแก้ไขที่ค้างอยู่ใน %(name)s ต้องปิดให้ครบก่อนยืนยันตรวจสอบ:\n"
-"%(lines)s"
-msgstr ""
-
-#. module: budget_transfer_change_request
 #: model_terms:ir.ui.view,arch_db:budget_transfer_change_request.view_budget_transfer_verify_return_wizard_form
 msgid "ระบุสิ่งที่ต้องแก้ไข (ไม่บังคับเมื่อมีข้อแก้ไขที่ค้างอยู่)..."
 msgstr ""

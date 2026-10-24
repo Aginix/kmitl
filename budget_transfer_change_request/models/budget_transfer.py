@@ -5,8 +5,9 @@ from odoo.tools import plaintext2html
 
 class BudgetTransfer(models.Model):
     """Budget transfers take Change requests: the Buddy details what to fix
-    as requests, ยืนยันตรวจสอบ is refused while any is outstanding, and a
-    covering Buddy may close one on its author's behalf."""
+    as requests, and a covering Buddy may close one on its author's behalf.
+    ยืนยันตรวจสอบ waits for them through an exception rule
+    (``budget_transfer_exception_change_request``)."""
 
     _name = "budget.transfer"
     _inherit = ["budget.transfer", "change.request.mixin"]
@@ -28,16 +29,6 @@ class BudgetTransfer(models.Model):
                 }
             lines.append(line)
         return lines
-
-    def action_verify(self):
-        for transfer in self:
-            lines = transfer._outstanding_change_request_lines()
-            if lines:
-                raise UserError(
-                    _("ยังมีข้อแก้ไขที่ค้างอยู่ใน %(name)s ต้องปิดให้ครบก่อนยืนยันตรวจสอบ:\n%(lines)s")
-                    % {"name": transfer.name, "lines": "\n".join(lines)}
-                )
-        return super().action_verify()
 
     def _action_verify_return(self, reason):
         """ส่งกลับแก้ไข: the reason may be left out while Change requests are
