@@ -12,6 +12,7 @@
                     string="Refresh from KMITL"
                     icon="fa-refresh"
                     class="btn-link"
+                    groups="base.group_partner_manager"
                     attrs="{'invisible': [('student_code', '=', False)]}"
                 />
             </xpath>
