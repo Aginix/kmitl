@@ -200,8 +200,8 @@ msgstr "ไม่มีบัญชีธนาคาร"
 #. module: disbursement_student_import
 #: code:addons/disbursement_student_import/wizards/disbursement_student_import.py:0
 #, python-format
-msgid "No national ID for the withholding tax certificate"
-msgstr "ไม่มีเลขบัตรประชาชนสำหรับออกหนังสือรับรองการหักภาษี ณ ที่จ่าย"
+msgid "No national ID"
+msgstr "ไม่มีเลขบัตรประชาชน"
 
 #. module: disbursement_student_import
 #: code:addons/disbursement_student_import/wizards/disbursement_student_import.py:0

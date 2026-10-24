@@ -275,7 +275,7 @@ class DisbursementStudentImport(models.TransientModel):
             if vat and partner_vat and vat != partner_vat:
                 warn.append(_("National ID differs from the one on record (kept)"))
             if request.has_tax and not vat and not partner_vat:
-                warn.append(_("No national ID for the withholding tax certificate"))
+                warn.append(_("No national ID"))
             vals["vat"] = vat
             if code and (counts[code] > 1 or code in on_request):
                 warn.append(_("Student ID appears more than once"))
