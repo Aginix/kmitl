@@ -60,9 +60,6 @@ class TestCashMovement(TransactionCase):
             limit=1,
         )
         cls.purchase_journal = cls.env.ref("account_kmitl.journal_ap")
-        cls.product = cls.env["product.product"].create(
-            {"name": "Service", "type": "service"}
-        )
 
         # Seeded paying accounts (หัวจ่าย) — KTB is on 4 of the 18 routes (a
         # different hop chain for REV and for GOV), cash and the REV/GOV
@@ -106,10 +103,8 @@ class TestCashMovement(TransactionCase):
                         0,
                         {
                             "partner_id": self.payee.id,
-                            "product_id": self.product.id,
                             "name": "Service",
-                            "quantity": 1,
-                            "price_unit": price,
+                            "amount": price,
                             "account_id": self.expense_account.id,
                             "analytic_distribution": distribution,
                         },
@@ -130,10 +125,8 @@ class TestCashMovement(TransactionCase):
                         0,
                         0,
                         {
-                            "product_id": self.product.id,
                             "name": "Service",
-                            "quantity": 1,
-                            "price_unit": price,
+                            "amount": price,
                             "account_id": self.expense_account.id,
                             "analytic_distribution": distribution,
                         },

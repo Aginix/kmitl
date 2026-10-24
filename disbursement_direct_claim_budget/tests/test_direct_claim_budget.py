@@ -22,13 +22,9 @@ class TestDirectClaimBudget(BudgetLedgerCommon):
                 "bank_ids": [(0, 0, {"acc_number": "1234567890"})],
             }
         )
-        cls.product = cls.env["product.product"].create(
-            {
-                "name": "Direct Service",
-                "type": "service",
-                "taxes_id": [(5, 0, 0)],
-                "supplier_taxes_id": [(5, 0, 0)],
-            }
+        cls.expense_account = cls.env["account.account"].search(
+            [("account_type", "=", "expense"), ("company_id", "=", cls.env.company.id)],
+            limit=1,
         )
         cls.rector = (
             cls.env["res.users"]
@@ -64,10 +60,9 @@ class TestDirectClaimBudget(BudgetLedgerCommon):
                         0,
                         0,
                         {
-                            "product_id": self.product.id,
+                            "account_id": self.expense_account.id,
                             "name": "line",
-                            "quantity": 1.0,
-                            "price_unit": amount,
+                            "amount": amount,
                             "partner_id": self.partner.id,
                         },
                     )

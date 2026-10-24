@@ -119,6 +119,11 @@ msgid "Account"
 msgstr "บัญชี"
 
 #. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request_line__amount
+msgid "Amount"
+msgstr "จำนวนเงิน"
+
+#. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__message_needaction
 msgid "Action Needed"
 msgstr ""
@@ -1262,16 +1267,6 @@ msgid "Prepaid"
 msgstr "สำรองจ่าย"
 
 #. module: disbursement
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_request_line__product_id
-msgid "Product"
-msgstr "รายการ"
-
-#. module: disbursement
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_request_line__quantity
-msgid "Quantity"
-msgstr "จำนวน"
-
-#. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_reject_wizard__reason
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_return_request_wizard__reason
 msgid "Reason"
@@ -1702,11 +1697,6 @@ msgstr "จำนวนเงิน"
 #: model:ir.model.fields,help:disbursement.field_disbursement_request__activity_exception_decoration
 msgid "Type of the exception activity on record."
 msgstr ""
-
-#. module: disbursement
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_request_line__price_unit
-msgid "Unit Price"
-msgstr "จำนวนเงิน"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__amount_untaxed

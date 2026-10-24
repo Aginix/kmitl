@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Purchase Work Acceptance Disbursement',
-    'version': '16.0.1.2.1',
+    'version': '16.0.1.2.2',
     'summary': """ Purchase Work Acceptance Disbursement Summary """,
     "category": "KMITL",
     "author": "Aginix Technologies",

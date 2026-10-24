@@ -71,10 +71,10 @@ class DisbursementStudentImport(models.TransientModel):
         ondelete="cascade",
     )
     company_id = fields.Many2one(related="request_id.company_id")
-    product_id = fields.Many2one(
-        "product.product",
-        string="Expense Item",
-        domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]",
+    account_id = fields.Many2one(
+        "account.account",
+        string="Account",
+        domain="[('company_id', '=', company_id), ('deprecated', '=', False)]",
     )
     file = fields.Binary(string="Excel File", attachment=False)
     filename = fields.Char()
@@ -299,8 +299,8 @@ class DisbursementStudentImport(models.TransientModel):
     def action_check(self):
         self.ensure_one()
         request = self._check_request()
-        if not self.product_id:
-            raise UserError(_("Choose the expense item."))
+        if not self.account_id:
+            raise UserError(_("Choose the account."))
         if not self.file:
             raise UserError(_("Upload the Excel file."))
         rows = self._read_rows()
@@ -331,11 +331,6 @@ class DisbursementStudentImport(models.TransientModel):
         Partner = self.env["res.partner"].sudo()
         Bank = self.env["res.partner.bank"].sudo()
         student_type = self.env.ref("partner_type_kmitl.partner_type_student")
-        product = self.product_id
-        expense_account = (
-            product.property_account_expense_id
-            or product.categ_id.property_account_expense_categ_id
-        )
         partners, accounts, commands = {}, {}, []
         for row in rows:
             partner = partners.get(row.student_code) or row.partner_id.sudo()
@@ -374,12 +369,10 @@ class DisbursementStudentImport(models.TransientModel):
                     0,
                     {
                         "partner_id": partner.id,
-                        "product_id": product.id,
-                        "name": row.description or product.display_name,
-                        "quantity": 1.0,
-                        "price_unit": row.amount,
+                        "name": row.description or self.account_id.name,
+                        "amount": row.amount,
                         "partner_bank_id": account.id,
-                        "account_id": expense_account.id,
+                        "account_id": self.account_id.id,
                         "analytic_distribution": request.analytic_distribution,
                     },
                 )

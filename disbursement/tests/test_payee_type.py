@@ -26,10 +26,9 @@ class TestPayeeType(TwoApproverCommon):
         dr = self.DR.create({
             "partner_type_id": self.partner.partner_type_id.id,
             "line_ids": [(0, 0, {
-                "product_id": self.product.id,
+                "account_id": self.expense_account.id,
                 "name": "line",
-                "quantity": 1.0,
-                "price_unit": 100.0,
+                "amount": 100.0,
                 "partner_id": partner.id,
             })],
             **vals,

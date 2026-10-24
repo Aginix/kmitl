@@ -48,12 +48,6 @@ class TestPaymentWorkflow(TransactionCase):
             limit=1,
         )
         cls.purchase_journal = cls.env.ref("account_kmitl.journal_ap")
-        cls.product = cls.env["product.product"].create(
-            {
-                "name": "Service",
-                "type": "service",
-            }
-        )
 
         # Seeded paying accounts (หัวจ่าย) on ใบสำคัญจ่าย.
         cls.scb_account = cls.env.ref(
@@ -110,10 +104,8 @@ class TestPaymentWorkflow(TransactionCase):
                         0,
                         {
                             "partner_id": payee.id,
-                            "product_id": self.product.id,
                             "name": "Service",
-                            "quantity": 1,
-                            "price_unit": 1000.0,
+                            "amount": 1000.0,
                             "account_id": self.expense_account.id,
                             "analytic_distribution": self.distribution,
                         },
@@ -141,10 +133,8 @@ class TestPaymentWorkflow(TransactionCase):
                             0,
                             0,
                             {
-                                "product_id": self.product.id,
                                 "name": "Service",
-                                "quantity": 1,
-                                "price_unit": 1000.0,
+                                "amount": 1000.0,
                                 "account_id": self.expense_account.id,
                                 "analytic_distribution": self.distribution,
                             },

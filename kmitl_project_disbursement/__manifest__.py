@@ -1,6 +1,6 @@
 {
     "name": "KMITL Project Disbursement",
-    "version": "16.0.1.3.0",
+    "version": "16.0.1.4.0",
     "category": "KMITL",
     "summary": "Link disbursement requests (ใบขอเบิก) raised under a KMITL project",
     "author": "Aginix Technologies",
@@ -8,7 +8,6 @@
     "depends": [
         "kmitl_project",
         "disbursement_budget",
-        "budget_product",
         "disbursement_pdf",
     ],
     "data": [
@@ -21,6 +20,6 @@
     "installable": True,
     # Glue module: surface the project's disbursements automatically whenever both
     # sides are present (disbursement_pdf is pulled in, not a trigger).
-    "auto_install": ["kmitl_project", "disbursement_budget", "budget_product"],
+    "auto_install": ["kmitl_project", "disbursement_budget"],
     "license": "LGPL-3",
 }

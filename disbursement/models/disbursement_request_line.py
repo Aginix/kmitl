@@ -23,29 +23,14 @@ class DisbursementRequestLine(models.Model):
         default=10,
     )
 
-    product_id = fields.Many2one(
-        comodel_name="product.product",
-        string="Product",
-        required=True,
-        domain=["|", ("company_id", "=", False), ("company_id", "=", "company_id")],
-    )
-
-    # Not required: the column is hidden on the form and filled from the
-    # product, so a line whose product is still unresolved (a budget code with
-    # no bound product, refused on submit by an exception rule) can be saved.
+    # Not required: filled from the account when left blank.
     name = fields.Text(
         string="Description",
     )
 
-    quantity = fields.Float(
-        string="Quantity",
-        default=1.0,
-        digits="Product Unit of Measure",
-    )
-
-    price_unit = fields.Float(
-        string="Unit Price",
-        digits="Product Price",
+    amount = fields.Monetary(
+        string="Amount",
+        currency_field="currency_id",
     )
 
     price_subtotal = fields.Monetary(
@@ -80,10 +65,8 @@ class DisbursementRequestLine(models.Model):
     account_id = fields.Many2one(
         comodel_name="account.account",
         string="Account",
-        domain=[
-            ("company_id", "=", "company_id"),
-            ("deprecated", "=", False),
-        ],
+        required=True,
+        domain="[('company_id', '=', company_id), ('deprecated', '=', False)]",
     )
 
     company_id = fields.Many2one(
@@ -157,7 +140,7 @@ class DisbursementRequestLine(models.Model):
             else:
                 line.amount_wht = 0.0
 
-    @api.depends("quantity", "price_unit", "tax_ids")
+    @api.depends("amount", "tax_ids")
     def _compute_amount(self):
         """Compute line amounts with tax calculation (mirrors PO logic)"""
         for line in self:
@@ -183,27 +166,17 @@ class DisbursementRequestLine(models.Model):
             self,
             partner=self.partner_id,
             currency=self.request_id.currency_id,
-            product=self.product_id,
             taxes=self.tax_ids,
-            price_unit=self.price_unit,
-            quantity=self.quantity,
+            price_unit=self.amount,
+            quantity=1.0,
             account=self.account_id,
             analytic_distribution=self.analytic_distribution,
         )
 
-    @api.onchange("product_id")
-    def _onchange_product_id(self):
-        """Update description, price, and account when product changes"""
-        if self.product_id:
-            self.name = self.product_id.display_name
-            self.price_unit = self.product_id.standard_price
-            # Set account: first from product, then from product category
-            account = (
-                self.product_id.property_account_expense_id
-                or self.product_id.categ_id.property_account_expense_categ_id
-            )
-            if account:
-                self.account_id = account
+    @api.onchange("account_id")
+    def _onchange_account_id(self):
+        if self.account_id:
+            self.name = self.account_id.name
 
     # -------------------------------------------------------------------------
     # Partner compute methods

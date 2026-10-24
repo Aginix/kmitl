@@ -60,8 +60,9 @@ class TestStudentImport(TransactionCase):
         )
         cls.ktb = cls.env["res.bank"].create({"name": "Test KTB"})
         cls.scb = cls.env["res.bank"].create({"name": "Test SCB"})
-        cls.product = cls.env["product.product"].create(
-            {"name": "TA Pay", "type": "service"}
+        cls.expense_account = cls.env["account.account"].search(
+            [("account_type", "=", "expense"), ("company_id", "=", cls.env.company.id)],
+            limit=1,
         )
         cls.known = cls.env["res.partner"].create(
             {
@@ -88,7 +89,7 @@ class TestStudentImport(TransactionCase):
             .create(
                 {
                     "request_id": request.id,
-                    "product_id": self.product.id,
+                    "account_id": self.expense_account.id,
                     "file": _xlsx(rows),
                     "filename": "ta.xlsx",
                 }
@@ -142,7 +143,7 @@ class TestStudentImport(TransactionCase):
         wizard.action_import()
         lines = request.line_ids.sorted("id")
         self.assertEqual(len(lines), 3)
-        self.assertEqual(lines.mapped("price_unit"), [1500, 2000, 500])
+        self.assertEqual(lines.mapped("amount"), [1500, 2000, 500])
         self.assertEqual(lines[0].partner_bank_id, self.known.bank_ids[:1])
         new = lines[1].partner_id
         self.assertEqual(new.name, "นายใหม่ ใจดี")
@@ -153,7 +154,7 @@ class TestStudentImport(TransactionCase):
         self.assertEqual(lines[2].partner_bank_id.bank_id, self.scb)
         self.assertEqual(len(self.known.bank_ids), 2, "the old account is kept")
         self.assertEqual(lines[0].name, "Course A")
-        self.assertEqual(lines[1].name, self.product.display_name)
+        self.assertEqual(lines[1].name, self.expense_account.name)
         self.assertIn("65019999", request.message_ids[0].body)
 
     def test_import_appends(self):
@@ -163,7 +164,7 @@ class TestStudentImport(TransactionCase):
                 request, [["64010001", amount, "", "", "", ""]]
             )
             wizard.action_import()
-        self.assertEqual(request.line_ids.mapped("price_unit"), [100, 200])
+        self.assertEqual(request.line_ids.mapped("amount"), [100, 200])
 
     def test_national_id(self):
         request = self._request(has_tax=True)

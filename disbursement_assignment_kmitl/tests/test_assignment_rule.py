@@ -60,8 +60,9 @@ class TestDisbursementAssignment(TransactionCase):
             {"name": "Partner B", "partner_type_id": cls.pt_b.id, "bank_ids": bank}
         )
 
-        cls.product = cls.env["product.product"].create(
-            {"name": "Test Service", "type": "service"}
+        cls.expense_account = cls.env["account.account"].search(
+            [("account_type", "=", "expense"), ("company_id", "=", cls.env.company.id)],
+            limit=1,
         )
 
         # -- users -------------------------------------------------------
@@ -122,10 +123,9 @@ class TestDisbursementAssignment(TransactionCase):
                     0,
                     0,
                     {
-                        "product_id": self.product.id,
+                        "account_id": self.expense_account.id,
                         "name": "Test line",
-                        "quantity": 1.0,
-                        "price_unit": 100.0,
+                        "amount": 100.0,
                         "partner_id": p.id,
                     },
                 )

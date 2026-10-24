@@ -19,7 +19,7 @@ const DR_FIELDS = [
     "activity_analytic_id",
 ];
 
-const LINE_FIELDS = ["partner_id", "name", "quantity", "price_unit", "price_subtotal"];
+const LINE_FIELDS = ["partner_id", "name", "price_subtotal"];
 
 // Filter buckets backed by the MultiRecordSelect widget -> DR search field.
 // fund/activity are computed non-stored on the DR (no search) so they are not
@@ -82,8 +82,6 @@ export class ApprovalQueue extends Component {
             reject: _t("Reject"),
             payee: _t("Payee"),
             description: _t("Description"),
-            quantity: _t("Quantity"),
-            unitPrice: _t("Unit Price"),
             subtotal: _t("Subtotal"),
             department: _t("Department"),
             source: _t("Source"),

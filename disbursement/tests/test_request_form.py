@@ -25,10 +25,9 @@ class TestRequestForm(TwoApproverCommon):
                             0,
                             0,
                             {
-                                "product_id": self.product.id,
+                                "account_id": self.expense_account.id,
                                 "name": "line",
-                                "quantity": 1.0,
-                                "price_unit": 100.0,
+                                "amount": 100.0,
                                 "partner_id": self.partner.id,
                             },
                         )
@@ -132,9 +131,9 @@ class TestTaxable(TwoApproverCommon):
                         0,
                         0,
                         {
-                            "product_id": self.product.id,
+                            "account_id": self.expense_account.id,
                             "name": "line",
-                            "price_unit": 100.0,
+                            "amount": 100.0,
                             "partner_id": self.partner.id,
                             "tax_ids": [(6, 0, self.vat.ids)],
                         },

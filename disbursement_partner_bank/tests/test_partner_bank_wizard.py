@@ -36,7 +36,7 @@ class TestPayeeBankWizard(TwoApproverCommon):
             {
                 "partner_type_id": partner.partner_type_id.id,
                 "line_ids": [
-                    (0, 0, {"product_id": self.product.id, "price_unit": 100.0, "partner_id": partner.id})
+                    (0, 0, {"account_id": self.expense_account.id, "amount": 100.0, "partner_id": partner.id})
                 ],
             }
         )

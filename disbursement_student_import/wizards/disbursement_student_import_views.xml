@@ -19,7 +19,7 @@
                     />
                 </div>
                 <group attrs="{'invisible': [('state', '!=', 'upload')]}">
-                    <field name="product_id" options="{'no_create': True}" />
+                    <field name="account_id" options="{'no_create': True}" />
                     <field name="file" filename="filename" />
                     <field name="filename" invisible="1" />
                 </group>

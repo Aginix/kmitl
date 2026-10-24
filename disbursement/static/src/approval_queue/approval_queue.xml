@@ -173,8 +173,6 @@
                                                 <tr>
                                                     <th><t t-esc="labels.payee"/></th>
                                                     <th><t t-esc="labels.description"/></th>
-                                                    <th class="text-end"><t t-esc="labels.quantity"/></th>
-                                                    <th class="text-end"><t t-esc="labels.unitPrice"/></th>
                                                     <th class="text-end"><t t-esc="labels.subtotal"/></th>
                                                 </tr>
                                             </thead>
@@ -183,8 +181,6 @@
                                                     <tr>
                                                         <td t-esc="displayName(line.partner_id)"/>
                                                         <td t-esc="line.name"/>
-                                                        <td class="text-end" t-esc="line.quantity"/>
-                                                        <td class="text-end" t-esc="formatCurrency(line.price_unit)"/>
                                                         <td class="text-end" t-esc="formatCurrency(line.price_subtotal)"/>
                                                     </tr>
                                                 </t>

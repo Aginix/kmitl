@@ -78,7 +78,7 @@ class WorkAcceptance(models.Model):
                         "PO '%s' still has WA '%s' waiting for disbursement submission."
                     ) % (wa.purchase_id.name, blocking[0].name)
                 )
-            
+
     def _link_to_disbursement(self, disbursement, analytic_distribution=False, fine_tax_ids=None):
         self.ensure_one()
         self.write({"disbursement_request_id": disbursement.id})
@@ -91,12 +91,6 @@ class WorkAcceptance(models.Model):
                 ],
                 limit=1,
             )
-            fine_product = self.env["product.product"].search(
-                [
-                    ("name", "=", "ค่าปรับ"),
-                ],
-                limit=1,
-            )
             if not fine_account:
                 raise UserError(
                     _("Account with code '4310000003' not found. Please check your chart of accounts.")
@@ -106,9 +100,7 @@ class WorkAcceptance(models.Model):
                 "line_ids": [
                     Command.create({
                         "name": _("ค่าปรับ"),
-                        "quantity": 1,
-                        "price_unit": -self.fines_late,
-                        "product_id": fine_product.id,
+                        "amount": -self.fines_late,
                         "account_id": fine_account.id,
                         # the vendor every line of a PO/PA request pays
                         "partner_id": disbursement.line_ids[:1].partner_id.id,
@@ -130,17 +122,12 @@ class WorkAcceptance(models.Model):
             ) % {"link": dr_link, "name": disbursement.display_name},
             subtype_xmlid="mail.mt_note",
         )
-            
+
 class WorkAcceptanceLine(models.Model):
     _inherit = "work.acceptance.line"
 
     def _prepare_disbursement_line_vals(self):
         """Convert WA line to disbursement request line vals."""
-        # ดึง account จาก product เหมือน PO line
-        account = (
-            self.product_id.property_account_expense_id
-            or self.product_id.categ_id.property_account_expense_categ_id
-        )
         # ดึง analytic จาก PO line ที่ link อยู่ (ถ้ามี)
         analytic = (
             self.purchase_line_id.analytic_distribution
@@ -154,11 +141,8 @@ class WorkAcceptanceLine(models.Model):
             else []
         )
         return {
-            "product_id": self.product_id.id,
             "name": self.name,
-            "quantity": self.product_qty,
-            "price_unit": self.price_unit,
-            "account_id": account.id if account else False,
+            "amount": self.product_qty * self.price_unit,
             "tax_ids": [(6, 0, tax_ids)],
             "analytic_distribution": analytic,
         }
