@@ -3,7 +3,7 @@ from odoo.exceptions import UserError, ValidationError
 
 
 class WorkCenterArea(models.Model):
-    """A work area (ระบบงาน) — งานพัสดุ, งานการเงิน, … Every ศูนย์งาน belongs to
+    """A work area (ระบบงาน) — งานการเงิน, งานงบประมาณ, … Every ศูนย์งาน belongs to
     exactly one area, and each area has its own overview. Bridges seed the area
     and add the document models it covers."""
 
