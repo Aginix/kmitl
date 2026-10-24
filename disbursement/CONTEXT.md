@@ -1,5 +1,13 @@
 # Disbursement
 
+> **Being replaced by the station model — see `disbursement_wc/CONTEXT.md` and
+> `disbursement_wc/docs/adr/0001-*`.** The DR's own state is reduced to ฉบับร่าง →
+> ยืนยัน → ลงนาม → in_progress → เสร็จสิ้น (+ ยกเลิก); the middle is carried by
+> **สถานี** and the money by **ขั้นการชำระ**. The entries below on Verify, the
+> two-approver step, `approval_state`, Reject and the Approver queue describe the
+> workflow being retired and are not yet rewritten. Payee, Payee type, Source document,
+> Fiscal year, Budget control, Stand-alone request and Signature block still hold.
+
 The disbursement request (DR, ใบขอเบิก) and the workflow it passes through:
 `draft → submitted → signed → verified → approved`, after which the accounting /
 finance bridges raise bills and payments. At `verified` the request must clear a
