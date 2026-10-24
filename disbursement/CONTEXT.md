@@ -153,3 +153,18 @@ snapshot taken at the moment of signing, so later HR edits never rewrite a signe
 request (see ADR 0002). Saraban's own block prints above it.
 _Avoid_: Approval history (that is the chatter and the approver stamps), เกษียน
 trail (Saraban's audit trail, which is not printed).
+
+**Printed request** (ใบขอเบิกพิมพ์):
+The standalone ใบขอเบิก PDF in the Print menu, signature block included. It lives
+in `disbursement_pdf`, not in the core, and leaves the Print menu once
+`disbursement_sarabun` is installed: the หนังสือ is then the official document
+(ADR 0006).
+_Avoid_: Portal / Preview (the `/my/disbursement` portal that framed it is gone).
+
+**Document preview** (ตัวอย่างเอกสาร):
+An on-screen, watermarked rendering of the หนังสือ a request would send to
+e-Saraban, opened from the form before Submit to Sarabun. Not an official
+document: it has no number and no signatures, and nothing is saved. Once the
+หนังสือ exists the same button opens the หนังสือ's own preview (ADR 0007).
+_Avoid_: Printed request (that is the ใบขอเบิก, not the หนังสือ), Draft หนังสือ (a
+real, saved `sarabun.document` in state `draft`).

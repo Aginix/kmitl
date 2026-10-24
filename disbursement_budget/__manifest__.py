@@ -3,7 +3,7 @@
 {
     "name": "Disbursement Budget",
     "summary": "Consume the linked budget commitment on the disbursement request's final approval",
-    "version": "16.0.1.1.0",
+    "version": "16.0.1.2.0",
     "category": "Disbursement",
     "license": "LGPL-3",
     "author": "KMITL",
@@ -12,6 +12,8 @@
         # A DR consumes without obligating first; the budget ledger liquidates
         # the reservation for it (budget ADR-0017).
         "budget",
+        # The printed ใบขอเบิก the budget rows are added to.
+        "disbursement_pdf",
     ],
     "data": [
         "security/security.xml",
@@ -21,5 +23,6 @@
         "report/report_disbursement_request.xml",
     ],
     "installable": True,
-    "auto_install": True,
+    # disbursement_pdf is pulled in, not a trigger.
+    "auto_install": ["disbursement", "budget"],
 }

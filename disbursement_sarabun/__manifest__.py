@@ -3,13 +3,15 @@
 {
     "name": "Disbursement Sarabun Integration",
     "summary": "Route disbursement requests through Sarabun for head approval",
-    "version": "16.0.1.3.0",
+    "version": "16.0.1.4.0",
     "category": "Disbursement",
     "license": "LGPL-3",
     "author": "KMITL",
     "website": "https://www.kmitl.ac.th",
     "depends": [
         "disbursement",
+        # Unbinds its ใบขอเบิก print (reports/report_disbursement_request_unbind.xml).
+        "disbursement_pdf",
         "agx_sarabun",
         "agx_sarabun_layout",
     ],
