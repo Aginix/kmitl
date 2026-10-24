@@ -27,7 +27,7 @@ class HrEmployee(models.Model):
     def _onchange_firstname_middlename_lastname(self):
         if self.firstname or self.middlename or self.lastname:
             self.name = self._get_name(self.firstname, self.middlename, self.lastname)
-        elif not self.firstname and not self.middlename and not self.lastname:
+        else:
             self.name = NO_NAME_TEXT
 
     @api.model
@@ -48,9 +48,21 @@ class HrEmployee(models.Model):
         return res
 
     def write(self, vals):
-        for employee in self:
-            employee._prepare_vals_on_write_firstname_middlename_lastname(vals)
-        res = super().write(vals)
+        name_parts_changed = any(
+            f in vals for f in ("firstname", "middlename", "lastname")
+        )
+        if name_parts_changed and len(self) > 1:
+            # The computed name differs per record, so vals cannot be shared:
+            # write each record with its own copy to avoid cross-contamination.
+            for employee in self:
+                rec_vals = dict(vals)
+                employee._prepare_vals_on_write_firstname_middlename_lastname(rec_vals)
+                super(HrEmployee, employee).write(rec_vals)
+            res = True
+        else:
+            for employee in self:
+                employee._prepare_vals_on_write_firstname_middlename_lastname(vals)
+            res = super().write(vals)
         if self._is_partner_fullname_installed() and set(vals).intersection(
             UPDATE_PARTNER_FIELDS
         ):
@@ -63,9 +75,10 @@ class HrEmployee(models.Model):
                 vals.get("firstname"), vals.get("middlename"), vals.get("lastname")
             )
         elif vals.get("name"):
-            vals["firstname"] = self.split_name(vals["name"])["firstname"]
-            vals["middlename"] = self.split_name(vals["name"])["middlename"]
-            vals["lastname"] = self.split_name(vals["name"])["lastname"]
+            parts = self.split_name(vals["name"])
+            vals["firstname"] = parts["firstname"]
+            vals["middlename"] = parts["middlename"]
+            vals["lastname"] = parts["lastname"]
         else:
             vals["name"] = NO_NAME_TEXT
 
@@ -86,15 +99,18 @@ class HrEmployee(models.Model):
             else:
                 lastname = self.lastname
 
-            vals["name"] = self._get_name(firstname, middlename, lastname)
+            vals["name"] = (
+                self._get_name(firstname, middlename, lastname) or NO_NAME_TEXT
+            )
 
         elif vals.get("name"):
             if vals.get("name") == NO_NAME_TEXT:
                 vals["name"] = NO_NAME_TEXT
             else:
-                vals["firstname"] = self.split_name(vals["name"])["firstname"]
-                vals["middlename"] = self.split_name(vals["name"])["middlename"]
-                vals["lastname"] = self.split_name(vals["name"])["lastname"]
+                parts = self.split_name(vals["name"])
+                vals["firstname"] = parts["firstname"]
+                vals["middlename"] = parts["middlename"]
+                vals["lastname"] = parts["lastname"]
         else:
             if self.name and self.name != NO_NAME_TEXT:
                 return
@@ -106,12 +122,7 @@ class HrEmployee(models.Model):
         """Remove redundant whitespace from :param:`name`.
         Removes leading, trailing and duplicated whitespace.
         """
-        try:
-            name = " ".join(name.split()) if name else name
-        except UnicodeDecodeError:
-            name = " ".join(name.decode("utf-8").split()) if name else name
-
-        return name
+        return " ".join(name.split()) if name else name
 
     @api.model
     def _get_inverse_name(self, name):
@@ -124,6 +135,8 @@ class HrEmployee(models.Model):
         """
 
         name = self._get_whitespace_cleaned_name(name)
+        if not name:
+            return {"firstname": False, "middlename": False, "lastname": False}
         parts = name.split(" ")
         if len(parts) == 1:
             return {"firstname": parts[0], "middlename": False, "lastname": False}
