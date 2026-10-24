@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="view_procurement_plan_floating_return_form" model="ir.ui.view">
+        <field name="name">procurement.plan.floating.return.form</field>
+        <field name="model">procurement.plan.floating.return</field>
+        <field name="arch" type="xml">
+            <form string="โอนคืนงบลอย">
+                <field name="plan_id" invisible="1" force_save="1" />
+                <field name="currency_id" invisible="1" />
+                <div class="alert alert-info" role="status">
+                    โอนเงินออกจากมิติแผนคืนเป็นเงินลอย มีผลทันทีโดยไม่ผ่านการขออนุมัติโอนงบประมาณ
+                    เงินจองที่ยังไม่ได้ผูกพันจะถูกคืนจองในใบโอนเดียวกัน
+                </div>
+                <group>
+                    <group string="จากแผน">
+                        <field name="plan_received" />
+                        <field name="claimed_label" />
+                        <field name="claimed_amount" />
+                        <field name="returnable" class="fw-bold" />
+                    </group>
+                    <group string="คืนเข้า">
+                        <field name="pool_label" nolabel="1" colspan="2" />
+                    </group>
+                </group>
+                <group>
+                    <field name="amount" />
+                    <field name="note" placeholder="บันทึกช่วยจำ (ไม่บังคับ)" />
+                </group>
+                <footer>
+                    <button
+                        name="action_confirm"
+                        type="object"
+                        string="ยืนยันโอนคืน"
+                        class="btn-primary"
+                        confirm="ยืนยันโอนคืนงบลอย? ใบโอนจะมีผลทันที"
+                        attrs="{'invisible': [('returnable', '&lt;=', 0)]}"
+                    />
+                    <button string="ยกเลิก" special="cancel" class="btn-secondary" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

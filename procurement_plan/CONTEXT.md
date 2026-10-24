@@ -22,9 +22,13 @@ _Avoid_: dimension, tag
 What the plan **asks for** — the procurement's estimated value as planned. The yardstick that **Plan Budget** is measured against; never reserved by itself.
 _Avoid_: budget, Plan Budget (that is what was actually received)
 
-**Responsible (ผู้รับผิดชอบ, `user_id`)**:
-The officer who looks after the plan day to day. A contact, not an owner: they follow the plan and are told of every status change, but grant no rights the unit's plan users don't already have.
-_Avoid_: owner, coordinator (plans have neither — unlike a KMITL Project)
+**Responsible (เจ้าหน้าที่ผู้รับผิดชอบ, `responsible_id`)**:
+The officer who looks after the plan day to day. A contact, not an owner: they follow the plan and are told of every status change, but grant no rights the unit's plan users don't already have. Optional, and may change at any time until the plan is closed or cancelled.
+_Avoid_: owner, coordinator (plans have neither — unlike a KMITL Project); ผู้จัดทำ
+
+**Preparer (ผู้จัดทำ, `user_id`)**:
+Who drew the plan up — defaults to its creator (or the appropriation's user for a plan born from an appropriation) and is fixed once the plan is submitted. Drives "แผนของฉัน". Not the Responsible.
+_Avoid_: owner, responsible
 
 **Installment (งวดงาน, `procurement.plan.payment`)**:
 A planned disbursement tranche of a plan. Optional; when a plan has any, they must add up to the **Plan Amount** before the plan is submitted, and only warn on a mismatch afterwards. Purely informational at the core level — the rows are the *plan*, not a ledger.
@@ -37,7 +41,7 @@ The draft → รอตรวจสอบข้อมูล transition. The sing
 _Avoid_: confirm, activate, ปรับแผน
 
 **Close Plan (ปิดแผน)**:
-The manual act that finishes a plan (→ จัดซื้อจัดจ้างเสร็จสิ้น). Waits until no purchase request, purchase order or disbursement request on the plan is still open, and returns the unspent reservation (คืนจอง) — the money itself stays at the plan's dimension as **Held Money**. Never happens automatically when the reservation is used up. See [ADR-0005](./docs/adr/0005-plan-close-and-deletion-follow-project.md).
+The manual act that finishes a plan in progress (อยู่ในระหว่างดำเนินการ → จัดซื้อจัดจ้างเสร็จสิ้น), by a plan manager. Waits until no purchase request, purchase order or disbursement request on the plan is still open, and returns the unspent reservation (คืนจอง) — the money itself stays at the plan's dimension as **Held Money**. Never happens automatically when the reservation is used up. See [ADR-0005](./docs/adr/0005-plan-close-and-deletion-follow-project.md).
 _Avoid_: done / auto-close, cancel
 
 **Plan Deletion (ลบแผน)**:

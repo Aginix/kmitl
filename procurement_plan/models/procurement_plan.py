@@ -92,6 +92,9 @@ class ProcurementPlan(models.Model):
         default="draft",
         tracking=True,
     )
+    # A soft-deleted plan (ADR-0005) is archived together with its analytic
+    # account; Reset to Draft brings both back with the same number.
+    active = fields.Boolean(default=True, tracking=True)
     note = fields.Text("Notes", tracking=True)
     purchase_request_eta = fields.Selection(
         MONTH_SELECTION,
@@ -128,6 +131,14 @@ class ProcurementPlan(models.Model):
         tracking=True,
         readonly=False,
         states=READONLY_STATES,
+    )
+    responsible_id = fields.Many2one(
+        string="เจ้าหน้าที่ผู้รับผิดชอบ",
+        comodel_name="res.users",
+        domain=[("share", "=", False)],
+        index=True,
+        tracking=True,
+        states={"done": [("readonly", True)], "cancel": [("readonly", True)]},
     )
 
     company_id = fields.Many2one(
@@ -193,23 +204,103 @@ class ProcurementPlan(models.Model):
         return super().copy(default)
 
     def unlink(self):
-        if any(plan.state != "cancel" for plan in self):
+        """ลบแผน (ADR-0005), Odoo's own Delete: a plan whose analytic has no
+        Ledger Footprint goes for good together with the analytic; one that is
+        part of the budget history is soft-deleted (``action_cancel``) instead,
+        so it stays archived and can be revived."""
+        for plan in self:
+            plan._check_deletable()
+        soft = self.filtered(lambda p: p._must_soft_delete())
+        soft.action_cancel()
+        hard = self - soft
+        analytics = hard.analytic_account_id
+        result = super(ProcurementPlan, hard).unlink()
+        analytics.sudo().unlink()
+        return result
+
+    def _must_soft_delete(self):
+        """Whether the plan is part of the history and so may only be
+        soft-deleted: its analytic has a Ledger Footprint."""
+        self.ensure_one()
+        return bool(
+            self.analytic_account_id
+            and self.analytic_account_id._has_ledger_footprint(exclude=self)
+        )
+
+    def _check_plan_manager(self, action):
+        """Close, Reset to Draft and deleting a numbered plan are plan-manager
+        acts (ADR-0002)."""
+        if self.env.su or self.env.user.has_group(
+            "procurement_plan.group_procurement_plan_manager"
+        ):
+            return
+        raise UserError(_("%s ได้เฉพาะผู้จัดการแผนจัดซื้อจัดจ้างเท่านั้น") % action)
+
+    def _check_deletable(self):
+        """Every guard of ลบแผน (ADR-0005): deleting never moves money and never
+        strands a document that still points at the plan."""
+        self.ensure_one()
+        if self.name and self.name != "/":
+            self._check_plan_manager(_("ลบแผนที่มีเลขที่แล้ว (%s)") % self.name)
+        if self.state == "done":
+            raise UserError(_("ไม่สามารถลบแผนที่ปิดแล้ว (%s)") % self.name)
+        if self._has_spent():
             raise UserError(
-                _(
-                    "Only cancelled procurement plans can be deleted. "
-                    "Please cancel it first."
+                _("แผน %s มีการใช้จ่ายงบประมาณแล้ว ลบไม่ได้ กรุณาปิดแผนแทน") % self.name
+            )
+        reasons = self._get_held_money_reasons()
+        if reasons:
+            raise UserError(
+                _("ไม่สามารถลบแผน %s ได้ เนื่องจาก:\n%s\nกรุณาโอนคืนงบลอยให้เหลือ 0 บาทก่อน")
+                % (self.name, "\n".join("- %s" % reason for reason in reasons))
+            )
+        open_documents = self._get_open_downstream_documents()
+        if open_documents:
+            raise UserError(
+                _("ไม่สามารถลบแผน %s ได้ เนื่องจากยังมีเอกสารที่อ้างถึงแผนนี้:\n%s")
+                % (self.name, "\n".join("- %s" % doc for doc in open_documents))
+            )
+
+    def _has_spent(self):
+        """Hook: whether the plan has obligated or consumed money (budget layer)."""
+        self.ensure_one()
+        return False
+
+    def _get_held_money_reasons(self):
+        """Hook: why the plan still holds money (Held Money, budget layer).
+        Empty when it holds none."""
+        self.ensure_one()
+        return []
+
+    def _get_open_downstream_documents(self):
+        """Hook: labels of the documents still open on this plan (purchase
+        requests, purchase orders, disbursement requests) — extended by the
+        bridges that own them. Blocks ปิดแผน and ลบแผน."""
+        self.ensure_one()
+        return []
+
+    def _track_subtype(self, init_values):
+        self.ensure_one()
+        if "state" in init_values:
+            return self.env.ref("procurement_plan.mt_plan_state")
+        return super()._track_subtype(init_values)
+
+    def _message_auto_subscribe_followers(self, updated_values, default_subtype_ids):
+        """The Responsible follows the plan like ``user_id`` does, so they are
+        told of every status change (สถานะแผน)."""
+        res = super()._message_auto_subscribe_followers(
+            updated_values, default_subtype_ids
+        )
+        user = self.env["res.users"].sudo().browse(updated_values.get("responsible_id"))
+        if user.exists() and user.active:
+            res.append(
+                (
+                    user.partner_id.id,
+                    default_subtype_ids,
+                    "mail.message_user_assigned" if user != self.env.user else False,
                 )
             )
-        # Delete the related analytic account unless another document recorded
-        # it (budget moves, reservations, …) — that one stays archived.
-        analytic_accounts_to_delete = self.env["account.analytic.account"]
-        for record in self:
-            account = record.analytic_account_id
-            if account and not account._has_ledger_footprint(exclude=record):
-                analytic_accounts_to_delete |= account
-        result = super().unlink()
-        analytic_accounts_to_delete.unlink()
-        return result
+        return res
 
     def write(self, vals):
         res = super().write(vals)
@@ -291,14 +382,34 @@ class ProcurementPlan(models.Model):
         self.write({"state": "in_progress"})
 
     def action_done(self):
+        """ปิดแผน (ADR-0005): ``in_progress`` → ``done``, by hand only. Waits for
+        every downstream document to finish, then lets the budget layer return
+        the unspent reservation (``_on_close``)."""
+        self._check_plan_manager(_("ปิดแผน"))
+        for plan in self:
+            if plan.state != "in_progress":
+                raise UserError(_("ปิดแผนได้เฉพาะแผนที่อยู่ในระหว่างดำเนินการ"))
+            open_documents = plan._get_open_downstream_documents()
+            if open_documents:
+                raise UserError(
+                    _("ไม่สามารถปิดแผน %s ได้ เนื่องจากยังมีเอกสารค้างดำเนินการ:\n%s")
+                    % (plan.name, "\n".join("- %s" % doc for doc in open_documents))
+                )
         self.write({"state": "done"})
+        self._on_close()
+
+    def _on_close(self):
+        """No-op hook. Budget layer returns the unspent reservation here."""
+        return
 
     def action_reset_to_draft(self):
+        self._check_plan_manager(_("กลับเป็นแบบร่าง"))
+        if self.filtered(lambda p: p.state not in ("to_verify", "verified", "cancel")):
+            raise UserError(_("กลับเป็นแบบร่างได้เฉพาะแผนที่รอจัดสรร/รอดำเนินการ หรือแผนที่ถูกลบ"))
         self._on_reset()
-        self.write({"state": "draft"})
-        # Revive the plan's analytic dimension that action_cancel archived, so a
-        # cancelled plan brought back to draft carries its account with it.
-        self.analytic_account_id.filtered(lambda a: not a.active).write(
+        # A soft-deleted plan comes back with its analytic account (ADR-0005).
+        self.write({"state": "draft", "active": True})
+        self.analytic_account_id.sudo().filtered(lambda a: not a.active).write(
             {"active": True}
         )
 
@@ -307,11 +418,15 @@ class ProcurementPlan(models.Model):
         return
 
     def action_cancel(self):
+        """Soft delete (ADR-0005): → ``cancel`` and archive the plan and its
+        analytic account, for a plan whose analytic is part of the budget
+        history. No button of its own — reached through ลบแผน (``unlink``),
+        only once ``_check_deletable`` passes; Reset to Draft revives both."""
+        for plan in self:
+            plan._check_deletable()
         self._on_cancel()
-        self.write({"state": "cancel"})
-        # Archive the plan's analytic dimension so a cancelled plan's account
-        # stops showing up as a selectable มิติ; action_reset_to_draft revives it.
-        self.analytic_account_id.filtered(lambda a: a.active).write({"active": False})
+        self.write({"state": "cancel", "active": False})
+        self.analytic_account_id.sudo().filtered("active").write({"active": False})
 
     def _on_cancel(self):
         """No-op hook. Budget layer releases an untouched reservation here."""

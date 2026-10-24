@@ -20,6 +20,22 @@ class BudgetTransfer(models.Model):
 
     _inherit = "budget.transfer"
 
+    # Mark the transfers a Floating Return (procurement_plan ADR-0005) creates —
+    # they post on confirm, without the approval, so they stay auditable.
+    is_procurement_plan_floating_return = fields.Boolean(
+        string="โอนคืนงบลอยจากแผน",
+        readonly=True,
+        copy=False,
+        help="โอนเงินจากมิติแผนจัดซื้อจัดจ้างคืนเป็นเงินลอย (ไม่ผ่านกระบวนการขออนุมัติโอนงบประมาณ)",
+    )
+    procurement_plan_id = fields.Many2one(
+        "procurement.plan",
+        string="แผนจัดซื้อจัดจ้าง",
+        readonly=True,
+        copy=False,
+        index=True,
+    )
+
     procurement_plan_line_ids = fields.Many2many(
         "budget.move.line",
         string="แผนจัดซื้อจัดจ้าง",
@@ -36,6 +52,9 @@ class BudgetTransfer(models.Model):
             transfer.procurement_plan_line_ids = (
                 transfer.from_line_ids | transfer.to_line_ids
             ).filtered("procurement_plan_analytic_id")
+
+    def _skip_submit_review(self):
+        return self.is_procurement_plan_floating_return or super()._skip_submit_review()
 
     def _post_transfer(self):
         # Reserve only after super() has posted the delegated move and moved the

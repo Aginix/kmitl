@@ -59,6 +59,8 @@
             <filter name="current_fy" position="after">
                 <separator/>
                 <filter name="reserved" string="จองงบแล้ว" domain="[('budget_commitment_ids.state', 'not in', ('cancel',))]" />
+                <filter name="held_money" string="มีเงินค้างในมิติแผน" domain="[('has_held_money', '=', True)]" />
+                <filter name="done_held_money" string="ปิดแล้วมีเงินค้าง" domain="[('state', '=', 'done'), ('has_held_money', '=', True)]" />
             </filter>
             <filter name="group_by_state" position="before">
                 <filter string="รหัสงบประมาณ" name="group_by_budget_account" context="{'group_by': 'budget_account_id'}" />

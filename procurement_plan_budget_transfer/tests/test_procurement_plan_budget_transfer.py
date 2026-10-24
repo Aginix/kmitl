@@ -4,10 +4,8 @@ from odoo import Command
 from odoo.tests.common import TransactionCase, tagged
 
 
-@tagged("post_install", "-at_install")
-class TestProcurementPlanBudgetTransfer(TransactionCase):
-    """A transfer that funds a procurement plan's dimension to exactly its
-    planned amount auto-reserves the plan (จองงบ) the moment it posts."""
+class PlanTransferCommon(TransactionCase):
+    """Budget codes, dimensions and helpers shared by the plan transfer tests."""
 
     @classmethod
     def setUpClass(cls):
@@ -141,9 +139,12 @@ class TestProcurementPlanBudgetTransfer(TransactionCase):
         )
         return transfer
 
-    # ------------------------------------------------------------------
-    # tests
-    # ------------------------------------------------------------------
+
+@tagged("post_install", "-at_install")
+class TestProcurementPlanBudgetTransfer(PlanTransferCommon):
+    """A transfer that funds a procurement plan's dimension to exactly its
+    planned amount auto-reserves the plan (จองงบ) the moment it posts."""
+
     def test_full_funding_auto_reserves(self):
         self._appropriate(self.src, 5000)
         plan = self._make_plan(5000)

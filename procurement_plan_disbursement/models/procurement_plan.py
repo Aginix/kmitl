@@ -1,5 +1,11 @@
 from odoo import _, api, fields, models
 
+# Not cancelled and not yet settled: still holds the plan open (ค้าง).
+DISBURSEMENT_OPEN_DOMAIN = [
+    ("state", "!=", "cancel"),
+    ("settlement_stage", "not in", ("settled", "booked")),
+]
+
 
 def _is_pending(dr):
     """Not cancelled, and its budget not consumed yet."""
@@ -89,3 +95,19 @@ class ProcurementPlan(models.Model):
             "domain": [("id", "in", done.ids)],
             "view_mode": "tree,form",
         }
+
+    def _get_open_downstream_documents(self):
+        """An outstanding (ค้าง) disbursement drawing the plan's reservation
+        keeps the plan from being closed or deleted (procurement_plan ADR-0005)."""
+        res = super()._get_open_downstream_documents()
+        count = (
+            self.env["disbursement.request"]
+            .sudo()
+            .search_count(
+                [("budget_commitment_id.procurement_plan_id", "=", self.id)]
+                + DISBURSEMENT_OPEN_DOMAIN
+            )
+        )
+        if count:
+            res.append(_("ใบขอเบิกที่ค้างดำเนินการอยู่ %s รายการ") % count)
+        return res
