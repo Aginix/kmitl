@@ -34,10 +34,10 @@ class KmitlStudentCatalog(models.AbstractModel):
         if not codes:
             return {}
         params = self.env["ir.config_parameter"].sudo()
-        url = (params.get_param("partner_student_kmitl.api_url") or DEFAULT_URL).rstrip(
-            "/"
-        )
-        key = params.get_param("partner_student_kmitl.api_key")
+        url = (
+            params.get_param("partner_student_kmitl_api.api_url") or DEFAULT_URL
+        ).rstrip("/")
+        key = params.get_param("partner_student_kmitl_api.api_key")
         if not key:
             raise UserError(
                 _(

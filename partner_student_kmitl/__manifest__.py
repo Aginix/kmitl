@@ -2,17 +2,15 @@
 
 {
     "name": "KMITL Student Contacts",
-    "summary": "Student ID on contacts, named from the KMITL student catalog API",
+    "summary": "Student ID, faculty and curriculum on contacts",
     "version": "16.0.1.0.0",
     "category": "KMITL",
     "license": "LGPL-3",
     "author": "KMITL",
     "website": "https://www.kmitl.ac.th",
-    "depends": ["base_setup", "partner_type_kmitl"],
-    "external_dependencies": {"python": ["requests"]},
+    "depends": ["partner_type_kmitl"],
     "data": [
         "views/res_partner_views.xml",
-        "views/res_config_settings_views.xml",
     ],
     "installable": True,
     "auto_install": False,

@@ -19,7 +19,9 @@ _Avoid_: Student number.
 **Student catalog** (ทะเบียนนักศึกษา สจล.):
 The institute's register of students, read over its API: the source of a student's
 official name, faculty and curriculum. It never supplies a bank account or a national
-ID — those come from whoever pays the student (see ADR 0001).
+ID — those come from whoever pays the student (see ADR 0001). Connected only where
+`partner_student_kmitl_api` is installed; without it, only students already on a
+contact are known.
 _Avoid_: Student API (the transport, not the register), REG.
 
 **Refresh from the catalog** (ดึงข้อมูลจาก สจล.):

@@ -208,13 +208,13 @@ msgstr "ไม่มีรหัสนักศึกษา"
 msgid ""
 "One row per payment: student ID, amount, bank, account number, national ID "
 "(when taxed) and description. A student already in Odoo keeps their name; a "
-"new one is named from the KMITL student catalog. Lines are added to the "
-"request, never replaced."
+"new one is named from the KMITL student catalog (when connected). Lines are "
+"added to the request, never replaced."
 msgstr ""
 "หนึ่งแถวต่อหนึ่งรายการจ่าย: รหัสนักศึกษา จำนวนเงิน ธนาคาร เลขที่บัญชี "
 "เลขบัตรประชาชน (กรณีมีภาษี) และรายละเอียด นักศึกษาที่มีในระบบแล้วใช้ชื่อเดิม"
-" ส่วนรายใหม่ใช้ชื่อจากทะเบียนนักศึกษา สจล. รายการจะถูกเพิ่มต่อท้าย "
-"ไม่แทนที่รายการเดิม"
+" ส่วนรายใหม่ใช้ชื่อจากทะเบียนนักศึกษา สจล. (เมื่อเชื่อมต่อไว้) "
+"รายการจะถูกเพิ่มต่อท้าย ไม่แทนที่รายการเดิม"
 
 #. module: disbursement_student_import
 #: model:ir.model.fields.selection,name:disbursement_student_import.selection__disbursement_student_import__state__preview
@@ -277,8 +277,8 @@ msgstr "รหัสนักศึกษาซ้ำ"
 #. module: disbursement_student_import
 #: code:addons/disbursement_student_import/wizards/disbursement_student_import.py:0
 #, python-format
-msgid "Student ID not found in the KMITL student catalog"
-msgstr "ไม่พบรหัสนักศึกษาในทะเบียนนักศึกษา สจล."
+msgid "Student ID not found"
+msgstr "ไม่พบรหัสนักศึกษา"
 
 #. module: disbursement_student_import
 #: model:ir.model,name:disbursement_student_import.model_disbursement_student_import_line

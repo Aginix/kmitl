@@ -7,7 +7,7 @@ import requests
 from odoo.exceptions import UserError
 from odoo.tests.common import TransactionCase, tagged
 
-_GET = "odoo.addons.partner_student_kmitl.models.kmitl_student_catalog.requests.get"
+_GET = "odoo.addons.partner_student_kmitl_api.models.kmitl_student_catalog.requests.get"
 
 ROW = {
     "student_id": 65010001,
@@ -32,7 +32,7 @@ class TestStudentCatalog(TransactionCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.env["ir.config_parameter"].sudo().set_param(
-            "partner_student_kmitl.api_key", "k"
+            "partner_student_kmitl_api.api_key", "k"
         )
         cls.Catalog = cls.env["kmitl.student.catalog"]
         cls.Partner = cls.env["res.partner"]
@@ -61,28 +61,24 @@ class TestStudentCatalog(TransactionCase):
 
     def test_fetch_without_key_raises(self):
         self.env["ir.config_parameter"].sudo().set_param(
-            "partner_student_kmitl.api_key", False
+            "partner_student_kmitl_api.api_key", False
         )
         with self.assertRaises(UserError):
             self.Catalog.fetch(["65010001"])
 
-    def test_student_vals_and_match(self):
-        vals = self.Partner._kmitl_student_vals(ROW)
-        self.assertEqual(vals["name"], "นายสมชาย ใจดี")
-        self.assertEqual(vals["student_faculty"], "คณะวิศวกรรมศาสตร์")
-        by_vat = self.Partner.create(
-            {
-                "name": "สมชาย",
-                "partner_type_id": self.student_type.id,
-                "vat": "1101700203451",
-            }
-        )
+    def test_lookup_names_students_from_the_catalog(self):
+        with patch(_GET, return_value=_response([ROW])):
+            found = self.Partner._kmitl_student_lookup(["65010001", "00000000"])
         self.assertEqual(
-            self.Partner._kmitl_student_match("65010001", "1101700203451"), by_vat
+            found,
+            {
+                "65010001": {
+                    "name": "นายสมชาย ใจดี",
+                    "student_faculty": "คณะวิศวกรรมศาสตร์",
+                    "student_curriculum": "วิศวกรรมคอมพิวเตอร์",
+                }
+            },
         )
-        by_vat.student_code = "65010001"
-        self.assertEqual(self.Partner._kmitl_student_match("65010001"), by_vat)
-        self.assertTrue(by_vat.is_student)
 
     def test_refresh_from_kmitl(self):
         partner = self.Partner.create(

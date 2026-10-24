@@ -26,8 +26,9 @@ A ready row may still carry a **warning**.
 _Avoid_: Valid row.
 
 **Skipped row** (แถวที่ข้าม):
-A row that cannot become a line — its student ID is not in the **Student catalog**, it
-has no amount, or the student has no bank account at all. Listed in the preview and in
+A row that cannot become a line — its student ID is on no contact and not in the
+**Student catalog** (or the catalog is not connected), it has no amount, or the student
+has no bank account at all. Listed in the preview and in
 the note left on the request; never blocks the ready rows.
 _Avoid_: Error row, Rejected row.
 

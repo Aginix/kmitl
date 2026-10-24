@@ -119,8 +119,8 @@ upfront.
   setup gap.
 - [KMITL Student](./partner_student_kmitl/CONTEXT.md) — a student as an Odoo contact,
   keyed by the institute's **Student ID** and named from the **Student catalog**
-  (ทะเบียนนักศึกษา สจล.) API; the catalog supplies identity only, never a bank account
-  or a national ID.
+  (ทะเบียนนักศึกษา สจล.) API — an optional connector, `partner_student_kmitl_api`; the
+  catalog supplies identity only, never a bank account or a national ID.
 - [Disbursement — Student List Import](./disbursement_student_import/CONTEXT.md) —
   appends one line per row of a requester's Excel list (scholarships, TA pay) to a draft
   นักศึกษา-type disbursement request; unknown students are **skipped rows**, never a

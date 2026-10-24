@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_partner_form" model="ir.ui.view">
+        <field name="name">res.partner.form (partner_student_kmitl_api)</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="partner_student_kmitl.view_partner_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='student_code']" position="after">
+                <button
+                    name="action_refresh_from_kmitl"
+                    type="object"
+                    string="Refresh from KMITL"
+                    icon="fa-refresh"
+                    class="btn-link"
+                    attrs="{'invisible': [('student_code', '=', False)]}"
+                />
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,7 +1,6 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 
-from odoo import _, api, fields, models
-from odoo.exceptions import UserError
+from odoo import api, fields, models
 
 
 class ResPartner(models.Model):
@@ -32,50 +31,33 @@ class ResPartner(models.Model):
             partner.is_student = partner.partner_type_id == student_type
 
     @api.model
-    def _kmitl_student_vals(self, row):
-        """Contact values for a student catalog row: the Thai name with its
-        prefix (นายสมชาย ใจดี), faculty and curriculum."""
-        name = "%s%s %s" % (
-            row.get("prename_th") or "",
-            row.get("first_name_th") or "",
-            row.get("last_name_th") or "",
-        )
-        return {
-            "name": name.strip(),
-            "student_faculty": row.get("faculty_name_th") or False,
-            "student_curriculum": row.get("curriculum_name_th") or False,
-        }
+    def _kmitl_student_lookup(self, student_codes):
+        """``{student_code: contact values}`` (name, faculty, curriculum) for
+        students no contact carries yet; an unknown code is absent. Finds
+        nothing here — ``partner_student_kmitl_api`` reads the KMITL student
+        catalog."""
+        return {}
 
     @api.model
-    def _kmitl_student_match(self, student_code, vat=None):
-        """The contact a student is already on: by student ID, else by national
-        ID on a student contact without one (ADR 0001). Never creates."""
-        partner = self.search([("student_code", "=", student_code)], limit=1)
-        if not partner and vat:
-            partner = self.search(
+    def _kmitl_student_match(self, vat_by_code):
+        """``{student_code: contact}`` for the students already on a contact:
+        by student ID, else by national ID on a student contact without one
+        (ADR 0001). Two searches however many codes; never creates."""
+        found = {
+            partner.student_code: partner
+            for partner in self.search([("student_code", "in", list(vat_by_code))])
+        }
+        code_by_vat = {
+            vat: code for code, vat in vat_by_code.items() if vat and code not in found
+        }
+        if code_by_vat:
+            student_type = self.env.ref("partner_type_kmitl.partner_type_student")
+            for partner in self.search(
                 [
-                    ("vat", "=", vat),
-                    (
-                        "partner_type_id",
-                        "=",
-                        self.env.ref("partner_type_kmitl.partner_type_student").id,
-                    ),
+                    ("vat", "in", list(code_by_vat)),
+                    ("partner_type_id", "=", student_type.id),
                     ("student_code", "=", False),
-                ],
-                limit=1,
-            )
-        return partner
-
-    def action_refresh_from_kmitl(self):
-        """Re-read name, faculty and curriculum from the student catalog."""
-        students = self.filtered("student_code")
-        rows = self.env["kmitl.student.catalog"].fetch(students.mapped("student_code"))
-        missing = students.filtered(lambda p: p.student_code not in rows)
-        if missing:
-            raise UserError(
-                _("Not found in the KMITL student catalog: %s")
-                % ", ".join(missing.mapped("student_code"))
-            )
-        for partner in students:
-            partner.write(self._kmitl_student_vals(rows[partner.student_code]))
-        return True
+                ]
+            ):
+                found.setdefault(code_by_vat[partner.vat], partner)
+        return found

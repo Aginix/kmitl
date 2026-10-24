@@ -1,1 +1,1 @@
-from . import test_student_catalog
+from . import test_student

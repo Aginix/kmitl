@@ -1,0 +1,64 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* partner_student_kmitl_api
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: partner_student_kmitl_api
+#: code:addons/partner_student_kmitl_api/models/kmitl_student_catalog.py:0
+#, python-format
+msgid ""
+"Cannot reach the KMITL student catalog, please try again later.\n"
+"%s"
+msgstr ""
+"ไม่สามารถเชื่อมต่อระบบทะเบียนนักศึกษา สจล. ได้ กรุณาลองใหม่ภายหลัง\n"
+"%s"
+
+#. module: partner_student_kmitl_api
+#: model:ir.model,name:partner_student_kmitl_api.model_kmitl_student_catalog
+#: model_terms:ir.ui.view,arch_db:partner_student_kmitl_api.res_config_settings_view_form
+msgid "KMITL Student Catalog"
+msgstr "ทะเบียนนักศึกษา สจล."
+
+#. module: partner_student_kmitl_api
+#: model_terms:ir.ui.view,arch_db:partner_student_kmitl_api.res_config_settings_view_form
+msgid "Names and faculties of students paid by student ID"
+msgstr "ชื่อและคณะของนักศึกษาที่รับเงิน ค้นจากรหัสนักศึกษา"
+
+#. module: partner_student_kmitl_api
+#: code:addons/partner_student_kmitl_api/models/res_partner.py:0
+#, python-format
+msgid "Not found in the KMITL student catalog: %s"
+msgstr "ไม่พบในทะเบียนนักศึกษา สจล.: %s"
+
+#. module: partner_student_kmitl_api
+#: model_terms:ir.ui.view,arch_db:partner_student_kmitl_api.view_partner_form
+msgid "Refresh from KMITL"
+msgstr "ดึงข้อมูลจาก สจล."
+
+#. module: partner_student_kmitl_api
+#: model:ir.model.fields,field_description:partner_student_kmitl_api.field_res_config_settings__kmitl_student_api_key
+msgid "Student Catalog API Key"
+msgstr "API Key ทะเบียนนักศึกษา"
+
+#. module: partner_student_kmitl_api
+#: model:ir.model.fields,field_description:partner_student_kmitl_api.field_res_config_settings__kmitl_student_api_url
+msgid "Student Catalog URL"
+msgstr "URL ทะเบียนนักศึกษา"
+
+#. module: partner_student_kmitl_api
+#: code:addons/partner_student_kmitl_api/models/kmitl_student_catalog.py:0
+msgid ""
+"The KMITL student catalog API key is not set (Settings > General Settings > "
+"Integrations)."
+msgstr ""
+"ยังไม่ได้ตั้งค่า API Key ของทะเบียนนักศึกษา สจล. (ตั้งค่า > ตั้งค่าทั่วไป > "
+"Integrations)"

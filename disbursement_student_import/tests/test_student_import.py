@@ -9,8 +9,6 @@ import xlsxwriter
 from odoo.exceptions import UserError
 from odoo.tests.common import TransactionCase, tagged
 
-_FETCH = "odoo.addons.partner_student_kmitl.models.kmitl_student_catalog.KmitlStudentCatalog.fetch"
-
 
 def _thai_id(first12):
     total = sum(int(first12[i]) * (13 - i) for i in range(12))
@@ -32,14 +30,11 @@ def _xlsx(rows):
     return base64.b64encode(buffer.getvalue())
 
 
-def _catalog_row(code, first):
+def _looked_up(first):
     return {
-        "student_id": int(code),
-        "prename_th": "นาย",
-        "first_name_th": first,
-        "last_name_th": "ใจดี",
-        "faculty_name_th": "คณะวิศวกรรมศาสตร์",
-        "curriculum_name_th": "วิศวกรรมคอมพิวเตอร์",
+        "name": "นาย%s ใจดี" % first,
+        "student_faculty": "คณะวิศวกรรมศาสตร์",
+        "student_curriculum": "วิศวกรรมคอมพิวเตอร์",
     }
 
 
@@ -86,7 +81,7 @@ class TestStudentImport(TransactionCase):
             .create({"partner_type_id": self.student_type.id, **vals})
         )
 
-    def _check(self, request, rows, catalog=None):
+    def _check(self, request, rows, found=None):
         wizard = (
             self.env["disbursement.student.import"]
             .with_user(self.requester)
@@ -99,9 +94,15 @@ class TestStudentImport(TransactionCase):
                 }
             )
         )
-        with patch(_FETCH, return_value=catalog or {}) as fetch:
+        # Patched on the registry class: ahead of any lookup override
+        # (partner_student_kmitl_api) in the MRO.
+        with patch.object(
+            type(self.env["res.partner"]),
+            "_kmitl_student_lookup",
+            return_value=found or {},
+        ) as lookup:
             wizard.action_check()
-        return wizard, fetch
+        return wizard, lookup
 
     def _row(self, wizard, number):
         return wizard.line_ids.filtered(lambda r: r.row_number == number)
@@ -113,18 +114,18 @@ class TestStudentImport(TransactionCase):
             [
                 # known student, blank account -> their existing account
                 ["64010001", 1500, "", "", "", "Course A"],
-                # new student from the catalog with a new account (leading zero kept)
+                # new student found by the lookup with a new account (leading zero kept)
                 ["65010002", 2000, "Test SCB", "0222222222", "", ""],
-                # not in the catalog -> skipped
+                # not found -> skipped
                 ["65019999", 900, "Test SCB", "0333333333", "", ""],
                 # known student again, new account -> warning (duplicate), still imported
                 ["64010001", 500, "Test SCB", "444-4-44444-4", "", "Course B"],
                 # new student without any account -> skipped
                 ["65010003", 700, "", "", "", ""],
             ],
-            catalog={
-                "65010002": _catalog_row("65010002", "ใหม่"),
-                "65010003": _catalog_row("65010003", "ไร้บัญชี"),
+            found={
+                "65010002": _looked_up("ใหม่"),
+                "65010003": _looked_up("ไร้บัญชี"),
             },
         )
         # only the student IDs no contact carries are looked up

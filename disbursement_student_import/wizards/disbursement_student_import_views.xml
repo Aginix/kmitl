@@ -9,7 +9,7 @@
                 <field name="company_id" invisible="1" />
                 <field name="state" invisible="1" />
                 <div attrs="{'invisible': [('state', '!=', 'upload')]}">
-                    <p class="text-muted">One row per payment: student ID, amount, bank, account number, national ID (when taxed) and description. A student already in Odoo keeps their name; a new one is named from the KMITL student catalog. Lines are added to the request, never replaced.</p>
+                    <p class="text-muted">One row per payment: student ID, amount, bank, account number, national ID (when taxed) and description. A student already in Odoo keeps their name; a new one is named from the KMITL student catalog (when connected). Lines are added to the request, never replaced.</p>
                     <button
                         name="action_download_template"
                         string="Download the import template"

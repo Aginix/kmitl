@@ -10,6 +10,9 @@ only otherwise created under the catalog's name. A student ID the catalog does n
 know is skipped with a warning, never a rejection of the whole list, and the catalog's
 status (จบ, พ้นสภาพ, …) is deliberately ignored — paying a just-graduated TA is
 legitimate and the system is left open-ended; the requester and verifier judge.
+The catalog connector is its own module (`partner_student_kmitl_api`) behind the
+`_kmitl_student_lookup` hook, so a student list can be imported without it — only
+students already on a contact are then known.
 
 ## Considered Options
 

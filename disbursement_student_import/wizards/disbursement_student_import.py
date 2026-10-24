@@ -202,18 +202,18 @@ class DisbursementStudentImport(models.TransientModel):
 
     def _resolve(self, rows, request):
         """Preview values for ``rows``: each one's student, bank account,
-        status and message. Writes nothing; the student catalog is asked only
-        about student IDs no contact carries yet."""
+        status and message. Writes nothing; students are matched in one batch
+        and only student IDs no contact carries are looked up (in one batch)."""
         Partner = self.env["res.partner"].sudo()
         student_type = self.env.ref("partner_type_kmitl.partner_type_student")
-        partners = {}
+        vat_by_code = {}
         for row in rows:
             code = row["student_code"]
-            if code and code not in partners:
-                vat = row["vat"] if _valid_thai_id(row["vat"]) else None
-                partners[code] = Partner._kmitl_student_match(code, vat)
-        unknown = [code for code, partner in partners.items() if not partner]
-        catalog = self.env["kmitl.student.catalog"].fetch(unknown) if unknown else {}
+            if code and code not in vat_by_code:
+                vat_by_code[code] = row["vat"] if _valid_thai_id(row["vat"]) else None
+        partners = Partner._kmitl_student_match(vat_by_code)
+        unknown = [code for code in vat_by_code if code not in partners]
+        looked_up = Partner._kmitl_student_lookup(unknown) if unknown else {}
         banks = {
             bank.name.strip().lower(): bank for bank in self.env["res.bank"].search([])
         }
@@ -232,11 +232,11 @@ class DisbursementStudentImport(models.TransientModel):
                 vals["student_name"] = partner.name
                 if partner.partner_type_id != student_type:
                     skip.append(_("%s is not a student contact") % partner.display_name)
-            elif code in catalog:
-                vals.update(Partner._kmitl_student_vals(catalog[code]))
+            elif code in looked_up:
+                vals.update(looked_up[code])
                 vals["student_name"] = vals.pop("name")
             else:
-                skip.append(_("Student ID not found in the KMITL student catalog"))
+                skip.append(_("Student ID not found"))
             if row["amount"] <= 0:
                 skip.append(_("No amount"))
 
