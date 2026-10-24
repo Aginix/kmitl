@@ -11,13 +11,14 @@ Work Center
 |badge_devstat| |badge_license|
 
 A **work center** (ศูนย์งาน) is the unit that owns and tracks a document — whose
-work it is and who follows it up, e.g. ศูนย์งานภาควิชาไฟฟ้า or ศูนย์งานพัสดุกลาง.
+work it is and who follows it up, e.g. ศูนย์งานภาควิชาไฟฟ้า or ศูนย์งานการเงินกลาง.
 It is stamped on the document itself, so the unit never loses sight of its own
 paperwork.
 
-This module is the core. It ships no document type of its own: each **work area**
-(ระบบงาน — งานพัสดุ, งานการเงิน, งานงบประมาณ …) arrives as a bridge module that
-seeds the area, puts the mixin on its documents and adds the area's overview menu.
+This module is the core. It ships no document type and no work area of its own:
+each **work area** (ระบบงาน — งานการเงิน, งานงบประมาณ …) arrives as a bridge module
+that seeds the area, puts the mixin on its documents and adds the area's overview
+menu.
 
 See ``CONTEXT.md`` for the glossary and ``docs/adr/0001-*`` for the decision
 behind the design.

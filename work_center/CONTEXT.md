@@ -1,7 +1,7 @@
 # Work Center (ศูนย์งาน)
 
 A cross-cutting way to divide work inside an organisation by the data on the documents
-themselves — "พ.1 ที่ส่วนงานผู้ขอเป็นภาควิชาไฟฟ้า เป็นงานของศูนย์งานภาคไฟฟ้า". Each
+themselves — "เอกสารที่ส่วนงานผู้ขอเป็นภาควิชาไฟฟ้า เป็นงานของศูนย์งานภาคไฟฟ้า". Each
 document is stamped with the unit that owns and follows it, and every work area
 (ระบบงาน) gets an overview of its work centers with live counters. Borrowed in spirit
 from the MRP work center, but **not** a station a document passes through: a document
@@ -10,17 +10,17 @@ stays with its ศูนย์งาน for its whole life.
 ## Language
 
 **ศูนย์งาน (Work Center)**: The unit that **owns and tracks** a document — whose work it
-is and who follows it up — e.g. ศูนย์งานภาควิชาไฟฟ้า, ศูนย์งานพัสดุกลาง. A document has
-at most one, stored on the document. It does **not** say who acts next: each step is
+is and who follows it up — e.g. ศูนย์งานภาควิชาไฟฟ้า, ศูนย์งานการเงินกลาง. A document
+has at most one, stored on the document. It does **not** say who acts next: each step is
 still done by whoever holds the right for that state. _Avoid_: หน่วยงาน (that is the
 Operating Unit), ส่วนงาน (the departments dimension), กลุ่มงาน (a formal org sub-unit),
 โต๊ะ, station, team
 
-**ระบบงาน (Work Area)**: The line of work a ศูนย์งาน belongs to — งานพัสดุ, งานการเงิน,
+**ระบบงาน (Work Area)**: The line of work a ศูนย์งาน belongs to — งานการเงิน,
 งานงบประมาณ … A ศูนย์งาน belongs to exactly one area and may hold several document types
-of that area (ศูนย์งานพัสดุกลาง holds พจ.1 and PO). Each area has its own overview. A
-ภาควิชา whose ธุรการ does both พัสดุ and การเงิน has two ศูนย์งาน, one per area.
-_Avoid_: module, app (an area may span several modules)
+of that area. Each area has its own overview. A ภาควิชา whose ธุรการ does both การเงิน
+and งบประมาณ has two ศูนย์งาน, one per area. _Avoid_: module, app (an area may span
+several modules)
 
 **Member (สมาชิก)**: A person who follows a ศูนย์งาน — its card shows on their overview
 under "ศูนย์งานของฉัน". Membership is focus only: it grants no access and restricts no
@@ -39,7 +39,7 @@ assignment rule (that picks a person)
 **Pinned (กำหนดเอง)**: A ศูนย์งาน chosen by hand that differs from what the rules would
 give. Rules stop touching a pinned document; clearing its ศูนย์งาน un-pins it.
 
-**Counter (ตัวนับ)**: A number on every card of an area — e.g. "พ.1 รอตรวจสอบ" —
+**Counter (ตัวนับ)**: A number on every card of an area — e.g. "เอกสารรอตรวจสอบ" —
 counting that ศูนย์งาน's documents matching a condition, with the viewer's own access,
 so it always equals the list it opens.
 
@@ -53,15 +53,15 @@ their ศูนย์งาน.
   **ยังไม่มีศูนย์งาน** card.
 - A **ศูนย์งาน** has many **Routing Rules**, many **Members** and at most one Operating
   Unit.
-- A document has at most one **ศูนย์งาน**; parent and child documents (พ.1 → พจ.1) are
+- A document has at most one **ศูนย์งาน**; a document and the document it spawns are
   routed independently and may land on the same or different ศูนย์งาน.
 
 ## Example dialogue
 
-> **Dev:** "When the ธุรการ verifies a พ.1, does it move to the budget officer's
-> ศูนย์งาน?" **Domain expert:** "No — the พ.1 is ภาคไฟฟ้า's work from ส่งตรวจ to จองงบ.
-> The budget officer acts on it by right, but ภาคไฟฟ้า keeps following it. Only a wrong
-> ศูนย์งาน gets changed, by hand."
+> **Dev:** "When the ธุรการ sends a request for checking, does it move to the budget
+> officer's ศูนย์งาน?" **Domain expert:** "No — the request is ภาคไฟฟ้า's work from
+> ส่งตรวจ to จองงบ. The budget officer acts on it by right, but ภาคไฟฟ้า keeps following
+> it. Only a wrong ศูนย์งาน gets changed, by hand."
 
 ## Flagged ambiguities
 
