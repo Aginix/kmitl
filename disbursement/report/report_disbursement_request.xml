@@ -85,21 +85,21 @@
                                     </td>
                                 </tr>
                                 <tr class="o_field_department_analytic_id">
-                                    <td>หน่วยงาน</td>
+                                    <td>ส่วนงาน</td>
                                     <td>
                                         <span t-field="o.department_analytic_id" />
-                                    </td>
-                                </tr>
-                                <tr class="o_field_activity_analytic_id">
-                                    <td>ด้าน/แผนงาน/กิจกรรม</td>
-                                    <td>
-                                        <span t-field="o.activity_analytic_id" />
                                     </td>
                                 </tr>
                                 <tr class="o_field_fund_analytic_id">
                                     <td>กองทุน</td>
                                     <td>
                                         <span t-field="o.fund_analytic_id" />
+                                    </td>
+                                </tr>
+                                <tr class="o_field_activity_analytic_id">
+                                    <td>ด้าน/แผนงาน/กิจกรรม</td>
+                                    <td>
+                                        <span t-field="o.activity_analytic_id" />
                                     </td>
                                 </tr>
                             </tbody>
