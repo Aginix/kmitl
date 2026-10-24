@@ -381,12 +381,9 @@
                                         optional="show"
                                         options="{'no_open': True, 'no_create': True, 'no_edit': True}"
                                     />
-                                    <field name="product_id" />
-                                    <!-- Kept loaded: the product onchange fills the
-                                         description and the quantity defaults to 1. -->
-                                    <field name="name" invisible="1" />
-                                    <field name="quantity" invisible="1" />
-                                    <field name="price_unit" />
+                                    <field name="account_id" />
+                                    <field name="name" />
+                                    <field name="amount" />
                                     <field
                                         name="tax_ids"
                                         widget="many2many_tags"
@@ -396,7 +393,6 @@
                                         name="wht_tax_id"
                                         attrs="{'column_invisible': [('parent.has_tax', '=', False)]}"
                                     />
-                                    <field name="account_id" optional="hide" />
                                     <field
                                         name="analytic_distribution"
                                         widget="analytic_distribution"

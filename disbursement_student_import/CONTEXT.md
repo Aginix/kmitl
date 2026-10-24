@@ -10,7 +10,7 @@ knows it was imported.
 **Student list import** (นำเข้ารายชื่อนักศึกษา):
 Adding one request line per row of the requester's Excel file — student ID, amount,
 bank account, optional national ID and description — to a draft request whose
-**Payee type** is นักศึกษา, all under the one expense item chosen for the import. It
+**Payee type** is นักศึกษา, all under the one account chosen for the import. It
 only ever appends; the request's existing lines are left alone.
 _Avoid_: Upload, Sync, Bulk create.
 

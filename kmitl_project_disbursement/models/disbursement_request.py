@@ -61,22 +61,22 @@ class DisbursementRequest(models.Model):
         string="Is Project Expense",
     )
 
-    # For project expenses the line product is not chosen by hand — it is the
-    # product bound to the project budget account (budget_product). Hand both to
-    # the disbursement hooks, which hide the product column and stamp the product
-    # and its expense account on every line at ORM level. A code with no bound
-    # product leaves the line blank and is refused on submit by the
-    # excep_disbursement_project_no_product rule.
+    # For project expenses the line account is not chosen by hand — it is the
+    # expense account of the product bound to the budget account
+    # (budget_product). Hand both to the disbursement hooks, which hide the
+    # account column and stamp it on every line at ORM level. A code whose
+    # account cannot be resolved leaves the lines blank and is refused on submit
+    # by the excep_disbursement_project_no_product rule.
     @api.depends("budget_account_id.is_project")
     def _compute_is_budget_account_product_expense(self):
         super()._compute_is_budget_account_product_expense()
         for rec in self.filtered("is_project_expense"):
             rec.is_budget_account_product_expense = True
 
-    def _budget_account_line_product(self):
+    def _budget_account_line_account(self):
         if self.is_project_expense:
-            return self.budget_account_id.product_id
-        return super()._budget_account_line_product()
+            return self.budget_account_id.product_id._get_disbursement_expense_account()
+        return super()._budget_account_line_account()
 
     def _project_disbursement_claimed_total(self):
         """Total amount claimed by this project's non-cancelled disbursements

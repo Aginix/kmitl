@@ -57,7 +57,7 @@
                 <!-- force_save: filled by the commitment onchange while readonly. -->
                 <field name="budget_account_id" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '!=', 'draft')]}" required="1" force_save="1" />
                 <!-- Loaded (hidden) so the line list can hide the
-                     product column via parent. -->
+                     account column via parent. -->
                 <field name="is_budget_account_product_expense" invisible="1" />
             </field>
             <xpath expr="//group[@name='dates']" position="inside">
@@ -66,10 +66,10 @@
             <xpath expr="//group[@name='budget_information']/field[@name='currency_id']" position="before">
                 <field name="budget_consumed_amount" attrs="{'invisible': [('budget_consumed_amount', '=', 0)]}" />
             </xpath>
-            <!-- Budget codes that carry their own product stamp it
+            <!-- Budget codes that carry their own account stamp it
                  automatically, so the whole column is hidden and only
-                 ordinary disbursements pick a product by hand. -->
-            <xpath expr="//field[@name='line_ids']/tree/field[@name='product_id']" position="attributes">
+                 ordinary disbursements pick an account by hand. -->
+            <xpath expr="//field[@name='line_ids']/tree/field[@name='account_id']" position="attributes">
                 <attribute name="attrs">{'column_invisible': [('parent.is_budget_account_product_expense', '=', True)], 'required': [('parent.is_budget_account_product_expense', '=', False)]}</attribute>
             </xpath>
         </field>

@@ -56,9 +56,9 @@ class ApprovalRequest(models.Model):
                 # allocation row) — narrow to this line's own row so the other
                 # rows' banks are not clobbered.
                 exact = candidates.filtered(
-                    lambda a: a.product_id == line.product_id
-                    and a.currency_id.compare_amounts(a.amount, line.price_unit)
-                    == 0
+                    lambda a: (a.description or a.product_id.display_name)
+                    == line.name
+                    and a.currency_id.compare_amounts(a.amount, line.amount) == 0
                 )
                 banks = exact.mapped("partner_bank_id")
             if len(banks) == 1 and line.partner_bank_id != banks:

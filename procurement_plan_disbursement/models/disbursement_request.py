@@ -3,8 +3,8 @@ from odoo import api, fields, models
 
 class DisbursementRequest(models.Model):
     """A disbursement request charged to a procurement-plan (investment) budget
-    account behaves like a budget-account expense: the line product is the budget
-    account's own product (hidden from the user, stamped automatically), and the
+    account behaves like a budget-account expense: the line account is the budget
+    account's own account (hidden from the user, stamped automatically), and the
     procurement-plan dimension is mandatory. The two "must be configured" checks
     are blocking base.exceptions (see data/exception_rule_data.xml), so they
     surface a clear message on submit instead of a raw ORM error."""
@@ -49,19 +49,19 @@ class DisbursementRequest(models.Model):
                 distribution[str(rec.procurement_plan_analytic_id.id)] = 100
             rec.analytic_distribution = distribution if distribution else False
 
-    # For procurement-plan expenses the line product is not chosen by hand — it
-    # is the product bound to the budget account (budget_product). Hand both to
-    # the disbursement hooks, which hide the product column and stamp the product
-    # and its expense account on every line at ORM level. A code with no bound
-    # product leaves the line blank and is refused on submit by the
-    # excep_disbursement_procurement_no_product rule.
+    # For procurement-plan expenses the line account is not chosen by hand — it is the
+    # expense account of the product bound to the budget account
+    # (budget_product). Hand both to the disbursement hooks, which hide the
+    # account column and stamp it on every line at ORM level. A code whose
+    # account cannot be resolved leaves the lines blank and is refused on submit
+    # by the excep_disbursement_procurement_no_product rule.
     @api.depends("budget_account_id.procurement_plan")
     def _compute_is_budget_account_product_expense(self):
         super()._compute_is_budget_account_product_expense()
         for rec in self.filtered("is_procurement_plan_expense"):
             rec.is_budget_account_product_expense = True
 
-    def _budget_account_line_product(self):
+    def _budget_account_line_account(self):
         if self.is_procurement_plan_expense:
-            return self.budget_account_id.product_id
-        return super()._budget_account_line_product()
+            return self.budget_account_id.product_id._get_disbursement_expense_account()
+        return super()._budget_account_line_account()

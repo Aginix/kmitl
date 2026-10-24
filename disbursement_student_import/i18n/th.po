@@ -102,8 +102,8 @@ msgstr "ตรวจสอบ"
 #. module: disbursement_student_import
 #: code:addons/disbursement_student_import/wizards/disbursement_student_import.py:0
 #, python-format
-msgid "Choose the expense item."
-msgstr "กรุณาเลือกรายการค่าใช้จ่าย"
+msgid "Choose the account."
+msgstr "กรุณาเลือกรหัสบัญชี"
 
 #. module: disbursement_student_import
 #: model:ir.model.fields,field_description:disbursement_student_import.field_disbursement_student_import_line__student_curriculum
@@ -128,9 +128,9 @@ msgid "Excel File"
 msgstr "ไฟล์ Excel"
 
 #. module: disbursement_student_import
-#: model:ir.model.fields,field_description:disbursement_student_import.field_disbursement_student_import__product_id
-msgid "Expense Item"
-msgstr "รายการค่าใช้จ่าย"
+#: model:ir.model.fields,field_description:disbursement_student_import.field_disbursement_student_import__account_id
+msgid "Account"
+msgstr "บัญชี"
 
 #. module: disbursement_student_import
 #: model:ir.model.fields,field_description:disbursement_student_import.field_disbursement_student_import_line__student_faculty

@@ -48,13 +48,13 @@ class DisbursementRequest(models.Model):
         states=DisbursementRequestBase.READONLY_STATES,
     )
 
-    # True when the budget code drives the line product itself (see
-    # ``_budget_account_line_product``): the product column is then hidden and
+    # True when the budget code drives the line account itself (see
+    # ``_budget_account_line_account``): the account column is then hidden and
     # stamped automatically. False for ordinary disbursements, where the user
-    # picks a product per line. Bridges that own such budget codes contribute to
+    # picks an account per line. Bridges that own such budget codes contribute to
     # this single flag so the line list has one condition to key on.
     is_budget_account_product_expense = fields.Boolean(
-        string="Product Derived From Budget Account",
+        string="Account Derived From Budget Account",
         compute="_compute_is_budget_account_product_expense",
     )
 
@@ -133,7 +133,7 @@ class DisbursementRequest(models.Model):
         for rec in records:
             if rec.budget_commitment_id:
                 rec._log_budget_commitment_linked()
-        records._fill_budget_account_product_on_lines()
+        records._fill_budget_account_account_on_lines()
         return records
 
     def write(self, values):
@@ -155,20 +155,20 @@ class DisbursementRequest(models.Model):
                 rec._log_budget_commitment_linked()
 
         if "budget_account_id" in values or "line_ids" in values:
-            self._fill_budget_account_product_on_lines()
+            self._fill_budget_account_account_on_lines()
 
         return res
 
     # -------------------------------------------------------------------------
-    # Budget-account driven line product
+    # Budget-account driven line account
     # -------------------------------------------------------------------------
-    # Some budget codes carry their own product (budget_product): the line
-    # product is then a mapping of the budget code, not a purchased item, so the
-    # user must not pick it by hand. A bridge that owns such codes raises
-    # ``is_budget_account_product_expense`` and returns the product from
-    # ``_budget_account_line_product``; the stamping itself lives here and runs
-    # at ORM level, so it also lands on requests created programmatically and on
-    # fields the interactive onchange cannot reach (the product column is hidden).
+    # Some budget codes carry their own GL account (through the product bound by
+    # budget_product), so the user must not pick it by hand. A bridge that owns
+    # such codes raises ``is_budget_account_product_expense`` and returns the
+    # account from ``_budget_account_line_account``; the stamping itself lives
+    # here and runs at ORM level, so it also lands on requests created
+    # programmatically and on fields the interactive onchange cannot reach (the
+    # account column is hidden).
     # A bridge overriding the compute declares the dependency it actually reads
     # (its own budget-code flag); Odoo merges ``@api.depends`` across every class
     # in the MRO that defines the method, so the base dependency below always
@@ -178,36 +178,30 @@ class DisbursementRequest(models.Model):
         for rec in self:
             rec.is_budget_account_product_expense = False
 
-    def _budget_account_line_product(self):
-        """Product every line must carry, or an empty recordset when the user
-        picks the product by hand. Overridden per budget-code type."""
+    def _budget_account_line_account(self):
+        """Account every line must carry, or an empty recordset when the user
+        picks the account by hand. Overridden per budget-code type."""
         self.ensure_one()
-        return self.env["product.product"]
+        return self.env["account.account"]
 
-    def _fill_budget_account_product_on_lines(self):
+    def _fill_budget_account_account_on_lines(self):
         for rec in self:
-            product = rec._budget_account_line_product()
-            if not product:
+            if not rec.is_budget_account_product_expense:
                 continue
-            account = (
-                product.property_account_expense_id
-                or product.categ_id.property_account_expense_categ_id
-            )
-            for line in rec.line_ids.filtered(lambda l: l.product_id != product):
-                line.product_id = product
-                if not line.name:
-                    line.name = product.display_name
-                # The account follows the product unconditionally, blank
-                # included: budget_product binds the budget code's own GL account
-                # to its product, and the product column is hidden for these
-                # codes — so keeping the previous code's account would silently
-                # book the expense against the wrong account with no way for the
-                # user to correct it. An empty account is visible and fixable.
+            # The account follows the budget code unconditionally, blank
+            # included: the account column is hidden for these codes — so
+            # keeping the previous code's account would silently book the
+            # expense against the wrong account with no way for the user to
+            # correct it. A blank account is refused on submit.
+            account = rec._budget_account_line_account()
+            for line in rec.line_ids.filtered(lambda l: l.account_id != account):
                 line.account_id = account
+                if not line.name:
+                    line.name = account.name
 
     @api.onchange("budget_account_id", "line_ids")
-    def _onchange_fill_budget_account_product(self):
-        self._fill_budget_account_product_on_lines()
+    def _onchange_fill_budget_account_account(self):
+        self._fill_budget_account_account_on_lines()
 
     def _action_approve_budget(self):
         """Consume from the pre-linked budget commitment.

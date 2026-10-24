@@ -28,8 +28,9 @@ class TestReturnToVerification(TransactionCase):
             # submit is guarded on every payee having an account
             "bank_ids": [(0, 0, {"acc_number": "1234567890"})],
         })
-        cls.product = cls.env["product.product"].create(
-            {"name": "Svc", "type": "service"}
+        cls.expense_account = cls.env["account.account"].search(
+            [("account_type", "=", "expense"), ("company_id", "=", cls.env.company.id)],
+            limit=1,
         )
         users = cls.env["res.users"].with_context(no_reset_password=True)
         cls.manager = users.create(
@@ -49,10 +50,9 @@ class TestReturnToVerification(TransactionCase):
                 "partner_type_id": self.partner.partner_type_id.id,
                 "line_ids": [
                     (0, 0, {
-                        "product_id": self.product.id,
+                        "account_id": self.expense_account.id,
                         "name": "line",
-                        "quantity": 1.0,
-                        "price_unit": 100.0,
+                        "amount": 100.0,
                         "partner_id": self.partner.id,
                     })
                 ]
@@ -97,10 +97,9 @@ class TestReturnToVerification(TransactionCase):
                 "partner_type_id": self.partner.partner_type_id.id,
                 "line_ids": [
                     (0, 0, {
-                        "product_id": self.product.id,
+                        "account_id": self.expense_account.id,
                         "name": "line",
-                        "quantity": 1.0,
-                        "price_unit": 100.0,
+                        "amount": 100.0,
                         "partner_id": self.partner.id,
                     })
                 ]

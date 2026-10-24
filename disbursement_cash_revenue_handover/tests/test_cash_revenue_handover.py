@@ -86,9 +86,6 @@ class TestCashRevenueHandover(TransactionCase):
             }
         )
 
-        cls.product = cls.env["product.product"].create(
-            {"name": "Handover Service", "type": "service"}
-        )
         cls.payee = cls.env["res.partner"].create(
             {
                 "name": "Handover Payee",
@@ -158,10 +155,8 @@ class TestCashRevenueHandover(TransactionCase):
                         0,
                         {
                             "partner_id": payee.id,
-                            "product_id": self.product.id,
                             "name": "Handover Service",
-                            "quantity": 1,
-                            "price_unit": price,
+                            "amount": price,
                             "account_id": self.expense_account.id,
                             "analytic_distribution": distribution,
                         },

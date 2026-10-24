@@ -219,11 +219,10 @@ class DisbursementRequest(models.Model):
         bill lines.
         """
         return {
-            "product_id": line.product_id.id,
             "name": line.name,
             "account_id": line.account_id.id,
-            "quantity": line.quantity,
-            "price_unit": line.price_unit,
+            "quantity": 1.0,
+            "price_unit": line.amount,
             "tax_ids": [Command.set(line.tax_ids.ids)],
             "wht_tax_id": line.wht_tax_id.id,
             "analytic_distribution": line.analytic_distribution,
