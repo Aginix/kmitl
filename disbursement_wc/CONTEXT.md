@@ -71,9 +71,13 @@ station is then computed from the last on-route station it visited. _Avoid_: ต
 (that sends work backwards), reassign (that is Assignment, inside one station).
 
 **สมุดเยี่ยม (Visit log)**: The append-only record of every station the DR has entered —
-when it arrived, when it left, who moved it and by which act. It is what answers "who
-held this last week" and "where does it rejoin the route after a divert"; neither the
-station pointer alone nor work center membership can answer either.
+when it arrived, when it left, who moved it, by which act, the reason given for any
+skipped required act, and **who was responsible when it arrived** (the station's members
+at that moment, frozen). Who may act is still decided live, so the person who acted may
+be missing from those responsible: that is evidence the station's membership changed
+while the DR was there, not a breach. It is what answers "who held this last week" and
+"where does it rejoin the route after a divert"; neither the station pointer alone nor
+the current membership can answer either.
 _Avoid_: chatter, tracking (those record field changes, not custody).
 
 ## Flagged ambiguities
