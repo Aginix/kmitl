@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_invoice_submission_form" model="ir.ui.view">
+        <field name="name">kmitl.invoice.submission.form.operating_unit</field>
+        <field name="model">kmitl.invoice.submission</field>
+        <field name="inherit_id" ref="invoice_kmitl.view_invoice_submission_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group/field[@name='department_analytic_id']" position="after">
+                <!-- Ungrouped copy: the invoice_ids domain needs it for every user.
+                     Keep it BEFORE the visible node: the form parser keeps the
+                     last node's widget, and widget="selection" must win. -->
+                <field name="operating_unit_id" invisible="1"/>
+                <field name="operating_unit_id" widget="selection"
+                       groups="operating_unit.group_multi_operating_unit"/>
+            </xpath>
+            <xpath expr="//field[@name='invoice_ids']" position="attributes">
+                <attribute name="domain">[('state', '=', 'draft'),
+                                          ('submission_id', '=', False),
+                                          ('department_analytic_id', 'child_of', department_analytic_id),
+                                          ('company_id', '=', company_id),
+                                          ('operating_unit_id', '=', operating_unit_id)]</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_invoice_submission_tree" model="ir.ui.view">
+        <field name="name">kmitl.invoice.submission.tree.operating_unit</field>
+        <field name="model">kmitl.invoice.submission</field>
+        <field name="inherit_id" ref="invoice_kmitl.view_invoice_submission_tree"/>
+        <field name="arch" type="xml">
+            <field name="state" position="before">
+                <field name="operating_unit_id"
+                       groups="operating_unit.group_multi_operating_unit"
+                       optional="hide"/>
+            </field>
+        </field>
+    </record>
+</odoo>

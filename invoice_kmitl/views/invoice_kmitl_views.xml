@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_invoice_kmitl_tree" model="ir.ui.view">
+        <field name="name">kmitl.invoice.tree</field>
+        <field name="model">kmitl.invoice</field>
+        <field name="arch" type="xml">
+            <tree decoration-muted="state == 'cancelled'"
+                  decoration-info="state == 'draft'"
+                  decoration-success="state == 'paid'">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="date_due" optional="show"/>
+                <field name="partner_id"/>
+                <field name="department_analytic_id" optional="show"/>
+                <field name="user_id" optional="hide"/>
+                <field name="amount_total" sum="Total"/>
+                <field name="currency_id" invisible="1"/>
+                <field name="submission_id" optional="show"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'draft'"
+                       decoration-warning="state in ('submitted', 'accepted')"
+                       decoration-primary="state == 'issued'"
+                       decoration-success="state == 'paid'"
+                       decoration-muted="state == 'cancelled'"
+                       optional="show"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_invoice_kmitl_form" model="ir.ui.view">
+        <field name="name">kmitl.invoice.form</field>
+        <field name="model">kmitl.invoice</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_receive_payment"
+                            type="object"
+                            string="Receive Payment"
+                            class="btn-primary"
+                            states="issued"
+                            groups="invoice_kmitl.group_invoice_kmitl_user"/>
+                    <button name="action_view_submission"
+                            type="object"
+                            string="View Submission"
+                            attrs="{'invisible': [('submission_id', '=', False)]}"/>
+                    <button name="action_cancel"
+                            type="object"
+                            string="Cancel"
+                            states="draft"
+                            groups="invoice_kmitl.group_invoice_kmitl_user"/>
+                    <button name="action_cancel"
+                            type="object"
+                            string="Cancel Invoice"
+                            states="issued"
+                            confirm="Cancel this issued invoice? Its receivable entry is deleted, or reversed by a credit note if accounting has posted it."
+                            groups="invoice_kmitl.group_invoice_kmitl_approver"/>
+                    <button name="action_reconcile"
+                            type="object"
+                            string="Reconcile"
+                            attrs="{'invisible': ['|', '|', ('state', 'not in', ('paid', 'cancelled')), ('move_id', '=', False), ('payment_state', 'in', ('paid', 'reversed'))]}"
+                            groups="invoice_kmitl.group_invoice_kmitl_approver"/>
+                    <button name="%(invoice_kmitl.action_report_invoice_kmitl)d"
+                            type="action"
+                            string="Print"
+                            icon="fa-print"/>
+                    <button name="%(invoice_kmitl.action_report_invoice_kmitl_copy)d"
+                            type="action"
+                            string="Print Copy"
+                            icon="fa-copy"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,submitted,accepted,issued,paid"/>
+                </header>
+                <sheet>
+                    <field name="move_id" invisible="1"/>
+                    <field name="refund_move_id" invisible="1"/>
+                    <field name="receipt_id" invisible="1"/>
+                    <field name="currency_id" invisible="1"/>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_move"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-book"
+                                string="Receivable Entry"
+                                attrs="{'invisible': [('move_id', '=', False)]}"
+                                groups="invoice_kmitl.group_invoice_kmitl_approver"/>
+                        <button name="action_view_refund"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-undo"
+                                string="Credit Note"
+                                attrs="{'invisible': [('refund_move_id', '=', False)]}"
+                                groups="invoice_kmitl.group_invoice_kmitl_approver"/>
+                        <button name="action_view_receipt"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-file-text-o"
+                                string="Receipt"
+                                attrs="{'invisible': [('receipt_id', '=', False)]}"
+                                groups="invoice_kmitl.group_invoice_kmitl_user"/>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group name="header">
+                            <field name="partner_id" options="{'no_create': True, 'no_edit': True}"/>
+                            <field name="date"/>
+                            <field name="date_due"/>
+                            <field name="user_id" readonly="1"/>
+                        </group>
+                        <group name="status">
+                            <field name="submission_id"
+                                   attrs="{'invisible': [('submission_id', '=', False)]}"/>
+                            <field name="payment_state"
+                                   attrs="{'invisible': [('move_id', '=', False)]}"/>
+                            <field name="amount_residual"
+                                   attrs="{'invisible': [('move_id', '=', False)]}"/>
+                        </group>
+                    </group>
+                    <group name="analytic_dimensions" string="Analytic Dimensions">
+                        <group>
+                            <field name="department_analytic_id" options="{'no_create': True, 'no_edit': True, 'no_open': True}"/>
+                            <field name="fund_analytic_id" options="{'no_create': True, 'no_edit': True, 'no_open': True}"/>
+                            <field name="source_analytic_id" options="{'no_create': True, 'no_edit': True, 'no_open': True}"/>
+                            <field name="activity_analytic_id" options="{'no_create': True, 'no_edit': True, 'no_open': True}"/>
+                            <field name="analytic_distribution" widget="analytic_distribution"
+                                   groups="analytic.group_analytic_accounting"
+                                   attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Lines" name="lines">
+                            <field name="line_ids">
+                                <tree editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="product_id"/>
+                                    <field name="name"/>
+                                    <field name="account_id"/>
+                                    <field name="quantity"/>
+                                    <field name="price_unit"/>
+                                    <field name="amount" sum="Total"/>
+                                    <field name="analytic_distribution" widget="analytic_distribution" groups="analytic.group_analytic_accounting" readonly="1" optional="hide"/>
+                                    <field name="currency_id" invisible="1"/>
+                                </tree>
+                            </field>
+                            <group class="oe_subtotal_footer">
+                                <field name="amount_total" widget="monetary"/>
+                            </group>
+                            <group name="footer">
+                                <label for="note" string="Notes"/>
+                                <field name="note" nolabel="1" colspan="2" placeholder="Notes"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_invoice_kmitl_pivot" model="ir.ui.view">
+        <field name="name">kmitl.invoice.pivot</field>
+        <field name="model">kmitl.invoice</field>
+        <field name="arch" type="xml">
+            <pivot string="Invoices">
+                <field name="department_analytic_id" type="row"/>
+                <field name="state" type="col"/>
+                <field name="amount_total" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_invoice_kmitl_search" model="ir.ui.view">
+        <field name="name">kmitl.invoice.search</field>
+        <field name="model">kmitl.invoice</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="department_analytic_id"/>
+                <field name="source_analytic_id"/>
+                <field name="fund_analytic_id"/>
+                <field name="user_id"/>
+                <field name="submission_id"/>
+                <separator/>
+                <filter string="My Invoices" name="my_invoices"
+                        domain="[('user_id', '=', uid)]"/>
+                <separator/>
+                <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="Submitted" name="submitted" domain="[('state', '=', 'submitted')]"/>
+                <filter string="Accepted" name="accepted" domain="[('state', '=', 'accepted')]"/>
+                <filter string="Issued" name="issued" domain="[('state', '=', 'issued')]"/>
+                <filter string="Paid" name="paid" domain="[('state', '=', 'paid')]"/>
+                <filter string="Cancelled" name="cancelled" domain="[('state', '=', 'cancelled')]"/>
+                <separator/>
+                <filter string="Unpaid" name="unpaid"
+                        domain="[('state', 'not in', ('paid', 'cancelled'))]"/>
+                <filter string="Overdue" name="overdue"
+                        domain="[('state', 'not in', ('paid', 'cancelled')), ('date_due', '&lt;', context_today().strftime('%Y-%m-%d'))]"/>
+                <group expand="0" name="group_by" string="Group By">
+                    <filter string="Customer" name="group_partner" context="{'group_by': 'partner_id'}"/>
+                    <filter string="Department" name="group_department" context="{'group_by': 'department_analytic_id'}"/>
+                    <filter string="Source" name="group_source" context="{'group_by': 'source_analytic_id'}"/>
+                    <filter string="Fund" name="group_fund" context="{'group_by': 'fund_analytic_id'}"/>
+                    <filter string="Status" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter string="Invoice Month" name="group_date" context="{'group_by': 'date:month'}"/>
+                    <filter string="Due Month" name="group_date_due" context="{'group_by': 'date_due:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_invoice_kmitl_my" model="ir.actions.act_window">
+        <field name="name">My Invoices</field>
+        <field name="res_model">kmitl.invoice</field>
+        <field name="view_mode">tree,form,pivot</field>
+        <field name="search_view_id" ref="view_invoice_kmitl_search"/>
+        <field name="context">{'search_default_my_invoices': 1}</field>
+    </record>
+
+    <record id="action_invoice_kmitl" model="ir.actions.act_window">
+        <field name="name">All Invoices</field>
+        <field name="res_model">kmitl.invoice</field>
+        <field name="view_mode">tree,form,pivot</field>
+        <field name="search_view_id" ref="view_invoice_kmitl_search"/>
+    </record>
+</odoo>

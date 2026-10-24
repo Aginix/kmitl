@@ -94,8 +94,9 @@ upfront.
   day the money left rather than the day it was authorised, and
   **รายงานเจ้าหนี้ถึงกำหนดชำระ**. In: **รายงานการรับเงิน** over the receipts that have
   reached the treasury (`kmitl.receipt` at `done`), plus **รายงานการตั้งลูกหนี้** and
-  **รายงานลูกหนี้ถึงกำหนดชำระ** over the **ใบตั้งหนี้** — which a receipt never settles,
-  so the two money-in populations never mix. The ถึงกำหนดชำระ pair is deliberately not
+  **รายงานลูกหนี้ถึงกำหนดชำระ** over the **ใบตั้งหนี้** — which a receipt settles only
+  when it was raised from an ใบแจ้งหนี้ (`invoice_kmitl`), so the two money-in
+  populations stay separate documents. The ถึงกำหนดชำระ pair is deliberately not
   the backward-looking Aged Payable/Receivable next door in `accounting_kmitl_reports`,
   and รายงานการรับเงิน is deliberately not `receipt_kmitl_summary_report`: that one is
   the issuing department's register, this one the treasury's. Defines no document —
@@ -126,6 +127,13 @@ upfront.
   Receipt Remittance (รายงานนำส่งคลัง) that treasury posts, generating one journal entry
   per receipt with a Remit to Treasury (นำเงินส่งคลัง) leg into the payment method's
   deposit account, alongside the 6D dimensions on every line.
+- [Invoice KMITL](./invoice_kmitl/CONTEXT.md) — the departments' side of raising a debt: a
+  department issues an **ใบแจ้งหนี้** (`kmitl.invoice`, `IV/<FY>/nnnn`) and bundles it into
+  an **รายงานนำส่งใบแจ้งหนี้** that the treasury office accepts and sends on, and the
+  accounting office books the **ใบตั้งหนี้** (`out_invoice`) from it; the debtor's payment
+  is a **ใบเสร็จตัดหนี้** (a `receipt_kmitl` receipt whose credit goes to the receivable)
+  and the **ทะเบียนคุมลูกหนี้** is a list view over the invoices. Keeps "paid for the
+  department" and "paid in the books" as two statuses on purpose.
 - [HR Employee Academic Standing Thailand](./hr_employee_academic_standing_thailand/CONTEXT.md)
   — the Thai academic **คำนำหน้าชื่อทางวิชาการ** (title prefix) computed onto every
   employee from academic standing, rank, profession, rank nobility and a hand-set **ดร.
@@ -266,3 +274,17 @@ upfront.
   Treasury (นำเงินส่งคลัง) pair that moves the cash received into the payment method's
   Deposit Bank Account; that pair shares its dimensions with the revenue line it
   mirrors, so its analytic balance nets to zero by design (`receipt_kmitl` ADR-0004).
+- **Invoice KMITL → GL**: sending an accepted `kmitl.invoice.submission` to accounting
+  (a treasury action, not sudo'd) raises one draft `out_invoice` per invoice on the
+  ใบสำคัญลูกหนี้ journal — the document `finance_kmitl_reports` and the accounting
+  dashboard's `unpaid_ar` card already read — which the accounting office submits and
+  approves like any entry. The header's 6D
+  `analytic_distribution` is copied onto every line, the receivable control line included
+  (`invoice_kmitl` ADR-0004). Until it is posted an invoice is in the debtor register but
+  in no finance report.
+- **Invoice KMITL ↔ Receipt KMITL**: a receipt raised from an invoice (a ใบเสร็จตัดหนี้,
+  `kmitl.receipt.invoice_id`) credits the customer's receivable instead of revenue, and is
+  reconciled against the invoice's `out_invoice` when the accounting office posts the later
+  of the two entries. The invoice reads "paid" for the department the moment the receipt
+  is drafted, and in the books only then (`invoice_kmitl` ADR-0002, ADR-0003). Resetting a
+  posted remittance cancels such receipts and issues their invoices again.

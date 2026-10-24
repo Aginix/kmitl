@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Receivable clearing entries: the entries of the receipts that settle an
+         invoice, the counterpart of the payable side's clearing entries. -->
+    <record id="view_account_move_filter_receivable_clearing_kmitl" model="ir.ui.view">
+        <field name="name">account.move.filter.receivable.clearing.kmitl</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_account_move_filter"/>
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <searchpanel>
+                    <field name="partner_type_id" icon="fa-user" select="multi" enable_counters="1"/>
+                </searchpanel>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_receivable_clearing_moves" model="ir.actions.act_window">
+        <field name="name">Receivable Clearing Entries</field>
+        <field name="res_model">account.move</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('kmitl_invoice_id', '!=', False), ('move_type', '=', 'entry')]</field>
+        <field name="context">{'create': False}</field>
+        <field name="search_view_id" ref="view_account_move_filter_receivable_clearing_kmitl"/>
+    </record>
+
+    <!-- Cancelling an issued invoice that accounting has posted raises a draft credit
+         note for them to submit and approve; core's own menu is not in this tree. -->
+    <menuitem id="menu_receivable_credit_notes"
+              name="Credit Notes"
+              parent="accounting_kmitl.menu_receivable"
+              action="account.action_move_out_refund_type"
+              sequence="15"/>
+
+    <menuitem id="menu_receivable_clearing_moves"
+              name="Receivable Clearing Entries"
+              parent="accounting_kmitl.menu_receivable"
+              action="action_receivable_clearing_moves"
+              sequence="20"/>
+</odoo>
