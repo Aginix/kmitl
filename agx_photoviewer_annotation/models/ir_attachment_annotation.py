@@ -302,6 +302,13 @@ class IrAttachmentAnnotation(models.Model):
     # ------------------------------------------------------------------
 
     @api.model
+    @api.model
+    def _export_font(self):
+        """The reportlab font of the export's comments page. Helvetica only
+        has Latin letters: a module registers one for its language
+        (``agx_photoviewer_annotation_l10n_th_fonts`` for Thai)."""
+        return "Helvetica"
+
     def _export_pdf(self, attachment):
         """Return the annotated export of ``attachment`` as PDF bytes."""
         annotations = self.sudo().search([("attachment_id", "=", attachment.id)])
@@ -338,4 +345,5 @@ class IrAttachmentAnnotation(models.Model):
             comments=comments,
             title=_("Comments on %s", attachment.name or ""),
             page_label=_("Page"),
+            font=self._export_font(),
         )

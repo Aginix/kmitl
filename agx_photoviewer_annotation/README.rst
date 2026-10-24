@@ -17,7 +17,8 @@ an image or a PDF inside the photo viewer of ``agx_photoviewer``.
 * The eye button hides every mark to show the file as it was uploaded;
   annotating is off meanwhile.
 * **Download with annotations** builds a PDF of the file with the marks drawn
-  on it and the comments listed on a last page; nothing is stored.
+  on it and the comments listed on a last page; nothing is stored. Install
+  ``agx_photoviewer_annotation_l10n_th_fonts`` to write Thai comments there.
 * Leaving an annotated file posts one internal note on the chatter of the
   record the file belongs to.
 * Attachments with annotations show a ``✎ n`` badge in ``many2many_binary``

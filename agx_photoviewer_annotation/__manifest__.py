@@ -7,7 +7,7 @@
     "website": "https://github.com/aginix/kmitl",
     "development_status": "Beta",
     "category": "Hidden",
-    "depends": ["agx_photoviewer", "mail", "l10n_th_fonts"],
+    "depends": ["agx_photoviewer", "mail"],
     "data": [
         "security/ir.model.access.csv",
     ],

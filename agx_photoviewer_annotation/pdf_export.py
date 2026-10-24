@@ -8,22 +8,16 @@ coordinates. Keep the shapes below in sync with ``annotation_renderer.js``.
 """
 
 import io
-import logging
 from collections import defaultdict
 
 from PIL import Image, ImageOps
 from reportlab.lib.colors import HexColor, white
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.utils import ImageReader
-from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.pdfmetrics import stringWidth
-from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
 
-from odoo.modules.module import get_module_resource
 from odoo.tools.pdf import PdfFileReader, PdfFileWriter
-
-_logger = logging.getLogger(__name__)
 
 # Stamps in a unit box centred on the click point (y down), scaled by half
 # the stamp size.
@@ -36,26 +30,6 @@ HIGHLIGHT_OPACITY = 0.35
 DEFAULT_COLOR = "#e53935"
 # Longest side of the page an image is exported on (A4 height).
 IMAGE_PAGE_SIZE = A4[1]
-
-_FONT = "THSarabunNew"
-_FALLBACK_FONT = "Helvetica"
-_font_name = None
-
-
-def _font():
-    """Register the Thai font once; fall back to Helvetica on any failure."""
-    global _font_name
-    if _font_name is None:
-        try:
-            path = get_module_resource(
-                "l10n_th_fonts", "static", "fonts", "THSarabunNew.ttf"
-            )
-            pdfmetrics.registerFont(TTFont(_FONT, path))
-            _font_name = _FONT
-        except Exception:  # pragma: no cover - best effort
-            _logger.warning("Could not register THSarabunNew", exc_info=True)
-            _font_name = _FALLBACK_FONT
-    return _font_name
 
 
 def _color(value):
@@ -169,8 +143,7 @@ def _wrap(text, font, size, width):
     return lines
 
 
-def _draw_summary(can, comments, numbers, title, page_label):
-    font = _font()
+def _draw_summary(can, comments, numbers, title, page_label, font):
     page_width, page_height = A4
     margin = 50
     line_height = 18
@@ -214,13 +187,16 @@ def _draw_summary(can, comments, numbers, title, page_label):
     can.showPage()
 
 
-def build_annotated_pdf(content, is_pdf, annotations, comments, title, page_label):
+def build_annotated_pdf(
+    content, is_pdf, annotations, comments, title, page_label, font="Helvetica"
+):
     """Return the Annotated export as PDF bytes.
 
     :param bytes content: the original file (a PDF, or an image otherwise).
     :param list annotations: dicts with ``id, page, kind, geometry, color``.
     :param list comments: dicts with ``id, page, author, date, text``; listed
         on a summary page and numbered in (page, id) order like the viewer.
+    :param str font: a font registered in reportlab, for the summary page.
     """
     numbers = {
         comment["id"]: number
@@ -256,7 +232,7 @@ def build_annotated_pdf(content, is_pdf, annotations, comments, title, page_labe
             can.showPage()
             overlay_index[index] = len(overlay_index)
         if comments:
-            _draw_summary(can, comments, numbers, title, page_label)
+            _draw_summary(can, comments, numbers, title, page_label, font)
         can.save()
         overlay = PdfFileReader(io.BytesIO(packet.getvalue()), strict=False)
         for index in range(reader.getNumPages()):
@@ -277,7 +253,7 @@ def build_annotated_pdf(content, is_pdf, annotations, comments, title, page_labe
         _draw_annotations(can, by_page.get(1, []), width, height, numbers)
         can.showPage()
         if comments:
-            _draw_summary(can, comments, numbers, title, page_label)
+            _draw_summary(can, comments, numbers, title, page_label, font)
         can.save()
         overlay = PdfFileReader(io.BytesIO(packet.getvalue()), strict=False)
         for index in range(overlay.getNumPages()):
