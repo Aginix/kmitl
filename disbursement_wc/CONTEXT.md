@@ -14,9 +14,25 @@ captured during design; this file is a glossary, not a specification.
 **สถานี (Station)**: A desk the DR sits at while one step of its handling is done —
 สถานีหมวดตรวจ, สถานี ผอ.กองคลัง, สถานีตั้งหนี้. A station is at the level of a **step**,
 not of a person: "the DR is at สถานีหมวดตรวจ" says nothing about which officer has it.
-A DR is at exactly one station at a time. _Avoid_: ศูนย์งาน in its `work_center`
-ADR-0001 sense (the unit that owns a document for its whole life — the DR's station
-moves), โต๊ะของคน, queue.
+A DR is at exactly one station at a time. A station is also only ever a place where a person
+acts **on the DR**: a step performed on another document is not a station.
+_Avoid_: ศูนย์งาน in its `work_center` ADR-0001 sense (the unit that owns a document for
+its whole life — the DR's station moves), โต๊ะของคน, queue.
+
+**วงจร (Circuit)**: The stretch of a DR's life that stations route, from หมวดตรวจ to
+อนุมัติจ่าย. A station exists only where a **person presses something on the DR itself**;
+the steps whose act happens on another document (posting the bill, closing the
+e-payment file, posting the JV) are outside the circuit and belong to the
+ขั้นการชำระ. Leaving the circuit backwards — sending the DR to its maker to fix —
+returns it to ฉบับร่าง and is a different act from Divert, which stays inside.
+_Avoid_: workflow, lifecycle (the DR has more life than the circuit).
+
+**ขั้นการชำระ (Settlement stage)**: The DR's second axis — none → billed → settled →
+booked — saying how far the money has got. It is **derived from the bills and vouchers
+that actually exist**, never written by anyone, so it walks back by itself when a bill
+is reverted or a cheque is cancelled. The station says who holds the work; the
+ขั้นการชำระ says where the money is. _Avoid_: สถานะ / state (that is the DR's own and
+no longer tracks progress), pipeline_status (the mirrored field it replaces).
 
 **การมอบหมาย (Assignment)**: Choosing **which officer inside a station** handles the
 DR, once it has arrived there. A separate concern from routing, with its own rules
