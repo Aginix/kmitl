@@ -31,12 +31,15 @@
                 />
             </xpath>
             <xpath expr="//group[@name='disbursement_information']/field[@name='memo_number']" position="attributes">
+                <!-- Optional while drafting, so a draft can be saved before the
+                     memo is ready; Submit checks it (exception rule), and from
+                     then on it is shown required. Same for the date. -->
                 <attribute name="readonly" />
-                <attribute name="attrs">{'readonly': ['|', ('is_direct_claim', '=', False), ('state', '!=', 'draft')], 'required': [('is_direct_claim', '=', True), ('state', '=', 'draft')]}</attribute>
+                <attribute name="attrs">{'readonly': ['|', ('is_direct_claim', '=', False), ('state', '!=', 'draft')], 'required': [('is_direct_claim', '=', True), ('state', '!=', 'draft')]}</attribute>
             </xpath>
             <xpath expr="//group[@name='dates']/field[@name='sign_date']" position="attributes">
                 <attribute name="readonly" />
-                <attribute name="attrs">{'readonly': ['|', ('is_direct_claim', '=', False), ('state', '!=', 'draft')], 'required': [('is_direct_claim', '=', True), ('state', '=', 'draft')]}</attribute>
+                <attribute name="attrs">{'readonly': ['|', ('is_direct_claim', '=', False), ('state', '!=', 'draft')], 'required': [('is_direct_claim', '=', True), ('state', '!=', 'draft')]}</attribute>
             </xpath>
         </field>
     </record>

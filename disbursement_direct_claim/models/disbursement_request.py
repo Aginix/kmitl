@@ -1,7 +1,7 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 
 from odoo import _, api, fields, models
-from odoo.exceptions import AccessError, UserError
+from odoo.exceptions import AccessError
 
 from odoo.addons.disbursement.models.disbursement_request import (
     DisbursementRequest as DisbursementRequestBase,
@@ -71,22 +71,13 @@ class DisbursementRequest(models.Model):
             # It skips the head's e-Saraban signature: the right, not just
             # the tick, decides who may send it on.
             record._check_direct_claim_right()
-            record._check_direct_claim_memo()
+        # Memo number, date and scan: exception rules (data/exception_rule_data.xml).
         res = super().action_submit()
         # The external memo already carries the head's signature.
         self.filtered(
             lambda r: r.is_direct_claim and r.state == "submitted"
         ).action_sign()
         return res
-
-    def _check_direct_claim_memo(self):
-        self.ensure_one()
-        if not self.memo_number:
-            raise UserError(_("A direct claim needs the memo number."))
-        if not self.sign_date:
-            raise UserError(_("A direct claim needs the date the memo was signed."))
-        if not self.attachment_ids:
-            raise UserError(_("A direct claim needs the memo attached to the request."))
 
     def _keep_sign_date_on_draft(self):
         # The memo's own date survives a reset; core clears the stamped one.

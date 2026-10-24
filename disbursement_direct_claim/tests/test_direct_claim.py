@@ -3,7 +3,7 @@
 from datetime import date
 from unittest.mock import patch
 
-from odoo.exceptions import AccessError, UserError
+from odoo.exceptions import AccessError
 from odoo.tests.common import tagged
 
 from odoo.addons.disbursement.tests.test_two_approver import TwoApproverCommon
@@ -49,24 +49,32 @@ class TestDirectClaim(TwoApproverCommon):
         return patch.object(type(self.DR), "detect_exceptions", return_value=[])
 
     def test_direct_claim_needs_memo_number_and_attachment(self):
+        """Memo number, date and scan are blocking exceptions on Submit."""
         dr = self._draft(is_direct_claim=True)
-        with self._no_exceptions():
-            with self.assertRaises(UserError):
-                dr.action_submit()
-            dr.memo_number = "อว 7201/123"
-            with self.assertRaises(UserError):
-                dr.action_submit()
-            dr.sign_date = date(2026, 10, 1)
-            with self.assertRaises(UserError):
-                dr.action_submit()
-            self.env["ir.attachment"].create(
-                {
-                    "name": "memo.pdf",
-                    "res_model": dr._name,
-                    "res_id": dr.id,
-                    "raw": b"%PDF-1.4",
-                }
+        rules = {
+            name: self.env.ref(
+                "disbursement_direct_claim.excep_disbursement_direct_claim_" + name
             )
+            for name in ("memo_number", "sign_date", "attachment")
+        }
+        dr.action_submit()
+        self.assertEqual(dr.state, "draft")
+        self.assertLessEqual(set(rules.values()), set(dr.exception_ids))
+        dr.write({"memo_number": "อว 7201/123", "sign_date": date(2026, 10, 1)})
+        dr.action_submit()
+        self.assertEqual(dr.state, "draft")
+        self.assertIn(rules["attachment"], dr.exception_ids)
+        self.assertNotIn(rules["memo_number"], dr.exception_ids)
+        self.assertNotIn(rules["sign_date"], dr.exception_ids)
+        self.env["ir.attachment"].create(
+            {
+                "name": "memo.pdf",
+                "res_model": dr._name,
+                "res_id": dr.id,
+                "raw": b"%PDF-1.4",
+            }
+        )
+        with self._no_exceptions():
             dr.action_submit()
         self.assertEqual(dr.state, "signed")
         # the memo's own date, not the day it was submitted
