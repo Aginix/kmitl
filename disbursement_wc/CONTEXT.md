@@ -34,13 +34,23 @@ is reverted or a cheque is cancelled. The station says who holds the work; the
 ขั้นการชำระ says where the money is. _Avoid_: สถานะ / state (that is the DR's own and
 no longer tracks progress), pipeline_status (the mirrored field it replaces).
 
+**การกระทำ (Act)**: Something a station's people do to the DR while it sits there —
+ตรวจสอบ, เห็นชอบ, อนุมัติ, ตั้งหนี้ … Each act is contributed by the capability that
+implements it, not by the station: the station only lists which acts it **allows** (the
+ones offered there) and which it **requires** before the DR may be forwarded. A required
+act can be skipped by forwarding with a reason. Adding a station never needs a new act;
+adding a kind of act does. _Avoid_: method (the developer's word for it), permission
+(allowing an act at a station does not give anyone the right to perform it), step.
+
 **การมอบหมาย (Assignment)**: Choosing **which officer inside a station** handles the
 DR, once it has arrived there. A separate concern from routing, with its own rules
 (`disbursement.assignment.rule`) — routing picks the station, assignment picks the
 person. _Avoid_: routing rule, forward.
 
 **Standard route (เส้นทางมาตรฐาน)**: The ordered chain of stations a DR normally
-passes through, configured once by an administrator rather than written in code. It is
+passes through, configured once by an administrator rather than written in code.
+Stations themselves are configuration too: adding a station is adding a record, not
+installing a module. It is
 read live: it is not copied onto each DR, so editing it moves in-flight requests too.
 _Avoid_: workflow (that is the DR's own states), route template per document.
 
