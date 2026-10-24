@@ -28,6 +28,13 @@
                         attrs="{'invisible': [('state', '=', 'cancelled')]}"
                         groups="accounting_kmitl.group_accounting_kmitl_user"
                     />
+                    <button
+                        name="action_reconcile"
+                        type="object"
+                        string="Reconcile"
+                        attrs="{'invisible': ['|', ('state', '!=', 'posted'), ('is_reconciled', '=', True)]}"
+                        groups="accounting_kmitl.group_accounting_kmitl_user"
+                    />
                     <field
                         name="state"
                         widget="statusbar"
@@ -88,6 +95,11 @@
                         <group>
                             <field name="wht_account_id" readonly="1" />
                             <field
+                                name="is_reconciled"
+                                readonly="1"
+                                attrs="{'invisible': [('state', '!=', 'posted')]}"
+                            />
+                            <field
                                 name="savings_account_id"
                                 attrs="{'readonly': [('state', '!=', 'draft')]}"
                             />
@@ -145,6 +157,14 @@
                 decoration-muted="state == 'cancelled'"
                 decoration-success="state == 'posted'"
             >
+                <header>
+                    <button
+                        name="action_reconcile"
+                        type="object"
+                        string="Reconcile"
+                        groups="accounting_kmitl.group_accounting_kmitl_user"
+                    />
+                </header>
                 <field name="name" />
                 <field name="income_tax_form" />
                 <field name="period" optional="show" />
