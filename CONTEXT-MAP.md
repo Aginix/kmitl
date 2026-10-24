@@ -144,9 +144,34 @@ upfront.
   academic staff get their [[hr-employee-academic-standing-thailand]] title, everyone
   else their personal honorific (`prefix_id`), glued to the
   [[kmitl-hr-employee-full-name]] first/middle/last name.
+- [Photo Viewer — Annotation](./agx_photoviewer_annotation/CONTEXT.md) — reviewers tick,
+  draw, highlight and comment directly on an image or PDF attachment inside the photo
+  viewer; marks are an overlay stored beside the untouched file, exportable on demand as
+  an annotated PDF.
+  - **`agx_photoviewer_annotation_revision`** (no own glossary — part of this context):
+    Revisions of an annotated file — a corrected file is uploaded as the next revision,
+    never over the annotated one (ADR-0003).
+  - **`agx_photoviewer_change_request`** (no own glossary — bridge to Change Requests):
+    pins a Change request on a file and cancels it when the file is deleted
+    (agx_change_request ADR-0001).
+- [Change Requests](./agx_change_request/CONTEXT.md) — a reviewer asks a record's maker
+  to fix or explain something, on the record or pinned on one of its files; Assignees get
+  an activity, every step lands in the chatter, and its author (or someone on their
+  behalf) closes it. Opt-in
+  per model through a mixin.
+- [Photo Viewer — Annotation History](./agx_photoviewer_annotation_history/CONTEXT.md) —
+  a side panel listing who added, changed or removed marks on a file in each visit, and
+  drawing the layer as any of those Changes left it.
 
 ## Relationships
 
+- **Budget → Change Requests**: budget transfers take Change requests
+  (`budget_transfer_change_request`, on top of Buddy Verification): the Buddy details
+  what to fix as requests, ยืนยันตรวจสอบ is refused while any is outstanding, and a
+  covering Buddy may close one on its author's behalf.
+- **Photo Viewer — Annotation → Change Requests**: a Pinned Change request's pin is a
+  Comment of a file's Annotation layer; deleting the file cancels the request
+  (agx_change_request ADR-0001).
 - **Budget → Procurement Plan**: posting a `budget.appropriation` line creates a
   `procurement.plan` and reserves its `budget.commitment` for the full amount
   (ADR-0005).

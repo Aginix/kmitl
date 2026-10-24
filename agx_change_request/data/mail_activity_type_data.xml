@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <!-- Matched by activity_type_id and change_request_id, so a step clears
+         exactly the activities of its own request. -->
+    <record id="mail_activity_change_request_answer" model="mail.activity.type">
+        <field name="name">Answer a change request</field>
+        <field name="icon">fa-exclamation-circle</field>
+    </record>
+</odoo>
