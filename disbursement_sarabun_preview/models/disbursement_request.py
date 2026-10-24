@@ -44,20 +44,19 @@ class DisbursementRequest(models.Model):
                 **self._prepare_sarabun_document_vals(),
             }
         )
-        html = (
-            self.env["ir.actions.report"]
-            .sudo()
-            ._render_template(
-                doc._get_no_source_report_ref(),
-                {
-                    "docs": doc,
-                    "doc_ids": [],
-                    "doc_model": "sarabun.document",
-                    "report_type": "html",
-                },
-            )
-            .decode("utf-8")
-        )
+        Report = self.env["ir.actions.report"].sudo()
+        # The ref may be a report action xmlid (agx_sarabun's default) or a
+        # report_name (agx_sarabun_layout); _render_template needs the latter.
+        report_name = Report._get_report(doc._get_no_source_report_ref()).report_name
+        html = Report._render_template(
+            report_name,
+            {
+                "docs": doc,
+                "doc_ids": [],
+                "doc_model": "sarabun.document",
+                "report_type": "html",
+            },
+        ).decode("utf-8")
         if "</body>" in html:
             html = html.replace("</body>", WATERMARK_STYLE + "</body>", 1)
         else:
