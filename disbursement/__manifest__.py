@@ -2,7 +2,7 @@
 
 {
     "name": "Disbursement",
-    "version": "16.0.15.0.0",
+    "version": "16.0.16.0.0",
     "category": "Disbursement",
     "license": "LGPL-3",
     "author": "KMITL",
@@ -27,20 +27,10 @@
         "data/exception_rule_data.xml",
         "wizards/disbursement_exception_confirm.xml",
         "wizards/return_request_wizard_views.xml",
-        "wizards/disbursement_reject_wizard_views.xml",
         "views/disbursement_request_views.xml",
-        "views/disbursement_approval_queue_views.xml",
         "views/disbursement_return_views.xml",
         "views/exception_rule_views.xml",
     ],
-    "assets": {
-        "web.assets_backend": [
-            "disbursement/static/src/approval_queue/multi_record_select.js",
-            "disbursement/static/src/approval_queue/approval_queue.js",
-            "disbursement/static/src/approval_queue/approval_queue.xml",
-            "disbursement/static/src/approval_queue/approval_queue.scss",
-        ],
-    },
     "installable": True,
     "application": True,
 }

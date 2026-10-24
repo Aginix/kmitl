@@ -51,6 +51,12 @@ re-renderable at will, including from the portal.
   the previous round" while the PDF prints only the current one. The payment-execution
   steps are forward-only and their stamps are never cleared, so they are never
   archived either.
+
+  **Superseded in part:** the rule is now simpler and lives in one place. A re-stamp
+  archives the previous active row of its step (`_stamp_signature`), and resetting a
+  request to draft archives every active row; there is no longer a per-step reset
+  (`_reset_approval`, `_reset_verification` and the reject round are retired). Rows
+  are in plain chronological order.
 - **The role caption is NOT snapshotted.** `step` is a Selection: the role belongs to
   the *step*, not to the person, so relabelling "Verified by" later should — and does —
   correct every historical document. Only identity is frozen.

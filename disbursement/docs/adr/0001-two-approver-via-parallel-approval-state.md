@@ -1,5 +1,12 @@
 # Two-approver step via a parallel `approval_state` (not tier.validation, not new `state` values)
 
+**Status: superseded by [disbursement_wc ADR-0001](../../../disbursement_wc/docs/adr/0001-the-route-is-the-only-control.md).**
+`approval_state`, the two-approver step, the approver queues and the reject flow are
+retired: Validate and the two approvals are acts of their own modules
+(`disbursement_validation`, `disbursement_approver_director`,
+`disbursement_approver_rector`) that a station lists, and where the request sits is
+the station's business. Kept as history.
+
 The `verified → approved` transition on `disbursement.request` requires **two
 approvals in sequence** — the Finance Division Director (ผอ.กองคลัง) then the
 Rector-delegated approver (ผู้ได้รับมอบอำนาจอธิการบดี), on every request

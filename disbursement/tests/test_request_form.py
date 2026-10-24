@@ -150,8 +150,9 @@ class TestTaxable(TwoApproverCommon):
 
 @tagged("post_install", "-at_install")
 class TestRequesterActions(TwoApproverCommon):
-    """A requester resets or cancels a request up to its approval; past it
-    only a finance officer cancels. Only a cancelled request is deleted."""
+    """A requester resets or cancels a request before it enters the circuit;
+    once it is done only a finance officer cancels. Only a cancelled request is
+    deleted."""
 
     @classmethod
     def setUpClass(cls):
@@ -166,7 +167,7 @@ class TestRequesterActions(TwoApproverCommon):
         )
 
     def test_requester_resets_and_cancels_before_approval(self):
-        dr = self._make_verified_dr().with_user(self.requester)
+        dr = self._make_signed_dr().with_user(self.requester)
         dr.action_draft()
         self.assertEqual(dr.state, "draft")
         dr.action_cancel()
@@ -175,12 +176,11 @@ class TestRequesterActions(TwoApproverCommon):
         self.assertEqual(dr.state, "draft")
 
     def test_only_officer_cancels_an_approved_request(self):
-        dr = self._make_verified_dr()
-        # Approved as superuser: this is about who may cancel afterwards.
-        with self._patch_final_approval():
-            dr.action_approve_finance()
-            dr.action_approve()
-        self.assertEqual(dr.state, "approved")
+        dr = self._make_signed_dr()
+        # Approved and through the circuit, as superuser: this is about who may
+        # cancel afterwards.
+        dr._stamp_signature("rector_approve")
+        dr.state = "done"
         with self.assertRaises(UserError):
             dr.with_user(self.requester).action_cancel()
         dr.with_user(self.officer).action_cancel()
@@ -190,7 +190,7 @@ class TestRequesterActions(TwoApproverCommon):
             dr.unlink()
 
     def test_only_a_cancelled_request_is_deleted(self):
-        dr = self._make_verified_dr().with_user(self.requester)
+        dr = self._make_signed_dr().with_user(self.requester)
         with self.assertRaises(UserError):
             dr.unlink()
         dr.action_cancel()
