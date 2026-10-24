@@ -1,11 +1,11 @@
 # Procurement Plan — Budget
 
-Makes a [Procurement Plan](../procurement_plan/CONTEXT.md) budget-backed: it carries a budget code, and reserves its full amount against the budget pipeline when it is verified. This is the layer that connects the standalone plan to the KMITL budget engine; the plan itself (workflow, dimensions, analytic identity) lives in core.
+Makes a [Procurement Plan](../procurement_plan/CONTEXT.md) budget-backed: it carries a budget code, and reserves the budget it has actually received against the budget pipeline when it is verified. This is the layer that connects the standalone plan to the KMITL budget engine; the plan itself (workflow, dimensions, analytic identity) lives in core.
 
 ## Language
 
 **Reserve (จองงบ)**:
-The plan's full-amount earmark against the budget pool, created the moment the plan is verified (รอตรวจสอบข้อมูล → รอดำเนินการ). One `budget.commitment` per plan; nothing downstream reserves again — a plan-driven purchase request only *draws* this reservation down.
+The plan's earmark against the budget pool, sized to its **Plan Budget** (what it has actually received at its dimension) — not its วงเงินตามแผน. Created automatically on verify (รอตรวจสอบข้อมูล → รอดำเนินการ) when the plan has received at least its วงเงินตามแผน; an under-funded plan is reserved by a budget user by hand, with a warning. Money received later tops the reservation up. One `budget.commitment` per plan; nothing downstream reserves again — the plan's purchase requests only *draw* this reservation down. See [ADR-0003](../procurement_plan/docs/adr/0003-plan-reserves-received-not-plan-amount.md).
 _Avoid_: allocate, commit
 
 **Budget code (รหัสงบประมาณ, `budget_account_id`)**:

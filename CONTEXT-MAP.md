@@ -39,9 +39,11 @@ upfront.
   revenue** (`account.move.line`, income types) row by row; each row carries two
   independent selectors because the budget chart and the CoA have no stored link.
 - [Procurement Plan](./procurement_plan/CONTEXT.md) — annual procurement planning; a
-  plan stands on its own (budget-free core), optionally reserves budget when verified,
-  and may originate from a posted appropriation. Realised through one purchase request;
-  its installments (งวด) track actual disbursement (see the Disbursement bridge below).
+  plan stands on its own (budget-free core), optionally reserves the budget it has
+  received when verified, and may originate from a posted appropriation. Realised through
+  one or more purchase requests, closed by hand; no per-plan approval — the unit's annual
+  plan is what is published (procurement_plan ADR-0002). Its installments (งวด) track
+  actual disbursement (see the Disbursement bridge below).
 - [Procurement Plan — Disbursement](./procurement_plan_disbursement/CONTEXT.md) —
   tracking-only bridge that manually links each งวด (`procurement.plan.payment`) to the
   disbursement request paying it, so the plan can compare planned งวด against budget
@@ -175,11 +177,15 @@ upfront.
 - **Budget → Procurement Plan**: posting a `budget.appropriation` line creates a
   `procurement.plan` and reserves its `budget.commitment` for the full amount
   (ADR-0005).
-- **Procurement Plan → Budget**: the plan's single purchase request, and the
-  disbursement requests that flow from its purchase order, draw that one shared
-  commitment down (obligate+consume per DR) (ADR-0004, ADR-0006). The disbursements are
-  created and operated on the PO, not the plan; the plan only **tracks** them, linking
-  each งวด to its DR by hand (`procurement_plan_disbursement`).
+- **Procurement Plan → Budget**: the plan reserves what it has **received** at its own
+  dimension (procurement_plan ADR-0003), not its วงเงินตามแผน. Its purchase requests —
+  many, capped at that received budget (procurement_plan ADR-0004, superseding budget ADR-0006's
+  one-active rule) — and the disbursement requests that flow from their purchase orders
+  draw that one shared commitment down (obligate+consume per DR) (budget ADR-0004). The plan is
+  closed by hand once nothing is open, returning the unspent reservation (คืนจอง); it
+  never auto-closes (procurement_plan ADR-0005). The disbursements are created and
+  operated on the PO, not the plan; the plan only **tracks** them, linking each งวด to
+  its DR by hand (`procurement_plan_disbursement`).
 - **Budget → KMITL Project**: posting an appropriation on an `is_project` budget code
   leaves the pool _floating_ — it does **not** auto-create a project or reserve
   (contrast Procurement Plan). งานแผน then **allocates** a slice into the project's own

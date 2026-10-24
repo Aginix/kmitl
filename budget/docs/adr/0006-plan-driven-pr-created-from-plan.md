@@ -1,5 +1,7 @@
 # Plan-driven purchase requests are created from the plan, one active at a time
 
+> **Superseded (one-active rule only) by [procurement_plan ADR-0004](../../../procurement_plan/docs/adr/0004-many-purchase-requests-per-plan.md)** — a plan may now raise many purchase requests, capped at its Plan Budget. Create-from-plan still holds.
+
 A purchase request that spends a procurement plan is **created from the plan** (a "สร้าง PR" action on `procurement.plan`), not by ticking `use_procurement_plan` and picking a plan on the PR form. The action prefills budget account, analytic distribution, fiscal year, procurement method and title, links the plan's **existing** `budget.commitment`, and moves the plan to `in_progress`. A plan allows **at most one active PR** (state ≠ `rejected`); if that PR is rejected the plan returns to `ready` so a new one can be created.
 
 The "สร้าง PR" button shows while the plan is `new` or `ready` (and has no active PR); pressing it on a `new` plan raises a `UserError` telling the officer to complete the ETA fields and press *Ready* first — the ETA gate.
