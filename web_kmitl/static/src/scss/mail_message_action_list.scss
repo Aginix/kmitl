@@ -2,9 +2,11 @@
 .o_Message_actionListContainer .o_MessageActionList:not(.o-isDeviceSmall) {
     font-size: 1.25rem;
 
-    // fa-lg has line-height .75em and the list is overflow-hidden: without
-    // vertical padding the glyphs are cropped at the top/bottom.
+    // mail sets a fixed `py-2` (!important) on each action and fa-lg has
+    // line-height 1, so the glyph overflows the clickable box and is cropped
+    // by the overflow-hidden list. Grow the action box itself instead.
     .o_MessageActionView {
-        padding-block: 0.25em;
+        line-height: 1.5;
+        padding-block: 0.25em !important;
     }
 }
