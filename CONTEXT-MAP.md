@@ -170,6 +170,9 @@ upfront.
 - [Photo Viewer — Annotation History](./agx_photoviewer_annotation_history/CONTEXT.md) —
   a side panel listing who added, changed or removed marks on a file in each visit, and
   drawing the layer as any of those Changes left it.
+- [Work Center](./work_center/CONTEXT.md) — สถานี: a desk a document passes through;
+  routes, visit log, acts, and a per-area overview with configurable counters.
+  Membership narrows who acts, it never grants — the role gives the right.
 
 ## Relationships
 

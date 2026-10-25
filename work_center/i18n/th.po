@@ -1,0 +1,1047 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* work_center
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-24 17:00+0000\n"
+"PO-Revision-Date: 2026-10-24 17:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: work_center
+#. odoo-python
+#: code:addons/work_center/models/work_center.py:0
+#, python-format
+msgid "%(act)s does not belong to a document model of %(area)s."
+msgstr "%(act)s ไม่ได้อยู่ในโมเดลเอกสารของระบบงาน %(area)s"
+
+#. module: work_center
+#. odoo-python
+#: code:addons/work_center/models/work_center.py:0
+#, python-format
+msgid "%(act)s is required at %(station)s but not allowed there."
+msgstr "%(act)s เป็นการกระทำที่ต้องทำที่สถานี %(station)s แต่ไม่ได้เปิดให้ทำที่สถานีนั้น"
+
+#. module: work_center
+#. odoo-python
+#: code:addons/work_center/models/work_center_area.py:0
+#, python-format
+msgid "%(model)s already belongs to work area %(area)s."
+msgstr "%(model)s อยู่ในระบบงาน %(area)s อยู่แล้ว"
+
+#. module: work_center
+#. odoo-python
+#: code:addons/work_center/models/work_center_counter.py:0
+#: code:addons/work_center/models/work_center_route.py:0
+#: code:addons/work_center/models/work_center_rule.py:0
+#, python-format
+msgid "%(model)s is not a document model of work area %(area)s."
+msgstr "%(model)s ไม่ใช่โมเดลเอกสารของระบบงาน %(area)s"
+
+#. module: work_center
+#. odoo-python
+#: code:addons/work_center/models/work_center_route.py:0
+#, python-format
+msgid "%(station)s cannot be on this route: it is the Unassigned card or belongs to another work area."
+msgstr "%(station)s อยู่ในเส้นทางนี้ไม่ได้: เป็นการ์ดยังไม่มีสถานี หรืออยู่ในระบบงานอื่น"
+
+#. module: work_center
+#. odoo-python
+#: code:addons/work_center/models/work_center_route.py:0
+#, python-format
+msgid "%s already has an active route."
+msgstr "%s มีเส้นทางมาตรฐานที่ใช้งานอยู่แล้ว"
+
+#. module: work_center
+#. odoo-python
+#: code:addons/work_center/models/work_center_route.py:0
+#: code:addons/work_center/models/work_center_rule.py:0
+#, python-format
+msgid "%s does not support stations."
+msgstr "%s ไม่รองรับสถานี"
+
+#. module: work_center
+#. odoo-python
+#: code:addons/work_center/models/work_center_rule.py:0
+#, python-format
+msgid "%s has no operating unit, so it can only be routed to a central station (one without an operating unit)."
+msgstr "%s ไม่มีหน่วยงาน จึงจัดเข้าได้เฉพาะสถานีส่วนกลาง (สถานีที่ไม่ระบุหน่วยงาน)"
+
+#. module: work_center
+#. odoo-python
+#: code:addons/work_center/models/work_center_route.py:0
+#, python-format
+msgid "%s is already on this route."
+msgstr "%s อยู่ในเส้นทางนี้แล้ว"
+
+#. module: work_center
+#. odoo-python
+#: code:addons/work_center/models/work_center_mixin.py:0
+#, python-format
+msgid "A document can only be diverted to another station of its own work area."
+msgstr "เบี่ยงเส้นทางเอกสารได้เฉพาะไปยังสถานีอื่นในระบบงานเดียวกัน"
+
+#. module: work_center
+#. odoo-python
+#: code:addons/work_center/models/work_center_mixin.py:0
+#, python-format
+msgid "A document cannot be put on the Unassigned card."
+msgstr "ไม่สามารถกำหนดเอกสารให้การ์ด \"ยังไม่มีสถานี\" ได้"
+
+#. module: work_center
+#. odoo-python
+#: code:addons/work_center/models/work_center_mixin.py:0
+#, python-format
+msgid "A document is moved between stations by the station engine, not by hand."
+msgstr "การย้ายเอกสารระหว่างสถานีทำผ่านระบบสถานีเท่านั้น ไม่ใช่การแก้ค่าด้วยมือ"
+
+#. module: work_center
+#. odoo-python
+#: code:addons/work_center/models/work_center_mixin.py:0
+#, python-format
+msgid "A document is put at a station by the station engine, not by hand."
+msgstr "การกำหนดสถานีให้เอกสารทำผ่านระบบสถานีเท่านั้น ไม่ใช่การแก้ค่าด้วยมือ"
+
+#. module: work_center
+#. odoo-python
+#: code:addons/work_center/models/work_center_rule.py:0
+#, python-format
+msgid "A rule cannot route to the Unassigned card."
+msgstr "กฎไม่สามารถจัดเอกสารเข้าการ์ด \"ยังไม่มีสถานี\" ได้"
+
+#. module: work_center
+#. odoo-python
+#: code:addons/work_center/models/work_center.py:0
+#, python-format
+msgid "A station that documents have visited cannot be deleted: archive it instead."
+msgstr "ลบสถานีที่เคยมีเอกสารผ่านไม่ได้ กรุณาเก็บถาวรแทน"
+
+#. module: work_center
+#: model:ir.model.fields.selection,name:work_center.selection__work_center_act__kind__act
+msgid "Act"
+msgstr "การกระทำ"
+
+#. module: work_center
+#: model:ir.model.fields,field_description:work_center.field_work_center__active
+#: model:ir.model.fields,field_description:work_center.field_work_center_act__active
+#: model:ir.model.fields,field_description:work_center.field_work_center_route__active
+msgid "Active"
+msgstr "เปิดใช้งาน"
+
+#. module: work_center
+#: model:ir.actions.act_window,name:work_center.work_center_act_action
+#: model:ir.ui.menu,name:work_center.menu_work_center_act
+#: model_terms:ir.ui.view,arch_db:work_center.work_center_act_view_search
+#: model_terms:ir.ui.view,arch_db:work_center.work_center_view_form
+msgid "Acts"
+msgstr "การกระทำ"
+
+#. module: work_center
+#: model:ir.model.fields,field_description:work_center.field_work_center_mixin__work_center_missing_act_ids
+#: model:ir.model.fields,field_description:work_center.field_work_center_move_wizard__missing_act_ids
+msgid "Acts Still to Do"
+msgstr "การกระทำที่ยังไม่ได้ทำ"
+
+#. module: work_center
+#: model_terms:ir.actions.act_window,help:work_center.work_center_act_action
+msgid ""
+"Acts are declared by the modules that implement them and appear\n"
+"                here after the module is installed or upgraded."
+msgstr "โมดูลที่ทำการกระทำนั้นเป็นผู้ประกาศการกระทำ และจะแสดงที่นี่หลังติดตั้งหรืออัปเกรดโมดูล"
+
+#. module: work_center
+#: model:ir.model.fields,help:work_center.field_work_center__required_act_ids
+msgid "Acts that must be done during a visit before the document is forwarded. Forwarding without one needs a reason, which is logged."
+msgstr "การกระทำที่ต้องทำให้เสร็จระหว่างที่เอกสารอยู่ที่สถานีก่อนส่งต่อ การส่งต่อโดยไม่ได้ทำต้องระบุเหตุผล ซึ่งจะถูกบันทึกไว้"
+
+#. module: work_center
+#: model:ir.model.fields,field_description:work_center.field_work_center__allowed_act_ids
+msgid "Allowed Acts"
+msgstr "การกระทำที่ทำได้"
+
+#. module: work_center
+#: model:ir.model.fields,field_description:work_center.field_work_center_move_wizard__allowed_target_ids
+msgid "Allowed Stations"
+msgstr "สถานีที่เลือกได้"
+
+#. module: work_center
+#: model:ir.model.fields,help:work_center.field_work_center_act__kind
+msgid "An editable part is an edit permission on the document, not an act: it can never be required before a document is forwarded."
+msgstr "ส่วนที่แก้ไขได้คือสิทธิ์แก้ไขเอกสาร ไม่ใช่การกระทำ จึงตั้งเป็นสิ่งที่ต้องทำก่อนส่งต่อไม่ได้"
+
+#. module: work_center
+#: model_terms:ir.ui.view,arch_db:work_center.work_center_act_view_search
+#: model_terms:ir.ui.view,arch_db:work_center.work_center_route_view_form
+#: model_terms:ir.ui.view,arch_db:work_center.work_center_view_form
+#: model_terms:ir.ui.view,arch_db:work_center.work_center_view_search
+msgid "Archived"
+msgstr "เก็บถาวรแล้ว"
+
+#. module: work_center
+#: model:ir.model.fields,field_description:work_center.field_work_center_visit__arrival_act
+#: model_terms:ir.ui.view,arch_db:work_center.work_center_visit_view_form
+msgid "Arrival"
+msgstr "การมาถึงสถานี"
+
+#. module: work_center
+#: model:ir.model.fields,field_description:work_center.field_work_center_visit__arrival_date
+msgid "Arrived"
+msgstr "มาถึงเมื่อ"
+
+#. module: work_center
+#: model:ir.model.fields,field_description:work_center.field_work_center_visit__arrived_by_id
+msgid "Arrived By"
+msgstr "ส่งมาโดย"
+
+#. module: work_center
+#: model:mail.activity.type,name:work_center.mail_activity_station_arrival
+msgid "Arrived at your station"
+msgstr "มีเอกสารมาถึงสถานีของคุณ"
+
+#. module: work_center
+#: model:ir.model.fields,field_description:work_center.field_work_center_mixin__work_center_can_move
+msgid "Can Move"
+msgstr "ย้ายได้"
+
+#. module: work_center
+#: model_terms:ir.ui.view,arch_db:work_center.work_center_move_wizard_view_form
+msgid "Cancel"
+msgstr "ยกเลิก"
+
+#. module: work_center
+#: model:ir.model.fields.selection,name:work_center.selection__work_center_visit__departure_act__cancel
+msgid "Cancelled"
+msgstr "ยกเลิกแล้ว"
+
+#. module: work_center
+#: model:ir.model.fields,field_description:work_center.field_work_center_route_line__work_center_ids
+msgid "Candidate Stations"
+msgstr "สถานีตัวเลือก"
+
+#. module: work_center
+#: model_terms:ir.ui.view,arch_db:work_center.work_center_view_search
+msgid "Central"
+msgstr "ส่วนกลาง"
+
+#. module: work_center
+#. odoo-python
+#: code:addons/work_center/wizards/work_center_move_wizard.py:0
+#, python-format
+msgid "Choose the station to divert the document to."
+msgstr "เลือกสถานีที่จะเบี่ยงเส้นทางเอกสารไป"
+
+#. module: work_center
+#: model:ir.model.fields,field_description:work_center.field_work_center__code
+#: model:ir.model.fields,field_description:work_center.field_work_center_act__code
+#: model:ir.model.fields,field_description:work_center.field_work_center_area__code
+msgid "Code"
+msgstr "รหัส"
+
+#. module: work_center
+#: model:ir.model.fields,field_description:work_center.field_work_center__color
+#: model:ir.model.fields,field_description:work_center.field_work_center_counter__color
+msgid "Color"
+msgstr "สี"
+
+#. module: work_center
+#: model:ir.model.fields,field_description:work_center.field_work_center__company_id
+msgid "Company"
+msgstr "บริษัท"
+
+#. module: work_center
+#: model_terms:ir.ui.view,arch_db:work_center.work_center_view_kanban
+msgid "Configure"
+msgstr "ตั้งค่า"
+
+#. module: work_center
+#: model:res.groups,comment:work_center.group_work_center_manager
+msgid "Configures stations, routes, acts, routing rules and overview counters."
+msgstr "ตั้งค่าสถานี เส้นทางมาตรฐาน การกระทำ กฎการจัดเข้าสถานี และตัวนับบนการ์ดในหน้าภาพรวม"
+
+#. module: work_center
+#: model_terms:ir.ui.view,arch_db:work_center.work_center_move_wizard_view_form
+msgid "Confirm"
+msgstr "ยืนยัน"
+
+#. module: work_center
+#: model:ir.model.fields,field_description:work_center.field_work_center__counter_data
+msgid "Counters"
+msgstr "ตัวนับ"
+
+#. module: work_center
+#: model_terms:ir.actions.act_window,help:work_center.work_center_route_action
+msgid "Create a route"
+msgstr "สร้างเส้นทางมาตรฐาน"
+
+#. module: work_center
+#: model_terms:ir.actions.act_window,help:work_center.work_center_rule_action
+msgid "Create a routing rule"
+msgstr "สร้างกฎการจัดเข้าสถานี"
+
+#. module: work_center
+#: model:ir.model.fields,field_description:work_center.field_work_center_mixin__work_center_open_visit_id
+msgid "Current Visit"
+msgstr "การเยี่ยมปัจจุบัน"
+
+#. module: work_center
+#: model:ir.model.fields,field_description:work_center.field_work_center_visit__departure_act
+#: model_terms:ir.ui.view,arch_db:work_center.work_center_visit_view_form
+msgid "Departure"
+msgstr "การออกจากสถานี"
+
+#. module: work_center
+#. odoo-python
+#: code:addons/work_center/models/work_center_mixin.py:0
+#: model:ir.model.fields.selection,name:work_center.selection__work_center_move_wizard__mode__divert
+#, python-format
+msgid "Divert"
+msgstr "เบี่ยงเส้นทาง"
+
+#. module: work_center
+#: model:ir.model.fields,field_description:work_center.field_work_center_move_wizard__target_id
+msgid "Divert To"
+msgstr "เบี่ยงเส้นทางไปที่"
+
+#. module: work_center
+#. odoo-python
+#: code:addons/work_center/models/work_center_mixin.py:0
+#, python-format
+msgid "Divert the document to a station first."
+msgstr "กรุณาเบี่ยงเส้นทางเอกสารไปยังสถานีก่อน"
+
+#. module: work_center
+#. odoo-python
+#: code:addons/work_center/models/work_center_mixin.py:0
+#: model:ir.model.fields.selection,name:work_center.selection__work_center_visit__arrival_act__divert
+#: model:ir.model.fields.selection,name:work_center.selection__work_center_visit__departure_act__divert
+#: model_terms:ir.ui.view,arch_db:work_center.work_center_visit_view_search
+#, python-format
+msgid "Diverted"
+msgstr "เบี่ยงเส้นทางแล้ว"
+
+#. module: work_center
+#: model:ir.model.fields,field_description:work_center.field_work_center_visit__document_display
+msgid "Document"
+msgstr "เอกสาร"
+
+#. module: work_center
+#: model:ir.model.fields,field_description:work_center.field_work_center_visit__res_id
+msgid "Document ID"
+msgstr "รหัสเอกสาร"
+
+#. module: work_center
+#: model:ir.model.fields,field_description:work_center.field_work_center__document_model
+#: model:ir.model.fields,field_description:work_center.field_work_center_act__model_id
+#: model:ir.model.fields,field_description:work_center.field_work_center_counter__model_id
+#: model:ir.model.fields,field_description:work_center.field_work_center_route__model_id
+#: model:ir.model.fields,field_description:work_center.field_work_center_rule__model_id
+#: model:ir.model.fields,field_description:work_center.field_work_center_visit__res_model
+#: model_terms:ir.ui.view,arch_db:work_center.work_center_act_view_search
+#: model_terms:ir.ui.view,arch_db:work_center.work_center_rule_view_search
+#: model_terms:ir.ui.view,arch_db:work_center.work_center_visit_view_search
+msgid "Document Model"
+msgstr "โมเดลเอกสาร"
+
+#. module: work_center
+#: model:ir.model.fields,field_description:work_center.field_work_center__area_model_ids
+#: model:ir.model.fields,field_description:work_center.field_work_center_area__model_ids
+#: model:ir.model.fields,field_description:work_center.field_work_center_counter__area_model_ids
+#: model:ir.model.fields,field_description:work_center.field_work_center_route__area_model_ids
+#: model:ir.model.fields,field_description:work_center.field_work_center_rule__area_model_ids
+msgid "Document Models"
+msgstr "โมเดลเอกสาร"
+
+#. module: work_center
+#: model:ir.model.fields,help:work_center.field_work_center__area_model_ids
+#: model:ir.model.fields,help:work_center.field_work_center_area__model_ids
+#: model:ir.model.fields,help:work_center.field_work_center_counter__area_model_ids
+#: model:ir.model.fields,help:work_center.field_work_center_route__area_model_ids
+#: model:ir.model.fields,help:work_center.field_work_center_rule__area_model_ids
+msgid "Document models whose work this area divides. Seeded by the bridge modules."
+msgstr "โมเดลเอกสารที่ระบบงานนี้แบ่งงานกัน กำหนดมาจากโมดูลเชื่อมต่อ"
+
+#. module: work_center
+#: model:ir.model.fields,field_description:work_center.field_work_center_counter__domain
+#: model:ir.model.fields,field_description:work_center.field_work_center_rule__domain
+msgid "Domain"
+msgstr "เงื่อนไข"
+
+#. module: work_center
+#: model:ir.model.fields,field_description:work_center.field_work_center_visit__done_act_ids
+msgid "Done Acts"
+msgstr "การกระทำที่ทำแล้ว"
+
+#. module: work_center
+#: model:ir.model.fields.selection,name:work_center.selection__work_center_act__kind__edit
+msgid "Editable Part"
+msgstr "ส่วนที่แก้ไขได้"
+
+#. module: work_center
+#: model:ir.model.fields,field_description:work_center.field_work_center__allowed_edit_ids
+#: model_terms:ir.ui.view,arch_db:work_center.work_center_act_view_search
+msgid "Editable Parts"
+msgstr "ส่วนที่แก้ไขได้"
+
+#. module: work_center
+#: model:ir.model.fields.selection,name:work_center.selection__work_center_visit__arrival_act__enter
+msgid "Entered the circuit"
+msgstr "เข้าสู่วงจร"
+
+#. module: work_center
+#. odoo-python
+#: code:addons/work_center/models/work_center_mixin.py:0
+#: model:ir.model.fields.selection,name:work_center.selection__work_center_move_wizard__mode__forward
+#, python-format
+msgid "Forward"
+msgstr "ส่งต่อ"
+
+#. module: work_center
+#. odoo-python
+#: code:addons/work_center/models/work_center_mixin.py:0
+#: model:ir.model.fields.selection,name:work_center.selection__work_center_visit__arrival_act__forward
+#: model:ir.model.fields.selection,name:work_center.selection__work_center_visit__departure_act__forward
+#, python-format
+msgid "Forwarded"
+msgstr "ส่งต่อแล้ว"
+
+#. module: work_center
+#. odoo-python
+#: code:addons/work_center/models/work_center_mixin.py:0
+#, python-format
+msgid "Give a reason to divert the document."
+msgstr "กรุณาระบุเหตุผลที่เบี่ยงเส้นทางเอกสาร"
+
+#. module: work_center
+#. odoo-python
+#: code:addons/work_center/models/work_center_mixin.py:0
+#, python-format
+msgid "Give a reason to forward without: %s"
+msgstr "กรุณาระบุเหตุผลที่ส่งต่อโดยยังไม่ได้ทำ: %s"
+
+#. module: work_center
+#. odoo-python
+#: code:addons/work_center/models/work_center_mixin.py:0
+#, python-format
+msgid "Give a reason to send the document back."
+msgstr "กรุณาระบุเหตุผลที่ส่งเอกสารคืนผู้จัดทำ"
+
+#. module: work_center
+#: model_terms:ir.ui.view,arch_db:work_center.work_center_act_view_search
+#: model_terms:ir.ui.view,arch_db:work_center.work_center_rule_view_search
+#: model_terms:ir.ui.view,arch_db:work_center.work_center_view_search
+#: model_terms:ir.ui.view,arch_db:work_center.work_center_visit_view_search
+msgid "Group By"
+msgstr "จัดกลุ่มตาม"
+
+#. module: work_center
+#. odoo-python
+#: code:addons/work_center/models/work_center_counter.py:0
+#, python-format
+msgid "Invalid domain on counter %(name)s: %(error)s"
+msgstr "เงื่อนไขของตัวนับ %(name)s ไม่ถูกต้อง: %(error)s"
+
+#. module: work_center
+#. odoo-python
+#: code:addons/work_center/models/work_center_rule.py:0
+#, python-format
+msgid "Invalid domain on rule of %(wc)s: %(error)s"
+msgstr "เงื่อนไขของกฎในสถานี %(wc)s ไม่ถูกต้อง: %(error)s"
+
+#. module: work_center
+#: model:ir.model.fields,field_description:work_center.field_work_center_act__kind
+msgid "Kind"
+msgstr "ชนิด"
+
+#. module: work_center
+#: model:ir.model.fields,help:work_center.field_work_center__company_id
+msgid "Leave empty to share the station with every company."
+msgstr "เว้นว่างไว้เพื่อให้ทุกบริษัทใช้สถานีนี้ร่วมกัน"
+
+#. module: work_center
+#: model:ir.model.fields,field_description:work_center.field_work_center_visit__departure_date
+msgid "Left"
+msgstr "ออกเมื่อ"
+
+#. module: work_center
+#: model:ir.model.fields,field_description:work_center.field_work_center_visit__departed_by_id
+msgid "Left By"
+msgstr "ออกโดย"
+
+#. module: work_center
+#: model:ir.model.fields.selection,name:work_center.selection__work_center_visit__departure_act__exit
+msgid "Left the last station"
+msgstr "ออกจากสถานีสุดท้าย"
+
+#. module: work_center
+#: model:ir.model.fields,field_description:work_center.field_work_center_act__model_name
+#: model:ir.model.fields,field_description:work_center.field_work_center_counter__model_name
+#: model:ir.model.fields,field_description:work_center.field_work_center_rule__model_name
+msgid "Model"
+msgstr "โมเดล"
+
+#. module: work_center
+#. odoo-python
+#: code:addons/work_center/models/work_center_counter.py:0
+#: code:addons/work_center/models/work_center_rule.py:0
+#, python-format
+msgid "Model %s is not installed."
+msgstr "ยังไม่ได้ติดตั้งโมเดล %s"
+
+#. module: work_center
+#: model:ir.model.fields,field_description:work_center.field_work_center_act__module
+#: model_terms:ir.ui.view,arch_db:work_center.work_center_act_view_search
+msgid "Module"
+msgstr "โมดูล"
+
+#. module: work_center
+#: model:ir.model,name:work_center.model_work_center_move_wizard
+msgid "Move a Document Between Stations"
+msgstr "ย้ายเอกสารระหว่างสถานี"
+
+#. module: work_center
+#: model:ir.model.fields,field_description:work_center.field_work_center__is_my_station
+msgid "My Station"
+msgstr "สถานีของฉัน"
+
+#. module: work_center
+#: model_terms:ir.ui.view,arch_db:work_center.work_center_view_search
+msgid "My Stations"
+msgstr "สถานีของฉัน"
+
+#. module: work_center
+#: model:ir.model.fields,field_description:work_center.field_work_center__name
+#: model:ir.model.fields,field_description:work_center.field_work_center_act__name
+#: model:ir.model.fields,field_description:work_center.field_work_center_area__name
+#: model:ir.model.fields,field_description:work_center.field_work_center_counter__name
+#: model:ir.model.fields,field_description:work_center.field_work_center_route__name
+#: model:ir.model.fields,field_description:work_center.field_work_center_route_line__name
+msgid "Name"
+msgstr "ชื่อ"
+
+#. module: work_center
+#: model:ir.model.fields,field_description:work_center.field_work_center_mixin__work_center_next_id
+msgid "Next Station"
+msgstr "สถานีถัดไป"
+
+#. module: work_center
+#: model_terms:ir.actions.act_window,help:work_center.work_center_act_action
+msgid "No act is declared yet"
+msgstr "ยังไม่มีการกระทำที่ถูกประกาศ"
+
+#. module: work_center
+#. odoo-python
+#: code:addons/work_center/models/work_center_mixin.py:0
+#, python-format
+msgid "No work area covers %s."
+msgstr "ไม่มีระบบงานใดครอบคลุม %s"
+
+#. module: work_center
+#: model:ir.model.fields,field_description:work_center.field_work_center_visit__not_applicable_act_ids
+msgid "Not Applicable Acts"
+msgstr "การกระทำที่ไม่เกี่ยวข้อง"
+
+#. module: work_center
+#. odoo-python
+#: code:addons/work_center/models/work_center_act.py:0
+#, python-format
+msgid "Only a Station Administrator can sync the acts."
+msgstr "เฉพาะผู้ดูแลสถานีเท่านั้นที่ซิงก์การกระทำได้"
+
+#. module: work_center
+#. odoo-python
+#: code:addons/work_center/models/work_center_mixin.py:0
+#, python-format
+msgid "Only the members of the station holding this document can do this."
+msgstr "เฉพาะสมาชิกของสถานีที่ถือเอกสารนี้อยู่เท่านั้นที่ทำได้"
+
+#. module: work_center
+#. odoo-python
+#: code:addons/work_center/models/work_center_mixin.py:0
+#, python-format
+msgid "Only the people responsible at the station holding this document can move it."
+msgstr "เฉพาะผู้รับผิดชอบที่สถานีซึ่งถือเอกสารนี้อยู่เท่านั้นที่ย้ายเอกสารได้"
+
+#. module: work_center
+#: model:ir.model.fields,field_description:work_center.field_work_center__operating_unit_id
+#: model_terms:ir.ui.view,arch_db:work_center.work_center_view_search
+msgid "Operating Unit"
+msgstr "หน่วยงาน"
+
+#. module: work_center
+#: model:ir.model.fields,help:work_center.field_work_center__member_ids
+msgid "People who may act on the documents at this station, within their own role: membership narrows, it never grants. With no members the station is open to everyone holding the role. Members also forward, divert and send back the documents here."
+msgstr "ผู้ที่ทำการกระทำกับเอกสารที่สถานีนี้ได้ภายในบทบาทของตนเอง การเป็นสมาชิกเป็นการจำกัดสิทธิ์ ไม่ใช่การให้สิทธิ์ หากไม่มีสมาชิก ผู้ที่มีบทบาทนั้นทุกคนทำได้ สมาชิกยังเป็นผู้ส่งต่อ เบี่ยงเส้นทาง และส่งคืนเอกสารที่สถานีนี้ด้วย"
+
+#. module: work_center
+#: model:ir.model.fields,field_description:work_center.field_work_center_move_wizard__reason
+#: model:ir.model.fields,field_description:work_center.field_work_center_visit__departure_reason
+msgid "Reason"
+msgstr "เหตุผล"
+
+#. module: work_center
+#: model:ir.model.fields,field_description:work_center.field_work_center__required_act_ids
+msgid "Required Acts"
+msgstr "การกระทำที่ต้องทำ"
+
+#. module: work_center
+#: model:ir.model.fields,help:work_center.field_work_center_visit__not_applicable_act_ids
+msgid "Required acts the document declared not applicable to itself."
+msgstr "การกระทำที่ต้องทำซึ่งเอกสารระบุว่าไม่เกี่ยวข้องกับตัวเอง"
+
+#. module: work_center
+#: model:ir.model.fields,help:work_center.field_work_center_visit__skipped_act_ids
+msgid "Required acts the document left without, with a reason."
+msgstr "การกระทำที่ต้องทำซึ่งเอกสารออกไปโดยไม่ได้ทำ พร้อมเหตุผล"
+
+#. module: work_center
+#: model:ir.model.fields,help:work_center.field_work_center_mixin__work_center_missing_act_ids
+msgid "Required at this station and not yet done in this visit."
+msgstr "ต้องทำที่สถานีนี้และยังไม่ได้ทำในการเยี่ยมครั้งนี้"
+
+#. module: work_center
+#: model:ir.model.fields,field_description:work_center.field_work_center_visit__responsible_source
+msgid "Responsible Source"
+msgstr "ที่มาของผู้รับผิดชอบ"
+
+#. module: work_center
+#: model:ir.model.fields,field_description:work_center.field_work_center_visit__responsible_user_ids
+msgid "Responsible on Arrival"
+msgstr "ผู้รับผิดชอบเมื่อมาถึง"
+
+#. module: work_center
+#: model:ir.model.fields.selection,name:work_center.selection__work_center_visit__arrival_act__resubmit
+msgid "Resubmitted"
+msgstr "ส่งใหม่"
+
+#. module: work_center
+#: model:ir.model.fields,field_description:work_center.field_work_center_act__group_id
+msgid "Role"
+msgstr "บทบาท"
+
+#. module: work_center
+#: model:ir.model.fields.selection,name:work_center.selection__work_center_visit__responsible_source__role
+msgid "Role holders"
+msgstr "ผู้ถือบทบาท"
+
+#. module: work_center
+#: model:ir.model.fields,field_description:work_center.field_work_center_route_line__route_id
+msgid "Route"
+msgstr "เส้นทางมาตรฐาน"
+
+#. module: work_center
+#: model:ir.model,name:work_center.model_work_center_route_line
+msgid "Route Line"
+msgstr "ลำดับในเส้นทาง"
+
+#. module: work_center
+#: model:ir.actions.act_window,name:work_center.work_center_route_action
+#: model:ir.ui.menu,name:work_center.menu_work_center_route
+msgid "Routes"
+msgstr "เส้นทางมาตรฐาน"
+
+#. module: work_center
+#: model:ir.model.fields,field_description:work_center.field_work_center__rule_ids
+#: model_terms:ir.ui.view,arch_db:work_center.work_center_view_form
+msgid "Routing Rules"
+msgstr "กฎการจัดเข้าสถานี"
+
+#. module: work_center
+#: model:ir.model.fields,help:work_center.field_work_center__document_model
+msgid "Search helper: stations whose area covers this model (ir.model is not readable by regular users)."
+msgstr "ตัวช่วยค้นหา: สถานีที่ระบบงานครอบคลุมโมเดลนี้ (ผู้ใช้ทั่วไปอ่าน ir.model ไม่ได้)"
+
+#. module: work_center
+#. odoo-python
+#: code:addons/work_center/models/work_center_mixin.py:0
+#: model:ir.model.fields.selection,name:work_center.selection__work_center_move_wizard__mode__send_back
+#, python-format
+msgid "Send Back"
+msgstr "ส่งคืนผู้จัดทำ"
+
+#. module: work_center
+#: model_terms:ir.ui.view,arch_db:work_center.work_center_visit_view_search
+msgid "Sent Back"
+msgstr "ส่งคืนแล้ว"
+
+#. module: work_center
+#. odoo-python
+#: code:addons/work_center/models/work_center_mixin.py:0
+#: model:ir.model.fields.selection,name:work_center.selection__work_center_visit__departure_act__send_back
+#, python-format
+msgid "Sent back"
+msgstr "ส่งคืนผู้จัดทำแล้ว"
+
+#. module: work_center
+#: model:ir.model.fields,field_description:work_center.field_work_center__sequence
+#: model:ir.model.fields,field_description:work_center.field_work_center_act__sequence
+#: model:ir.model.fields,field_description:work_center.field_work_center_area__sequence
+#: model:ir.model.fields,field_description:work_center.field_work_center_counter__sequence
+#: model:ir.model.fields,field_description:work_center.field_work_center_route_line__sequence
+#: model:ir.model.fields,field_description:work_center.field_work_center_rule__sequence
+msgid "Sequence"
+msgstr "ลำดับ"
+
+#. module: work_center
+#: model:ir.model.fields,help:work_center.field_work_center__operating_unit_id
+msgid "Set: the station is at operating unit level — it only takes documents of this operating unit, and only those can be diverted to it. Empty: the station is central and takes any operating unit."
+msgstr "ระบุ: สถานีอยู่ระดับหน่วยงาน รับเฉพาะเอกสารของหน่วยงานนี้ และเบี่ยงเส้นทางมาได้เฉพาะเอกสารของหน่วยงานนี้ เว้นว่าง: สถานีอยู่ระดับส่วนกลาง รับเอกสารของทุกหน่วยงาน"
+
+#. module: work_center
+#: model:ir.model.fields,field_description:work_center.field_work_center_visit__skipped_act_ids
+#: model_terms:ir.ui.view,arch_db:work_center.work_center_visit_view_search
+msgid "Skipped Acts"
+msgstr "การกระทำที่ข้าม"
+
+#. module: work_center
+#: model:ir.model.fields,help:work_center.field_work_center_act__code
+msgid "Stable, module-agnostic identifier, e.g. disbursement.validate."
+msgstr "รหัสที่คงที่และไม่ผูกกับโมดูล เช่น disbursement.validate"
+
+#. module: work_center
+#: model:ir.model,name:work_center.model_work_center_route
+msgid "Standard Route"
+msgstr "เส้นทางมาตรฐาน"
+
+#. module: work_center
+#: model:ir.model,name:work_center.model_work_center
+#: model:ir.model.fields,field_description:work_center.field_work_center_mixin__work_center_id
+#: model:ir.model.fields,field_description:work_center.field_work_center_rule__work_center_id
+#: model:ir.model.fields,field_description:work_center.field_work_center_visit__work_center_id
+#: model_terms:ir.ui.view,arch_db:work_center.work_center_visit_view_search
+msgid "Station"
+msgstr "สถานี"
+
+#. module: work_center
+#. odoo-python
+#: code:addons/work_center/models/work_center.py:0
+#, python-format
+msgid "Station %s needs at least one allowed act or one member."
+msgstr "สถานี %s ต้องมีการกระทำที่ทำได้อย่างน้อยหนึ่งอย่าง หรือมีสมาชิกอย่างน้อยหนึ่งคน"
+
+#. module: work_center
+#: model:ir.model,name:work_center.model_work_center_act
+msgid "Station Act"
+msgstr "การกระทำของสถานี"
+
+#. module: work_center
+#: model:res.groups,name:work_center.group_work_center_manager
+msgid "Station Administrator"
+msgstr "ผู้ดูแลสถานี"
+
+#. module: work_center
+#: model:ir.model,name:work_center.model_work_center_counter
+msgid "Station Counter"
+msgstr "ตัวนับบนการ์ดสถานี"
+
+#. module: work_center
+#: model:ir.actions.act_window,name:work_center.work_center_counter_action
+#: model:ir.ui.menu,name:work_center.menu_work_center_counter
+msgid "Station Counters"
+msgstr "ตัวนับบนการ์ดสถานี"
+
+#. module: work_center
+#: model:ir.model.fields,field_description:work_center.field_work_center__member_ids
+#: model_terms:ir.ui.view,arch_db:work_center.work_center_view_form
+msgid "Station Members"
+msgstr "สมาชิกสถานี"
+
+#. module: work_center
+#: model:ir.model,name:work_center.model_work_center_mixin
+msgid "Station Mixin"
+msgstr "Mixin สถานี"
+
+#. module: work_center
+#: model:ir.model,name:work_center.model_work_center_rule
+msgid "Station Routing Rule"
+msgstr "กฎการจัดเข้าสถานี"
+
+#. module: work_center
+#: model:ir.actions.act_window,name:work_center.work_center_rule_action
+#: model:ir.ui.menu,name:work_center.menu_work_center_rule
+msgid "Station Routing Rules"
+msgstr "กฎการจัดเข้าสถานี"
+
+#. module: work_center
+#: model:ir.model,name:work_center.model_work_center_visit
+msgid "Station Visit"
+msgstr "การเยี่ยมสถานี"
+
+#. module: work_center
+#: model:ir.model.fields.selection,name:work_center.selection__work_center_visit__responsible_source__fallback
+msgid "Station administrators"
+msgstr "ผู้ดูแลสถานี"
+
+#. module: work_center
+#: model:ir.model.fields.selection,name:work_center.selection__work_center_visit__responsible_source__members
+msgid "Station members"
+msgstr "สมาชิกสถานี"
+
+#. module: work_center
+#: model:ir.actions.act_window,name:work_center.work_center_action
+#: model:ir.module.category,name:work_center.module_category_work_center
+#: model:ir.ui.menu,name:work_center.menu_work_center
+#: model:ir.ui.menu,name:work_center.menu_work_center_root
+msgid "Stations"
+msgstr "สถานี"
+
+#. module: work_center
+#: model:ir.model.fields,field_description:work_center.field_work_center_route__line_ids
+msgid "Stations on the Route"
+msgstr "สถานีในเส้นทาง"
+
+#. module: work_center
+#: model_terms:ir.ui.view,arch_db:work_center.work_center_visit_view_search
+msgid "Still Here"
+msgstr "ยังอยู่ที่สถานี"
+
+#. module: work_center
+#: model:ir.actions.server,name:work_center.work_center_act_sync_server_action
+msgid "Sync acts"
+msgstr "ซิงก์การกระทำ"
+
+#. module: work_center
+#: model:ir.model.fields,help:work_center.field_work_center__is_my_station
+msgid "Technical: I am a member, or the station has no members and I hold the role of one of its acts."
+msgstr "ค่าทางเทคนิค: ฉันเป็นสมาชิก หรือสถานีไม่มีสมาชิกและฉันมีบทบาทของการกระทำใดการกระทำหนึ่งของสถานี"
+
+#. module: work_center
+#: model:ir.model.fields,help:work_center.field_work_center_mixin__work_center_can_move
+msgid "Technical: the current user may forward, divert or send back."
+msgstr "ค่าทางเทคนิค: ผู้ใช้ปัจจุบันส่งต่อ เบี่ยงเส้นทาง หรือส่งคืนได้"
+
+#. module: work_center
+#. odoo-python
+#: code:addons/work_center/models/work_center.py:0
+#, python-format
+msgid "The Unassigned card cannot be deleted."
+msgstr "ไม่สามารถลบการ์ด \"ยังไม่มีสถานี\" ได้"
+
+#. module: work_center
+#. odoo-python
+#: code:addons/work_center/models/work_center.py:0
+#, python-format
+msgid "The Unassigned card cannot belong to an operating unit."
+msgstr "การ์ด \"ยังไม่มีสถานี\" สังกัดหน่วยงานไม่ได้"
+
+#. module: work_center
+#. odoo-python
+#: code:addons/work_center/models/work_center.py:0
+#, python-format
+msgid "The Unassigned card has no acts, editable parts or members."
+msgstr "การ์ด \"ยังไม่มีสถานี\" ไม่มีการกระทำ ส่วนที่แก้ไขได้ หรือสมาชิก"
+
+#. module: work_center
+#: model:ir.model.constraint,message:work_center.constraint_work_center_act_code_uniq
+msgid "The act code must be unique."
+msgstr "รหัสการกระทำต้องไม่ซ้ำกัน"
+
+#. module: work_center
+#: model:ir.model.fields,help:work_center.field_work_center__allowed_act_ids
+msgid "The acts offered at this station."
+msgstr "การกระทำที่เปิดให้ทำที่สถานีนี้"
+
+#. module: work_center
+#. odoo-python
+#: code:addons/work_center/models/work_center_mixin.py:0
+#, python-format
+msgid "The document has already moved to another station. Reload and try again."
+msgstr "เอกสารถูกย้ายไปสถานีอื่นแล้ว กรุณาโหลดหน้าใหม่แล้วลองอีกครั้ง"
+
+#. module: work_center
+#. odoo-python
+#: code:addons/work_center/models/work_center_mixin.py:0
+#, python-format
+msgid "The document is already at a station."
+msgstr "เอกสารอยู่ที่สถานีแล้ว"
+
+#. module: work_center
+#: model:ir.model.fields,help:work_center.field_work_center_act__module
+msgid "The module that declares the act."
+msgstr "โมดูลที่ประกาศการกระทำนี้"
+
+#. module: work_center
+#: model:ir.model.fields,help:work_center.field_work_center__allowed_edit_ids
+msgid "The parts of the document that may be edited while it is here. They are permissions, not acts, and are never required."
+msgstr "ส่วนของเอกสารที่แก้ไขได้ขณะอยู่ที่สถานีนี้ เป็นสิทธิ์ ไม่ใช่การกระทำ และไม่เคยเป็นสิ่งที่ต้องทำ"
+
+#. module: work_center
+#: model:ir.model.fields,help:work_center.field_work_center_act__group_id
+msgid "The role entitled to perform the act. An act without a role is offered to nobody."
+msgstr "บทบาทที่มีสิทธิ์ทำการกระทำนี้ การกระทำที่ไม่มีบทบาทจะไม่เปิดให้ใครทำ"
+
+#. module: work_center
+#: model_terms:ir.actions.act_window,help:work_center.work_center_route_action
+msgid ""
+"The route is the chain of stations a document of one model\n"
+"                normally passes through. Several candidate stations on one line\n"
+"                are chosen between by the routing rules."
+msgstr "เส้นทางมาตรฐานคือลำดับสถานีที่เอกสารของโมเดลหนึ่งผ่านตามปกติ หากมีสถานีตัวเลือกหลายแห่งในลำดับเดียวกัน กฎการจัดเข้าสถานีจะเป็นผู้เลือก"
+
+#. module: work_center
+#: model:ir.model.constraint,message:work_center.constraint_work_center_code_company_uniq
+msgid "The station code must be unique per company."
+msgstr "รหัสสถานีต้องไม่ซ้ำกันภายในบริษัทเดียวกัน"
+
+#. module: work_center
+#: model:ir.model.fields,help:work_center.field_work_center_mixin__work_center_id
+msgid "The station holding the document. It only changes through the forward, divert, send back and exit actions."
+msgstr "สถานีที่ถือเอกสารอยู่ เปลี่ยนได้ผ่านการส่งต่อ เบี่ยงเส้นทาง ส่งคืน และออกจากสถานีสุดท้ายเท่านั้น"
+
+#. module: work_center
+#: model:ir.model.fields,help:work_center.field_work_center_route_line__work_center_ids
+msgid "The stations that can take the document at this position. When there are several, the routing rules choose."
+msgstr "สถานีที่รับเอกสารได้ในลำดับนี้ หากมีหลายแห่ง กฎการจัดเข้าสถานีจะเป็นผู้เลือก"
+
+#. module: work_center
+#: model:ir.model.fields,help:work_center.field_work_center__is_unassigned
+msgid "The synthetic Unassigned card of a work area: it counts the documents in the circuit that no rule placed at a station. Documents never point to it; a station administrator moves them on."
+msgstr "การ์ด \"ยังไม่มีสถานี\" ของระบบงาน ใช้นับเอกสารในวงจรที่ไม่มีกฎใดจัดเข้าสถานี เอกสารจะไม่ชี้มาที่การ์ดนี้ ผู้ดูแลสถานีเป็นผู้ย้ายเอกสารต่อ"
+
+#. module: work_center
+#: model:ir.model.fields,help:work_center.field_work_center_area__unassigned_work_center_id
+msgid "The synthetic Unassigned card of this area."
+msgstr "การ์ด \"ยังไม่มีสถานี\" ของระบบงานนี้"
+
+#. module: work_center
+#: model:ir.model.constraint,message:work_center.constraint_work_center_area_code_uniq
+msgid "The work area code must be unique."
+msgstr "รหัสระบบงานต้องไม่ซ้ำกัน"
+
+#. module: work_center
+#. odoo-python
+#: code:addons/work_center/models/work_center_mixin.py:0
+#: code:addons/work_center/models/work_center_mixin.py:0
+#, python-format
+msgid "There is no standard route for this document."
+msgstr "ยังไม่มีเส้นทางมาตรฐานสำหรับเอกสารนี้"
+
+#. module: work_center
+#. odoo-python
+#: code:addons/work_center/models/work_center_mixin.py:0
+#, python-format
+msgid "This act is not allowed at the station holding this document."
+msgstr "การกระทำนี้ไม่ได้เปิดให้ทำที่สถานีซึ่งถือเอกสารนี้อยู่"
+
+#. module: work_center
+#. odoo-python
+#: code:addons/work_center/models/work_center.py:0
+#, python-format
+msgid "This counter no longer exists."
+msgstr "ไม่มีตัวนับนี้แล้ว"
+
+#. module: work_center
+#. odoo-python
+#: code:addons/work_center/models/work_center_mixin.py:0
+#: code:addons/work_center/models/work_center_mixin.py:0
+#, python-format
+msgid "This document is not at a station."
+msgstr "เอกสารนี้ไม่ได้อยู่ที่สถานีใด"
+
+#. module: work_center
+#. odoo-python
+#: code:addons/work_center/wizards/work_center_move_wizard.py:0
+#, python-format
+msgid "This document no longer exists."
+msgstr "ไม่มีเอกสารนี้แล้ว"
+
+#. module: work_center
+#. odoo-python
+#: code:addons/work_center/models/work_center_area.py:0
+#: model_terms:ir.ui.view,arch_db:work_center.work_center_view_kanban
+#, python-format
+msgid "Unassigned"
+msgstr "ยังไม่มีสถานี"
+
+#. module: work_center
+#: model:ir.model.fields,field_description:work_center.field_work_center__is_unassigned
+#: model:ir.model.fields,field_description:work_center.field_work_center_area__unassigned_work_center_id
+msgid "Unassigned Card"
+msgstr "การ์ดยังไม่มีสถานี"
+
+#. module: work_center
+#: model:ir.actions.act_window,name:work_center.work_center_visit_action
+#: model:ir.model.fields,field_description:work_center.field_work_center_mixin__work_center_visit_ids
+#: model:ir.ui.menu,name:work_center.menu_work_center_visit
+msgid "Visit Log"
+msgstr "สมุดเยี่ยม"
+
+#. module: work_center
+#. odoo-python
+#: code:addons/work_center/models/work_center_visit.py:0
+#, python-format
+msgid "Visit log entries are immutable and cannot be modified."
+msgstr "รายการในสมุดเยี่ยมแก้ไขไม่ได้"
+
+#. module: work_center
+#. odoo-python
+#: code:addons/work_center/models/work_center_visit.py:0
+#, python-format
+msgid "Visit log entries cannot be deleted."
+msgstr "ลบรายการในสมุดเยี่ยมไม่ได้"
+
+#. module: work_center
+#: model_terms:ir.actions.act_window,help:work_center.work_center_rule_action
+msgid ""
+"When a document reaches a route line with several candidate\n"
+"                stations, the rules of its model are tried in order and the\n"
+"                first whose condition matches picks the station."
+msgstr "เมื่อเอกสารมาถึงลำดับในเส้นทางที่มีสถานีตัวเลือกหลายแห่ง ระบบจะตรวจกฎของโมเดลนั้นตามลำดับ และกฎแรกที่เงื่อนไขตรงกันจะเป็นผู้เลือกสถานี"
+
+#. module: work_center
+#: model:ir.model.fields,help:work_center.field_work_center_mixin__work_center_next_id
+msgid "Where forwarding would send the document now, on the live route."
+msgstr "สถานีที่การส่งต่อจะส่งเอกสารไปในตอนนี้ ตามเส้นทางมาตรฐานปัจจุบัน"
+
+#. module: work_center
+#: model:ir.model.fields,help:work_center.field_work_center_visit__responsible_user_ids
+msgid "Who was responsible when the document arrived, frozen. Who may act is decided live, so the person who acted can be missing here: that is evidence the membership changed, not a breach."
+msgstr "ผู้รับผิดชอบเมื่อเอกสารมาถึง บันทึกไว้ไม่เปลี่ยนแปลง ผู้ที่ทำการกระทำได้พิจารณาตามปัจจุบัน ผู้ที่ทำการกระทำจึงอาจไม่อยู่ในรายชื่อนี้ ซึ่งเป็นหลักฐานว่าสมาชิกเปลี่ยนไประหว่างที่เอกสารอยู่ ไม่ใช่การละเมิด"
+
+#. module: work_center
+#: model:ir.model.fields,help:work_center.field_work_center_visit__departure_reason
+msgid "Why a required act was skipped, or why the document was diverted or sent back."
+msgstr "เหตุผลที่ข้ามการกระทำที่ต้องทำ หรือเหตุผลที่เบี่ยงเส้นทางหรือส่งคืนเอกสาร"
+
+#. module: work_center
+#: model:ir.model,name:work_center.model_work_center_area
+#: model:ir.model.fields,field_description:work_center.field_work_center__area_id
+#: model:ir.model.fields,field_description:work_center.field_work_center_counter__area_id
+#: model:ir.model.fields,field_description:work_center.field_work_center_route__area_id
+#: model:ir.model.fields,field_description:work_center.field_work_center_rule__area_id
+#: model:ir.model.fields,field_description:work_center.field_work_center_visit__area_id
+#: model_terms:ir.ui.view,arch_db:work_center.work_center_view_search
+msgid "Work Area"
+msgstr "ระบบงาน"
+
+#. module: work_center
+#: model:ir.actions.act_window,name:work_center.work_center_area_action
+#: model:ir.ui.menu,name:work_center.menu_work_center_area
+msgid "Work Areas"
+msgstr "ระบบงาน"
+
+#. module: work_center
+#. odoo-python
+#: code:addons/work_center/models/work_center_area.py:0
+#, python-format
+msgid "Work area %(area)s still has stations; delete them first."
+msgstr "ระบบงาน %(area)s ยังมีสถานีอยู่ กรุณาลบสถานีก่อน"
+
+#. module: work_center
+#. odoo-python
+#: code:addons/work_center/models/work_center_mixin.py:0
+#, python-format
+msgid "You do not hold the role this act requires."
+msgstr "คุณไม่มีบทบาทที่การกระทำนี้ต้องการ"
+
+#. module: work_center
+#: model_terms:ir.ui.view,arch_db:work_center.work_center_view_form
+msgid "e.g. Verification Station"
+msgstr "เช่น สถานีหมวดตรวจ"
