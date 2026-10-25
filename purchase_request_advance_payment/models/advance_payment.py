@@ -73,12 +73,48 @@ class AdvancePayment(models.Model):
             self.purchase_request_id = False
 
     def _get_reference_picker_domain(self):
-        """Only approved requests may back a loan — the same check as
-        _check_reference_status, offered up front (ADR-0023)."""
+        """Only approved advance-payment requests with no live loan of their
+        own may back a loan — the same checks as _check_reference_status and
+        _check_one_loan_per_purchase_request, offered up front (ADR-0023)."""
         domain = super()._get_reference_picker_domain()
         if self.loan_type_id.reference_model == "purchase.request":
-            domain = expression.AND([domain, [("state", "=", "approved")]])
+            domain = expression.AND(
+                [
+                    domain,
+                    [
+                        ("state", "=", "approved"),
+                        ("payment_type", "=", "advance"),
+                        "|",
+                        ("advance_payment_id", "=", False),
+                        ("advance_payment_id", "=", self._origin.id),
+                    ],
+                ]
+            )
         return domain
+
+    @api.constrains("purchase_request_id", "state")
+    def _check_one_loan_per_purchase_request(self):
+        """A purchase request backs one live loan; a cancelled one frees it."""
+        for rec in self.filtered(
+            lambda r: r.purchase_request_id and r.state != "cancel"
+        ):
+            # sudo: an own-only borrower cannot see the other loan.
+            other = self.sudo().search(
+                [
+                    ("purchase_request_id", "=", rec.purchase_request_id.id),
+                    ("state", "!=", "cancel"),
+                    ("id", "!=", rec.id),
+                ],
+                limit=1,
+            )
+            if other:
+                raise ValidationError(
+                    _(
+                        "ใบขอให้จัดหา %(pr)s มีสัญญายืมเงิน %(loan)s อยู่แล้ว",
+                        pr=rec.purchase_request_id.name,
+                        loan=other.name,
+                    )
+                )
 
     @api.depends("purchase_request_id")
     def _compute_purchase_request_count(self):
@@ -88,6 +124,13 @@ class AdvancePayment(models.Model):
     def _check_reference_status(self):
         res = super()._check_reference_status()
         pr = self.purchase_request_id
+        if pr and pr.payment_type != "advance":
+            raise ValidationError(
+                _(
+                    "ใบขอให้จัดหา %(name)s ไม่ได้เลือกวิธีจ่ายเป็นเงินยืม",
+                    name=pr.name,
+                )
+            )
         if pr and pr.state != "approved":
             raise ValidationError(
                 _(
@@ -100,8 +143,7 @@ class AdvancePayment(models.Model):
         return res
 
     def _prepare_vals_from_reference(self):
-        """Pull the loan values off the source purchase request — the mirror of
-        purchase.request._prepare_advance_payment_vals for the manual path."""
+        """Pull the loan values off the picked purchase request."""
         vals = super()._prepare_vals_from_reference()
         pr = self.purchase_request_id
         if pr:

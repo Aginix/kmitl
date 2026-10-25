@@ -1,15 +1,22 @@
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
-from odoo.tools import plaintext2html
 
 
 class PurchaseRequest(models.Model):
     _inherit = "purchase.request"
 
+    # A loan is only ever created in the advance payment app, by picking this
+    # request on it; the link is derived from the loans that point here.
+    advance_payment_ids = fields.One2many(
+        comodel_name="advance.payment",
+        inverse_name="purchase_request_id",
+        string="สัญญายืมเงินทั้งหมด",
+    )
     advance_payment_id = fields.Many2one(
         comodel_name="advance.payment",
         string="สัญญายืมเงิน",
-        readonly=True,
+        compute="_compute_advance_payment_id",
+        store=True,
         copy=False,
     )
 
@@ -17,19 +24,27 @@ class PurchaseRequest(models.Model):
         compute="_compute_advance_payment_count",
     )
 
-    is_requested_by_current_user = fields.Boolean(
-        compute="_compute_is_requested_by_current_user",
-    )
-
-    @api.depends("requested_by")
-    def _compute_is_requested_by_current_user(self):
+    @api.depends("advance_payment_ids.state")
+    def _compute_advance_payment_id(self):
+        """The request's live loan — at most one (see advance.payment's
+        _check_one_loan_per_purchase_request)."""
         for rec in self:
-            rec.is_requested_by_current_user = rec.requested_by == self.env.user
+            rec.advance_payment_id = rec.advance_payment_ids.filtered(
+                lambda ap: ap.state != "cancel"
+            )[:1]
 
+    # Counted as the reader, not sudo: a PR approver or buyer who may not
+    # read the loan gets no smart button instead of an AccessError behind it.
     @api.depends("advance_payment_id")
+    @api.depends_context("uid")
     def _compute_advance_payment_count(self):
+        AdvancePayment = self.env["advance.payment"]
         for rec in self:
-            rec.advance_payment_count = 1 if rec.advance_payment_id else 0
+            rec.advance_payment_count = (
+                AdvancePayment.search_count([("id", "=", rec.advance_payment_id.id)])
+                if rec.advance_payment_id
+                else 0
+            )
 
     def _check_requested_by_has_employee(self):
         """`requested_by` is a res.users here (OCA's purchase.request), but the
@@ -45,60 +60,6 @@ class PurchaseRequest(models.Model):
                     user=self.requested_by.name,
                 )
             )
-
-    def _prepare_advance_payment_vals(self):
-        """Prepare values for creating an advance payment from this PR."""
-        self.ensure_one()
-        loan_type = self.env.ref("advance_payment.loan_type_procurement")
-        return {
-            "employee_id": self.requested_by.employee_id.id,
-            "user_id": self.env.uid,
-            "reference": "purchase.request,%s" % self.id,
-            "loan_amount": self.get_estimated_cost_currency(),
-            "loan_type_id": loan_type.id,
-            "loan_reason": plaintext2html(self.description or ""),
-        }
-
-    def action_create_advance_payment(self):
-        """Create a draft advance payment agreement from this purchase request."""
-        self.ensure_one()
-        if self.state != "approved":
-            raise UserError(
-                _("Only approved purchase requests can create advance payments.")
-            )
-        if self.payment_type != "advance":
-            raise UserError(
-                _("Payment type must be 'Advance' to create an advance payment.")
-            )
-        if self.advance_payment_id:
-            raise UserError(
-                _("An advance payment already exists for this purchase request.")
-            )
-        self._check_requested_by_has_employee()
-
-        vals = self._prepare_advance_payment_vals()
-        advance_payment = self.env["advance.payment"].create(vals)
-        self.advance_payment_id = advance_payment.id
-        self.message_post(
-            body=_(
-                "สร้างสัญญายืมเงิน"
-                " <a href='/web#id=%(id)s&amp;model=advance.payment'>"
-                "<b>%(name)s</b></a> แล้ว"
-                " จำนวน <b>%(amount)s %(currency)s</b>",
-                id=advance_payment.id,
-                name=advance_payment.name,
-                amount=advance_payment.loan_amount,
-                currency=advance_payment.currency_id.name,
-            ),
-            subtype_xmlid="mail.mt_note",
-        )
-        return {
-            "type": "ir.actions.act_window",
-            "res_model": "advance.payment",
-            "res_id": advance_payment.id,
-            "view_mode": "form",
-            "target": "current",
-        }
 
     def action_view_advance_payment(self):
         """Open the linked advance payment form."""
