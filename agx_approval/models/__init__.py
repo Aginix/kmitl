@@ -9,3 +9,4 @@ from . import exception_rule
 from . import res_partner
 from . import hr_employee
 from . import budget_account
+from . import budget_commitment

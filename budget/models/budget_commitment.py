@@ -964,26 +964,19 @@ class BudgetCommitment(models.Model):
 
     def unlink(self):
         """ลบใบจอง, Odoo's own Delete — same rules as ลบโครงการ (kmitl_project
-        ADR-0011): never while it holds money; one with a ledger history is
+        ADR-0011): only a draft or cancelled one, whose posted events have all
+        been cancelled — a reservation in use, or closed by its own history
+        (used, returned), stays as the record. One with a ledger history is
         soft-deleted (cancelled + archived, revived by กลับแบบร่าง); a draft that
         never reached the ledger goes for good."""
         for record in self:
-            currency = record.currency_id or self.env.company.currency_id
-            if not currency.is_zero(record.total_obligated):
-                raise UserError(
-                    _("ใบจอง %s มีการเบิกจ่ายแล้ว ลบไม่ได้ — ปิดใบจองด้วยการส่งคืนเงินเหลือจ่าย")
-                    % record.name
-                )
-            if not currency.is_zero(record.total_reserved):
+            if record.state not in ("draft", "cancel"):
                 raise UserError(
                     _(
-                        "ใบจอง %(name)s มีเงินจองค้าง %(amount)s บาท ลบไม่ได้ — "
-                        "กรุณากลับแบบร่าง หรือส่งคืนเงินเหลือจ่ายก่อน"
+                        "ใบจอง %s ลบได้เฉพาะสถานะแบบร่าง — ใบที่ยังไม่มีการใช้งานให้กลับแบบร่างก่อน "
+                        "ใบที่มีการเบิกจ่ายหรือส่งคืนเงินเหลือจ่ายแล้วต้องเก็บไว้เป็นประวัติ"
                     )
-                    % {
-                        "name": record.name,
-                        "amount": "{:,.2f}".format(record.total_reserved),
-                    }
+                    % record.name
                 )
             documents = record._get_open_downstream_documents()
             if documents:

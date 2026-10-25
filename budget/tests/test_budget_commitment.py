@@ -450,7 +450,7 @@ class TestBudgetCommitment(TransactionCase):
             c.action_reset_to_draft()
 
     def test_94_delete_hard_soft_or_refused(self):
-        """ลบใบจอง: refused while it holds money, soft once it has a ledger
+        """ลบใบจอง: refused unless draft/cancelled, soft once it has a ledger
         history, hard for a draft that never reached the ledger."""
         fresh = self._create_commitment(1_000)
         fresh.unlink()
@@ -469,6 +469,18 @@ class TestBudgetCommitment(TransactionCase):
         c.action_reset_to_draft()
         self.assertEqual(c.state, "draft")
         self.assertTrue(c.active)
+
+    def test_95_delete_refused_once_closed_by_its_history(self):
+        """A reservation returned in full holds no money but keeps its history:
+        it can neither be deleted nor reset."""
+        c = self._create_commitment(1_000)
+        c.action_reserve()
+        self._return_wizard(c).action_confirm()
+        self.assertEqual(c.state, "done")
+        with self.assertRaises(UserError):
+            c.unlink()
+        with self.assertRaises(UserError):
+            c.action_reset_to_draft()
 
     # ====================================================================
     # 11. Cancel recalculates balances
