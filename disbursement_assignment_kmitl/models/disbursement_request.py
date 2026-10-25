@@ -21,8 +21,8 @@ class DisbursementRequest(models.Model):
 
     Loaded after the core return / return-to-source layers so its overrides sit
     on top of the MRO: ``_verification_officer`` routes the core return To-Dos
-    to the assigned officer, and ``action_sign`` / ``action_resubmit_verification``
-    auto-assign a responsible officer by rule.
+    to the assigned officer, and arriving at a station (``disbursement_wc``)
+    auto-assigns a responsible officer there by rule.
     """
 
     _inherit = "disbursement.request"
@@ -34,8 +34,6 @@ class DisbursementRequest(models.Model):
         tracking=True,
         index=True,
     )
-    # Not added to READONLY_STATES on purpose: it must stay writable at the
-    # ``signed`` state, which is exactly where officers are assigned.
     assignment_can_assign_me = fields.Boolean(
         compute="_compute_assignment_can_assign_me",
     )
@@ -73,7 +71,7 @@ class DisbursementRequest(models.Model):
 
     # -- activity bookkeeping --------------------------------------------
     def _assignment_activity_summary(self):
-        return _("Assigned as responsible verification officer")
+        return _("Assigned as the responsible officer at this station")
 
     def _assignment_notify(self, user):
         self.ensure_one()
@@ -96,11 +94,11 @@ class DisbursementRequest(models.Model):
         stale.unlink()
 
     def _assignment_close_activity(self):
-        """Close the open assignment to-do(s) once the verification stage ends.
+        """Close the open assignment to-do(s) once the request leaves the station.
 
-        Called when a request is validated, reset, or cancelled. Uses sudo so
-        the to-do is cleared regardless of who performs the action (assignment
-        is not locked, so a request may be validated by another officer).
+        Called when a request leaves its station, is reset, or cancelled. Uses
+        sudo so the to-do is cleared regardless of who performs the action
+        (assignment is not locked, so another officer may act).
         """
         activity_type = self.env.ref(ASSIGN_ACTIVITY_XMLID)
         summary = self._assignment_activity_summary()
@@ -138,8 +136,7 @@ class DisbursementRequest(models.Model):
 
     def action_assignment_open_wizard(self):
         self.ensure_one()
-        if not self._assignment_is_manager():
-            raise AccessError(_("Only a manager can assign another officer."))
+        self._work_center_check_move()
         return {
             "name": _("Assign Officer"),
             "type": "ir.actions.act_window",
@@ -151,15 +148,15 @@ class DisbursementRequest(models.Model):
 
     # -- auto-assign + workflow hooks ------------------------------------
     def _assignment_auto_assign(self):
-        """Assign the matching officer to signed requests and raise a To-Do.
+        """Assign the matching officer to requests at a station and raise a To-Do.
 
         Requests that already carry a responsible officer (manual override or
-        a previous sign) keep their officer -- the rules never overwrite them.
+        a previous round) keep their officer -- the rules never overwrite them.
         The rule search is sudo'd so the automatic Sarabun sign path (run by a
         head who may not read rules) still routes correctly.
         """
         Rule = self.env["disbursement.assignment.rule"].sudo()
-        for rec in self.filtered(lambda r: r.state == "signed"):
+        for rec in self.filtered(lambda r: r.state == "in_progress" and r.work_center_id):
             if not rec.assigned_to:
                 rule = Rule._find_for_request(rec)
                 if not rule:
@@ -169,15 +166,18 @@ class DisbursementRequest(models.Model):
                 rec._assignment_clear_activity(rec.assigned_to)
                 rec._assignment_notify(rec.assigned_to)
 
-    def action_sign(self):
-        res = super().action_sign()
+    def _work_center_on_arrival(self, visit):
+        super()._work_center_on_arrival(visit)
         self._assignment_auto_assign()
-        return res
 
-    def action_validate(self):
-        res = super().action_validate()
+    def _work_center_on_departure(self, visit):
+        """The To-Do closes on any departure. The officer is responsible at one
+        station: a request that moves on gets its next officer from that
+        station's rules, while a request sent back keeps its officer."""
+        super()._work_center_on_departure(visit)
         self._assignment_close_activity()
-        return res
+        if visit.departure_act in ("forward", "divert"):
+            self.assigned_to = False
 
     def action_draft(self):
         res = super().action_draft()
@@ -187,9 +187,4 @@ class DisbursementRequest(models.Model):
     def action_cancel(self):
         res = super().action_cancel()
         self._assignment_close_activity()
-        return res
-
-    def action_resubmit_verification(self):
-        res = super().action_resubmit_verification()
-        self._assignment_auto_assign()
         return res

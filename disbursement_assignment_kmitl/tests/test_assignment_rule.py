@@ -86,6 +86,14 @@ class TestDisbursementAssignment(TransactionCase):
                 "groups_id": [(6, 0, [g_officer.id])],
             }
         )
+        cls.officer_c = users.create(
+            {
+                "name": "Officer C",
+                "login": "dr_officer_c",
+                "email": "dr_officer_c@example.com",
+                "groups_id": [(6, 0, [g_officer.id])],
+            }
+        )
         cls.manager = users.create(
             {
                 "name": "DR Manager",
@@ -100,6 +108,27 @@ class TestDisbursementAssignment(TransactionCase):
                 "login": "dr_outsider",
                 "email": "dr_outsider@example.com",
                 "groups_id": [(6, 0, [g_user.id])],
+            }
+        )
+
+        # -- the station: signing enters it, officers A and B are its members
+        cls.env["work.center.act"]._reflect_acts()
+        cls.station = cls.env.ref("disbursement_wc.station_check")
+        cls.station.member_ids = [(6, 0, (cls.officer_a | cls.officer_b).ids)]
+        cls.env.ref("disbursement_wc.route_disbursement").write(
+            {
+                "line_ids": [
+                    (5, 0, 0),
+                    (
+                        0,
+                        0,
+                        {
+                            "name": "Check",
+                            "sequence": 10,
+                            "work_center_ids": [(6, 0, cls.station.ids)],
+                        },
+                    ),
+                ]
             }
         )
 
@@ -154,7 +183,7 @@ class TestDisbursementAssignment(TransactionCase):
         )
 
     def _reassign(self, request, user):
-        self.Wizard.with_user(self.manager).create(
+        self.Wizard.with_user(self.officer_a).create(
             {"request_id": request.id, "user_id": user.id}
         ).action_assign()
 
@@ -263,7 +292,7 @@ class TestDisbursementAssignment(TransactionCase):
         self.Rule.create({"user_id": self.officer_a.id})
         dr = self._make_dr()
         self.assertEqual(dr.assigned_to, self.officer_a)
-        # Manager reassigns to B.
+        # A member of the station reassigns to B.
         self._reassign(dr, self.officer_b)
         self.assertEqual(dr.assigned_to, self.officer_b)
         self.assertFalse(self._todos(dr, self.officer_a))
@@ -278,13 +307,13 @@ class TestDisbursementAssignment(TransactionCase):
         self.assertEqual(dr.assigned_to, self.officer_b)
         self.assertEqual(len(self._todos(dr, self.officer_b)), 1)
 
-    # -- validate closes the to-do (not locked) -------------------------
-    def test_validate_by_other_officer_closes_todo(self):
+    # -- leaving the station closes the to-do (not locked) --------------
+    def test_forwarding_out_of_the_station_closes_todo(self):
         self.Rule.create({"user_id": self.officer_a.id})
         dr = self._make_dr()
         self.assertTrue(self._todos(dr, self.officer_a))
-        dr.with_user(self.officer_b).action_validate()
-        self.assertEqual(dr.state, "verified")
+        dr.with_user(self.officer_b)._work_center_forward()
+        self.assertEqual(dr.state, "done")
         self.assertFalse(self._todos(dr, self.officer_a))
 
     # -- takeover guard --------------------------------------------------
@@ -326,18 +355,21 @@ class TestDisbursementAssignment(TransactionCase):
         with self.assertRaises(AccessError):
             dr.with_user(self.officer_a).action_assignment_unassign()
 
-    def test_user_cannot_open_wizard(self):
+    def test_only_a_station_member_can_open_wizard(self):
         dr = self._make_dr()
+        self.env.invalidate_all()
         with self.assertRaises(AccessError):
-            dr.with_user(self.officer_a).action_assignment_open_wizard()
+            dr.with_user(self.officer_c).action_assignment_open_wizard()
+        dr.with_user(self.officer_a).action_assignment_open_wizard()
 
     # -- wizard ----------------------------------------------------------
-    def test_wizard_allowed_users_are_officer_group(self):
+    def test_wizard_allowed_users_are_the_stations_people(self):
         dr = self._make_dr()
-        wiz = self.Wizard.with_user(self.manager).create(
+        wiz = self.Wizard.with_user(self.officer_a).create(
             {"request_id": dr.id, "user_id": self.officer_a.id}
         )
         self.assertIn(self.officer_a, wiz.allowed_user_ids)
+        self.assertNotIn(self.officer_c, wiz.allowed_user_ids)
         self.assertNotIn(self.outsider, wiz.allowed_user_ids)
 
     # -- re-apply to backlog --------------------------------------------
