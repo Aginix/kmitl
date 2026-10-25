@@ -18,8 +18,8 @@ msgstr ""
 
 #. module: disbursement_wc
 #: model_terms:ir.ui.view,arch_db:disbursement_wc.view_disbursement_request_form
-msgid "<strong>Station:</strong>"
-msgstr "<strong>สถานี:</strong>"
+msgid "<strong>Current Station:</strong>"
+msgstr "<strong>สถานีปัจจุบัน:</strong>"
 
 #. module: disbursement_wc
 #: model_terms:ir.actions.act_window,help:disbursement_wc.action_disbursement_stations
@@ -39,14 +39,10 @@ msgid "At My Stations"
 msgstr "อยู่ที่สถานีของฉัน"
 
 #. module: disbursement_wc
+#: model:work.center,name:disbursement_wc.station_bill
 #: model:work.center.route.line,name:disbursement_wc.route_line_bill
 msgid "Billing"
 msgstr "ตั้งหนี้"
-
-#. module: disbursement_wc
-#: model:work.center,name:disbursement_wc.station_bill
-msgid "Billing Station"
-msgstr "สถานีตั้งหนี้"
 
 #. module: disbursement_wc
 #: model:ir.model.fields,field_description:disbursement_wc.field_disbursement_request__work_center_can_move
@@ -54,14 +50,10 @@ msgid "Can Move"
 msgstr "ย้ายได้"
 
 #. module: disbursement_wc
+#: model:work.center,name:disbursement_wc.station_check
 #: model:work.center.route.line,name:disbursement_wc.route_line_check
 msgid "Check"
 msgstr "หมวดตรวจ"
-
-#. module: disbursement_wc
-#: model:work.center,name:disbursement_wc.station_check
-msgid "Check Station"
-msgstr "สถานีหมวดตรวจ"
 
 #. module: disbursement_wc
 #: model:ir.model.fields,field_description:disbursement_wc.field_disbursement_request__work_center_open_visit_id
@@ -124,14 +116,10 @@ msgid "Edit the Lines"
 msgstr "แก้ไขรายการ"
 
 #. module: disbursement_wc
+#: model:work.center,name:disbursement_wc.station_director
 #: model:work.center.route.line,name:disbursement_wc.route_line_director
 msgid "Finance Director"
 msgstr "ผอ.กองคลัง"
-
-#. module: disbursement_wc
-#: model:work.center,name:disbursement_wc.station_director
-msgid "Finance Director Station"
-msgstr "สถานี ผอ.กองคลัง"
 
 #. module: disbursement_wc
 #: model_terms:ir.ui.view,arch_db:disbursement_wc.view_disbursement_request_form
@@ -159,34 +147,22 @@ msgid "Not yet billed"
 msgstr "ยังไม่ตั้งหนี้"
 
 #. module: disbursement_wc
+#: model:work.center,name:disbursement_wc.station_audit
 #: model:work.center.route.line,name:disbursement_wc.route_line_audit
 msgid "Payment Audit"
 msgstr "ตรวจจ่าย"
 
 #. module: disbursement_wc
-#: model:work.center,name:disbursement_wc.station_audit
-msgid "Payment Audit Station"
-msgstr "สถานีตรวจจ่าย"
-
-#. module: disbursement_wc
+#: model:work.center,name:disbursement_wc.station_authorize
 #: model:work.center.route.line,name:disbursement_wc.route_line_authorize
 msgid "Payment Authorization"
 msgstr "อนุมัติจ่าย"
 
 #. module: disbursement_wc
-#: model:work.center,name:disbursement_wc.station_authorize
-msgid "Payment Authorization Station"
-msgstr "สถานีอนุมัติจ่าย"
-
-#. module: disbursement_wc
+#: model:work.center,name:disbursement_wc.station_rector
 #: model:work.center.route.line,name:disbursement_wc.route_line_rector
 msgid "Rector Delegate"
 msgstr "ผู้รับมอบอำนาจอธิการบดี"
-
-#. module: disbursement_wc
-#: model:work.center,name:disbursement_wc.station_rector
-msgid "Rector Delegate Station"
-msgstr "สถานีผู้รับมอบอำนาจอธิการบดี"
 
 #. module: disbursement_wc
 #: model:ir.model.fields,help:disbursement_wc.field_disbursement_request__work_center_missing_act_ids
@@ -240,5 +216,10 @@ msgstr "สถานีที่การส่งต่อจะส่งเอ
 
 #. module: disbursement_wc
 #: model_terms:ir.ui.view,arch_db:disbursement_wc.view_disbursement_request_form
-msgid "· <strong>Acts Still to Do:</strong>"
-msgstr "· <strong>การกระทำที่ยังไม่ได้ทำ:</strong>"
+msgid "<strong>Acts Still to Do:</strong>"
+msgstr "<strong>การกระทำที่ยังไม่ได้ทำ:</strong>"
+
+#. module: disbursement_wc
+#: model_terms:ir.ui.view,arch_db:disbursement_wc.view_disbursement_request_form
+msgid "<strong>Next Station on the Route:</strong>"
+msgstr "<strong>เส้นทางที่จะส่งต่อไป:</strong>"

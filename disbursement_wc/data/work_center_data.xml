@@ -16,32 +16,32 @@
          an administrator seats them, and that is what makes a station valid. -->
     <data noupdate="1">
         <record id="station_check" model="work.center">
-            <field name="name">Check Station</field>
+            <field name="name">Check</field>
             <field name="area_id" ref="area_disbursement" />
             <field name="sequence">10</field>
         </record>
         <record id="station_director" model="work.center">
-            <field name="name">Finance Director Station</field>
+            <field name="name">Finance Director</field>
             <field name="area_id" ref="area_disbursement" />
             <field name="sequence">20</field>
         </record>
         <record id="station_rector" model="work.center">
-            <field name="name">Rector Delegate Station</field>
+            <field name="name">Rector Delegate</field>
             <field name="area_id" ref="area_disbursement" />
             <field name="sequence">30</field>
         </record>
         <record id="station_bill" model="work.center">
-            <field name="name">Billing Station</field>
+            <field name="name">Billing</field>
             <field name="area_id" ref="area_disbursement" />
             <field name="sequence">40</field>
         </record>
         <record id="station_audit" model="work.center">
-            <field name="name">Payment Audit Station</field>
+            <field name="name">Payment Audit</field>
             <field name="area_id" ref="area_disbursement" />
             <field name="sequence">50</field>
         </record>
         <record id="station_authorize" model="work.center">
-            <field name="name">Payment Authorization Station</field>
+            <field name="name">Payment Authorization</field>
             <field name="area_id" ref="area_disbursement" />
             <field name="sequence">60</field>
         </record>

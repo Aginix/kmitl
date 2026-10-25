@@ -48,29 +48,32 @@
                     style="margin-bottom:0px;"
                     attrs="{'invisible': [('work_center_id', '=', False)]}"
                 >
-                    <strong>Station:</strong>
-                    <field
-                        name="work_center_id"
-                        class="oe_inline"
-                        options="{'no_open': True}"
-                    />
-                    <span attrs="{'invisible': [('work_center_next_id', '=', False)]}">
-                        → <field
+                    <div>
+                        <strong>Current Station:</strong>
+                        <field
+                            name="work_center_id"
+                            class="oe_inline"
+                            options="{'no_open': True}"
+                        />
+                    </div>
+                    <div attrs="{'invisible': [('work_center_next_id', '=', False)]}">
+                        <strong>Next Station on the Route:</strong>
+                        <field
                             name="work_center_next_id"
                             class="oe_inline"
                             options="{'no_open': True}"
                         />
-                    </span>
-                    <span
+                    </div>
+                    <div
                         attrs="{'invisible': [('work_center_missing_act_ids', '=', [])]}"
                     >
-                        · <strong>Acts Still to Do:</strong>
+                        <strong>Acts Still to Do:</strong>
                         <field
                             name="work_center_missing_act_ids"
                             widget="many2many_tags"
                             class="oe_inline"
                         />
-                    </span>
+                    </div>
                 </div>
             </header>
             <xpath expr="//notebook" position="inside">
