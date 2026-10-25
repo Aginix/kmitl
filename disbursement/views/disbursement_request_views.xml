@@ -16,16 +16,23 @@
                 <field name="account_fiscal_year_id" options="{'no_open': True}" />
                 <field name="amount_total" />
                 <field
-                    name="display_status"
+                    name="state"
                     widget="badge"
-                    decoration-info="display_status == 'draft'"
-                    decoration-warning="display_status in ('submitted', 'signed', 'bill_draft', 'payment_draft')"
-                    decoration-primary="display_status in ('verified', 'bill_posted')"
-                    decoration-success="display_status in ('approved', 'payment_posted', 'done')"
-                    decoration-danger="display_status == 'cancel'"
+                    decoration-info="state == 'draft'"
+                    decoration-warning="state in ('submitted', 'signed')"
+                    decoration-primary="state == 'in_progress'"
+                    decoration-success="state == 'done'"
+                    decoration-danger="state == 'cancel'"
                 />
-                <field name="state" invisible="1" />
-                <field name="pipeline_status" invisible="1" />
+                <field
+                    name="settlement_stage"
+                    widget="badge"
+                    optional="show"
+                    decoration-info="settlement_stage == 'none'"
+                    decoration-warning="settlement_stage == 'billed'"
+                    decoration-primary="settlement_stage == 'settled'"
+                    decoration-success="settlement_stage == 'booked'"
+                />
                 <field name="main_exception_id" />
                 <field name="department_analytic_id" optional="show" />
                 <field name="source_analytic_id" optional="show" />
@@ -55,91 +62,42 @@
                         attrs="{'invisible': [('state', '!=', 'submitted')]}"
                         groups="disbursement.group_disbursement_head"
                     />
-                    <button
-                        name="action_validate"
-                        string="Validate"
-                        type="object"
-                        class="oe_highlight"
-                        attrs="{'invisible': [('state', '!=', 'signed')]}"
-                        confirm="Are you sure you want to validate this request?"
-                        groups="disbursement.group_disbursement_officer"
-                    />
-                    <button
-                        name="action_approve_finance"
-                        string="Approve (Finance Director)"
-                        type="object"
-                        class="oe_highlight"
-                        attrs="{'invisible': ['|', ('state', '!=', 'verified'), ('approval_state', '!=', 'pending_finance')]}"
-                        groups="disbursement.group_disbursement_finance_director"
-                    />
-                    <button
-                        name="action_approve"
-                        string="Approve (Rector Delegate)"
-                        type="object"
-                        class="oe_highlight"
-                        attrs="{'invisible': ['|', ('state', '!=', 'verified'), ('approval_state', '!=', 'pending_rector')]}"
-                        confirm="Are you sure you want to approve this request?"
-                        groups="disbursement.group_disbursement_rector_delegate"
-                    />
-                    <button
-                        name="action_open_reject_wizard"
-                        string="Reject"
-                        type="object"
-                        attrs="{'invisible': [('approval_state', '!=', 'pending_finance')]}"
-                        groups="disbursement.group_disbursement_finance_director"
-                    />
-                    <button
-                        name="action_open_reject_wizard"
-                        string="Reject"
-                        type="object"
-                        attrs="{'invisible': [('approval_state', '!=', 'pending_rector')]}"
-                        groups="disbursement.group_disbursement_rector_delegate"
-                    />
-                    <button
-                        name="action_request_approval"
-                        string="Request Approval Again"
-                        type="object"
-                        class="oe_highlight"
-                        attrs="{'invisible': [('approval_state', '!=', 'rejected')]}"
-                        groups="disbursement.group_disbursement_officer"
-                    />
+                    <!-- The acts (Validate, Approve …) are buttons of the
+                         modules that implement them. -->
                     <button
                         name="action_draft"
                         string="Reset to draft"
                         type="object"
                         class="btn btn-secondary"
-                        attrs="{'invisible': [('state', 'not in', ('submitted', 'signed', 'verified', 'cancel'))]}"
+                        attrs="{'invisible': [('state', 'not in', ('submitted', 'signed', 'cancel'))]}"
                     />
                     <button
                         name="action_cancel"
                         string="Cancel"
                         type="object"
                         confirm="Cancel this disbursement request?"
-                        attrs="{'invisible': [('state', 'not in', ('draft', 'submitted', 'signed', 'verified'))]}"
+                        attrs="{'invisible': [('state', 'in', ('done', 'cancel'))]}"
                     />
-                    <!-- Past the final approval: finance officers only. -->
+                    <!-- Once the circuit is done: finance officers only, until
+                         the money has started. -->
                     <button
                         name="action_cancel"
                         string="Cancel"
                         type="object"
                         confirm="Cancel this disbursement request?"
-                        attrs="{'invisible': ['|', ('state', 'in', ('draft', 'submitted', 'signed', 'verified', 'cancel')), ('pipeline_status', 'in', ('bill_posted', 'payment_draft', 'payment_posted', 'done'))]}"
+                        attrs="{'invisible': ['|', ('state', '!=', 'done'), ('settlement_stage', '!=', 'none')]}"
                         groups="disbursement.group_disbursement_officer"
                     />
-                    <field name="state" invisible="1" />
-                    <field name="pipeline_status" invisible="1" />
                     <field
-                        name="display_status"
+                        name="state"
                         widget="statusbar"
-                        statusbar_visible="draft,submitted,signed,verified,approved,bill_draft,bill_posted,payment_draft,payment_posted,done"
+                        statusbar_visible="draft,submitted,signed,in_progress,done"
                     />
-                    <!-- Two-approver sub-status, shown only during the approval window -->
-                    <field
-                        name="approval_state"
-                        widget="statusbar"
-                        statusbar_visible="pending_finance,pending_rector"
-                        attrs="{'invisible': [('state', '!=', 'verified')]}"
-                    />
+                    <field name="can_edit_header" invisible="1" />
+                    <field name="can_edit_lines" invisible="1" />
+                    <field name="can_edit_attachments" invisible="1" />
+                    <field name="can_edit_dimensions" invisible="1" />
+                    <field name="can_edit_budget" invisible="1" />
                 </header>
                 <!-- Returned to source for correction -->
                 <div
@@ -152,37 +110,6 @@
                     <strong>Returned to source for correction:</strong>
                     <field
                         name="return_source_reason"
-                        class="oe_inline"
-                        nolabel="1"
-                        readonly="1"
-                    />
-                </div>
-                <!-- Returned to the verification officer for a re-check -->
-                <div
-                    class="alert alert-warning"
-                    role="alert"
-                    style="margin-bottom:0px;"
-                    attrs="{'invisible': [('returned_to_verification', '=', False)]}"
-                >
-                    <field name="returned_to_verification" invisible="1" />
-                    <strong>Returned to verification:</strong>
-                    <field
-                        name="return_verification_reason"
-                        class="oe_inline"
-                        nolabel="1"
-                        readonly="1"
-                    />
-                </div>
-                <!-- Approval rejected by an approver -->
-                <div
-                    class="alert alert-danger"
-                    role="alert"
-                    style="margin-bottom:0px;"
-                    attrs="{'invisible': [('approval_state', '!=', 'rejected')]}"
-                >
-                    <strong>Approval rejected:</strong>
-                    <field
-                        name="approval_reject_reason"
                         class="oe_inline"
                         nolabel="1"
                         readonly="1"
@@ -229,12 +156,14 @@
                                 widget="radio"
                                 options="{'horizontal': true}"
                                 required="1"
+                                attrs="{'readonly': [('can_edit_header', '=', False)]}"
                             />
                             <!-- Payees live on the lines (pay-by-name); the header
                                  only fixes which type they must all be. -->
                             <field
                                 name="partner_type_id"
                                 options="{'no_create': True, 'no_open': True}"
+                                attrs="{'readonly': [('can_edit_header', '=', False)]}"
                             />
                             <!-- Stamped by e-Saraban (disbursement_sarabun); a
                                  direct claim types it (disbursement_direct_claim). -->
@@ -242,8 +171,17 @@
                             <field name="partner_type_company_type" invisible="1" />
                             <field
                                 name="has_tax"
-                                attrs="{'readonly': ['|', ('partner_type_company_type', '=', 'company'), ('state', '!=', 'draft')]}"
+                                attrs="{'readonly': ['|', ('partner_type_company_type', '=', 'company'), ('can_edit_header', '=', False)]}"
                                 force_save="1"
+                            />
+                            <!-- ขั้นการชำระ: derived from the bills and vouchers. -->
+                            <field
+                                name="settlement_stage"
+                                widget="badge"
+                                decoration-info="settlement_stage == 'none'"
+                                decoration-warning="settlement_stage == 'billed'"
+                                decoration-primary="settlement_stage == 'settled'"
+                                decoration-success="settlement_stage == 'booked'"
                             />
                         </group>
                         <group
@@ -255,30 +193,31 @@
                                 name="account_fiscal_year_id"
                                 required="1"
                                 options="{'no_create': True, 'no_open': True}"
+                                attrs="{'readonly': [('can_edit_header', '=', False)]}"
                             />
                             <field
                                 name="source_analytic_id"
                                 required="1"
                                 options="{'no_create': True, 'no_open': True}"
-                                attrs="{'readonly': [('state', '!=', 'draft')]}"
+                                attrs="{'readonly': [('can_edit_dimensions', '=', False)]}"
                             />
                             <field
                                 name="department_analytic_id"
                                 required="1"
                                 options="{'no_create': True, 'no_open': True}"
-                                attrs="{'readonly': [('state', '!=', 'draft')]}"
+                                attrs="{'readonly': [('can_edit_dimensions', '=', False)]}"
                             />
                             <field
                                 name="fund_analytic_id"
                                 required="1"
                                 options="{'no_create': True, 'no_open': True}"
-                                attrs="{'readonly': [('state', '!=', 'draft')]}"
+                                attrs="{'readonly': [('can_edit_dimensions', '=', False)]}"
                             />
                             <field
                                 name="activity_analytic_id"
                                 required="1"
                                 options="{'no_create': True, 'no_open': True}"
-                                attrs="{'readonly': [('state', '!=', 'draft')]}"
+                                attrs="{'readonly': [('can_edit_dimensions', '=', False)]}"
                             />
                             <field name="analytic_distribution" invisible="1" />
                             <field name="currency_id" invisible="1" />
@@ -288,23 +227,20 @@
                     <!-- The request's content, before its metadata; rich text,
                          so full width rather than squeezed into a column. -->
                     <group name="description" string="Description">
-                        <field name="note" nolabel="1" colspan="2" />
+                        <!-- Open before the request enters the circuit, and at a
+                             station that lets its people edit the header. -->
+                        <field
+                            name="note"
+                            nolabel="1"
+                            colspan="2"
+                            attrs="{'readonly': [('state', 'not in', ('draft', 'submitted', 'signed')), ('can_edit_header', '=', False)]}"
+                        />
                     </group>
 
                     <group>
                         <!-- One date per step. -->
                         <group id="dates" name="dates" string="Dates">
                             <field name="sign_date" readonly="1" />
-                            <field
-                                name="verify_date"
-                                string="Verification Date"
-                                widget="date"
-                            />
-                            <field
-                                name="rector_approve_date"
-                                string="Request Approved On"
-                                widget="date"
-                            />
                         </group>
                         <group
                             id="other_information"
@@ -314,10 +250,15 @@
                             <field
                                 name="company_id"
                                 groups="base.group_multi_company"
+                                attrs="{'readonly': [('can_edit_header', '=', False)]}"
                             />
+                            <!-- Both nodes: a field repeated in a form takes its
+                                 model-level modifiers from the last one, so the
+                                 manager node carries its own attrs. -->
                             <field
                                 name="user_id"
                                 groups="disbursement.group_disbursement_manager"
+                                attrs="{'readonly': [('can_edit_header', '=', False)]}"
                             />
                             <field
                                 name="user_id"
@@ -325,24 +266,8 @@
                                 groups="!disbursement.group_disbursement_manager"
                             />
                             <field
-                                name="verifier_id"
-                                attrs="{'invisible': [('verifier_id', '=', False)]}"
-                            />
-                            <field
-                                name="finance_approver_id"
-                                attrs="{'invisible': [('finance_approver_id', '=', False)]}"
-                            />
-                            <field
-                                name="finance_approve_date"
-                                attrs="{'invisible': [('finance_approver_id', '=', False)]}"
-                            />
-                            <field
-                                name="rector_approver_id"
-                                attrs="{'invisible': [('rector_approver_id', '=', False)]}"
-                            />
-                            <field
                                 name="ignore_exception"
-                                states="to_approve"
+                                invisible="1"
                                 groups='base_exception.group_exception_rule_manager'
                             />
                             <field
@@ -358,7 +283,11 @@
                         name="attachment"
                         string="Attachment for Disbursement Request"
                     >
-                        <field name="attachment_ids" widget="many2many_binary">
+                        <field
+                            name="attachment_ids"
+                            widget="many2many_binary"
+                            attrs="{'readonly': [('can_edit_attachments', '=', False)]}"
+                        >
                         </field>
                     </group>
 
@@ -368,6 +297,7 @@
                                 name="line_ids"
                                 widget="one2many"
                                 context="{'default_request_id': active_id}"
+                                attrs="{'readonly': [('can_edit_lines', '=', False)]}"
                             >
                                 <tree editable="bottom">
                                     <field name="sequence" widget="handle" />
@@ -519,9 +449,9 @@
                 />
                 <separator />
                 <filter
-                    string="Pre-approval"
-                    name="pre_approval"
-                    domain="[('pipeline_status', '=', 'pre_approval')]"
+                    string="Open"
+                    name="open"
+                    domain="[('state', 'not in', ('done', 'cancel'))]"
                 />
                 <filter
                     string="Draft"
@@ -539,39 +469,31 @@
                     domain="[('state', '=', 'signed')]"
                 />
                 <filter
-                    string="Verified"
-                    name="verified"
-                    domain="[('state', '=', 'verified')]"
+                    string="In Progress"
+                    name="in_progress"
+                    domain="[('state', '=', 'in_progress')]"
                 />
-                <filter
-                    string="Approved"
-                    name="approved"
-                    domain="[('state', '=', 'approved')]"
-                />
-                <filter
-                    string="Bill Draft"
-                    name="bill_draft"
-                    domain="[('pipeline_status', '=', 'bill_draft')]"
-                />
-                <filter
-                    string="Bill Posted"
-                    name="bill_posted"
-                    domain="[('pipeline_status', '=', 'bill_posted')]"
-                />
-                <filter
-                    string="Payment Draft"
-                    name="payment_draft"
-                    domain="[('pipeline_status', '=', 'payment_draft')]"
-                />
-                <filter
-                    string="Payment Posted"
-                    name="payment_posted"
-                    domain="[('pipeline_status', '=', 'payment_posted')]"
-                />
+                <!-- Anchor of the finance filters: the circuit is finished. -->
                 <filter
                     string="Done"
                     name="done"
-                    domain="[('pipeline_status', '=', 'done')]"
+                    domain="[('state', '=', 'done')]"
+                />
+                <separator />
+                <filter
+                    string="Billed"
+                    name="stage_billed"
+                    domain="[('settlement_stage', '=', 'billed')]"
+                />
+                <filter
+                    string="Settled"
+                    name="stage_settled"
+                    domain="[('settlement_stage', '=', 'settled')]"
+                />
+                <filter
+                    string="Booked"
+                    name="stage_booked"
+                    domain="[('settlement_stage', '=', 'booked')]"
                 />
                 <separator />
                 <filter
@@ -604,6 +526,11 @@
                         name="state"
                         context="{'group_by': 'state'}"
                     />
+                    <filter
+                        string="Settlement Stage"
+                        name="group_settlement_stage"
+                        context="{'group_by': 'settlement_stage'}"
+                    />
                 </group>
                 <!-- แหล่งเงิน down the left: it is the first cut the finance office
                      takes on any list of requests, and it is a handful of values,
@@ -626,18 +553,18 @@
         </field>
     </record>
 
-    <!-- Action: default to requester queue (DRs not yet approved) -->
+    <!-- Action: the requests still open (not done, not cancelled) -->
     <record id="action_disbursement_request" model="ir.actions.act_window">
         <field name="name">Disbursement Requests</field>
         <field name="res_model">disbursement.request</field>
         <field name="view_mode">tree,form</field>
-        <field name="context">{"search_default_pre_approval": 1}</field>
+        <field name="context">{"search_default_open": 1}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-                ไม่มีใบขอเบิกที่อยู่ระหว่างขออนุมัติ
+                ไม่มีใบขอเบิกที่ยังดำเนินการอยู่
             </p>
             <p>
-                ใบขอเบิกที่กำลังอยู่ในขั้นตอนการอนุมัติ (draft / submitted / signed / verified)
+                ใบขอเบิกที่ยังไม่เสร็จสิ้นและยังไม่ยกเลิก (ฉบับร่าง / ส่งแล้ว / ลงนามแล้ว / อยู่ระหว่างดำเนินการ)
             </p>
         </field>
     </record>
