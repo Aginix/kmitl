@@ -868,10 +868,16 @@ class AdvancePayment(models.Model):
     @api.onchange("use_unlisted_bank")
     def _onchange_use_unlisted_bank(self):
         """The two ways of naming the account are exclusive: ticking drops
-        bank_id, unticking refills it from the borrower (ADR-0022)."""
+        bank_id, unticking refills it from the borrower (ADR-0022). A draft
+        also drops the declared account; once submitted it is the audit trail."""
         if self.use_unlisted_bank:
             self.bank_id = False
         else:
+            if self.state == "draft":
+                self.unlisted_bank_id = False
+                self.unlisted_acc_number = False
+                self.book_bank_file = False
+                self.book_bank_filename = False
             self._onchange_employee_id()
 
     @api.depends(
@@ -1076,7 +1082,8 @@ class AdvancePayment(models.Model):
         """Creator-only: only the borrower (or an admin) may submit (ADR-0005)."""
         is_admin = self.env.user.has_group("base.group_system")
         for rec in self:
-            if rec.employee_id.user_id == self.env.user or is_admin:
+            # sudo: same hr.employee.public crash as can_submit.
+            if rec.employee_id.sudo().user_id == self.env.user or is_admin:
                 continue
             raise UserError(
                 _(
@@ -1116,6 +1123,9 @@ class AdvancePayment(models.Model):
         two of its stages wait on the borrower rather than on staff.
         """
         self.ensure_one()
+        # sudo: any actor builds every entry; a non-HR one crashes reading the
+        # borrower through hr.employee.public (see _compute_is_requester).
+        borrower_user = self.employee_id.sudo().user_id
         return {
             "to_endorse": (
                 _("เห็นชอบคำขอยืมเงิน %s", self.name),
@@ -1135,7 +1145,7 @@ class AdvancePayment(models.Model):
             ),
             "in_progress": (
                 _("ส่งรายงานค่าใช้จ่ายเงินยืม %s", self.name),
-                self.employee_id.user_id,
+                borrower_user,
             ),
             "reported": (
                 _("ตรวจรับรายงานค่าใช้จ่ายเงินยืม %s", self.name),
@@ -1143,7 +1153,7 @@ class AdvancePayment(models.Model):
             ),
             "to_reconcile": (
                 _("คืนเงินยืม %s", self.name),
-                self.employee_id.user_id,
+                borrower_user,
             ),
         }
 

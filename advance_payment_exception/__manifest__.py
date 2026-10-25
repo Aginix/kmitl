@@ -16,6 +16,7 @@
         "views/advance_payment_views.xml",
         "views/exception_rule_views.xml",
     ],
+    "pre_init_hook": "pre_init_hook",
     "installable": True,
     # The mandatory rules (missing bank account, reference, manager, amount
     # limits) live here, so every database with advance_payment gets them

@@ -1,4 +1,6 @@
-from odoo import api, fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
+from odoo.tools.safe_eval import safe_eval
 
 
 class AdvancePaymentLoanType(models.Model):
@@ -25,6 +27,23 @@ class AdvancePaymentLoanType(models.Model):
         help="Domain over the reference model. May use employee_id, partner_id"
         " and user_id (the borrower's), uid and company_id.",
     )
+
+    @api.constrains("reference_domain")
+    def _check_reference_domain(self):
+        """Every loan form of the type evaluates the filter, so a bad one
+        would break them all — reject it here instead."""
+        names = dict.fromkeys(
+            ("employee_id", "partner_id", "user_id", "uid", "company_id"), 0
+        )
+        for rec in self.filtered("reference_domain"):
+            try:
+                domain = safe_eval(rec.reference_domain, dict(names))
+            except Exception as e:
+                raise ValidationError(
+                    _("Invalid Reference filter: %(error)s", error=e)
+                ) from e
+            if not isinstance(domain, (list, tuple)):
+                raise ValidationError(_("The Reference filter must be a list."))
 
     @api.model
     def _selection_reference_model(self):
