@@ -3,7 +3,7 @@ from odoo.exceptions import UserError, ValidationError
 
 
 class WorkCenterArea(models.Model):
-    """A work area (ระบบงาน) — งานการเงิน, งานงบประมาณ, … Every ศูนย์งาน belongs to
+    """A work area (ระบบงาน) — งานการเงิน, งานงบประมาณ, … Every station belongs to
     exactly one area, and each area has its own overview. Bridges seed the area
     and add the document models it covers."""
 
@@ -38,8 +38,8 @@ class WorkCenterArea(models.Model):
 
     @api.constrains("model_ids")
     def _check_model_in_one_area(self):
-        """A document has a single work center, so a model may only be divided
-        by one area: two areas would compete for the same field and both would
+        """A document has a single station, so a model may only be divided by
+        one area: two areas would compete for the same field and both would
         count the same documents on their Unassigned card."""
         for area in self:
             clash = self.sudo().search(
@@ -102,7 +102,7 @@ class WorkCenterArea(models.Model):
         )
         if used:
             raise UserError(
-                _("Work area %(area)s still has work centers; delete them first.")
+                _("Work area %(area)s still has stations; delete them first.")
                 % {"area": used.area_id.name}
             )
         WorkCenter.with_context(work_center_area_unlink=True).search(

@@ -1,5 +1,7 @@
 # A ศูนย์งาน is a stamped owning unit, routed only while draft
 
+**Status: superseded by [ADR-0002](0002-a-work-center-is-a-station.md).**
+
 Every work area (การเงิน, งบประมาณ, …) needs to split the work of one Operating Unit by
 document data — a คณะ split by ภาควิชา, plus central units. We model this as a
 **ศูนย์งาน** (`work.center`) **stored on the document** (`work_center_id`, via
