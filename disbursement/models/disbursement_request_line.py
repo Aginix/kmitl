@@ -28,6 +28,10 @@ class DisbursementRequestLine(models.Model):
         string="Description",
     )
 
+    note = fields.Text(
+        string="Note",
+    )
+
     amount = fields.Monetary(
         string="Amount",
         currency_field="currency_id",
@@ -193,8 +197,9 @@ class DisbursementRequestLine(models.Model):
                 line.partner_bank_id = line.partner_bank_id
             elif line.partner_id:
                 banks = line.partner_id.bank_ids.filtered(
-                    lambda b: not b.company_id
-                    or b.company_id == line.request_id.company_id
+                    lambda b: (
+                        not b.company_id or b.company_id == line.request_id.company_id
+                    )
                 )
                 # Keep a still-valid choice: a new account on the partner must
                 # not re-point lines that already have one.
@@ -207,9 +212,7 @@ class DisbursementRequestLine(models.Model):
     def _check_line_partner_required(self):
         for line in self:
             if not line.partner_id:
-                raise ValidationError(
-                    _("Partner is required on each line.")
-                )
+                raise ValidationError(_("Partner is required on each line."))
 
     # -------------------------------------------------------------------------
     # WHT methods

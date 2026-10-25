@@ -119,11 +119,6 @@ msgid "Account"
 msgstr "บัญชี"
 
 #. module: disbursement
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_request_line__amount
-msgid "Amount"
-msgstr "จำนวนเงิน"
-
-#. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__message_needaction
 msgid "Action Needed"
 msgstr ""
@@ -168,6 +163,11 @@ msgstr ""
 #: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__payment_type__advance
 msgid "Advance"
 msgstr "เงินยืม"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request_line__amount
+msgid "Amount"
+msgstr "จำนวนเงิน"
 
 #. module: disbursement
 #: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
@@ -985,6 +985,11 @@ msgstr "ไม่มีใบขอเบิกที่รอคุณอนุ
 #: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__approval_state__none
 msgid "None"
 msgstr "ไม่มี"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request_line__note
+msgid "Note"
+msgstr "หมายเหตุ"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__name
