@@ -37,6 +37,9 @@
                 <field name="project_type"/>
                 <field name="manager_id" widget="many2one_avatar_employee" optional="show"/>
                 <field name="department_analytic_id" optional="show" />
+                <field name="budget_estimate" optional="show" sum="รวม" />
+                <field name="budget_consumed" optional="show" sum="รวม" />
+                <field name="budget_remaining" optional="show" sum="รวม" />
                 <field name="operating_unit_id" optional="hide" groups="operating_unit.group_multi_operating_unit" />
                 <field name="state" widget="badge"
                     decoration-info="state in ('to_verify', 'to_send', 'sent')"
