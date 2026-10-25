@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+    <t t-name="budget.CommitmentReturn" owl="1">
+        <div class="o_bcr">
+            <div class="o_bcr_steps">
+                <t t-foreach="steps" t-as="label" t-key="label_index">
+                    <div
+                        class="o_bcr_step"
+                        t-att-class="{'o_bcr_step_on': label_index === stepIndex, 'o_bcr_step_ok': label_index &lt; stepIndex}"
+                    >
+                        <span class="o_bcr_step_dot">
+                            <i t-if="label_index &lt; stepIndex" class="fa fa-check" />
+                            <t t-else="" t-esc="label_index + 1" />
+                        </span>
+                        <span class="o_bcr_step_label" t-esc="label" />
+                    </div>
+                </t>
+            </div>
+
+            <!-- Step 1: from the reservation → back to the budget -->
+            <t t-if="data.step === 'review'">
+                <div class="o_bcr_flow">
+                    <div class="o_bcr_acct">
+                        <div class="o_bcr_kicker">จาก · ใบจองงบประมาณ</div>
+                        <div class="o_bcr_title" t-esc="data.commitment_label" />
+                        <dl class="o_bcr_figs">
+                            <dt>ยอดจองทั้งหมด</dt>
+                            <dd>฿<t t-esc="money(data.total_reserved)" /></dd>
+                            <dt>เบิกจ่ายแล้ว</dt>
+                            <dd>฿<t t-esc="money(data.total_consumed)" /></dd>
+                        </dl>
+                        <div class="o_bcr_bal">
+                            <span class="o_bcr_bal_label">คืนได้</span>
+                            <span class="o_bcr_bal_value">฿<t
+                                    t-esc="money(amount)"
+                                /></span>
+                        </div>
+                        <div class="o_bcr_after">หลังคืน <b>฿<t
+                                    t-esc="money(0)"
+                                /></b></div>
+                    </div>
+                    <div class="o_bcr_arrow"><i class="fa fa-long-arrow-right" /></div>
+                    <div class="o_bcr_acct o_bcr_acct_to">
+                        <div class="o_bcr_kicker">ไป</div>
+                        <div
+                            class="o_bcr_title"
+                        >งบประมาณคงเหลือ (พิกัดเดียวกับใบจอง)</div>
+                        <t t-call="budget.CommitmentReturn.Dims" />
+                    </div>
+                </div>
+
+                <div class="o_bcr_big o_bcr_amount">
+                    <div class="o_bcr_big_label">จำนวนเงินที่ส่งคืน</div>
+                    <div class="o_bcr_big_value">฿<t t-esc="money(amount)" /></div>
+                </div>
+                <div t-if="closesCommitment" class="o_bcr_msg">
+                    ส่งคืนเงินเหลือจ่ายทั้งหมด — ใบจองจะปิดเป็น "เสร็จสิ้น" หลังส่งคืน
+                </div>
+                <div t-else="" class="o_bcr_msg o_bcr_msg_warn">
+                    ใบจองยังมียอดผูกพันค้าง ฿<t
+                        t-esc="money(data.available_to_consume)"
+                    />
+                    — จะยังไม่ปิดหลังส่งคืน
+                </div>
+            </t>
+
+            <!-- Step 2: the slip -->
+            <div t-elif="data.step === 'done'" class="o_bcr_sum">
+                <div class="o_bcr_icon"><i class="fa fa-check" /></div>
+                <div class="o_bcr_big">
+                    <div class="o_bcr_big_label">ส่งคืนเงินเหลือจ่ายสำเร็จ</div>
+                    <div class="o_bcr_big_value">฿<t t-esc="money(amount)" /></div>
+                </div>
+                <div class="o_bcr_rows">
+                    <div class="o_bcr_row">
+                        <div class="o_bcr_row_label">จาก</div>
+                        <div class="o_bcr_row_value">
+                            <t t-esc="data.commitment_label" />
+                            <small t-esc="budgetCode" />
+                        </div>
+                    </div>
+                    <div class="o_bcr_row">
+                        <div class="o_bcr_row_label">ไป</div>
+                        <div
+                            class="o_bcr_row_value"
+                        >งบประมาณคงเหลือ (พิกัดเดียวกับใบจอง)</div>
+                    </div>
+                    <div class="o_bcr_row">
+                        <div class="o_bcr_row_label">เลขที่รายการ</div>
+                        <div class="o_bcr_row_value" t-esc="data.return_ref" />
+                    </div>
+                    <div class="o_bcr_row">
+                        <div class="o_bcr_row_label">วันที่/เวลา</div>
+                        <div class="o_bcr_row_value" t-esc="returnDate" />
+                    </div>
+                    <div class="o_bcr_row">
+                        <div class="o_bcr_row_label">ผู้ทำรายการ</div>
+                        <div class="o_bcr_row_value" t-esc="returnUser" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+
+    <!-- Complete names: ancestors muted, leaf in ink. -->
+    <t t-name="budget.CommitmentReturn.Dims" owl="1">
+        <dl class="o_bcr_dims">
+            <t t-foreach="dims" t-as="dim" t-key="dim.key">
+                <dt t-esc="dim.label" />
+                <dd>
+                    <span class="o_bcr_code">[<t t-esc="dim.code" />]</span>
+                    <t t-foreach="dim.path" t-as="part" t-key="part_index">
+                        <span class="o_bcr_anc"><t t-esc="part" /> / </span>
+                    </t>
+                    <span class="o_bcr_leaf" t-esc="dim.leaf" />
+                </dd>
+            </t>
+        </dl>
+    </t>
+
+</templates>

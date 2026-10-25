@@ -259,9 +259,7 @@ class TestBudgetCommitment(TransactionCase):
         c.action_cancel()
         self.assertEqual(c.state, "cancel")
         # All posted lines should be cancelled
-        self.assertTrue(
-            all(l.state == "cancel" for l in c.line_ids)
-        )
+        self.assertTrue(all(line.state == "cancel" for line in c.line_ids))
         c.action_reset_to_draft()
         self.assertEqual(c.state, "draft")
 
@@ -376,7 +374,7 @@ class TestBudgetCommitment(TransactionCase):
             self.env["budget.commitment"].create(
                 {
                     "date": date.today(),
-                "title": "Test commitment",
+                    "title": "Test commitment",
                     "account_id": self.account_1.id,
                     "amount": -1,
                     "analytic_distribution": self._header_analytic(),
@@ -402,9 +400,11 @@ class TestBudgetCommitment(TransactionCase):
 
         self._add_line(c, "consume", 100_000)
         self.assertEqual(c.available_to_consume, 0)
-        self.assertTrue(c.line_ids.filtered(
-            lambda l: l.move_type == "consume" and l.budget_move_id
-        ))
+        self.assertTrue(
+            c.line_ids.filtered(
+                lambda line: line.move_type == "consume" and line.budget_move_id
+            )
+        )
 
         c.action_done()
         self.assertEqual(c.state, "done")
@@ -434,12 +434,41 @@ class TestBudgetCommitment(TransactionCase):
         with self.assertRaises(UserError):
             c.action_cancel()
 
-    def test_93_reset_only_from_cancel(self):
-        """action_reset_to_draft only works from cancel."""
+    def test_93_reset_only_while_unused(self):
+        """กลับแบบร่าง releases an unused reservation; once used it is refused."""
         c = self._create_commitment(100_000)
         c.action_reserve()
+        c.action_reset_to_draft()
+        self.assertEqual(c.state, "draft")
+        self.assertEqual(c.total_reserved, 0)
+        number = c.name
+        c.action_reserve()
+        self.assertEqual(c.name, number)
+        self.assertEqual(c.total_reserved, 100_000)
+        self._add_line(c, "consume", 1_000)
         with self.assertRaises(UserError):
             c.action_reset_to_draft()
+
+    def test_94_delete_hard_soft_or_refused(self):
+        """ลบใบจอง: refused while it holds money, soft once it has a ledger
+        history, hard for a draft that never reached the ledger."""
+        fresh = self._create_commitment(1_000)
+        fresh.unlink()
+        self.assertFalse(fresh.exists())
+
+        c = self._create_commitment(1_000)
+        c.action_reserve()
+        with self.assertRaises(UserError):
+            c.unlink()
+        c.action_reset_to_draft()
+        c.unlink()
+        self.assertTrue(c.exists())
+        self.assertEqual(c.state, "cancel")
+        self.assertFalse(c.active)
+        # กลับแบบร่าง revives a soft-deleted commitment.
+        c.action_reset_to_draft()
+        self.assertEqual(c.state, "draft")
+        self.assertTrue(c.active)
 
     # ====================================================================
     # 11. Cancel recalculates balances
@@ -574,12 +603,25 @@ class TestBudgetCommitment(TransactionCase):
         self.assertEqual(c.total_reserved, 550)
         self.assertEqual(c.available_to_obligate, 0)
         self.assertEqual(c.state, "done")
-        ret = c.line_ids.filtered(lambda l: l.is_return)
+        ret = c.line_ids.filtered(lambda line: line.is_return)
         self.assertEqual(len(ret), 1)
         self.assertEqual(ret.move_type, "reserve")
         self.assertEqual(ret.amount, -50)
         # คืนจอง posts its own reserve move to the budget ledger (ADR-0017)
         self.assertEqual(ret.budget_move_id.move_type, "reserve")
+
+    def test_60b_return_unused_commitment_closes_it(self):
+        """Returning a never-used reservation in full closes it (done)."""
+        c = self._create_commitment(600)
+        c.action_reserve()
+        wizard = self._return_wizard(c)
+        wizard.action_confirm()
+        self.assertEqual(c.total_reserved, 0)
+        self.assertEqual(c.state, "done")
+        # The wizard turns into the slip of the posted return.
+        self.assertEqual(wizard.step, "done")
+        self.assertEqual(wizard.returned_amount, 600)
+        self.assertTrue(wizard.return_line_id.is_return)
 
     def test_61_return_inherits_reserve_account_and_dims(self):
         """The return line mirrors the first reserve line's account + dimensions."""
@@ -587,7 +629,7 @@ class TestBudgetCommitment(TransactionCase):
         c.action_reserve()
         self._add_line(c, "consume", 500)
         self._return_wizard(c).action_confirm()
-        ret = c.line_ids.filtered(lambda l: l.is_return)
+        ret = c.line_ids.filtered(lambda line: line.is_return)
         self.assertEqual(ret.account_id, c.account_id)
         self.assertEqual(ret.analytic_distribution, self._line_analytic())
 
@@ -600,7 +642,7 @@ class TestBudgetCommitment(TransactionCase):
             c, default_res_model="budget.commitment", default_res_id=c.id
         )
         wizard.action_confirm()
-        ret = c.line_ids.filtered(lambda l: l.is_return)
+        ret = c.line_ids.filtered(lambda line: line.is_return)
         self.assertEqual(ret.res_model, "budget.commitment")
         self.assertEqual(ret.res_id, c.id)
 
