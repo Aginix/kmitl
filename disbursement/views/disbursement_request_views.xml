@@ -24,15 +24,7 @@
                     decoration-success="state == 'done'"
                     decoration-danger="state == 'cancel'"
                 />
-                <field
-                    name="settlement_stage"
-                    widget="badge"
-                    optional="show"
-                    decoration-info="settlement_stage == 'none'"
-                    decoration-warning="settlement_stage == 'billed'"
-                    decoration-primary="settlement_stage == 'settled'"
-                    decoration-success="settlement_stage == 'booked'"
-                />
+                <field name="settlement_stage" invisible="1" />
                 <field name="main_exception_id" />
                 <field name="department_analytic_id" optional="show" />
                 <field name="source_analytic_id" optional="show" />
@@ -174,15 +166,8 @@
                                 attrs="{'readonly': ['|', ('partner_type_company_type', '=', 'company'), ('can_edit_header', '=', False)]}"
                                 force_save="1"
                             />
-                            <!-- ขั้นการชำระ: derived from the bills and vouchers. -->
-                            <field
-                                name="settlement_stage"
-                                widget="badge"
-                                decoration-info="settlement_stage == 'none'"
-                                decoration-warning="settlement_stage == 'billed'"
-                                decoration-primary="settlement_stage == 'settled'"
-                                decoration-success="settlement_stage == 'booked'"
-                            />
+                            <!-- ขั้นการชำระ: hidden, kept for the modifiers that read it. -->
+                            <field name="settlement_stage" invisible="1" />
                         </group>
                         <group
                             id="budget"

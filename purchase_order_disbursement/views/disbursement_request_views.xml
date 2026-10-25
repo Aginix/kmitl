@@ -52,12 +52,7 @@
                     decoration-success="state == 'done'"
                     decoration-danger="state == 'cancel'"
                     optional="show" />
-                <field name="settlement_stage" widget="badge"
-                    decoration-info="settlement_stage == 'none'"
-                    decoration-warning="settlement_stage == 'billed'"
-                    decoration-primary="settlement_stage == 'settled'"
-                    decoration-success="settlement_stage == 'booked'"
-                    optional="show" />
+                <field name="settlement_stage" invisible="1" />
                 <field name="source_analytic_id" optional="show" />
                 <field name="department_analytic_id" optional="show" />
             </tree>
