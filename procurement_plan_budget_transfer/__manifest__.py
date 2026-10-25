@@ -14,6 +14,11 @@
         "views/budget_transfer_views.xml",
         "wizard/procurement_plan_floating_return_views.xml",
     ],
+    "assets": {
+        "web.assets_backend": [
+            "procurement_plan_budget_transfer/static/src/floating_return/*",
+        ],
+    },
     "installable": True,
     # Auto-install wherever a budget transfer can fund a procurement plan.
     "auto_install": True,
