@@ -138,6 +138,8 @@ class WorkCenter(models.Model):
     @api.constrains("allowed_act_ids", "required_act_ids")
     def _check_required_within_allowed(self):
         for station in self:
+            if station.required_act_ids.filtered(lambda act: act.kind != "act"):
+                raise ValidationError(_("An editable part cannot be required."))
             missing = station.required_act_ids - station.allowed_act_ids
             if missing:
                 raise ValidationError(

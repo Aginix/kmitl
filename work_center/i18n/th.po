@@ -173,6 +173,13 @@ msgid "Allowed Stations"
 msgstr "สถานีที่เลือกได้"
 
 #. module: work_center
+#. odoo-python
+#: code:addons/work_center/models/work_center.py:0
+#, python-format
+msgid "An editable part cannot be required."
+msgstr "ส่วนที่แก้ไขได้ไม่สามารถกำหนดเป็นสิ่งที่ต้องทำ"
+
+#. module: work_center
 #: model:ir.model.fields,help:work_center.field_work_center_act__kind
 msgid "An editable part is an edit permission on the document, not an act: it can never be required before a document is forwarded."
 msgstr "ส่วนที่แก้ไขได้คือสิทธิ์แก้ไขเอกสาร ไม่ใช่การกระทำ จึงตั้งเป็นสิ่งที่ต้องทำก่อนส่งต่อไม่ได้"
