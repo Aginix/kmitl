@@ -56,7 +56,7 @@
             </field>
             <field name="activity_analytic_id" position="after">
                 <!-- force_save: filled by the commitment onchange while readonly. -->
-                <field name="budget_account_id" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': [('can_edit_budget', '=', False)]}" required="1" force_save="1" />
+                <field name="budget_account_id" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': ['|', ('can_edit_budget', '=', False), ('budget_commitment_id', '!=', False)]}" required="1" force_save="1" />
                 <!-- Loaded (hidden) so the line list can hide the
                      account column via parent. -->
                 <field name="is_line_account_locked" invisible="1" />

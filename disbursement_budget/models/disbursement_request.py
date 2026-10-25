@@ -136,9 +136,12 @@ class DisbursementRequest(models.Model):
         super()._compute_can_edit()
 
     def _can_edit_blocked(self, kind):
-        """The linked commitment carries the dimensions and the budget code."""
+        """The linked commitment carries the dimensions. (It also carries the
+        budget code, which the form locks on the field itself: the budget part
+        must stay open, or picking a commitment would lock the commitment
+        field and the value would never be saved.)"""
         return super()._can_edit_blocked(kind) or (
-            kind in ("dimensions", "budget") and bool(self.budget_commitment_id)
+            kind == "dimensions" and bool(self.budget_commitment_id)
         )
 
     # -------------------------------------------------------------------------
