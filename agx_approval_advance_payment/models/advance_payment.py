@@ -1,5 +1,6 @@
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
+from odoo.osv import expression
 
 
 class AdvancePayment(models.Model):
@@ -118,21 +119,21 @@ class AdvancePayment(models.Model):
             )
         return vals
 
-    @api.depends("approval_request_id", "reference", "loan_type_id.reference_model")
-    def _compute_reference_state(self):
-        super()._compute_reference_state()
-        for rec in self:
-            if rec.approval_request_id:
-                rec.is_reference_visible = True
-
-    @api.onchange("loan_type_id")
-    def _onchange_loan_type_id(self):
-        """Keep an approval-request reference when the picked loan type declares
-        no reference_model — AR-backed loans use loan_type_other. A type that
-        requires a *different* model still clears it (handled by super)."""
-        if self.approval_request_id and not self.loan_type_id.reference_model:
-            return
-        super()._onchange_loan_type_id()
+    def _get_reference_picker_domain(self):
+        """Approved requests the borrower is a participant of (ADR-0003),
+        ANDed with the loan type's own filter (advance_payment ADR-0023)."""
+        domain = super()._get_reference_picker_domain()
+        if self.loan_type_id.reference_model == "approval.request":
+            domain = expression.AND(
+                [
+                    domain,
+                    [
+                        ("state", "=", "approved"),
+                        ("participant_ids.partner_id", "=", self.partner_id.id),
+                    ],
+                ]
+            )
+        return domain
 
     @api.depends("approval_request_id")
     def _compute_approval_request_count(self):
@@ -190,8 +191,10 @@ class AdvancePayment(models.Model):
         )
         if not rows:
             raise ValidationError(
-                _("There are no เงินยืม rows on %(name)s naming this agreement yet.",
-                  name=self.approval_request_id.display_name)
+                _(
+                    "There are no เงินยืม rows on %(name)s naming this agreement yet.",
+                    name=self.approval_request_id.display_name,
+                )
             )
         self.write(
             {

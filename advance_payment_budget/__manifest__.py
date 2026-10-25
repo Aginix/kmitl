@@ -6,6 +6,7 @@
     "category": "KMITL",
     "depends": [
         "advance_payment",
+        "advance_payment_exception",
         "budget",
         "account_analytic_kmitl",
     ],

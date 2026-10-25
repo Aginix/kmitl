@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_advance_payment_form_partner_bank" model="ir.ui.view">
+        <field name="name">advance.payment.form.partner_bank</field>
+        <field name="model">advance.payment</field>
+        <field name="inherit_id" ref="advance_payment.view_advance_payment_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//header/button[@name='action_verify']" position="before">
+                <button
+                    name="action_open_partner_bank_wizard"
+                    string="สร้างบัญชีธนาคาร"
+                    type="object"
+                    class="btn-primary"
+                    attrs="{'invisible': ['|', ('state', '!=', 'to_verify'), ('use_unlisted_bank', '=', False)]}"
+                    groups="advance_payment.group_advance_payment_loan_officer"
+                />
+            </xpath>
+        </field>
+    </record>
+</odoo>

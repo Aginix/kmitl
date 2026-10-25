@@ -1,4 +1,4 @@
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 from odoo.tests.common import TransactionCase, tagged
 
 
@@ -159,9 +159,7 @@ class TestPurchaseRequestAdvancePayment(TransactionCase):
             self.env.ref("advance_payment.loan_type_procurement"),
         )
         self.assertEqual(ap.loan_reason, pr.title)
-        self.assertEqual(
-            ap.reference, "purchase.request,%s" % pr.id
-        )
+        self.assertEqual(ap.reference, "purchase.request,%s" % pr.id)
 
     def test_ap_analytic_distribution_from_pr(self):
         """AP inherits analytic_distribution from PR header."""
@@ -277,9 +275,6 @@ class TestPurchaseRequestAdvancePayment(TransactionCase):
 
     def test_reference_not_locked_when_empty(self):
         """Reference is not locked when empty."""
-        self.env["ir.config_parameter"].sudo().set_param(
-            "advance_payment.allow_manual_reference", "True"
-        )
         ap = self.env["advance.payment"].create(
             {
                 "requested_by": self.manager.id,
@@ -294,9 +289,6 @@ class TestPurchaseRequestAdvancePayment(TransactionCase):
 
     def test_reference_visible_when_loan_type_has_model(self):
         """Reference is visible when loan type has a reference_model."""
-        self.env["ir.config_parameter"].sudo().set_param(
-            "advance_payment.allow_manual_reference", "False"
-        )
         ap = self.env["advance.payment"].create(
             {
                 "requested_by": self.manager.id,
@@ -308,6 +300,53 @@ class TestPurchaseRequestAdvancePayment(TransactionCase):
             }
         )
         self.assertTrue(ap.is_reference_visible)
+
+    # ------------------------------------------------------------------ #
+    # Reference filter (advance_payment ADR-0023)                          #
+    # ------------------------------------------------------------------ #
+
+    def test_picker_domain_ands_type_filter_with_baseline(self):
+        """The type's filter is evaluated for the borrower and ANDed with the
+        bridge's approved-only baseline."""
+        loan_type = self.env.ref("advance_payment.loan_type_procurement")
+        loan_type.reference_domain = "[('requested_by', '=', user_id)]"
+        pr = self._make_pr()
+        other = self._make_pr()
+        other.requested_by = self.officer
+        ap = self.env["advance.payment"].create(
+            {
+                "employee_id": self.manager_employee.id,
+                "loan_amount": 1000,
+                "loan_type_id": loan_type.id,
+                "loan_reason": "Picker",
+            }
+        )
+        offered = self.env["purchase.request"].search(ap.reference_picker_domain)
+        self.assertIn(pr, offered)
+        self.assertNotIn(other, offered)
+        self.assertFalse(offered.filtered(lambda r: r.state != "approved"))
+
+    def test_draft_check_rejects_reference_outside_filter(self):
+        loan_type = self.env.ref("advance_payment.loan_type_procurement")
+        loan_type.reference_domain = "[('id', '=', 0)]"
+        pr = self._make_pr()
+        with self.assertRaises(ValidationError):
+            pr.action_create_advance_payment()
+
+    def test_picker_writes_reference(self):
+        pr = self._make_pr()
+        ap = self.env["advance.payment"].create(
+            {
+                "employee_id": self.manager_employee.id,
+                "loan_amount": 1000,
+                "loan_type_id": self.env.ref(
+                    "advance_payment.loan_type_procurement"
+                ).id,
+                "loan_reason": "Picker",
+                "purchase_request_id": pr.id,
+            }
+        )
+        self.assertEqual(ap.reference, pr)
 
     # ------------------------------------------------------------------ #
     # View action                                                          #

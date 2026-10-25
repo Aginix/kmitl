@@ -1,14 +1,17 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <record id="view_advance_payment_list" model="ir.ui.view">
         <field name="name">advance.payment.list</field>
         <field name="model">advance.payment</field>
         <field name="arch" type="xml">
-            <tree string="สัญญายืมเงิน" decoration-info="state == 'draft'"
+            <tree
+                string="สัญญายืมเงิน"
+                decoration-info="state == 'draft'"
                 decoration-muted="state == 'cancel'"
                 decoration-warning="state in ('to_endorse', 'to_verify', 'to_approve', 'reported', 'to_reconcile')"
                 decoration-primary="state in ('approved', 'in_progress')"
-                decoration-success="state == 'done'">
+                decoration-success="state == 'done'"
+            >
                 <field name="create_date" optional="show" />
                 <field name="name" />
                 <field name="contract_number" optional="show" />
@@ -19,16 +22,22 @@
                 <field name="actual_expense_amount" optional="show" />
                 <field name="amount_remaining" />
                 <field name="return_due_date" optional="show" />
-                <field name="state" widget="badge"
+                <field
+                    name="state"
+                    widget="badge"
                     decoration-info="state == 'draft'"
                     decoration-warning="state in ('to_endorse', 'to_verify', 'to_approve', 'reported', 'to_reconcile')"
                     decoration-primary="state in ('approved', 'in_progress')"
                     decoration-success="state == 'done'"
-                    decoration-danger="state == 'cancel'" />
-                <field name="disbursement_state" optional="show" widget="badge"
+                    decoration-danger="state == 'cancel'"
+                />
+                <field
+                    name="disbursement_state"
+                    optional="show"
+                    widget="badge"
                     decoration-warning="disbursement_state == 'pending'"
-                    decoration-success="disbursement_state == 'paid'" />
-                <field name="main_exception_id" optional="hide" />
+                    decoration-success="disbursement_state == 'paid'"
+                />
                 <field name="loan_reason" optional="hide" />
             </tree>
         </field>
@@ -39,20 +48,23 @@
         <field name="model">advance.payment</field>
         <field name="arch" type="xml">
             <form string="สัญญายืมเงิน">
-                <div class="alert alert-danger" role="alert" style="margin-bottom:0px;"
-                    attrs="{'invisible': [('exceptions_summary','=',False)]}">
-                    <p>
-                        <strong>มีข้อผิดพลาดที่ต้องแก้ไข:</strong>
-                    </p>
-                    <field name="exceptions_summary" />
-                </div>
-                <div class="alert alert-warning" role="alert" style="margin-bottom:0px;"
-                    attrs="{'invisible': [('state', '!=', 'approved')]}">
+                <div
+                    class="alert alert-warning"
+                    role="alert"
+                    style="margin-bottom:0px;"
+                    attrs="{'invisible': [('state', '!=', 'approved')]}"
+                >
                     <strong>อนุมัติแล้ว</strong> — รอฝ่ายการเงินดำเนินการโอนเงิน </div>
-                <div class="alert alert-info" role="alert" style="margin-bottom:0px;"
-                    attrs="{'invisible': [('state', '!=', 'to_reconcile')]}">
-                    <strong>รอคืนเงิน</strong> — ยอดคงเหลือที่ต้องคืน <field name="return_amount"
-                        class="oe_inline" /> บาท </div>
+                <div
+                    class="alert alert-info"
+                    role="alert"
+                    style="margin-bottom:0px;"
+                    attrs="{'invisible': [('state', '!=', 'to_reconcile')]}"
+                >
+                    <strong>รอคืนเงิน</strong> — ยอดคงเหลือที่ต้องคืน <field
+                        name="return_amount"
+                        class="oe_inline"
+                    /> บาท </div>
                 <header>
                     <field name="is_requester" invisible="1" />
                     <field name="is_loan_officer" invisible="1" />
@@ -62,188 +74,385 @@
                     <field name="can_verify" invisible="1" />
                     <field name="can_approve" invisible="1" />
                     <field name="excess_amount" invisible="1" />
-                    <button name="action_submit" string="ส่งคำขอ" type="object"
+                    <button
+                        name="action_submit"
+                        string="ส่งคำขอ"
+                        type="object"
                         class="btn-primary"
-                        attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('can_submit', '=', False)]}" />
-                    <button name="action_endorse" string="เห็นชอบ" type="object"
+                        attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('can_submit', '=', False)]}"
+                    />
+                    <button
+                        name="action_endorse"
+                        string="เห็นชอบ"
+                        type="object"
                         class="btn-primary"
-                        attrs="{'invisible': ['|', ('state', '!=', 'to_endorse'), ('can_endorse', '=', False)]}" />
-                    <button name="action_endorse_reject" string="ส่งกลับแก้ไข" type="object"
-                        attrs="{'invisible': ['|', ('state', '!=', 'to_endorse'), ('can_endorse', '=', False)]}" />
-                    <button name="action_recall" string="Reset to draft" type="object"
+                        attrs="{'invisible': ['|', ('state', '!=', 'to_endorse'), ('can_endorse', '=', False)]}"
+                    />
+                    <button
+                        name="action_endorse_reject"
+                        string="ส่งกลับแก้ไข"
+                        type="object"
+                        attrs="{'invisible': ['|', ('state', '!=', 'to_endorse'), ('can_endorse', '=', False)]}"
+                    />
+                    <button
+                        name="action_recall"
+                        string="Reset to draft"
+                        type="object"
                         confirm="ต้องการตั้งคำขอกลับเป็นแบบร่างหรือไม่?"
-                        attrs="{'invisible': ['|', ('state', 'not in', ['to_endorse', 'to_verify', 'to_approve']), ('is_requester', '=', False)]}" />
-                    <button name="action_verify" string="ยืนยันการตรวจสอบ" type="object"
+                        attrs="{'invisible': ['|', ('state', 'not in', ['to_endorse', 'to_verify', 'to_approve']), ('is_requester', '=', False)]}"
+                    />
+                    <button
+                        name="action_verify"
+                        string="ยืนยันการตรวจสอบ"
+                        type="object"
                         class="btn-primary"
                         attrs="{'invisible': ['|', ('state', '!=', 'to_verify'), ('can_verify', '=', False)]}"
-                        groups="advance_payment.group_advance_payment_loan_officer" />
-                    <button name="action_reset_to_draft" string="ส่งกลับแก้ไข" type="object"
+                        groups="advance_payment.group_advance_payment_loan_officer"
+                    />
+                    <button
+                        name="action_reset_to_draft"
+                        string="ส่งกลับแก้ไข"
+                        type="object"
                         attrs="{'invisible': [('state', '!=', 'to_verify')]}"
-                        groups="advance_payment.group_advance_payment_loan_officer" />
-                    <button name="action_approve" string="อนุมัติ" type="object"
+                        groups="advance_payment.group_advance_payment_loan_officer"
+                    />
+                    <button
+                        name="action_approve"
+                        string="อนุมัติ"
+                        type="object"
                         class="btn-primary"
                         attrs="{'invisible': ['|', ('state', '!=', 'to_approve'), ('can_approve', '=', False)]}"
-                        groups="advance_payment.group_advance_payment_loan_approver" />
-                    <button name="action_create_payment_voucher" string="สร้างใบสำคัญจ่าย"
-                        type="object" class="btn-primary"
+                        groups="advance_payment.group_advance_payment_loan_approver"
+                    />
+                    <button
+                        name="action_create_payment_voucher"
+                        string="สร้างใบสำคัญจ่าย"
+                        type="object"
+                        class="btn-primary"
                         attrs="{'invisible': ['|', ('state', '!=', 'approved'), ('payment_count', '!=', 0)]}"
-                        groups="advance_payment.group_advance_payment_loan_officer" />
-                    <button name="action_submit_report" string="นำส่งรายงานค่าใช้จ่าย"
-                        type="object" class="btn-primary"
-                        attrs="{'invisible': ['|', ('state', '!=', 'in_progress'), ('is_requester', '=', False)]}" />
-                    <button name="action_accept_report" string="ตรวจรับรายงาน" type="object"
+                        groups="advance_payment.group_advance_payment_loan_officer"
+                    />
+                    <button
+                        name="action_submit_report"
+                        string="นำส่งรายงานค่าใช้จ่าย"
+                        type="object"
+                        class="btn-primary"
+                        attrs="{'invisible': ['|', ('state', '!=', 'in_progress'), ('is_requester', '=', False)]}"
+                    />
+                    <button
+                        name="action_accept_report"
+                        string="ตรวจรับรายงาน"
+                        type="object"
                         class="btn-primary"
                         attrs="{'invisible': [('state', '!=', 'reported')]}"
-                        groups="advance_payment.group_advance_payment_loan_officer" />
-                    <button name="action_open_return_wizard" string="แจ้งคืนเงิน" type="object"
-                        attrs="{'invisible': ['|', ('state', '!=', 'to_reconcile'), ('is_requester', '=', False)]}" />
-                    <button name="action_confirm_donation" string="ยืนยันบริจาคส่วนเกิน"
-                        type="object" class="btn-primary"
+                        groups="advance_payment.group_advance_payment_loan_officer"
+                    />
+                    <button
+                        name="action_open_return_wizard"
+                        string="แจ้งคืนเงิน"
+                        type="object"
+                        attrs="{'invisible': ['|', ('state', '!=', 'to_reconcile'), ('is_requester', '=', False)]}"
+                    />
+                    <button
+                        name="action_confirm_donation"
+                        string="ยืนยันบริจาคส่วนเกิน"
+                        type="object"
+                        class="btn-primary"
                         confirm="ยืนยันบริจาคเงินส่วนเกินให้สถาบัน?"
-                        attrs="{'invisible': ['|', ('state', '!=', 'to_reconcile'), ('excess_amount', '&lt;=', 0)]}" />
-                    <button name="action_open_cancel_wizard" string="ยกเลิกสัญญา" type="object"
+                        attrs="{'invisible': ['|', ('state', '!=', 'to_reconcile'), ('excess_amount', '&lt;=', 0)]}"
+                    />
+                    <button
+                        name="action_open_cancel_wizard"
+                        string="ยกเลิกสัญญา"
+                        type="object"
                         attrs="{'invisible': [('state', 'not in', ['to_endorse', 'to_verify', 'to_approve', 'approved', 'in_progress', 'reported', 'to_reconcile'])]}"
-                        groups="advance_payment.group_advance_payment_manager" />
-                    <button name="action_reopen" string="เปิดสัญญาอีกครั้ง" type="object"
+                        groups="advance_payment.group_advance_payment_manager"
+                    />
+                    <button
+                        name="action_reopen"
+                        string="เปิดสัญญาอีกครั้ง"
+                        type="object"
                         confirm="ต้องการเปิดสัญญาอีกครั้งหรือไม่?"
                         attrs="{'invisible': [('state', '!=', 'done')]}"
-                        groups="base.group_system" />
-                    <button name="action_reset_cancel_to_draft" string="Reset to draft"
+                        groups="base.group_system"
+                    />
+                    <button
+                        name="action_reset_cancel_to_draft"
+                        string="Reset to draft"
                         type="object"
                         confirm="ต้องการตั้งสัญญาที่ยกเลิกกลับเป็นแบบร่างหรือไม่?"
                         attrs="{'invisible': ['|', ('state', '!=', 'cancel'), ('effective_date', '!=', False)]}"
-                        groups="advance_payment.group_advance_payment_manager" />
-                    <button name="button_cancel" string="ยกเลิก" type="object"
+                        groups="advance_payment.group_advance_payment_manager"
+                    />
+                    <button
+                        name="button_cancel"
+                        string="ยกเลิก"
+                        type="object"
                         confirm="ต้องการยกเลิกสัญญานี้หรือไม่?"
-                        attrs="{'invisible': [('state', '!=', 'draft')]}" />
-                    <field name="state" widget="statusbar"
-                        statusbar_visible="draft,to_endorse,to_verify,to_approve,approved,in_progress,reported,to_reconcile,done" />
+                        attrs="{'invisible': [('state', '!=', 'draft')]}"
+                    />
+                    <field
+                        name="state"
+                        widget="statusbar"
+                        statusbar_visible="draft,to_endorse,to_verify,to_approve,approved,in_progress,reported,to_reconcile,done"
+                    />
                 </header>
                 <sheet>
                     <div name="button_box" class="oe_button_box">
-                        <button name="action_view_payments" type="object"
-                            class="oe_stat_button" icon="fa-credit-card"
+                        <button
+                            name="action_view_payments"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-credit-card"
                             attrs="{'invisible': [('payment_count', '=', 0)]}"
-                            groups="advance_payment.group_advance_payment_loan_officer">
-                            <field name="payment_count" string="Payments" widget="statinfo" />
+                            groups="advance_payment.group_advance_payment_loan_officer"
+                        >
+                            <field
+                                name="payment_count"
+                                string="Payments"
+                                widget="statinfo"
+                            />
                         </button>
-                        <button name="action_view_return_lines" type="object"
-                            class="oe_stat_button" icon="fa-undo"
-                            attrs="{'invisible': [('return_count', '=', 0)]}">
-                            <field name="return_count" string="Returns" widget="statinfo" />
+                        <button
+                            name="action_view_return_lines"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-undo"
+                            attrs="{'invisible': [('return_count', '=', 0)]}"
+                        >
+                            <field
+                                name="return_count"
+                                string="Returns"
+                                widget="statinfo"
+                            />
                         </button>
                     </div>
                     <div class="oe_title">
                         <label for="name" string="เลขที่คำขอ / เลขที่สัญญา" />
                         <h1>
                             <field name="name" readonly="1" />
-                            <span attrs="{'invisible': [('contract_number', '=', False)]}"> / </span>
-                            <field name="contract_number" readonly="1"
-                                attrs="{'invisible': [('contract_number', '=', False)]}" />
+                            <span
+                                attrs="{'invisible': [('contract_number', '=', False)]}"
+                            > / </span>
+                            <field
+                                name="contract_number"
+                                readonly="1"
+                                attrs="{'invisible': [('contract_number', '=', False)]}"
+                            />
                         </h1>
                     </div>
                     <group>
-                        <group name="borrow_info" string="ข้อมูลการยืมเงิน">
+                        <group name="borrow_info" string="ผู้ยืม">
                             <field name="is_locked_by_reference" invisible="1" />
                             <field name="can_draft_on_behalf" invisible="1" />
                             <field name="can_edit_drafter" invisible="1" />
-                            <field name="employee_id" options="{'no_create': True}"
-                                attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('can_draft_on_behalf', '=', False)]}" />
+                            <field
+                                name="employee_id"
+                                options="{'no_create': True}"
+                                attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('can_draft_on_behalf', '=', False)]}"
+                            />
                             <field name="partner_id" invisible="1" />
-                            <field name="is_reference_visible" invisible="1" />
-                            <field name="loan_type_id" widget="selection"
-                                attrs="{'readonly': [('state', '!=', 'draft')]}" />
-                            <field name="reference"
-                                attrs="{
-                                    'invisible': [('is_reference_visible', '=', False)],
-                                    'readonly': ['|', ('is_locked_by_reference', '=', True), ('id', '!=', False)]
-                                }" />
-                            <field name="loan_reason"
-                                attrs="{'readonly': [('state', 'not in', ['draft', 'to_endorse', 'to_verify'])]}" />
-                            <field name="currency_id" invisible="1" />
-                            <field name="loan_amount"
-                                attrs="{'readonly': [('state', '!=', 'draft')]}" />
-                            <field name="bank_id"
+                            <field
+                                name="user_id"
+                                attrs="{'readonly': [('can_edit_drafter', '=', False)]}"
+                            />
+                            <field name="date_submitted" />
+                            <!-- Unlisted bank account (ADR-0022): the three
+                                 declared fields stand in for bank_id until the
+                                 loan officer creates the account at verify. -->
+                            <field
+                                name="use_unlisted_bank"
+                                attrs="{'readonly': ['|', ('state', 'not in', ['draft', 'to_verify', 'to_approve', 'approved']), '&amp;', ('state', '!=', 'draft'), ('is_loan_officer', '=', False)]}"
+                            />
+                            <field
+                                name="bank_id"
                                 domain="[('partner_id', '=', partner_id)]"
                                 widget="selection"
-                                required="1"
-                                attrs="{'readonly': ['|', ('state', 'not in', ['draft', 'to_verify', 'to_approve', 'approved']), '&amp;', ('state', '!=', 'draft'), ('is_loan_officer', '=', False)]}" />
-                        </group>
-                        <group name="processing_dates" string="ข้อมูลการดำเนินการ">
-                            <field name="date_submitted" />
-                            <field name="date_endorsed" attrs="{'invisible': [('state', '=', 'draft')]}" />
-                            <field name="date_verified" attrs="{'invisible': [('state', '=', 'draft')]}" />
-                            <field name="date_approved" attrs="{'invisible': [('state', '=', 'draft')]}" />
-                            <field name="return_due_date"
                                 attrs="{
-                                    'invisible': [('state', 'in', ['draft', 'to_endorse', 'to_verify', 'to_approve'])],
-                                    'readonly': ['|', ('is_loan_officer', '=', False), ('state', 'in', ['done', 'cancel'])]
-                                }" />
-                            <field name="endorser_id"
-                                attrs="{'readonly': ['&amp;', ('state', '!=', 'draft'), ('is_manager', '=', False)]}" />
-                            <field name="loan_verifier_id"
-                                attrs="{'readonly': ['&amp;', ('state', '!=', 'draft'), ('is_manager', '=', False)]}" />
-                            <field name="approver_id"
-                                attrs="{'readonly': ['&amp;', ('state', '!=', 'draft'), ('is_manager', '=', False)]}" />
-                            <field name="user_id"
-                                attrs="{'readonly': [('can_edit_drafter', '=', False)]}" />
+                                    'invisible': [('use_unlisted_bank', '=', True)],
+                                    'required': [('use_unlisted_bank', '=', False)],
+                                    'readonly': ['|', ('state', 'not in', ['draft', 'to_verify', 'to_approve', 'approved']), '&amp;', ('state', '!=', 'draft'), ('is_loan_officer', '=', False)]
+                                }"
+                            />
+                            <field
+                                name="unlisted_bank_id"
+                                options="{'no_create': True, 'no_open': True}"
+                                attrs="{
+                                    'invisible': [('use_unlisted_bank', '=', False)],
+                                    'required': [('use_unlisted_bank', '=', True)],
+                                    'readonly': ['|', ('state', 'not in', ['draft', 'to_verify', 'to_approve', 'approved']), '&amp;', ('state', '!=', 'draft'), ('is_loan_officer', '=', False)]
+                                }"
+                            />
+                            <field
+                                name="unlisted_acc_number"
+                                attrs="{
+                                    'invisible': [('use_unlisted_bank', '=', False)],
+                                    'required': [('use_unlisted_bank', '=', True)],
+                                    'readonly': ['|', ('state', 'not in', ['draft', 'to_verify', 'to_approve', 'approved']), '&amp;', ('state', '!=', 'draft'), ('is_loan_officer', '=', False)]
+                                }"
+                            />
+                            <field name="book_bank_filename" invisible="1" />
+                            <field
+                                name="book_bank_file"
+                                filename="book_bank_filename"
+                                attrs="{
+                                    'invisible': [('use_unlisted_bank', '=', False)],
+                                    'required': [('use_unlisted_bank', '=', True)],
+                                    'readonly': ['|', ('state', 'not in', ['draft', 'to_verify', 'to_approve', 'approved']), '&amp;', ('state', '!=', 'draft'), ('is_loan_officer', '=', False)]
+                                }"
+                            />
+                        </group>
+                        <group name="loan_info" string="รายละเอียดการยืม">
+                            <field name="is_reference_visible" invisible="1" />
+                            <field name="loan_type_reference_model" invisible="1" />
+                            <field name="reference_picker_domain" invisible="1" />
+                            <field
+                                name="loan_type_id"
+                                widget="selection"
+                                attrs="{'readonly': [('state', '!=', 'draft')]}"
+                            />
+                            <!-- Anchor only: each bridge inserts its typed
+                                 picker after it (ADR-0023). -->
+                            <field name="reference" invisible="1" />
+                            <field name="currency_id" invisible="1" />
+                            <field
+                                name="loan_amount"
+                                attrs="{'readonly': [('state', '!=', 'draft')]}"
+                            />
+                            <field
+                                name="loan_reason"
+                                attrs="{'readonly': [('state', 'not in', ['draft', 'to_endorse', 'to_verify'])]}"
+                            />
                         </group>
                     </group>
                     <group name="terms" string="เงื่อนไขและข้อตกลงการยืมเงินทดรองจ่าย">
-                        <field name="terms_conditions" nolabel="1" readonly="1" colspan="2" />
+                        <field
+                            name="terms_conditions"
+                            nolabel="1"
+                            readonly="1"
+                            colspan="2"
+                        />
                     </group>
                     <group name="attachments" string="เอกสารแนบ">
-                        <field name="attachment_ids" widget="many2many_binary"
-                            attrs="{'readonly': [('state', 'in', ['done', 'cancel'])]}" />
+                        <field
+                            name="attachment_ids"
+                            widget="many2many_binary"
+                            attrs="{'readonly': [('state', 'in', ['done', 'cancel'])]}"
+                        />
                     </group>
-                    <group name="actual_expense" string="บันทึกค่าใช้จ่ายจริง"
-                        attrs="{'invisible': [('state', 'in', ['draft', 'to_endorse', 'to_verify', 'to_approve', 'approved'])]}">
-                        <field name="expense_description"
-                            attrs="{'readonly': [('state', '!=', 'in_progress')]}" />
-                        <field name="actual_expense_amount"
-                            attrs="{'readonly': [('state', '!=', 'in_progress')]}" />
+                    <group name="processing" string="ข้อมูลการดำเนินการ">
+                        <group name="processing_unit" string="หน่วยงาน">
+                            <field
+                                name="endorser_id"
+                                attrs="{'readonly': ['&amp;', ('state', '!=', 'draft'), ('is_manager', '=', False)]}"
+                            />
+                            <field
+                                name="date_endorsed"
+                                attrs="{'invisible': [('date_endorsed', '=', False)]}"
+                            />
+                        </group>
+                        <group name="processing_finance" string="สำนักงานคลัง">
+                            <field
+                                name="loan_verifier_id"
+                                attrs="{'readonly': ['&amp;', ('state', '!=', 'draft'), ('is_manager', '=', False)]}"
+                            />
+                            <field
+                                name="date_verified"
+                                attrs="{'invisible': [('date_verified', '=', False)]}"
+                            />
+                            <field
+                                name="approver_id"
+                                attrs="{'readonly': ['&amp;', ('state', '!=', 'draft'), ('is_manager', '=', False)]}"
+                            />
+                            <field
+                                name="date_approved"
+                                attrs="{'invisible': [('date_approved', '=', False)]}"
+                            />
+                        </group>
+                    </group>
+                    <group
+                        name="actual_expense"
+                        string="บันทึกค่าใช้จ่ายจริง"
+                        attrs="{'invisible': [('state', 'in', ['draft', 'to_endorse', 'to_verify', 'to_approve', 'approved'])]}"
+                    >
+                        <field
+                            name="expense_description"
+                            attrs="{'readonly': [('state', '!=', 'in_progress')]}"
+                        />
+                        <field
+                            name="actual_expense_amount"
+                            attrs="{'readonly': [('state', '!=', 'in_progress')]}"
+                        />
                         <field name="return_amount" />
-                        <field name="return_installment"
-                            attrs="{'readonly': ['|', ('state', 'in', ['done', 'cancel']), '&amp;', ('state', '!=', 'in_progress'), ('is_loan_officer', '=', False)]}" />
+                        <field
+                            name="return_installment"
+                            attrs="{'readonly': ['|', ('state', 'in', ['done', 'cancel']), '&amp;', ('state', '!=', 'in_progress'), ('is_loan_officer', '=', False)]}"
+                        />
                     </group>
-                    <group name="amount_summary" string="สรุปยอดเงิน"
-                        attrs="{'invisible': [('state', 'in', ['draft', 'to_endorse', 'to_verify', 'to_approve'])]}">
+                    <group
+                        name="amount_summary"
+                        string="สรุปยอดเงิน"
+                        attrs="{'invisible': [('state', 'in', ['draft', 'to_endorse', 'to_verify', 'to_approve'])]}"
+                    >
                         <field name="amount_returned" />
                         <field name="amount_remaining" />
-                        <field name="excess_amount"
-                            attrs="{'invisible': [('excess_amount', '&lt;=', 0)]}" />
+                        <field
+                            name="excess_amount"
+                            attrs="{'invisible': [('excess_amount', '&lt;=', 0)]}"
+                        />
                         <field name="effective_date" />
-                        <field name="disbursement_state" widget="badge"
+                        <field
+                            name="return_due_date"
+                            attrs="{'readonly': ['|', ('is_loan_officer', '=', False), ('state', 'in', ['done', 'cancel'])]}"
+                        />
+                        <field
+                            name="disbursement_state"
+                            widget="badge"
                             attrs="{'invisible': [('disbursement_state', '=', False)]}"
                             decoration-warning="disbursement_state == 'pending'"
-                            decoration-success="disbursement_state == 'paid'" />
+                            decoration-success="disbursement_state == 'paid'"
+                        />
                     </group>
-                    <group name="donation" string="การบริจาคเงินส่วนเกิน"
-                        attrs="{'invisible': [('donate_excess', '=', False)]}">
+                    <group
+                        name="donation"
+                        string="การบริจาคเงินส่วนเกิน"
+                        attrs="{'invisible': [('donate_excess', '=', False)]}"
+                    >
                         <field name="donate_excess" readonly="1" />
                         <field name="donate_consent_uid" readonly="1" />
                         <field name="donate_consent_date" readonly="1" />
                     </group>
-                    <group name="reason" string="เหตุผล"
-                        attrs="{'invisible': [('cancel_reason', '=', False)]}">
+                    <group
+                        name="reason"
+                        string="เหตุผล"
+                        attrs="{'invisible': [('cancel_reason', '=', False)]}"
+                    >
                         <field name="cancel_reason" readonly="1" nolabel="1" />
                     </group>
                     <notebook>
-                        <page string="รายการคืนเงิน" name="return_lines"
-                            attrs="{'invisible': [('state', 'in', ['draft', 'to_endorse', 'to_verify', 'to_approve', 'approved'])]}">
-                            <field name="return_line_ids"
-                                attrs="{'readonly': [('state', '!=', 'to_reconcile')]}">
+                        <page
+                            string="รายการคืนเงิน"
+                            name="return_lines"
+                            attrs="{'invisible': [('state', 'in', ['draft', 'to_endorse', 'to_verify', 'to_approve', 'approved'])]}"
+                        >
+                            <field
+                                name="return_line_ids"
+                                attrs="{'readonly': [('state', '!=', 'to_reconcile')]}"
+                            >
                                 <tree>
                                     <field name="date" />
                                     <field name="currency_id" invisible="1" />
                                     <field name="amount" />
                                     <field name="note" />
                                     <field name="payment_id" optional="show" />
-                                    <field name="state" widget="badge"
+                                    <field
+                                        name="state"
+                                        widget="badge"
                                         decoration-info="state == 'draft'"
                                         decoration-warning="state == 'pending_review'"
                                         decoration-danger="state == 'rejected'"
-                                        decoration-success="state == 'done'" />
+                                        decoration-success="state == 'done'"
+                                    />
                                 </tree>
                             </field>
                         </page>
@@ -268,38 +477,81 @@
                 <field name="employee_id" />
                 <field name="user_id" />
                 <separator />
-                <filter string="สัญญาของฉัน" name="my_contracts"
-                    domain="['|', ('employee_id.user_id', '=', uid), ('user_id', '=', uid)]" />
-                <filter string="รอฉันเห็นชอบ" name="to_endorse_by_me"
-                    domain="[('endorser_id', '=', uid), ('state', '=', 'to_endorse')]" />
-                <separator />
-                <filter icon="fa-exclamation-circle" name="tofix" string="Exceptions"
-                    domain="[('main_exception_id','!=',False)]" />
+                <filter
+                    string="สัญญาของฉัน"
+                    name="my_contracts"
+                    domain="['|', ('employee_id.user_id', '=', uid), ('user_id', '=', uid)]"
+                />
+                <filter
+                    string="รอฉันเห็นชอบ"
+                    name="to_endorse_by_me"
+                    domain="[('endorser_id', '=', uid), ('state', '=', 'to_endorse')]"
+                />
                 <separator />
                 <filter string="Draft" name="draft" domain="[('state','=','draft')]" />
-                <filter string="รอผู้บังคับบัญชาเห็นชอบ" name="to_endorse"
-                    domain="[('state','=','to_endorse')]" />
-                <filter string="รอตรวจสอบ" name="to_verify" domain="[('state','=','to_verify')]" />
-                <filter string="รออนุมัติ" name="to_approve" domain="[('state','=','to_approve')]" />
-                <filter string="รอโอนเงิน" name="approved"
-                    domain="[('state','=','approved')]" />
-                <filter string="อยู่ในสัญญา" name="in_progress"
-                    domain="[('state','=','in_progress')]" />
-                <filter string="รอตรวจรับรายงาน" name="reported"
-                    domain="[('state','=','reported')]" />
-                <filter string="รอคืนเงิน" name="to_reconcile"
-                    domain="[('state','=','to_reconcile')]" />
+                <filter
+                    string="รอผู้บังคับบัญชาเห็นชอบ"
+                    name="to_endorse"
+                    domain="[('state','=','to_endorse')]"
+                />
+                <filter
+                    string="รอตรวจสอบ"
+                    name="to_verify"
+                    domain="[('state','=','to_verify')]"
+                />
+                <filter
+                    string="รออนุมัติ"
+                    name="to_approve"
+                    domain="[('state','=','to_approve')]"
+                />
+                <filter
+                    string="รอโอนเงิน"
+                    name="approved"
+                    domain="[('state','=','approved')]"
+                />
+                <filter
+                    string="อยู่ในสัญญา"
+                    name="in_progress"
+                    domain="[('state','=','in_progress')]"
+                />
+                <filter
+                    string="รอตรวจรับรายงาน"
+                    name="reported"
+                    domain="[('state','=','reported')]"
+                />
+                <filter
+                    string="รอคืนเงิน"
+                    name="to_reconcile"
+                    domain="[('state','=','to_reconcile')]"
+                />
                 <filter string="ปิดสัญญา" name="done" domain="[('state','=','done')]" />
-                <filter string="ยกเลิก" name="cancelled" domain="[('state','=','cancel')]" />
+                <filter
+                    string="ยกเลิก"
+                    name="cancelled"
+                    domain="[('state','=','cancel')]"
+                />
                 <separator />
-                <filter string="ยังไม่ปิด (active)" name="active_agreements"
-                    domain="[('state','in',['to_endorse','to_verify','to_approve','approved','in_progress','reported','to_reconcile'])]" />
+                <filter
+                    string="ยังไม่ปิด (active)"
+                    name="active_agreements"
+                    domain="[('state','in',['to_endorse','to_verify','to_approve','approved','in_progress','reported','to_reconcile'])]"
+                />
                 <group expand="0" name="group_by" string="Group By">
-                    <filter string="State" name="group_state" context="{'group_by':'state'}" />
-                    <filter string="Loan Type" name="group_loan_type"
-                        context="{'group_by':'loan_type_id'}" />
-                    <filter string="Requested By" name="group_employee"
-                        context="{'group_by':'employee_id'}" />
+                    <filter
+                        string="State"
+                        name="group_state"
+                        context="{'group_by':'state'}"
+                    />
+                    <filter
+                        string="Loan Type"
+                        name="group_loan_type"
+                        context="{'group_by':'loan_type_id'}"
+                    />
+                    <filter
+                        string="Requested By"
+                        name="group_employee"
+                        context="{'group_by':'employee_id'}"
+                    />
                 </group>
             </search>
         </field>
@@ -325,6 +577,8 @@
         <field name="name">รอฉันเห็นชอบ</field>
         <field name="res_model">advance.payment</field>
         <field name="view_mode">tree,form</field>
-        <field name="context">{'search_default_to_endorse_by_me': 1, 'create': False}</field>
+        <field
+            name="context"
+        >{'search_default_to_endorse_by_me': 1, 'create': False}</field>
     </record>
 </odoo>

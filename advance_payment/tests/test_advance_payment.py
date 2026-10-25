@@ -33,15 +33,17 @@ class TestAdvancePayment(TransactionCase):
         # advance_payment_budget now, but a database upgraded from before the
         # split can still carry the pre-split copy under
         # `advance_payment.excep_missing_analytic`, and that one reads fields
-        # this module no longer defines.
-        cls.env["exception.rule"].search(
-            [
-                ("model", "=", "advance.payment"),
-                "|",
-                ("code", "ilike", "analytic_id"),
-                ("domain", "ilike", "department_id"),
-            ]
-        ).active = False
+        # this module no longer defines. Guarded: rules only exist once
+        # advance_payment_exception is installed (ADR-0024).
+        if "exception.rule" in cls.env:
+            cls.env["exception.rule"].search(
+                [
+                    ("model", "=", "advance.payment"),
+                    "|",
+                    ("code", "ilike", "analytic_id"),
+                    ("domain", "ilike", "department_id"),
+                ]
+            ).active = False
 
         cls.manager = cls.env.ref("base.user_admin")  # in manager group
         Users = cls.env["res.users"]
@@ -54,7 +56,11 @@ class TestAdvancePayment(TransactionCase):
                     (
                         6,
                         0,
-                        [cls.env.ref("advance_payment.group_advance_payment_own_only").id],
+                        [
+                            cls.env.ref(
+                                "advance_payment.group_advance_payment_own_only"
+                            ).id
+                        ],
                     )
                 ],
             }
@@ -68,7 +74,11 @@ class TestAdvancePayment(TransactionCase):
                     (
                         6,
                         0,
-                        [cls.env.ref("advance_payment.group_advance_payment_own_only").id],
+                        [
+                            cls.env.ref(
+                                "advance_payment.group_advance_payment_own_only"
+                            ).id
+                        ],
                     )
                 ],
             }
@@ -79,7 +89,11 @@ class TestAdvancePayment(TransactionCase):
                 "login": "staff_ap",
                 "email": "staff@test.local",
                 "groups_id": [
-                    (6, 0, [cls.env.ref("advance_payment.group_advance_payment_user").id])
+                    (
+                        6,
+                        0,
+                        [cls.env.ref("advance_payment.group_advance_payment_user").id],
+                    )
                 ],
             }
         )
@@ -161,7 +175,15 @@ class TestAdvancePayment(TransactionCase):
                 "login": "loan_officer_ap",
                 "email": "loan_officer@test.local",
                 "groups_id": [
-                    (6, 0, [cls.env.ref("advance_payment.group_advance_payment_loan_officer").id])
+                    (
+                        6,
+                        0,
+                        [
+                            cls.env.ref(
+                                "advance_payment.group_advance_payment_loan_officer"
+                            ).id
+                        ],
+                    )
                 ],
             }
         )
@@ -177,7 +199,11 @@ class TestAdvancePayment(TransactionCase):
                     (
                         6,
                         0,
-                        [cls.env.ref("advance_payment.group_advance_payment_own_only").id],
+                        [
+                            cls.env.ref(
+                                "advance_payment.group_advance_payment_own_only"
+                            ).id
+                        ],
                     )
                 ],
             }
@@ -192,7 +218,11 @@ class TestAdvancePayment(TransactionCase):
                 "login": "other_supervisor_ap",
                 "email": "other_supervisor@test.local",
                 "groups_id": [
-                    (6, 0, [cls.env.ref("advance_payment.group_advance_payment_user").id])
+                    (
+                        6,
+                        0,
+                        [cls.env.ref("advance_payment.group_advance_payment_user").id],
+                    )
                 ],
             }
         )
@@ -232,7 +262,9 @@ class TestAdvancePayment(TransactionCase):
                 {"acc_number": "x-%s" % rec.id, "partner_id": rec.partner_id.id}
             )
 
-    def _make(self, requested_by=None, amount=1000, as_user=None, loan_verifier_id=None):
+    def _make(
+        self, requested_by=None, amount=1000, as_user=None, loan_verifier_id=None
+    ):
         requested_by = requested_by or self.manager
         verifier = loan_verifier_id if loan_verifier_id is not None else self.officer
         env = self.env(user=as_user) if as_user else self.env
@@ -279,12 +311,6 @@ class TestAdvancePayment(TransactionCase):
         ap.action_submit()
         with self.assertRaises(UserError):
             ap.action_submit()
-
-    def test_submit_blocked_by_zero_amount(self):
-        """Blocking exception rule keeps a zero-amount request in draft."""
-        ap = self._make(amount=0)
-        ap.action_submit()
-        self.assertEqual(ap.state, "draft")
 
     # ------------------------------------------------------------------ #
     # Creator-only (ADR-0005)                                              #
@@ -396,46 +422,6 @@ class TestAdvancePayment(TransactionCase):
     # ------------------------------------------------------------------ #
     # Supervisor endorsement (ADR-0020)                                     #
     # ------------------------------------------------------------------ #
-
-    def test_submit_blocked_when_borrower_has_no_manager(self):
-        """Blocking exception rule keeps a manager-less borrower's request
-        in draft (excep_missing_manager, ADR-0020)."""
-        employee = self.env["hr.employee"].create({"name": "Manager-less Employee"})
-        ap = self.env["advance.payment"].create(
-            {
-                "employee_id": employee.id,
-                "loan_amount": 1000,
-                "loan_type_id": self.loan_type.id,
-                "loan_reason": "Test reason",
-                "loan_verifier_id": self.officer.id,
-                "bank_id": self.banks[self.manager.id].id,
-            }
-        )
-        ap.with_user(self.manager).action_submit()
-        self.assertEqual(ap.state, "draft")
-
-    def test_submit_blocked_when_manager_has_no_user(self):
-        """Same blocking rule when the manager exists but has no linked
-        user account to endorse with (ADR-0020)."""
-        userless_manager = self.env["hr.employee"].create({"name": "Userless Manager"})
-        employee = self.env["hr.employee"].create(
-            {
-                "name": "Employee With Userless Manager",
-                "parent_id": userless_manager.id,
-            }
-        )
-        ap = self.env["advance.payment"].create(
-            {
-                "employee_id": employee.id,
-                "loan_amount": 1000,
-                "loan_type_id": self.loan_type.id,
-                "loan_reason": "Test reason",
-                "loan_verifier_id": self.officer.id,
-                "bank_id": self.banks[self.manager.id].id,
-            }
-        )
-        ap.with_user(self.manager).action_submit()
-        self.assertEqual(ap.state, "draft")
 
     def test_endorser_can_endorse(self):
         ap = self._make(requested_by=self.user, as_user=self.user)
@@ -608,38 +594,12 @@ class TestAdvancePayment(TransactionCase):
         has to follow, or it sits on somebody who can no longer act."""
         ap = self._make(requested_by=self.user, as_user=self.user)
         ap.with_user(self.user).action_submit()
-        self.assertEqual(
-            ap._workflow_activities("to_endorse").user_id, self.supervisor
-        )
+        self.assertEqual(ap._workflow_activities("to_endorse").user_id, self.supervisor)
         ap.with_user(self.manager).write({"endorser_id": self.other_supervisor.id})
         ap.invalidate_recordset()
         todo = ap._workflow_activities("to_endorse")
         self.assertEqual(len(todo), 1)
         self.assertEqual(todo.user_id, self.other_supervisor)
-
-    # ------------------------------------------------------------------ #
-    # Blocking exceptions on the officer's own corrections                 #
-    # ------------------------------------------------------------------ #
-
-    def test_officer_amount_edit_in_to_verify_is_checked(self):
-        """The officer may correct loan_amount in to_verify (ADR-0005), so
-        that edit faces the same blocking rules the borrower's submit did."""
-        ap = self._make(amount=1000)
-        ap.action_submit()
-        ap.action_endorse()
-        with self.assertRaises(ValidationError):
-            ap.with_user(self.officer).write({"loan_amount": 60000})
-
-    def test_missing_manager_does_not_block_officer_in_to_verify(self):
-        """excep_missing_manager is scoped to draft/to_endorse: past the
-        endorsement the endorser is already named, so a manager leaving must
-        not lock the loan officer out of their own corrections."""
-        ap = self._make(amount=1000)
-        ap.action_submit()
-        ap.action_endorse()
-        self.emp[self.manager.id].parent_id = False
-        ap.with_user(self.officer).write({"loan_amount": 4200})
-        self.assertEqual(ap.loan_amount, 4200)
 
     # ------------------------------------------------------------------ #
     # verify / approve guards                                              #
@@ -651,6 +611,17 @@ class TestAdvancePayment(TransactionCase):
         ap.action_endorse()
         ap.action_verify()
         self.assertEqual(ap.state, "to_approve")
+
+    def test_verify_blocked_without_bank_account(self):
+        """An unlisted account has to be materialised before verify
+        (ADR-0022) — the money path never sees a loan without bank_id."""
+        ap = self._make()
+        ap.action_submit()
+        ap.action_endorse()
+        ap.write({"bank_id": False})
+        with self.assertRaises(UserError):
+            ap.with_user(self.officer).action_verify()
+        self.assertEqual(ap.state, "to_verify")
 
     def test_verify_only_from_to_verify(self):
         ap = self._make()
@@ -757,9 +728,7 @@ class TestAdvancePayment(TransactionCase):
     def test_submit_schedules_endorse_activity(self):
         ap = self._make()
         ap.action_submit()
-        activity = ap.activity_ids.filtered(
-            lambda a: a.user_id == self.supervisor
-        )
+        activity = ap.activity_ids.filtered(lambda a: a.user_id == self.supervisor)
         self.assertTrue(activity)
 
     # ------------------------------------------------------------------ #
@@ -777,8 +746,7 @@ class TestAdvancePayment(TransactionCase):
         self.assertFalse(ap._workflow_activities("to_verify"))
         self.assertTrue(
             ap.message_ids.filtered(
-                lambda m: m.subtype_id
-                == self.env.ref("mail.mt_activities")
+                lambda m: m.subtype_id == self.env.ref("mail.mt_activities")
             )
         )
 
@@ -848,6 +816,44 @@ class TestAdvancePayment(TransactionCase):
         ap.employee_id = self.emp[self.user2.id]
         ap._onchange_employee_id()
         self.assertEqual(ap.bank_id, self.banks[self.user2.id])
+
+    # ------------------------------------------------------------------ #
+    # Unlisted bank account (ADR-0022)                                     #
+    # ------------------------------------------------------------------ #
+
+    def test_unlisted_bank_tick_clears_bank_and_stops_refill(self):
+        ap = self._make(requested_by=self.user)
+        ap.use_unlisted_bank = True
+        ap._onchange_use_unlisted_bank()
+        self.assertFalse(ap.bank_id)
+        ap.employee_id = self.emp[self.user2.id]
+        ap._onchange_employee_id()
+        self.assertFalse(ap.bank_id)
+        ap.use_unlisted_bank = False
+        ap._onchange_use_unlisted_bank()
+        self.assertEqual(ap.bank_id, self.banks[self.user2.id])
+
+    def test_unlisted_bank_fields_guarded_like_bank_id(self):
+        """Locked for the borrower once submitted, correctable by the loan
+        officer while the request is under verification."""
+        ap = self._make(requested_by=self.user)
+        ap.with_user(self.user).action_submit()
+        with self.assertRaises(UserError):
+            ap.with_user(self.user).write({"unlisted_acc_number": "123"})
+        ap.action_endorse()
+        ap.with_user(self.officer).write(
+            {"use_unlisted_bank": True, "unlisted_acc_number": "123"}
+        )
+        self.assertEqual(ap.unlisted_acc_number, "123")
+
+    # ------------------------------------------------------------------ #
+    # Loan type decides the reference (ADR-0023)                           #
+    # ------------------------------------------------------------------ #
+
+    def test_no_reference_without_type_model(self):
+        ap = self._make()
+        self.assertFalse(ap.is_reference_visible)
+        self.assertEqual(ap.reference_picker_domain, [])
 
     def test_manager_cancel_drops_officer_todo(self):
         """mail_activity_rule_user limits write/unlink to the to-do's user_id
@@ -1394,15 +1400,21 @@ class TestAdvancePayment(TransactionCase):
             {"users": [(4, self.staff.id)]}
         )
         visible_to_staff = (
-            self.env["advance.payment"].with_user(self.staff).search([("id", "=", ap.id)])
+            self.env["advance.payment"]
+            .with_user(self.staff)
+            .search([("id", "=", ap.id)])
         )
         self.assertEqual(visible_to_staff, ap)
         visible_to_user2 = (
-            self.env["advance.payment"].with_user(self.user2).search([("id", "=", ap.id)])
+            self.env["advance.payment"]
+            .with_user(self.user2)
+            .search([("id", "=", ap.id)])
         )
         self.assertEqual(visible_to_user2, ap)
         visible_to_user = (
-            self.env["advance.payment"].with_user(self.user).search([("id", "=", ap.id)])
+            self.env["advance.payment"]
+            .with_user(self.user)
+            .search([("id", "=", ap.id)])
         )
         self.assertFalse(visible_to_user)
 

@@ -1,5 +1,6 @@
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
+from odoo.osv import expression
 
 
 class AdvancePayment(models.Model):
@@ -7,17 +8,27 @@ class AdvancePayment(models.Model):
 
     _rec_names_search = ["name", "contract_number", "purchase_request_id.name"]
 
-    # Typed mirror of `reference` when it points at a purchase request: gives
-    # searching, grouping and referential integrity that a bare Reference
-    # (a Char at database level) cannot.
+    # The source model now lives here, not in core (advance_payment ADR-0023).
+    reference = fields.Reference(
+        selection_add=[("purchase.request", "Purchase Request")],
+    )
+
+    # Typed mirror of `reference` when it points at a purchase request, and
+    # the borrower's picker for it: compute for display, inverse for input,
+    # like agx_approval_advance_payment's approval_request_id. Gives searching,
+    # grouping and referential integrity that a bare Reference (a Char at
+    # database level) cannot.
     purchase_request_id = fields.Many2one(
         comodel_name="purchase.request",
         string="Purchase Request",
         compute="_compute_reference",
+        inverse="_inverse_purchase_request_id",
         store=True,
+        readonly=False,
         index=True,
         ondelete="restrict",
         compute_sudo=False,
+        copy=False,
     )
 
     purchase_request_count = fields.Integer(
@@ -31,6 +42,30 @@ class AdvancePayment(models.Model):
             rec.purchase_request_id = (
                 rec.reference if rec.reference_model == "purchase.request" else False
             )
+
+    def _inverse_purchase_request_id(self):
+        """Picking a request writes it into `reference`, the source of truth."""
+        for rec in self:
+            if rec.purchase_request_id:
+                rec.reference = rec.purchase_request_id
+            elif rec.reference_model == "purchase.request":
+                rec.reference = False
+
+    @api.onchange("purchase_request_id")
+    def _onchange_purchase_request_id(self):
+        """This picker stands in for the `reference` widget, so it has to run
+        the same prefill: `reference` itself is only written by the inverse at
+        save time, long after `_onchange_reference` could fire."""
+        if self.purchase_request_id:
+            self._apply_vals_from_reference()
+
+    def _get_reference_picker_domain(self):
+        """Only approved requests may back a loan — the same check as
+        _check_reference_status, offered up front (ADR-0023)."""
+        domain = super()._get_reference_picker_domain()
+        if self.loan_type_id.reference_model == "purchase.request":
+            domain = expression.AND([domain, [("state", "=", "approved")]])
+        return domain
 
     @api.depends("purchase_request_id")
     def _compute_purchase_request_count(self):

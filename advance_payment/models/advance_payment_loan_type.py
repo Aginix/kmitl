@@ -16,6 +16,15 @@ class AdvancePaymentLoanType(models.Model):
         help="If set, this loan type requires a reference document of this model. "
         "Leave empty for standalone loan types.",
     )
+    # Reference filter (ADR-0023): narrows the documents the borrower is
+    # offered. Evaluated server-side with the borrower's employee_id,
+    # partner_id, user_id, plus uid and company_id.
+    reference_domain = fields.Char(
+        string="ตัวกรองเอกสารอ้างอิง",
+        default="[]",
+        help="Domain over the reference model. May use employee_id, partner_id"
+        " and user_id (the borrower's), uid and company_id.",
+    )
 
     @api.model
     def _selection_reference_model(self):
