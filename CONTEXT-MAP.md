@@ -173,6 +173,11 @@ upfront.
 - [Work Center](./work_center/CONTEXT.md) — สถานี: a desk a document passes through;
   routes, visit log, acts, and a per-area overview with configurable counters.
   Membership narrows who acts, it never grants — the role gives the right.
+- [Disbursement — Acts](./disbursement_wc/CONTEXT.md) — the ตรวจสอบ, ผอ.กองคลัง and
+  ผู้รับมอบอำนาจอธิการบดี acts on the DR (`disbursement_validation`,
+  `disbursement_approver_director`, `disbursement_approver_rector`): each stamps who
+  acted and one signature row, none changes the DR's state; terms in
+  `disbursement_wc/CONTEXT.md`.
 
 ## Relationships
 
