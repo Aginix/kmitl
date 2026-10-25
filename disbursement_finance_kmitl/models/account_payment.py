@@ -1,6 +1,6 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 
-from odoo import _, fields, models
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
 
@@ -24,6 +24,17 @@ class AccountPayment(models.Model):
         related="disbursement_request_id.name",
         string="Disbursement Request Number",
     )
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        """Odoo's create copies every stored field the payment shares with
+        account.move onto the voucher's entry, the request link included; left
+        there, the entry would count as one of the request's bills."""
+        payments = super().create(vals_list)
+        payments.move_id.filtered("disbursement_request_id").write(
+            {"disbursement_request_id": False}
+        )
+        return payments
 
     def action_view_disbursement_request(self):
         """Open the ใบขอเบิก this voucher was raised for.
