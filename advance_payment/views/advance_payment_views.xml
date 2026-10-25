@@ -262,7 +262,7 @@
                                  loan officer creates the account at verify. -->
                             <field
                                 name="use_unlisted_bank"
-                                attrs="{'readonly': ['|', ('state', 'not in', ['draft', 'to_verify', 'to_approve', 'approved']), '&amp;', ('state', '!=', 'draft'), ('is_loan_officer', '=', False)]}"
+                                attrs="{'readonly': ['|', ('state', 'not in', ['draft', 'to_verify']), '&amp;', ('state', '!=', 'draft'), ('is_loan_officer', '=', False)]}"
                             />
                             <field
                                 name="bank_id"
@@ -280,7 +280,7 @@
                                 attrs="{
                                     'invisible': [('use_unlisted_bank', '=', False)],
                                     'required': [('use_unlisted_bank', '=', True)],
-                                    'readonly': ['|', ('state', 'not in', ['draft', 'to_verify', 'to_approve', 'approved']), '&amp;', ('state', '!=', 'draft'), ('is_loan_officer', '=', False)]
+                                    'readonly': ['|', ('state', 'not in', ['draft', 'to_verify']), '&amp;', ('state', '!=', 'draft'), ('is_loan_officer', '=', False)]
                                 }"
                             />
                             <field
@@ -288,7 +288,7 @@
                                 attrs="{
                                     'invisible': [('use_unlisted_bank', '=', False)],
                                     'required': [('use_unlisted_bank', '=', True)],
-                                    'readonly': ['|', ('state', 'not in', ['draft', 'to_verify', 'to_approve', 'approved']), '&amp;', ('state', '!=', 'draft'), ('is_loan_officer', '=', False)]
+                                    'readonly': ['|', ('state', 'not in', ['draft', 'to_verify']), '&amp;', ('state', '!=', 'draft'), ('is_loan_officer', '=', False)]
                                 }"
                             />
                             <field name="book_bank_filename" invisible="1" />
@@ -298,7 +298,7 @@
                                 attrs="{
                                     'invisible': [('use_unlisted_bank', '=', False)],
                                     'required': [('use_unlisted_bank', '=', True)],
-                                    'readonly': ['|', ('state', 'not in', ['draft', 'to_verify', 'to_approve', 'approved']), '&amp;', ('state', '!=', 'draft'), ('is_loan_officer', '=', False)]
+                                    'readonly': ['|', ('state', 'not in', ['draft', 'to_verify']), '&amp;', ('state', '!=', 'draft'), ('is_loan_officer', '=', False)]
                                 }"
                             />
                         </group>

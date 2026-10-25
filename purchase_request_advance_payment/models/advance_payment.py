@@ -59,6 +59,15 @@ class AdvancePayment(models.Model):
         if self.purchase_request_id:
             self._apply_vals_from_reference()
 
+    @api.onchange("loan_type_id")
+    def _onchange_loan_type_id(self):
+        """The picker is only written into `reference` at save, so super's
+        clear cannot see it — drop it here when the new type does not take
+        purchase requests."""
+        super()._onchange_loan_type_id()
+        if self.loan_type_id.reference_model != "purchase.request":
+            self.purchase_request_id = False
+
     def _get_reference_picker_domain(self):
         """Only approved requests may back a loan — the same check as
         _check_reference_status, offered up front (ADR-0023)."""

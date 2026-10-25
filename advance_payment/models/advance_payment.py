@@ -56,16 +56,6 @@ class AdvancePayment(models.Model):
         "book_bank_filename",
     }
 
-    # Correctable by the loan officer up to the transfer (ADR-0005/0022).
-    _BANK_FIELDS = {
-        "bank_id",
-        "use_unlisted_bank",
-        "unlisted_bank_id",
-        "unlisted_acc_number",
-        "book_bank_file",
-        "book_bank_filename",
-    }
-
     # Material fields are read-only in the UI in every non-draft state.
     READONLY_STATES = {
         state: [("readonly", True)]
@@ -996,7 +986,9 @@ class AdvancePayment(models.Model):
                     "to_approve",
                     "approved",
                 ):
-                    editable |= self._BANK_FIELDS
+                    # Only bank_id: the unlisted fields close with to_verify,
+                    # where the account is materialised (ADR-0022).
+                    editable.add("bank_id")
                 blocked = protected - editable
                 if blocked:
                     raise UserError(
