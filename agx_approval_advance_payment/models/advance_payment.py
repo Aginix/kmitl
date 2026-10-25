@@ -12,7 +12,7 @@ class AdvancePayment(models.Model):
     # display, inverse for input, following the repo's analytic_distribution →
     # *_analytic_id idiom. `reference` stays the source of truth (ADR-0007); a
     # `domain` on a fields.Reference would apply to every model in its selection
-    # and so cannot express "requests I am a participant of" (ADR-0003).
+    # and so cannot carry a per-model filter (advance_payment ADR-0023).
     approval_request_id = fields.Many2one(
         comodel_name="approval.request",
         string="Approval Request",
@@ -105,17 +105,6 @@ class AdvancePayment(models.Model):
                     state=dict(ar._fields["state"].selection).get(ar.state),
                 )
             )
-        # Only a participant may borrow against a request (ADR-0003). The UI
-        # domain already filters this; enforce it for RPC / import too.
-        if self.partner_id not in ar.participant_ids.partner_id:
-            raise ValidationError(
-                _(
-                    "%(user)s is not listed as a participant of %(name)s, so"
-                    " cannot borrow against it.",
-                    user=self.employee_id.name,
-                    name=ar.name,
-                )
-            )
         return res
 
     def _prepare_vals_from_reference(self):
@@ -128,28 +117,18 @@ class AdvancePayment(models.Model):
             vals.update(
                 {
                     "loan_reason": ar.description or "",
-                    "analytic_distribution": ar.analytic_distribution,
-                    # The request's own earmark — the loan rides it rather than
-                    # reserving again (ADR-0003).
-                    "budget_commitment_id": ar.budget_commitment_id.id,
                 }
             )
         return vals
 
     def _get_reference_picker_domain(self):
-        """Approved requests the borrower is a participant of (ADR-0003),
-        ANDed with the loan type's own filter (advance_payment ADR-0023)."""
+        """Approved requests, ANDed with the loan type's own filter
+        (advance_payment ADR-0023). The participant roster is no longer a
+        condition (advance_payment ADR-0025): who may borrow is left to the
+        filter and to approval.request's own record rules."""
         domain = super()._get_reference_picker_domain()
         if self.loan_type_id.reference_model == "approval.request":
-            domain = expression.AND(
-                [
-                    domain,
-                    [
-                        ("state", "=", "approved"),
-                        ("participant_ids.partner_id", "=", self.partner_id.id),
-                    ],
-                ]
-            )
+            domain = expression.AND([domain, [("state", "=", "approved")]])
         return domain
 
     @api.depends("approval_request_id")

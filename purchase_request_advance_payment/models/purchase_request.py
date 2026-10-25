@@ -57,8 +57,6 @@ class PurchaseRequest(models.Model):
             "loan_amount": self.get_estimated_cost_currency(),
             "loan_type_id": loan_type.id,
             "loan_reason": plaintext2html(self.description or ""),
-            "analytic_distribution": self.analytic_distribution,
-            "budget_commitment_id": self.budget_commitment_id.id,
         }
 
     def action_create_advance_payment(self):

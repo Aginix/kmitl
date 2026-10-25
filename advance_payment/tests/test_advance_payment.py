@@ -28,23 +28,6 @@ class TestAdvancePayment(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        # The dimension rule needs master data these tests do not set up. Look
-        # it up by content rather than by xml id: it lives in
-        # advance_payment_budget now, but a database upgraded from before the
-        # split can still carry the pre-split copy under
-        # `advance_payment.excep_missing_analytic`, and that one reads fields
-        # this module no longer defines. Guarded: rules only exist once
-        # advance_payment_exception is installed (ADR-0024).
-        if "exception.rule" in cls.env:
-            cls.env["exception.rule"].search(
-                [
-                    ("model", "=", "advance.payment"),
-                    "|",
-                    ("code", "ilike", "analytic_id"),
-                    ("domain", "ilike", "department_id"),
-                ]
-            ).active = False
-
         cls.manager = cls.env.ref("base.user_admin")  # in manager group
         Users = cls.env["res.users"]
         cls.user = Users.create(

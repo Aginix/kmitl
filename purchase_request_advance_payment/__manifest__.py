@@ -7,9 +7,7 @@
     "depends": [
         "purchase_request",
         "purchase_request_kmitl",
-        "purchase_request_budget",
         "advance_payment",
-        "advance_payment_budget",
     ],
     "data": [
         "data/advance_payment_loan_type_data.xml",

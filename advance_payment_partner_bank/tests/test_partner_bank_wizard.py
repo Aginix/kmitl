@@ -12,18 +12,6 @@ class TestPartnerBankWizard(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        # Moving the loan into to_verify re-checks the blocking rules when
-        # advance_payment_exception is installed; the dimension rule
-        # (advance_payment_budget) needs master data these tests do not set up.
-        if "exception.rule" in cls.env:
-            cls.env["exception.rule"].search(
-                [
-                    ("model", "=", "advance.payment"),
-                    "|",
-                    ("code", "ilike", "analytic_id"),
-                    ("domain", "ilike", "department_id"),
-                ]
-            ).active = False
         cls.manager = cls.env.ref("base.user_admin")
         cls.officer = cls.env["res.users"].create(
             {

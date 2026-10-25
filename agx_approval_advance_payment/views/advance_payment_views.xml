@@ -13,9 +13,8 @@
                 </attribute>
             </xpath>
 
-            <!-- The borrower's own picker: approved requests they are a
-                 participant of, narrowed by the loan type's filter (ADR-0003,
-                 advance_payment ADR-0023). -->
+            <!-- The borrower's own picker: approved requests, narrowed by the
+                 loan type's filter (advance_payment ADR-0023/0025). -->
             <xpath expr="//field[@name='loan_type_id']" position="after">
                 <field
                     name="approval_request_id"

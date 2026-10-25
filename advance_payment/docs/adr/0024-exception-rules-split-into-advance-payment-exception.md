@@ -11,7 +11,7 @@ The core inherited `base.exception` and shipped the submit-time rules, the popup
 - The module is `auto_install=True`, so any database with `advance_payment` gets it. The mandatory rules are therefore always present in practice.
 - `action_submit` is overridden there: a draft with exceptions and no `ignore_exception` returns the popup; otherwise it calls super.
 - `excep_missing_bank_account` becomes `by_py_code` so it understands the unlisted bank account (ADR-0022).
-- The bridges whose `exception.rule` data needs the model (`agx_approval_advance_payment`'s headroom rule, `advance_payment_budget`'s dimensions rule) add `advance_payment_exception` to `depends`.
+- The bridges whose `exception.rule` data needs the model (`agx_approval_advance_payment`'s headroom rule, `advance_payment_budget`'s dimensions rule, since removed by ADR-0025) add `advance_payment_exception` to `depends`.
 
 ## Why
 

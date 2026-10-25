@@ -161,13 +161,6 @@ class TestPurchaseRequestAdvancePayment(TransactionCase):
         self.assertEqual(ap.loan_reason, pr.title)
         self.assertEqual(ap.reference, "purchase.request,%s" % pr.id)
 
-    def test_ap_analytic_distribution_from_pr(self):
-        """AP inherits analytic_distribution from PR header."""
-        pr = self._make_pr()
-        pr.action_create_advance_payment()
-        ap = pr.advance_payment_id
-        self.assertEqual(ap.analytic_distribution, self.analytic_distribution)
-
     def test_pr_message_posted_on_create(self):
         """PR chatter gets a message when AP is created."""
         pr = self._make_pr()

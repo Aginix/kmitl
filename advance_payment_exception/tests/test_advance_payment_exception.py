@@ -11,16 +11,6 @@ class TestAdvancePaymentException(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        # The dimension rule (advance_payment_budget) needs master data these
-        # tests do not set up — same lookup as advance_payment's own suite.
-        cls.env["exception.rule"].search(
-            [
-                ("model", "=", "advance.payment"),
-                "|",
-                ("code", "ilike", "analytic_id"),
-                ("domain", "ilike", "department_id"),
-            ]
-        ).active = False
         cls.manager = cls.env.ref("base.user_admin")
         Users = cls.env["res.users"]
         cls.officer = Users.create(
