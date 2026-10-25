@@ -109,7 +109,6 @@ class AdvancePayment(models.Model):
             vals.update(
                 {
                     "employee_id": pr.requested_by.employee_id.id,
-                    "user_id": self.env.uid,
                     "loan_amount": pr.get_estimated_cost_currency(),
                     "loan_reason": plaintext2html(pr.description or ""),
                 }

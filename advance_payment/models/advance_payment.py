@@ -981,6 +981,18 @@ class AdvancePayment(models.Model):
         return result
 
     def write(self, vals):
+        if "user_id" in vals and not (
+            self.env.su
+            or self.env.user.has_group("advance_payment.group_advance_payment_manager")
+            or self.env.user.has_group("base.group_system")
+        ):
+            # The drafter (ผู้จัดทำ) is corrected by a manager/admin only
+            # (ADR-0014); the form's can_edit_drafter gate alone left it
+            # writable over RPC/import. Rewriting the same value is harmless.
+            if self.filtered(lambda r: r.user_id.id != vals["user_id"]):
+                raise UserError(
+                    _("Only an advance-payment manager can change the drafter.")
+                )
         protected = self._PROTECTED_FIELDS & set(vals)
         if protected:
             is_admin = self.env.user.has_group("base.group_system")
@@ -1514,7 +1526,12 @@ class AdvancePayment(models.Model):
         )
 
     def action_reset_to_draft(self):
-        """Finance officer resets a request under verification to draft (ADR-0001)."""
+        """Finance officer resets a request under verification to draft (ADR-0001).
+
+        Same authority as verify: the named officer or an admin (ADR-0013) —
+        not any loan-officer-group member, and not just whoever can reach the
+        method over RPC."""
+        self._check_verify_permission()
         for rec in self:
             if rec.state != "to_verify":
                 raise UserError(
@@ -1802,6 +1819,7 @@ class AdvancePayment(models.Model):
 
     def action_reject(self):
         self.ensure_one()
+        self._check_verify_permission()
         self._action_do_reject()
 
     # ------------------------------------------------------------------ #

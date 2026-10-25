@@ -1049,6 +1049,20 @@ class TestAdvancePayment(TransactionCase):
         with self.assertRaises(UserError):
             ap.with_user(self.user).action_recall()
 
+    def test_other_officer_cannot_send_back(self):
+        """ส่งกลับแก้ไข carries the same authority as verify: the named officer
+        or an admin, not any loan-officer-group member (ADR-0013)."""
+        ap = self._make()
+        ap.action_submit()
+        ap.action_endorse()
+        with self.assertRaises(UserError):
+            ap.with_user(self.officer2).action_reset_to_draft()
+        with self.assertRaises(UserError):
+            ap.with_user(self.officer2).action_reject()
+        self.assertEqual(ap.state, "to_verify")
+        ap.with_user(self.manager).action_reset_to_draft()
+        self.assertEqual(ap.state, "draft")
+
     def test_officer_reset_to_draft(self):
         ap = self._make()
         ap.action_submit()
@@ -1422,6 +1436,17 @@ class TestAdvancePayment(TransactionCase):
     # ------------------------------------------------------------------ #
     # can_edit_drafter (ADR-0014)                                          #
     # ------------------------------------------------------------------ #
+
+    def test_drafter_change_requires_manager_server_side(self):
+        """The form gate (can_edit_drafter) is backed by write(): a `user`-tier
+        staffer cannot re-point ผู้จัดทำ over RPC, a manager can, and
+        rewriting the same value is not a change (ADR-0014)."""
+        ap = self._make(requested_by=self.user2, as_user=self.staff)
+        with self.assertRaises(UserError):
+            ap.with_user(self.staff).write({"user_id": self.user2.id})
+        ap.with_user(self.staff).write({"user_id": self.staff.id})
+        ap.with_user(self.manager).write({"user_id": self.user2.id})
+        self.assertEqual(ap.user_id, self.user2)
 
     def test_can_edit_drafter_manager_only(self):
         # can_edit_drafter has no field dependency — invalidate between
