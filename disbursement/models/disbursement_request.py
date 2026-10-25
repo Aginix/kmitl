@@ -894,6 +894,13 @@ class DisbursementRequest(models.Model):
                 )
             if record.state == "in_progress":
                 record._disbursement_check_send_back()
+            if record.settlement_stage != "none":
+                raise UserError(
+                    _(
+                        "The money of this request has started (a bill is "
+                        "posted): it can no longer be reset or sent back."
+                    )
+                )
             record.state = "draft"
             # Signed again on the next round.
             if not record._keep_sign_date_on_draft():

@@ -67,7 +67,7 @@
         </field>
     </record>
 
-    <!-- The accountant's queue: in the circuit and not billed yet. -->
+    <!-- The accountant's queue: in the circuit or finished, and not billed yet. -->
     <record id="view_disbursement_request_search_inherit_accounting" model="ir.ui.view">
         <field name="name">disbursement.request.search.inherit.accounting_kmitl</field>
         <field name="model">disbursement.request</field>
@@ -76,7 +76,7 @@
             <xpath expr="//filter[@name='in_progress']" position="after">
                 <filter name="awaiting_bill"
                         string="Awaiting Billing"
-                        domain="[('state', 'in', ('signed', 'in_progress')), ('settlement_stage', '=', 'none'), ('bill_ids', '=', False)]"/>
+                        domain="[('state', 'in', ('signed', 'in_progress', 'done')), ('settlement_stage', '=', 'none')]"/>
             </xpath>
         </field>
     </record>

@@ -87,6 +87,13 @@ msgid "Disbursement Requests"
 msgstr "ใบขอเบิก"
 
 #. module: disbursement_budget
+#. odoo-python
+#: code:addons/disbursement_budget/models/disbursement_request_line.py:0
+#, python-format
+msgid "The budget of this request is already consumed for its amount: its lines can no longer be added, removed or re-priced. Cancel the request to release the budget."
+msgstr "งบประมาณของใบขอเบิกนี้ถูกตัดตามยอดแล้ว จึงเพิ่ม ลบ หรือแก้ราคารายการไม่ได้อีก ยกเลิกใบขอเบิกเพื่อคืนงบประมาณ"
+
+#. module: disbursement_budget
 #: model:ir.model.fields,help:disbursement_budget.field_disbursement_request__consumes_budget
 msgid "Untick for money that does not draw on the budget, such as third party deposits (เงินรับฝากบุคคลที่สาม) or guarantees (เงินประกัน): the consume budget act is then not applicable."
 msgstr "ไม่ติ๊กสำหรับเงินที่ไม่ได้ใช้งบประมาณ เช่น เงินรับฝากบุคคลที่สาม หรือเงินประกัน การกระทำตัดงบประมาณจะไม่เกี่ยวข้องกับใบขอเบิกนี้"

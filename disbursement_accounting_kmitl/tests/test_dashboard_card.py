@@ -23,9 +23,8 @@ class TestDisbursementDashboardCard(TransactionCase):
         self.assertEqual(
             card["domain"],
             [
-                ("state", "in", ("signed", "in_progress")),
+                ("state", "in", ("signed", "in_progress", "done")),
                 ("settlement_stage", "=", "none"),
-                ("bill_ids", "=", False),
             ],
         )
         self.assertNotIn("amount", card)  # count-only card

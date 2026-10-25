@@ -112,6 +112,8 @@ class TestCashMovement(TransactionCase):
                 ],
             }
         )
+        # The acts only run on a request in the circuit.
+        request.state = "signed"
         bill = self.env["account.move"].create(
             {
                 "move_type": "in_invoice",

@@ -146,6 +146,14 @@ class DisbursementRequest(models.Model):
             self.with_context(active_test=False).search([]),
         )
 
+    def _bills_all_posted(self):
+        """The request has bills and every live one is posted: a payee whose bill
+        is still to come must not be left behind by an audit or a voucher batch,
+        and ``all([])`` is true, so the emptiness is guarded explicitly."""
+        self.ensure_one()
+        active = self.bill_ids.filtered(lambda b: b.state != "cancel")
+        return bool(active) and all(b.state == "posted" for b in active)
+
     def _vouchers_all_paid(self):
         """Every payee of the request has a live voucher, and every live voucher
         is paid (the money left, whether or not the books have it yet).
@@ -218,9 +226,7 @@ class DisbursementRequest(models.Model):
     def _compute_payment_acts(self):
         for rec in self:
             audit = rec._disbursement_act_offered("disbursement.audit_payment")
-            rec.can_audit_payment = audit and any(
-                bill.state == "posted" for bill in rec.bill_ids
-            )
+            rec.can_audit_payment = audit and rec._bills_all_posted()
             rec.can_authorize_payment = rec._disbursement_act_offered(
                 "disbursement.authorize_payment"
             )
@@ -438,7 +444,7 @@ class DisbursementRequest(models.Model):
         are posted."""
         for record in self:
             record._disbursement_check_act("disbursement.audit_payment")
-            if not any(bill.state == "posted" for bill in record.bill_ids):
+            if not record._bills_all_posted():
                 raise UserError(_("Post the bills first."))
             record._ensure_payment_lines()
             record._check_payment_classification()
@@ -767,6 +773,8 @@ class DisbursementRequest(models.Model):
         why the chatter can name them.
         """
         self.ensure_one()
+        if not self._bills_all_posted():
+            raise UserError(_("Post the bills first."))
         existing_payments = self.payment_ids.filtered(lambda p: p.state != "cancel")
         if existing_payments:
             raise UserError(

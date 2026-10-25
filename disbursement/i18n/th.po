@@ -792,6 +792,13 @@ msgstr "ภาษีมูลค่าเพิ่ม"
 #. odoo-python
 #: code:addons/disbursement/models/disbursement_request.py:0
 #, python-format
+msgid "The money of this request has started (a bill is posted): it can no longer be reset or sent back."
+msgstr "การเงินของใบขอเบิกนี้เริ่มแล้ว (มีบิลที่โพสต์แล้ว) จึงรีเซ็ตหรือส่งคืนไม่ได้อีก"
+
+#. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_request.py:0
+#, python-format
 msgid "These payees are not of type %(type)s and must be changed before submitting: %(names)s"
 msgstr "ผู้รับเงินต่อไปนี้ไม่ใช่ประเภท %(type)s ต้องเปลี่ยนก่อนส่งขออนุมัติ: %(names)s"
 
