@@ -21,10 +21,9 @@
              the budget fields this view adds. -->
         <field name="priority">10</field>
         <field name="arch" type="xml">
-            <button name="action_approve" position="attributes">
-                <attribute name="confirm">Are you sure you want to approve? This will obligate and consume the budget.</attribute>
-            </button>
             <button name="action_draft" position="before">
+                <button name="action_consume_budget" string="Consume Budget" type="object" class="oe_highlight" confirm="Are you sure you want to consume the budget of this request?" attrs="{'invisible': [('can_consume_budget', '=', False)]}" groups="disbursement.group_disbursement_rector_delegate" />
+                <field name="can_consume_budget" invisible="1"/>
                 <button name="action_return_leftover_budget" string="ส่งคืนเงินเหลือจ่าย" type="object" attrs="{'invisible': ['|', ('budget_consumed_amount', '&lt;=', 0), ('budget_available_to_obligate', '&lt;=', 0)]}" groups="disbursement.group_disbursement_manager" />
                 <field name="budget_available_to_obligate" invisible="1"/>
             </button>
@@ -38,24 +37,26 @@
                 </div>
             </header>
             <field name="account_fiscal_year_id" position="after">
-                <field name="budget_commitment_id" />
+                <field name="budget_commitment_id" attrs="{'readonly': [('can_edit_budget', '=', False)]}" />
+                <field name="consumes_budget" attrs="{'readonly': [('can_edit_budget', '=', False)]}" />
             </field>
-            <!-- The linked commitment carries the dimensions: lock them once set. -->
+            <!-- The linked commitment carries the dimensions: a request that has
+                 one locks them (can_edit_dimensions says so). -->
             <field name="source_analytic_id" position="attributes">
-                <attribute name="attrs">{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '!=', 'draft')]}</attribute>
+                <attribute name="attrs">{'readonly': [('can_edit_dimensions', '=', False)]}</attribute>
             </field>
             <field name="department_analytic_id" position="attributes">
-                <attribute name="attrs">{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '!=', 'draft')]}</attribute>
+                <attribute name="attrs">{'readonly': [('can_edit_dimensions', '=', False)]}</attribute>
             </field>
             <field name="fund_analytic_id" position="attributes">
-                <attribute name="attrs">{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '!=', 'draft')]}</attribute>
+                <attribute name="attrs">{'readonly': [('can_edit_dimensions', '=', False)]}</attribute>
             </field>
             <field name="activity_analytic_id" position="attributes">
-                <attribute name="attrs">{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '!=', 'draft')]}</attribute>
+                <attribute name="attrs">{'readonly': [('can_edit_dimensions', '=', False)]}</attribute>
             </field>
             <field name="activity_analytic_id" position="after">
                 <!-- force_save: filled by the commitment onchange while readonly. -->
-                <field name="budget_account_id" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '!=', 'draft')]}" required="1" force_save="1" />
+                <field name="budget_account_id" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': ['|', ('can_edit_budget', '=', False), ('budget_commitment_id', '!=', False)]}" required="1" force_save="1" />
                 <!-- Loaded (hidden) so the line list can hide the
                      account column via parent. -->
                 <field name="is_line_account_locked" invisible="1" />

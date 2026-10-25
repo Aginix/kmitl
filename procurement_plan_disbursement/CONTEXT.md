@@ -17,7 +17,7 @@ _Avoid_: assignment, allocation
 
 **Actual disbursed (เบิกจ่ายจริง)**:
 The budget a งวด has really consumed = the linked DR's consumed amount, counted
-only once that DR is **approved** (its Rector approval obligated and consumed
-the plan's reservation). A linked-but-unapproved DR is *กำลังดำเนินการ* and
+only once the budget act has consumed it (the plan's reservation is drawn down
+then). A linked DR whose budget is not consumed yet is *กำลังดำเนินการ* and
 counts as zero.
 _Avoid_: paid, spent, planned amount (that is the งวด's own `amount`)

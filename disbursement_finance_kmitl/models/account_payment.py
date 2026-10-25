@@ -61,7 +61,16 @@ class AccountPayment(models.Model):
         own press, and from the request itself, and none of those should have to
         remember to tell the request.
         """
+        # A cheque that bounces writes ``confirmed`` back: the request's stage
+        # walks back, and whoever last held it is told.
+        requests = (
+            self.disbursement_request_id
+            if "finance_state" in vals
+            else self.env["disbursement.request"]
+        )
+        before = requests._settlement_snapshot()
         res = super().write(vals)
+        requests._settlement_check(before)
         if vals.get("finance_state") == "paid":
             self._try_hand_over_requests(self.disbursement_request_id)
         return res
@@ -74,14 +83,18 @@ class AccountPayment(models.Model):
         ``move_id.button_cancel()``, so nothing is ever written to this model.
         """
         requests = self.disbursement_request_id
+        before = requests._settlement_snapshot()
         res = super().action_cancel()
+        requests._settlement_check(before)
         self._try_hand_over_requests(requests)
         return res
 
     def unlink(self):
         """A voucher removed is one fewer thing its request is waiting for."""
         requests = self.disbursement_request_id
+        before = requests._settlement_snapshot()
         res = super().unlink()
+        requests._settlement_check(before)
         self._try_hand_over_requests(requests)
         return res
 
@@ -108,8 +121,7 @@ class AccountPayment(models.Model):
         nothing else in the system records money crossing a counter, so it is
         confirmed on itself — and the request crosses when it and its siblings are
         all paid (ADR-0007). Before this distinction existed, such a payee had no
-        reachable press at all and its request sat at ``payment_authorized``
-        forever.
+        reachable press at all and its request never crossed to the books.
 
         A cheque used to be in that sentence too, and is not any more: it now has a
         record of its own, and handing that cheque over is its press. The refusal

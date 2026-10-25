@@ -8,16 +8,6 @@ class ApprovalRequest(models.Model):
     _inherit = ["approval.request", "disbursement.return.source.mixin"]
     _disbursement_return_state = "billed"
 
-    # A DR is "billed" once its budget has been committed at ``approved`` and
-    # stays billed through every downstream state a finance/accounting bridge
-    # may add (bills_posted, payment_*, paid, cleared) — those states are not
-    # owned by this module and must never be enumerated here. Excluding the
-    # states that precede budget commitment, plus ``cancel``, is the only
-    # comparison that stays correct regardless of which bridges are installed.
-    _DISBURSEMENT_NOT_BILLED_STATES = (
-        "draft", "submitted", "signed", "verified", "cancel",
-    )
-
     # -- return-correction editability (D3) --------------------------------
     def _compute_is_correction(self):
         """A returned request that already has a disbursement is a DR-return:
@@ -125,12 +115,30 @@ class ApprovalRequest(models.Model):
                 record.disbursement_request_ids
             )
 
-    @api.depends("disbursement_request_ids", "disbursement_request_ids.state")
+    def init(self):
+        super().init()
+        # The rule behind the stored billing_status changed: recompute every
+        # row, because rewriting a compute does not refresh the stored values.
+        self.env.add_to_compute(
+            self._fields["billing_status"],
+            self.with_context(active_test=False).search([]),
+        )
+
+    @api.depends(
+        "disbursement_request_ids",
+        "disbursement_request_ids.state",
+        "disbursement_request_ids.budget_consumed_amount",
+        "disbursement_request_ids.settlement_stage",
+    )
     def _compute_billing_status(self):
+        """A DR counts as billed once its budget is consumed or its money has
+        started (a bill exists), unless it is cancelled. Both are facts that
+        outlive whatever states the request goes through."""
         for record in self:
             disbursements = record.disbursement_request_ids
             billed = disbursements.filtered(
-                lambda d: d.state not in self._DISBURSEMENT_NOT_BILLED_STATES
+                lambda d: d.state != "cancel"
+                and (d.budget_consumed_amount or d.settlement_stage != "none")
             )
             if not disbursements or not billed:
                 record.billing_status = "no"

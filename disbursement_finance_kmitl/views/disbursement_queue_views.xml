@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 
-    <!-- The three round-2 worklists are the same list of ใบขอเบิก stopped at three
-         different states, so they share one tree and differ only in the domain of
-         the action that opens them. Each stage's batch press sits in the tree's
-         header, where core puts a press that acts on the ticked rows.
+    <!-- The three payment-execution lists are the same list of ใบขอเบิก seen by
+         three facts (has payment lines, has no vouchers yet, is settled), so they
+         share one tree and differ only in the domain of the action that opens
+         them. The domains are about what exists, never about who touched the
+         request before: where a request sits, and who is to act next, is the
+         station's business (the station card is the desk's worklist). Each act's
+         batch press sits in the tree's header, where core puts a press that acts
+         on the ticked rows.
 
          This replaced an OWL screen. What a list gives back is everything the
          office already knows how to do — search, group, pivot, export, optional
@@ -16,15 +20,14 @@
         <!-- ir.ui.view is ordered by (priority, name) and default_view() takes the
              first primary view: at equal priority this name would sort before
              "disbursement.request.tree" and silently become the default list of
-             every action that does not pin a view_id. Same guard as
-             disbursement.view_disbursement_request_approved_tree. -->
+             every action that does not pin a view_id. -->
         <field name="priority">99</field>
         <field name="arch" type="xml">
             <tree create="false" default_order="date desc, id desc">
-                <!-- One press per stage, each shown only to the office that takes
+                <!-- One press per act, each shown only to the office that takes
                      that step. They can share a header because the batch methods
-                     filter by state themselves (_payment_batch), so a press only
-                     ever acts on the rows that are at its own stage and reports
+                     filter by the act's flag themselves (_payment_batch), so a
+                     press only ever acts on the rows it is offered on and reports
                      the rest back row by row. -->
                 <header>
                     <button
@@ -69,11 +72,21 @@
                 <field name="payment_audit_date" optional="hide" />
                 <field name="payment_status_display" optional="hide" />
                 <field
-                    name="display_status"
+                    name="state"
                     widget="badge"
-                    decoration-warning="display_status in ('bills_posted', 'payment_audited')"
-                    decoration-primary="display_status == 'payment_authorized'"
-                    decoration-success="display_status in ('paid', 'cleared')"
+                    decoration-info="state == 'draft'"
+                    decoration-warning="state in ('submitted', 'signed')"
+                    decoration-primary="state == 'in_progress'"
+                    decoration-success="state == 'done'"
+                    decoration-danger="state == 'cancel'"
+                />
+                <field
+                    name="settlement_stage"
+                    widget="badge"
+                    decoration-info="settlement_stage == 'none'"
+                    decoration-warning="settlement_stage == 'billed'"
+                    decoration-primary="settlement_stage == 'settled'"
+                    decoration-success="settlement_stage == 'booked'"
                 />
                 <!-- The single-record press, beside the row it acts on, for the
                      request that is looked at rather than swept up in a batch. -->
@@ -82,7 +95,7 @@
                     type="object"
                     string="Audit"
                     icon="fa-check"
-                    attrs="{'invisible': [('state', '!=', 'bills_posted')]}"
+                    attrs="{'invisible': [('can_audit_payment', '=', False)]}"
                     groups="disbursement_finance_kmitl.group_disbursement_payment_auditor"
                 />
                 <button
@@ -91,17 +104,18 @@
                     string="Authorize"
                     icon="fa-check-circle"
                     confirm="Authorize this disbursement? The payment vouchers will be raised and numbered for every payee at once, ready to go to the bank."
-                    attrs="{'invisible': [('state', '!=', 'payment_audited')]}"
+                    attrs="{'invisible': [('can_authorize_payment', '=', False)]}"
                     groups="disbursement_finance_kmitl.group_disbursement_payment_authorizer"
                 />
-                <field name="state" invisible="1" />
+                <field name="can_audit_payment" invisible="1" />
+                <field name="can_authorize_payment" invisible="1" />
                 <field name="currency_id" invisible="1" />
             </tree>
         </field>
     </record>
 
     <record id="action_dr_audit_queue" model="ir.actions.act_window">
-        <field name="name">Audit Disbursements</field>
+        <field name="name">Requests with Payment Lines</field>
         <field name="res_model">disbursement.request</field>
         <field name="view_mode">tree,form</field>
         <field name="view_id" ref="view_disbursement_request_queue_tree" />
@@ -109,21 +123,21 @@
             name="search_view_id"
             ref="disbursement.view_disbursement_request_search"
         />
-        <field name="domain">[('state', '=', 'bills_posted')]</field>
+        <field name="domain">[('state', 'in', ('signed', 'in_progress', 'done')), ('payment_line_ids', '!=', False)]</field>
         <field name="context">{'create': False}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-                No disbursement request is waiting to be audited.
+                No disbursement request has payment lines yet.
             </p>
             <p>
-                A request arrives here once the accounting office has billed it,
-                waiting for its payment subject and the audit.
+                A request has payment lines once the accounting office has posted
+                its bills: the payment subject and the audit are done on them.
             </p>
         </field>
     </record>
 
     <record id="action_dr_authorize_queue" model="ir.actions.act_window">
-        <field name="name">Authorize Disbursements</field>
+        <field name="name">Requests without Vouchers</field>
         <field name="res_model">disbursement.request</field>
         <field name="view_mode">tree,form</field>
         <field name="view_id" ref="view_disbursement_request_queue_tree" />
@@ -131,15 +145,15 @@
             name="search_view_id"
             ref="disbursement.view_disbursement_request_search"
         />
-        <field name="domain">[('state', '=', 'payment_audited')]</field>
+        <field name="domain">[('state', 'in', ('signed', 'in_progress')), ('payment_line_ids', '!=', False), ('payment_ids', '=', False)]</field>
         <field name="context">{'create': False}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-                No disbursement request is waiting to be authorized.
+                Every request with payment lines already has its vouchers.
             </p>
             <p>
-                Requests that have passed the audit, waiting for the authorization
-                that raises the payment vouchers.
+                Requests with payment lines and no voucher yet: the authorization
+                is what raises the payment vouchers.
             </p>
         </field>
     </record>
@@ -158,7 +172,7 @@
             name="search_view_id"
             ref="disbursement.view_disbursement_request_search"
         />
-        <field name="domain">[('state', '=', 'paid')]</field>
+        <field name="domain">[('settlement_stage', '=', 'settled')]</field>
         <field name="context">{'create': False}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
@@ -180,12 +194,12 @@
         groups="accounting_kmitl.group_accounting_kmitl_user"
     />
 
-    <!-- Round 2 is the treasury office's, so both its screens live in the Finance
-         app. The audit is a clerk's step in the paying run, so it sits with the
-         rest of that run under Payment Out; the authorisation is an approver's,
-         so it gets its own heading. Round 1 (ผอ.กองคลัง then the rector's
-         delegate) approves the *request* and stays in the Disbursement app —
-         see finance_kmitl/docs/adr/0005. -->
+    <!-- The payment execution is the treasury office's, so both its screens
+         live in the Finance app. The audit is a clerk's step in the paying run,
+         so it sits with the rest of that run under Payment Out; the
+         authorisation is an approver's, so it gets its own heading. The
+         approval of the *request* (ผอ.กองคลัง, the rector's delegate) stays in
+         the Disbursement app — see finance_kmitl/docs/adr/0005. -->
 
     <!-- Neither round-2 group implies a finance-office group: an auditor holds no
          rights on a payment voucher and an authorizer holds none on the books, and
@@ -210,7 +224,7 @@
 
     <menuitem
         id="menu_dr_audit_queue"
-        name="Audit Disbursements"
+        name="Requests with Payment Lines"
         parent="finance_kmitl.menu_finance_payment_out"
         action="action_dr_audit_queue"
         sequence="20"
@@ -227,7 +241,7 @@
 
     <menuitem
         id="menu_dr_authorize_queue"
-        name="Authorize Disbursements"
+        name="Requests without Vouchers"
         parent="menu_finance_approver"
         action="action_dr_authorize_queue"
         sequence="10"

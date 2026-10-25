@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <!-- ตั้งเบิกตรง (disbursement ADR-0005): a reservation is optional; without
-         one the claim is consumed directly from the pool on the final
-         approval. Blocking, checked on submit; the posting re-checks
+         one the claim is consumed directly from the pool by the consume-budget
+         act. Blocking, checked on submit; the posting re-checks
          availability. -->
     <record id="excep_disbursement_direct_claim_budget_account" model="exception.rule">
         <field name="name">ใบขอเบิกตั้งเบิกตรงยังไม่ระบุรหัสงบประมาณ</field>

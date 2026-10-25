@@ -1,5 +1,9 @@
 # The paying account lives on a payee-level payment line
 
+> **Superseded in part (station model).** The payment lines are made when the last
+> bill posts (`_on_bills_posted`), not when the request "reaches `bills_posted`", and their
+> banking coordinates are editable exactly until the voucher exists.
+
 A disbursement request pays a name list, and its payees genuinely are paid different
 ways out of different accounts — so the paying account (หัวจ่าย) has to be recorded per
 payee. It is stored on `disbursement.payment.line`, one row per payee per request, 1:1

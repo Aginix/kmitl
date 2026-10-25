@@ -23,8 +23,8 @@ class AdvancePaymentUsageLine(models.Model):
     )
 
     disbursement_state = fields.Selection(
-        related="disbursement_request_id.pipeline_status",
-        string="Disbursement State",
+        related="disbursement_request_id.settlement_stage",
+        string="Disbursement Settlement Stage",
     )
 
     @api.depends("disbursement_request_id", "disbursement_request_id.name")
