@@ -4,13 +4,14 @@
     "name": "Disbursement Assignment KMITL",
     "version": "16.0.1.0.1",
     "category": "Disbursement",
-    "summary": "Auto-assign a responsible verification officer to disbursement "
-    "requests by rules",
+    "summary": "Auto-assign a responsible officer to disbursement requests at "
+    "each station by rules",
     "author": "KMITL",
     "website": "https://www.kmitl.ac.th",
     "license": "LGPL-3",
     "depends": [
         "disbursement",
+        "disbursement_wc",
     ],
     "data": [
         "security/security.xml",

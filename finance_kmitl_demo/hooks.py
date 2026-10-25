@@ -4,13 +4,16 @@ Three demo stories run in order from ``seed``:
 
 * the disbursement flow (``PR -> PA -> PO -> Work Acceptance -> DR``), moved here
   from ``kmitl_demo``;
-* vendor bills created and posted from those DRs, leaving every request at
-  ``bills_posted``;
+* vendor bills created and posted from those DRs, leaving every request billed
+  (ขั้นการชำระ ``billed``) at สถานีตรวจจ่าย;
 * fixed assets with posted depreciation.
 
-The demo deliberately stops at ``bills_posted``: the payment tail (audit ->
-authorize -> pay) is left untouched so the finance queue can be exercised by
-hand in the UI, and no ``account.payment`` is created here.
+The disbursement requests are driven through the stations of
+``disbursement_wc``: the demo seats the six seeded stations with the acts they
+allow, signs each request, does the act of each station and forwards it. It
+deliberately stops at สถานีตรวจจ่าย: the payment tail (audit -> authorize ->
+pay) is left untouched so the finance queue can be exercised by hand in the UI,
+and no ``account.payment`` is created here.
 
 The disbursement flow reuses two helpers from ``kmitl_demo`` (the purchase
 end-to-end flow uses them too) instead of duplicating them.
@@ -41,6 +44,7 @@ def seed(env, disbursement=True, assets=True):
     installation share one code path. Each story is independent.
     """
     if disbursement:
+        _setup_stations(env)
         drs = _create_disbursement_flow_demo(
             env,
             admin=env.ref("base.user_admin"),
@@ -497,17 +501,85 @@ def _create_disbursement_flow_demo(
     return drs
 
 
-# === Step B: vendor bills ===
+# === Step B: stations and vendor bills ===
 #
-# Continue every disbursement request into a posted vendor bill (ตั้งหนี้), which
-# leaves it at ``bills_posted``. The payment tail (audit -> authorize -> pay) is
-# deliberately not run so the finance payment queue can be demoed by hand.
+# Drive every disbursement request through the stations (check, Finance
+# Director, Rector delegate) to a posted vendor bill (ตั้งหนี้) and forward it to
+# สถานีตรวจจ่าย, leaving it billed. The payment tail (audit -> authorize -> pay)
+# is deliberately not run so the finance payment queue can be demoed by hand.
+
+# The acts each seeded station allows (every allowed act is also required),
+# the same table as the pilot setup snippet. Acts of modules that are not
+# installed are skipped.
+EDIT_PARTS = [
+    "disbursement.edit_" + part
+    for part in ("header", "lines", "attachments", "dimensions", "budget")
+]
+STATION_ACTS = {
+    "check": ["disbursement.validate"] + EDIT_PARTS,
+    "director": ["disbursement.approve_director"],
+    "rector": ["disbursement.approve_rector", "disbursement.consume_budget"],
+    "bill": ["disbursement.create_bill"],
+    "audit": ["disbursement.audit_payment"],
+    "authorize": ["disbursement.authorize_payment"],
+}
+# The method behind each act, called in the order the stations are visited.
+ACT_METHODS = {
+    "disbursement.validate": "action_validate",
+    "disbursement.approve_director": "action_approve_finance",
+    "disbursement.approve_rector": "action_approve",
+    "disbursement.consume_budget": "action_consume_budget",
+}
 
 WHT_DR_INDEX = 7  # one case carries withholding tax
 
 
+def _setup_stations(env):
+    """Seat the seeded stations: the acts each allows, and the demo admin as
+    its member (the only demo user holding the roles)."""
+    Act = env["work.center.act"]
+    Act._reflect_acts()
+    acts = {act.code: act for act in Act.search([])}
+    admin = env.ref("base.user_admin")
+    for key, codes in STATION_ACTS.items():
+        codes = [code for code in codes if code in acts]
+        kinds = {code: acts[code].kind for code in codes}
+        env.ref("disbursement_wc.station_" + key).write(
+            {
+                "allowed_act_ids": [
+                    Command.set([acts[c].id for c in codes if kinds[c] == "act"])
+                ],
+                "required_act_ids": [
+                    Command.set([acts[c].id for c in codes if kinds[c] == "act"])
+                ],
+                "allowed_edit_ids": [
+                    Command.set([acts[c].id for c in codes if kinds[c] == "edit"])
+                ],
+                "member_ids": [Command.set(admin.ids)],
+            }
+        )
+
+
+def _walk_to(dr, station_xmlid):
+    """Do the acts of the station the request is at and forward it, until it
+    sits at ``station_xmlid``. The station is read from the open visit, not from
+    the cached pointer."""
+    stations = {dr.env.ref("disbursement_wc.station_" + key): key for key in STATION_ACTS}
+    target = dr.env.ref("disbursement_wc." + station_xmlid)
+    while True:
+        station = dr._work_center_open_visit().work_center_id
+        if station == target:
+            return
+        if not station:
+            raise ValueError("%s left the circuit before %s" % (dr.name, station_xmlid))
+        for code in STATION_ACTS[stations[station]]:
+            if code in ACT_METHODS and code in dr._work_center_live_codes():
+                getattr(dr, ACT_METHODS[code])()
+        dr._work_center_forward()
+
+
 def _create_bill_demo(env, drs):
-    """Drive every disbursement request through approval to a posted bill.
+    """Drive every disbursement request through the stations to a posted bill.
 
     Each DR is advanced inside its own try/except so a failure on one never
     aborts the whole install.
@@ -532,11 +604,11 @@ def _create_bill_demo(env, drs):
                 _bill_dr(dr, wht_tax if index == WHT_DR_INDEX else None)
         except Exception as error:  # noqa: BLE001 - demo must never abort install
             _logger.warning(
-                "finance_kmitl_demo: DR %s stopped before 'bills_posted' (%s)",
+                "finance_kmitl_demo: DR %s stopped before it was billed (%s)",
                 dr.name,
                 error,
             )
-    _logger.info("Vendor-bill demo created (requests left at 'bills_posted').")
+    _logger.info("Vendor-bill demo created (requests left at สถานีตรวจจ่าย, billed).")
 
 
 def _dr_commitment(dr):
@@ -552,7 +624,7 @@ def _dr_commitment(dr):
 
 
 def _approve_dr(dr):
-    """Link the reserved commitment and drive the DR draft -> approved."""
+    """Link the reserved commitment, sign the DR and walk it to สถานีตั้งหนี้."""
     if dr.state != "draft":
         return
     commitment = _dr_commitment(dr)
@@ -564,20 +636,20 @@ def _approve_dr(dr):
             dr.analytic_distribution = commitment.analytic_distribution
     dr.ignore_exception = True
     dr.action_submit()
+    # Signing enters the first station; each station's acts are done there
+    # (the budget is consumed by its own act at the Rector delegate's station).
     dr.action_sign()
-    dr.action_validate()
-    # Two approvers sign off before the budget is committed: the Finance
-    # Division Director first, then the Rector-delegated approver.
-    dr.action_approve_finance()
-    dr.action_approve()
+    _walk_to(dr, "station_bill")
 
 
 def _bill_dr(dr, wht_tax=None):
-    """Create and post the vendor bill, optionally tagging a WHT tax."""
+    """Create and post the vendor bill, optionally tagging a WHT tax, and
+    forward the request to สถานีตรวจจ่าย."""
     if wht_tax and dr.line_ids:
         dr.line_ids[:1].wht_tax_id = wht_tax.id
     dr.action_create_bill()
     dr.action_post_bills()
+    dr._work_center_forward()
 
 
 # === Step C: fixed assets and depreciation ===

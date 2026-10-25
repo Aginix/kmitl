@@ -97,7 +97,12 @@ class WorkCenterAct(models.Model):
         for model_name, model in self.env.items():
             if model._abstract or not issubclass(type(model), mixin):
                 continue
-            declared += [(model_name, decl) for decl in model._work_center_acts()]
+            try:
+                declared += [(model_name, decl) for decl in model._work_center_acts()]
+            except Exception:  # pylint: disable=broad-except
+                _logger.warning(
+                    "Could not read the acts declared by %s", model_name, exc_info=True
+                )
         return declared
 
     @api.model
@@ -109,7 +114,10 @@ class WorkCenterAct(models.Model):
         languages = [code for code, _name in self.env["res.lang"].get_installed()]
         seen = set()
         for model_name, decl in self._declared_acts():
-            code = decl["code"]
+            code = decl.get("code")
+            if not code:
+                _logger.warning("An act of %s has no code; skipped", model_name)
+                continue
             seen.add(code)
             try:
                 with self.env.cr.savepoint():

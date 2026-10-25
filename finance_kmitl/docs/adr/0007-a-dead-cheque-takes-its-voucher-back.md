@@ -1,5 +1,9 @@
 # A dead cheque takes its voucher back
 
+> **Superseded in part (station model).** A disbursement request that stays "`paid`" after a cheque
+> dies is now a request whose settlement stage walks back from `settled` to `billed` with
+> the voucher (`disbursement_finance_kmitl`).
+
 A cheque that dies after it was handed over is cancelled, and cancelling it writes its
 voucher's `finance_state` back from `paid` to `confirmed`. A replacement cheque is then
 written **on the same voucher**. This is the first and only way backwards in the payment

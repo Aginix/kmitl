@@ -180,12 +180,12 @@ class WorkCenterMixin(models.AbstractModel):
         rules = Rule._candidate_rules(self._name).filtered(
             lambda rule: rule.work_center_id in candidates
         )
-        return Rule._match(self, rules)
+        return Rule._match(self.sudo(), rules)
 
     def _work_center_next_line(self):
         """The route line after the last on-route station the document visited
-        (by visit id), or ``None`` after the last line. A document that has not
-        visited the route yet is due at line 1."""
+        in this round (by visit id), or ``None`` after the last line. A document
+        that has not visited the route yet is due at line 1."""
         self.ensure_one()
         lines = self._work_center_route().line_ids
         visits = self.env["work.center.visit"].sudo().search(
@@ -196,6 +196,8 @@ class WorkCenterMixin(models.AbstractModel):
             for index, line in enumerate(lines):
                 if visit.work_center_id in line.work_center_ids:
                     return lines[index + 1] if index + 1 < len(lines) else None
+            if visit.arrival_act in ("enter", "resubmit"):
+                break  # the visits before belong to an earlier round
         return lines[:1] or None
 
     def _work_center_unassigned_card(self):
@@ -230,7 +232,7 @@ class WorkCenterMixin(models.AbstractModel):
         """The act the holding station lists for ``code``. Only the pilot
         snippet sets ``work_center_act_anywhere`` to look past the station, to
         place a legacy document."""
-        if self.env.context.get("work_center_act_anywhere"):
+        if self.env.su and self.env.context.get("work_center_act_anywhere"):
             return (
                 self.env["work.center.act"]
                 .sudo()
@@ -612,7 +614,7 @@ class WorkCenterMixin(models.AbstractModel):
         if not reason:
             raise UserError(_("Give a reason to send the document back."))
         self._work_center_leave("send_back", reason, expected_station)
-        self._work_center_on_send_back(reason)
+        self.sudo()._work_center_on_send_back(reason)
 
     # ------------------------------------------------------------------
     # Buttons
@@ -670,9 +672,15 @@ class WorkCenterMixin(models.AbstractModel):
     # ------------------------------------------------------------------
     # Only the engine moves a document
     # ------------------------------------------------------------------
+    def _work_center_engine_moving(self):
+        """The engine is writing the pointer. The context key alone is not
+        trusted: an RPC caller can send any context, and only the engine (which
+        writes as sudo) may move a document."""
+        return self.env.su and bool(self.env.context.get("work_center_moving"))
+
     @api.model_create_multi
     def create(self, vals_list):
-        if not self.env.context.get("work_center_moving") and any(
+        if not self._work_center_engine_moving() and any(
             vals.get("work_center_id") for vals in vals_list
         ):
             raise UserError(
@@ -681,7 +689,7 @@ class WorkCenterMixin(models.AbstractModel):
         return super().create(vals_list)
 
     def write(self, vals):
-        if "work_center_id" in vals and not self.env.context.get("work_center_moving"):
+        if "work_center_id" in vals and not self._work_center_engine_moving():
             target = vals["work_center_id"] or False
             if any((rec.work_center_id.id or False) != target for rec in self):
                 raise UserError(

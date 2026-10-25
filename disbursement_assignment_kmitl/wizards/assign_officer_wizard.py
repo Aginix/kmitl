@@ -1,7 +1,7 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 
 from odoo import _, api, fields, models
-from odoo.exceptions import AccessError
+from odoo.exceptions import UserError
 
 OFFICER_GROUP = "disbursement.group_disbursement_officer"
 
@@ -11,7 +11,7 @@ class DisbursementAssignOfficerWizard(models.TransientModel):
     # that name would make this an implicit cross-module inherit of a model we
     # do not depend on.
     _name = "disbursement.assign.officer.wizard"
-    _description = "Assign Disbursement Verification Officer"
+    _description = "Assign Responsible Officer"
 
     request_id = fields.Many2one(
         "disbursement.request",
@@ -32,10 +32,18 @@ class DisbursementAssignOfficerWizard(models.TransientModel):
 
     @api.depends("request_id")
     def _compute_allowed_user_ids(self):
+        """The people of the station holding the request."""
         group = self.env.ref(OFFICER_GROUP, raise_if_not_found=False)
-        users = group.users if group else self.env["res.users"]
+        officers = group.users if group else self.env["res.users"]
         for wiz in self:
-            wiz.allowed_user_ids = users
+            station = (
+                wiz.request_id._work_center_holding_station()
+                if wiz.request_id
+                else False
+            )
+            wiz.allowed_user_ids = (
+                station._responsible_users()[0] if station else officers
+            )
 
     @api.model
     def default_get(self, fields_list):
@@ -49,8 +57,12 @@ class DisbursementAssignOfficerWizard(models.TransientModel):
     def action_assign(self):
         self.ensure_one()
         request = self.request_id
-        if not request._assignment_is_manager():
-            raise AccessError(_("Only a manager can assign another officer."))
+        request._work_center_check_move()
+        if self.user_id not in self.allowed_user_ids:
+            raise UserError(
+                _("%s is not one of the people responsible at this station.")
+                % self.user_id.display_name
+            )
         old_officer = request.assigned_to
         request.assigned_to = self.user_id
         if old_officer and old_officer != self.user_id:

@@ -88,7 +88,7 @@ class TestCashMovement(TransactionCase):
         return {str(account.id): 100.0 for account in accounts}
 
     def _billed_line(self, source, price=1000.0):
-        """A payment line at ``bills_posted``, before any ``account.payment``
+        """A payment line of a billed request, before any ``account.payment``
         exists — the exact point the auditor is choosing a paying account,
         which is what the live preview has to work from."""
         distribution = self._distribution(source)
@@ -112,7 +112,8 @@ class TestCashMovement(TransactionCase):
                 ],
             }
         )
-        request.state = "approved"
+        # The acts only run on a request in the circuit.
+        request.state = "signed"
         bill = self.env["account.move"].create(
             {
                 "move_type": "in_invoice",

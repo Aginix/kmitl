@@ -1,0 +1,55 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* disbursement_approver_rector
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-24 17:00+0000\n"
+"PO-Revision-Date: 2026-10-24 17:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: disbursement_approver_rector
+#. odoo-python
+#: code:addons/disbursement_approver_rector/models/disbursement_request.py:0
+#: model_terms:ir.ui.view,arch_db:disbursement_approver_rector.view_disbursement_request_form
+#, python-format
+msgid "Approve (Rector Delegate)"
+msgstr "อนุมัติ (ผู้รับมอบอำนาจ)"
+
+#. module: disbursement_approver_rector
+#: model_terms:ir.ui.view,arch_db:disbursement_approver_rector.view_disbursement_request_form
+msgid "Are you sure you want to approve this request?"
+msgstr "ยืนยันการอนุมัติใบขอเบิกนี้?"
+
+#. module: disbursement_approver_rector
+#: model:ir.model.fields,field_description:disbursement_approver_rector.field_disbursement_request__can_approve_rector
+msgid "Can Approve Rector"
+msgstr "อนุมัติ (ผู้รับมอบอำนาจ) ได้"
+
+#. module: disbursement_approver_rector
+#: model:ir.model,name:disbursement_approver_rector.model_disbursement_request
+msgid "Disbursement Request"
+msgstr "ใบขอเบิก"
+
+#. module: disbursement_approver_rector
+#: model:ir.model.fields,field_description:disbursement_approver_rector.field_disbursement_request__rector_approve_date
+msgid "Rector Approved On"
+msgstr "ผู้รับมอบอำนาจอนุมัติเมื่อ"
+
+#. module: disbursement_approver_rector
+#: model:ir.model.fields,field_description:disbursement_approver_rector.field_disbursement_request__rector_approver_id
+msgid "Rector-delegated Approver"
+msgstr "ผู้ได้รับมอบอำนาจอธิการบดี"
+
+#. module: disbursement_approver_rector
+#: model_terms:ir.ui.view,arch_db:disbursement_approver_rector.view_disbursement_request_form
+msgid "Request Approved On"
+msgstr "วันที่อนุมัติใบขอเบิก"

@@ -45,14 +45,14 @@ class AccountMove(models.Model):
 
     def _post(self, soft=True):
         """Post a disbursement payment only after the bank result is confirmed,
-        then reconcile it against its bill (clearing) and advance the request.
+        then reconcile it against its bill (clearing).
 
         The accounting office posts the payment move through the same
         account.move maker-checker as the vendor bill (Approve = post). Because
         that path does not run ``account.payment.action_post`` (where the
         deferred reconcile normally lives), the reconciliation is triggered
-        here so that posting == clearing (ล้างหนี้), mirroring how the
-        accounting bridge advances the request to ``bills_posted``.
+        here so that posting == clearing (ล้างหนี้). The request's settlement
+        stage follows the vouchers by itself.
 
         Disbursement payments are matched by searching account.payment on the
         moves being posted (no dependency on an account.move.payment_id field).
@@ -64,12 +64,12 @@ class AccountMove(models.Model):
                 ("disbursement_request_id", "!=", False),
             ]
         )
-        # Guard: a voucher on a disbursement request may only post once the finance
-        # office has confirmed the whole request paid. That the voucher itself is
-        # paid is checked in finance_kmitl; this is the part only the request knows.
+        # Guard: a voucher on a disbursement request may only post once the whole
+        # request is paid. That the voucher itself is paid is checked in
+        # finance_kmitl; this is the part only the request knows.
         for payment in dr_payments:
             request = payment.disbursement_request_id
-            if request.state not in ("paid", "cleared"):
+            if request.settlement_stage not in ("settled", "booked"):
                 raise UserError(
                     _(
                         "Payment %(payment)s cannot be posted: the disbursement "
@@ -84,17 +84,28 @@ class AccountMove(models.Model):
         if dr_payments:
             # Deferred reconcile now runs on the move-posting path (clearing).
             dr_payments._reconcile_source_invoice_lines()
-            requests = dr_payments.disbursement_request_id.filtered(
-                lambda d: d.state == "paid"
-            )
-            for request in requests:
-                active = request.payment_ids.filtered(
-                    lambda p: p.state != "cancel"
-                )
+            for request in dr_payments.disbursement_request_id:
+                active = request.payment_ids.filtered(lambda p: p.state != "cancel")
                 if active and all(p.state == "posted" for p in active):
-                    request.state = "cleared"
                     # The accounting office's work on the request is done.
                     request.activity_feedback(
                         ["disbursement_finance_kmitl.mail_activity_dr_to_book"]
                     )
+        return res
+
+    def button_draft(self):
+        """Resetting a voucher's posted entry walks its request's stage back.
+        The accounting bridge sees the request through its bills; a voucher
+        reaches it through the payment, so it is watched here."""
+        requests = self.payment_disbursement_request_id
+        before = requests._settlement_snapshot()
+        res = super().button_draft()
+        requests._settlement_check(before)
+        return res
+
+    def button_cancel(self):
+        requests = self.payment_disbursement_request_id
+        before = requests._settlement_snapshot()
+        res = super().button_cancel()
+        requests._settlement_check(before)
         return res

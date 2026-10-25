@@ -1,6 +1,6 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 
-from odoo import _, api, fields, models
+from odoo import _, _lt, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
 # Groups that gate each post-bill payment-execution step.
@@ -10,88 +10,37 @@ FINANCE_GROUP = "disbursement_finance_kmitl.group_disbursement_payment_finance"
 # The accounting office's makers, who book the vouchers once the request is paid.
 ACCOUNTING_MAKER_GROUP = "accounting_kmitl.group_accounting_kmitl_user"
 
-# Execution Todos fanned out to the group responsible for the next step.
-TO_AUDIT_ACTIVITY = "disbursement_finance_kmitl.mail_activity_dr_to_audit"
-TO_AUTHORIZE_ACTIVITY = "disbursement_finance_kmitl.mail_activity_dr_to_authorize"
+# Execution Todos fanned out to the group responsible for the next step. The
+# audit and the authorization need none: the request arrives at their station,
+# which notifies its members.
 TO_PAY_ACTIVITY = "disbursement_finance_kmitl.mail_activity_dr_to_pay"
 TO_BOOK_ACTIVITY = "disbursement_finance_kmitl.mail_activity_dr_to_book"
 
 
 class DisbursementRequest(models.Model):
-    """Post-bill payment-execution workflow on the disbursement request.
+    """Post-bill payment-execution acts on the disbursement request.
 
-    After the accounting office posts the vendor bills (``bills_posted``), the
-    request enters a second, forward-only approval phase that is separate from
-    the pre-bill request approval (signed/verified/approved):
+    After the accounting office posts the vendor bills, two acts and the money's
+    own progress take the request to the bank and back to the books:
 
-        bills_posted
-          -> payment_audited      (auditor       : action_audit)
-          -> payment_authorized   (rector delegate: action_authorize, which also
-                                   raises the vouchers, numbered and confirmed
-                                   for the bank -- see ADR-0006)
-          -> paid                 (no press: reached when the last of the request's
-                                   vouchers is paid, which happens as each officer
-                                   closes the e-payment file they handled -- see
-                                   ADR-0007)
-          -> cleared              (accounting posts the payment move through the
-                                   account.move maker-checker; set in
-                                   account_move._post)
+        audit (ตรวจจ่าย, the auditor)
+          -> authorize (อนุมัติจ่าย, the rector delegate: also raises the
+                        vouchers, numbered and confirmed for the bank -- see
+                        ADR-0006)
+          -> settled   (no press: ``settlement_stage`` reaches it when the last
+                        of the request's vouchers is paid, which happens as each
+                        officer closes the e-payment file they handled -- see
+                        ADR-0007)
+          -> booked    (accounting posts the payment moves through the
+                        account.move maker-checker)
 
-    Budget was already obligated/consumed once at ``approved`` and is never
-    touched again here.
+    The two acts belong to the stations that list them (disbursement_wc), in
+    whatever order the route says; the stage is derived from the bills and the
+    vouchers that exist and walks back by itself. Budget was consumed by its own
+    act and is never touched again here.
     """
 
     _inherit = "disbursement.request"
-
-    state = fields.Selection(
-        selection_add=[
-            ("payment_audited", "Payment Audited"),
-            ("payment_authorized", "Authorized for Disbursement"),
-            ("paid", "Paid"),
-            ("cleared", "Cleared"),
-            ("cancel",),
-        ],
-        ondelete={
-            "payment_audited": "set default",
-            "payment_authorized": "set default",
-            "paid": "set default",
-            "cleared": "set default",
-        },
-    )
-
-    pipeline_status = fields.Selection(
-        selection_add=[
-            ("payment_draft", "Payment Draft"),
-            ("payment_posted", "Payment Posted"),
-            ("done", "Done"),
-        ],
-        ondelete={
-            "payment_draft": "set default",
-            "payment_posted": "set default",
-            "done": "set default",
-        },
-    )
-
-    display_status = fields.Selection(
-        selection_add=[
-            ("payment_draft", "Payment Draft"),
-            ("payment_posted", "Payment Posted"),
-            ("done", "Done"),
-            ("payment_audited", "Payment Audited"),
-            ("payment_authorized", "Authorized for Disbursement"),
-            ("paid", "Paid"),
-            ("cleared", "Cleared"),
-        ],
-        ondelete={
-            "payment_draft": "set default",
-            "payment_posted": "set default",
-            "done": "set default",
-            "payment_audited": "set default",
-            "payment_authorized": "set default",
-            "paid": "set default",
-            "cleared": "set default",
-        },
-    )
 
     payment_subject_id = fields.Many2one(
         comodel_name="kmitl.payment.subject",
@@ -114,11 +63,11 @@ class DisbursementRequest(models.Model):
         copy=False,
     )
 
-    # Who performed each round-2 step, and when. Round 1 stamps its two approvals
-    # the same way (``finance_approver_id`` / ``rector_approver_id``); round 2 used
-    # to leave the answer in the chatter alone, which is not something a list can
-    # be built on. The authorizer's history list stands on the stamp rather than on
-    # the state, so a request stays in it once it is paid and cleared.
+    # Who performed each payment-execution act, and when. The approvals stamp
+    # their own pair the same way (in their own modules); the answer in the
+    # chatter alone is not something a list can be built on. The authorizer's
+    # history list stands on the stamp rather than on the state, so a request
+    # stays in it once it is paid and booked.
     payment_auditor_id = fields.Many2one(
         comodel_name="res.users",
         string="Payment Auditor",
@@ -184,27 +133,107 @@ class DisbursementRequest(models.Model):
             paid = len(active.filtered(lambda p: p.finance_state == "paid"))
             rec.payment_status_display = _("จ่ายแล้ว %s/%s", paid, total) if total else ""
 
+    # ------------------------------------------------------------------
+    # Settlement stage: the voucher legs
+    # ------------------------------------------------------------------
+    def init(self):
+        super().init()
+        # The column was filled with "none" when core was installed or upgraded,
+        # before the bridges were loaded: recompute it from the bills and the
+        # vouchers.
+        self.env.add_to_compute(
+            self._fields["settlement_stage"],
+            self.with_context(active_test=False).search([]),
+        )
+
+    def _bills_all_posted(self):
+        """The request has bills and every live one is posted: a payee whose bill
+        is still to come must not be left behind by an audit or a voucher batch,
+        and ``all([])`` is true, so the emptiness is guarded explicitly."""
+        self.ensure_one()
+        active = self.bill_ids.filtered(lambda b: b.state != "cancel")
+        return bool(active) and all(b.state == "posted" for b in active)
+
+    def _vouchers_all_paid(self):
+        """Every payee of the request has a live voucher, and every live voucher
+        is paid (the money left, whether or not the books have it yet).
+
+        A request with no voucher at all is not paid, and neither is one with a
+        payee whose voucher was never raised: ``all([])`` is true, so the
+        emptiness is guarded explicitly.
+        """
+        self.ensure_one()
+        active = self.payment_ids.filtered(lambda p: p.state != "cancel")
+        return bool(
+            active
+            and not self._payable_payment_lines()
+            and all(p.finance_state == "paid" for p in active)
+        )
+
     @api.depends(
-        "state",
-        "bill_ids",
-        "bill_ids.state",
-        "bill_ids.payment_state",
-        "payment_ids",
         "payment_ids.state",
+        "payment_ids.finance_state",
+        "payment_line_ids.payment_id",
     )
-    def _compute_pipeline_status(self):
-        # Base sets pre_approval/approved; the accounting bridge sets
-        # bill_draft/bill_posted while state is approved/bills_posted.
-        super()._compute_pipeline_status()
+    def _compute_settlement_stage(self):
+        """Settled once every voucher is paid, booked once they are all posted.
+        Both walk back by themselves (a voucher cancelled, a cheque bounced)."""
+        super()._compute_settlement_stage()
+        for rec in self.filtered(lambda r: r.settlement_stage == "billed"):
+            if not rec._vouchers_all_paid():
+                continue
+            active = rec.payment_ids.filtered(lambda p: p.state != "cancel")
+            rec.settlement_stage = (
+                "booked" if all(p.state == "posted" for p in active) else "settled"
+            )
+
+    def _on_bills_posted(self):
+        """The last bill posted: make the payment line of every payee, so the
+        request can never show an empty payment tab."""
+        super()._on_bills_posted()
+        self._ensure_payment_lines()
+
+    # ------------------------------------------------------------------
+    # The audit and the authorization: acts of their stations
+    # ------------------------------------------------------------------
+    @api.model
+    def _disbursement_acts(self):
+        return super()._disbursement_acts() + [
+            {
+                "code": "disbursement.audit_payment",
+                "name": _lt("Audit Payment"),
+                "kind": "act",
+                "group": AUDITOR_GROUP,
+                "sequence": 60,
+                "module": "disbursement_finance_kmitl",
+            },
+            {
+                "code": "disbursement.authorize_payment",
+                "name": _lt("Authorize Payment"),
+                "kind": "act",
+                "group": AUTHORIZER_GROUP,
+                "sequence": 70,
+                "module": "disbursement_finance_kmitl",
+            },
+        ]
+
+    can_audit_payment = fields.Boolean(compute="_compute_payment_acts")
+    can_authorize_payment = fields.Boolean(compute="_compute_payment_acts")
+    can_edit_payment_subject = fields.Boolean(compute="_compute_payment_acts")
+
+    @api.depends("state", "bill_ids.state", "payment_ids.state")
+    @api.depends_context("uid")
+    def _compute_payment_acts(self):
         for rec in self:
-            if rec.state == "cleared":
-                rec.pipeline_status = "done"
-            elif rec.state in ("payment_authorized", "paid"):
-                active = rec.payment_ids.filtered(lambda p: p.state != "cancel")
-                if active.filtered(lambda p: p.state == "posted"):
-                    rec.pipeline_status = "payment_posted"
-                elif active:
-                    rec.pipeline_status = "payment_draft"
+            audit = rec._disbursement_act_offered("disbursement.audit_payment")
+            rec.can_audit_payment = audit and rec._bills_all_posted()
+            rec.can_authorize_payment = rec._disbursement_act_offered(
+                "disbursement.authorize_payment"
+            )
+            # The subject is the auditor's to choose, until a voucher exists.
+            rec.can_edit_payment_subject = audit and not any(
+                payment.state != "cancel" for payment in rec.payment_ids
+            )
 
     # ------------------------------------------------------------------
     # Todo fan-out (mirrors accounting_kmitl_workflow._schedule_approval_todo)
@@ -222,11 +251,6 @@ class DisbursementRequest(models.Model):
 
     def write(self, vals):
         res = super().write(vals)
-        # Entering bills_posted (set by the accounting bridge when the last
-        # bill posts) opens the payment-execution phase: notify the auditors.
-        if vals.get("state") == "bills_posted":
-            self._ensure_payment_lines()
-            self._schedule_payment_todo(TO_AUDIT_ACTIVITY, AUDITOR_GROUP)
         # A new subject re-derives every row it is allowed to.
         if "payment_subject_id" in vals:
             for record in self:
@@ -241,9 +265,9 @@ class DisbursementRequest(models.Model):
         the amounts of the rows no payment has frozen up to date.
 
         Idempotent and cheap to call, so it runs at every door into the payment
-        phase rather than only at the ``bills_posted`` transition: a request can
-        then never show an empty payment tab, and a bill accounting reversed and
-        re-issued picks up its own row unaided.
+        phase rather than only when the last bill posts: a request can then never
+        show an empty payment tab, and a bill accounting reversed and re-issued
+        picks up its own row unaided.
 
         Runs sudo because it is a system derivation — the accounting user who
         posts the last bill triggers it without holding rights on these rows.
@@ -412,29 +436,30 @@ class DisbursementRequest(models.Model):
         return True
 
     # ------------------------------------------------------------------
-    # Workflow actions (forward-only, no reject in this phase)
+    # The acts (no reject, and no order enforced: the route says what normally
+    # happens, the visit log what did)
     # ------------------------------------------------------------------
     def action_audit(self):
-        """Auditor verifies the disbursement after the bills are posted."""
+        """The audit act: check the payees' banking coordinates once the bills
+        are posted."""
         for record in self:
-            if record.state != "bills_posted":
-                raise UserError(_("Only bills-posted requests can be audited."))
+            record._disbursement_check_act("disbursement.audit_payment")
+            if not record._bills_all_posted():
+                raise UserError(_("Post the bills first."))
             record._ensure_payment_lines()
             record._check_payment_classification()
             record.write(
                 {
-                    "state": "payment_audited",
                     "payment_auditor_id": self.env.user.id,
                     "payment_audit_date": fields.Datetime.now(),
                 }
             )
             record._stamp_signature("payment_audit")
-            record.activity_feedback([TO_AUDIT_ACTIVITY])
-            record._schedule_payment_todo(TO_AUTHORIZE_ACTIVITY, AUTHORIZER_GROUP)
+            record._disbursement_act_done("disbursement.audit_payment")
         return True
 
     def action_authorize(self):
-        """Rector delegate authorizes the disbursement, which raises its vouchers.
+        """The authorization act, which raises the vouchers.
 
         The authorisation is what makes the money payable, so it is also what
         issues the ใบสำคัญจ่าย: the finance office finds them numbered and
@@ -443,21 +468,17 @@ class DisbursementRequest(models.Model):
         payee. See ADR-0006.
         """
         for record in self:
-            if record.state != "payment_audited":
-                raise UserError(
-                    _("Only audited requests can be authorized for payment.")
-                )
+            record._disbursement_check_act("disbursement.authorize_payment")
             record.write(
                 {
-                    "state": "payment_authorized",
                     "payment_authorizer_id": self.env.user.id,
                     "payment_authorize_date": fields.Datetime.now(),
                 }
             )
             record._stamp_signature("payment_authorize")
-            record.activity_feedback([TO_AUTHORIZE_ACTIVITY])
             record._schedule_payment_todo(TO_PAY_ACTIVITY, FINANCE_GROUP)
             record._try_create_payments()
+            record._disbursement_act_done("disbursement.authorize_payment")
         return True
 
     def _try_create_payments(self):
@@ -512,8 +533,6 @@ class DisbursementRequest(models.Model):
         queue. See ADR-0004.
         """
         for record in self:
-            if record.state != "payment_authorized":
-                raise UserError(_("Only authorized requests can be confirmed as paid."))
             active = record.payment_ids.filtered(lambda p: p.state != "cancel")
             if not active:
                 raise UserError(
@@ -561,12 +580,14 @@ class DisbursementRequest(models.Model):
         Idempotent, and that is the point — it is reached two ways. Normally the
         last voucher turning paid brings the request across
         (``_try_hand_over_when_all_paid``); the finance office's own press calls it
-        too, for the case where there was nothing left to mark. Filtering on the
-        state it crosses *from* is what keeps the accounting office from getting the
-        same Todo twice.
+        too, for the case where there was nothing left to mark. An open To-book
+        Todo is what says it already crossed, so the accounting office never gets
+        the same Todo twice.
         """
-        for record in self.filtered(lambda rec: rec.state == "payment_authorized"):
-            record.state = "paid"
+        book = self.env.ref(TO_BOOK_ACTIVITY)
+        for record in self.filtered(lambda rec: rec.settlement_stage == "settled"):
+            if record.activity_ids.filtered(lambda a: a.activity_type_id == book):
+                continue
             record.activity_feedback([TO_PAY_ACTIVITY])
             # One Todo for the request, because the request is the document KMITL
             # navigates by — not twelve for twelve payees.
@@ -591,16 +612,8 @@ class DisbursementRequest(models.Model):
         request.
         """
         for record in self:
-            if record.state != "payment_authorized":
-                continue
-            active = record.payment_ids.filtered(
-                lambda payment: payment.state != "cancel"
-            )
-            if not active or active.filtered(
-                lambda payment: payment.finance_state != "paid"
-            ):
-                continue
-            record._hand_over()
+            if record._vouchers_all_paid():
+                record._hand_over()
         return True
 
     def action_submit_payments(self):
@@ -615,9 +628,9 @@ class DisbursementRequest(models.Model):
         Todo in their inbox, so the makers' own Todo on the request is cleared here.
         """
         for record in self:
-            if record.state != "paid":
+            if record.settlement_stage != "settled":
                 raise UserError(
-                    _("Only a request the finance office has paid can be booked.")
+                    _("Only a request whose payment is settled can be booked.")
                 )
             active = record.payment_ids.filtered(lambda p: p.state != "cancel")
             drafts = active.move_id.filtered(lambda move: move.state == "draft")
@@ -641,12 +654,15 @@ class DisbursementRequest(models.Model):
         return True
 
     def action_submit_payments_batch(self):
-        return self._payment_batch("action_submit_payments", "paid")
+        return self._payment_batch(
+            "action_submit_payments", lambda r: r.settlement_stage == "settled"
+        )
 
-    def _payment_batch(self, single_method, valid_state):
+    def _payment_batch(self, single_method, predicate):
         """Run a per-record action in isolated savepoints (mirror of
-        accounting_kmitl_workflow.action_approve_batch)."""
-        candidates = self.filtered(lambda r: r.state == valid_state)
+        accounting_kmitl_workflow.action_approve_batch) on the records that
+        satisfy ``predicate``."""
+        candidates = self.filtered(predicate)
         done = self.browse()
         failures = []
         for record in candidates:
@@ -686,22 +702,24 @@ class DisbursementRequest(models.Model):
         }
 
     def action_audit_batch(self):
-        return self._payment_batch("action_audit", "bills_posted")
+        return self._payment_batch("action_audit", lambda r: r.can_audit_payment)
 
     def action_authorize_batch(self):
-        return self._payment_batch("action_authorize", "payment_audited")
+        return self._payment_batch(
+            "action_authorize", lambda r: r.can_authorize_payment
+        )
 
     # ------------------------------------------------------------------
     # Cancel guard
     # ------------------------------------------------------------------
     def action_cancel(self):
-        """Block cancel once paid/cleared or when a payment is posted."""
+        """Block cancel once the payment is settled or when a payment is posted."""
         for record in self:
             if record.state == "cancel":
                 continue
-            if record.state in ("paid", "cleared"):
+            if record.settlement_stage in ("settled", "booked"):
                 raise UserError(
-                    _("Cannot cancel a request that is already paid/cleared.")
+                    _("Cannot cancel a request whose payment is already settled.")
                 )
             active = record.payment_ids.filtered(lambda p: p.state != "cancel")
             posted = active.filtered(lambda p: p.state == "posted")
@@ -755,10 +773,8 @@ class DisbursementRequest(models.Model):
         why the chatter can name them.
         """
         self.ensure_one()
-        if self.state != "payment_authorized":
-            raise UserError(
-                _("The disbursement must be authorized before creating the payment.")
-            )
+        if not self._bills_all_posted():
+            raise UserError(_("Post the bills first."))
         existing_payments = self.payment_ids.filtered(lambda p: p.state != "cancel")
         if existing_payments:
             raise UserError(
@@ -848,6 +864,20 @@ class DisbursementRequest(models.Model):
             )
 
         return payments
+
+    def action_draft(self):
+        """The audit and the authorization are stamped like every act: a request
+        sent back to its maker starts those rounds again."""
+        res = super().action_draft()
+        self.write(
+            {
+                "payment_auditor_id": False,
+                "payment_audit_date": False,
+                "payment_authorizer_id": False,
+                "payment_authorize_date": False,
+            }
+        )
+        return res
 
     def action_view_payments(self):
         """Open related payment(s) in list view."""

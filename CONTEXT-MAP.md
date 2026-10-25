@@ -81,7 +81,7 @@ upfront.
   later at disbursement. Routed for approval through e-Saraban.
 - [Approval ↔ Disbursement Bridge](./agx_approval_disbursement/CONTEXT.md) — links an
   Approval Request to the Disbursement Request it is billed into; returning a
-  disbursement keeps it intact (at `signed`) and bounces the approval request to
+  disbursement keeps it intact (at its station) and bounces the approval request to
   `returned`, where the requester corrects a limited set of fields and confirms to push
   them back onto the disbursement.
 - [KMITL Finance](./finance_kmitl/CONTEXT.md) — the finance office's side of paying
@@ -173,6 +173,16 @@ upfront.
 - [Work Center](./work_center/CONTEXT.md) — สถานี: a desk a document passes through;
   routes, visit log, acts, and a per-area overview with configurable counters.
   Membership narrows who acts, it never grants — the role gives the right.
+- [Disbursement — Stations](./disbursement_wc/CONTEXT.md) — routes the DR through the
+  stations of a configured route: signing enters the circuit, forwarding out of the
+  last station makes it done, and the station holding it decides who may act, edit,
+  send it back or cancel it. The DR's state is progress around the วงจร; the
+  ขั้นการชำระ is the money.
+- [Disbursement — Acts](./disbursement_wc/CONTEXT.md) — the ตรวจสอบ, ผอ.กองคลัง and
+  ผู้รับมอบอำนาจอธิการบดี acts on the DR (`disbursement_validation`,
+  `disbursement_approver_director`, `disbursement_approver_rector`): each stamps who
+  acted and one signature row, none changes the DR's state; terms in
+  `disbursement_wc/CONTEXT.md`.
 
 ## Relationships
 

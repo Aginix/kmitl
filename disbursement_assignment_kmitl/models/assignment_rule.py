@@ -1,16 +1,18 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 
 from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 
 class DisbursementAssignmentRule(models.Model):
-    """Routing rule that maps a disbursement request to a verification officer.
+    """Routing rule that maps a disbursement request to a responsible officer.
 
-    When a request reaches the ``signed`` state it is matched against these
-    rules (ordered by ``sequence``) and the first matching rule's officer is
-    stored in ``disbursement.request.assigned_to``. Matching is advisory: it
-    only pre-fills the responsible officer and raises a To-Do; it never locks
-    who is allowed to validate the request.
+    When a request arrives at a station it is matched against the rules of that
+    station (ordered by ``sequence``) and the first matching rule's officer is
+    stored in ``disbursement.request.assigned_to``. A rule without a station
+    applies to the first station of the route. Matching is advisory: it only
+    pre-fills the responsible officer and raises a To-Do; it never locks who
+    may act on the request.
     """
 
     _name = "disbursement.assignment.rule"
@@ -63,18 +65,51 @@ class DisbursementAssignmentRule(models.Model):
         ondelete="restrict",
     )
 
+    work_center_id = fields.Many2one(
+        "work.center",
+        string="Station",
+        ondelete="restrict",
+        domain=lambda self: [
+            ("area_id.model_ids.model", "=", "disbursement.request"),
+            ("is_unassigned", "=", False),
+        ],
+        help="Station where this rule assigns; empty = the first station of the route.",
+    )
     user_id = fields.Many2one(
         "res.users",
         string="Assigned Officer",
         required=True,
-        domain=lambda self: [
-            (
-                "groups_id",
-                "in",
-                self.env.ref("disbursement.group_disbursement_officer").ids,
-            )
-        ],
+        domain="[('id', 'in', allowed_user_ids)]",
     )
+    allowed_user_ids = fields.Many2many(
+        "res.users",
+        compute="_compute_allowed_user_ids",
+    )
+
+    @api.depends("work_center_id")
+    def _compute_allowed_user_ids(self):
+        """The people of the station (its members, or the holders of its acts'
+        roles when it has none); officers for a rule without a station."""
+        officers = self.env.ref("disbursement.group_disbursement_officer").users
+        for rule in self:
+            rule.allowed_user_ids = (
+                rule.work_center_id.sudo()._responsible_users()[0]
+                if rule.work_center_id
+                else officers
+            )
+
+    @api.constrains("work_center_id", "user_id")
+    def _check_user_in_station(self):
+        for rule in self.filtered("work_center_id"):
+            members = rule.work_center_id.sudo()._active_members()
+            if members and rule.user_id not in members:
+                raise ValidationError(
+                    _("%(user)s is not a member of %(station)s.")
+                    % {
+                        "user": rule.user_id.display_name,
+                        "station": rule.work_center_id.display_name,
+                    }
+                )
 
     @api.model
     def _find_for_request(self, request):
@@ -91,6 +126,12 @@ class DisbursementAssignmentRule(models.Model):
         # action is bound to a list whose action context sets
         # active_test=False, and that context leaks into this search.
         domain = [("active", "=", True), ("user_id.active", "=", True)]
+        # The rules of the station the request is at; those without a station
+        # belong to the first station of the route.
+        station = request.work_center_id
+        first = request._work_center_route().line_ids[:1].work_center_ids
+        stations = station.ids + ([False] if not station or station in first else [])
+        domain.append(("work_center_id", "in", stations))
         for field in self._CRITERIA:
             ancestors = [
                 int(i)
@@ -107,11 +148,16 @@ class DisbursementAssignmentRule(models.Model):
         domain.append(
             ("partner_type_id", "in", ptype.ids + [False])
         )
-        return self.search(domain, limit=1)
+        for rule in self.search(domain):
+            # The officer was checked when the rule was saved; the station's
+            # people may have changed since.
+            if not rule.work_center_id or rule.user_id in rule.allowed_user_ids:
+                return rule
+        return self.browse()
 
     @api.model
     def action_apply_to_pending(self):
-        """Re-run the rules against already-signed, still-unassigned requests.
+        """Re-run the rules against requests at a station that have no officer.
 
         Exposed through a server action on the rule list so an admin can route
         a backlog after adding or editing rules. Idempotent: requests that
@@ -119,7 +165,11 @@ class DisbursementAssignmentRule(models.Model):
         """
         Request = self.env["disbursement.request"]
         pending = Request.search(
-            [("state", "=", "signed"), ("assigned_to", "=", False)]
+            [
+                ("state", "=", "in_progress"),
+                ("work_center_id", "!=", False),
+                ("assigned_to", "=", False),
+            ]
         )
         pending._assignment_auto_assign()
         assigned = pending.filtered("assigned_to")

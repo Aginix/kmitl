@@ -6,6 +6,8 @@
         <field name="arch" type="xml">
             <tree string="Assignment Rules" editable="bottom">
                 <field name="sequence" widget="handle" />
+                <field name="allowed_user_ids" invisible="1" />
+                <field name="work_center_id" options="{'no_create': True}" />
                 <field name="department_analytic_id" options="{'no_create': True}" />
                 <field name="source_analytic_id" options="{'no_create': True}" />
                 <field name="fund_analytic_id" options="{'no_create': True}" />
@@ -24,17 +26,17 @@
         <field name="context">{'active_test': False}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-                สร้างกฎเพื่อมอบหมายใบขอเบิกที่ลงนามแล้วให้เจ้าหน้าที่ผู้รับผิดชอบ
+                สร้างกฎเพื่อมอบหมายใบขอเบิกที่มาถึงสถานีให้เจ้าหน้าที่ผู้รับผิดชอบ
             </p>
             <p>
                 เว้นเงื่อนไขว่างไว้เพื่อให้เป็น wildcard (จับคู่ได้ทุกค่า) กฎจะถูกจับคู่จากบนลงล่าง
-                โดยกฎแรกที่ตรงเป็นผู้ชนะ กฎที่ตั้งบนส่วนงาน/กองทุน/กิจกรรมระดับแม่
+                โดยกฎแรกที่ตรงเป็นผู้ชนะ กฎที่ไม่ระบุสถานีใช้กับสถานีแรกของเส้นทาง กฎที่ตั้งบนส่วนงาน/กองทุน/กิจกรรมระดับแม่
                 จะครอบคลุมระดับลูกทั้งหมด
             </p>
         </field>
     </record>
 
-    <!-- Gear-menu action to route already-signed requests after editing rules -->
+    <!-- Gear-menu action to route requests already at a station after editing rules -->
     <record id="action_apply_rules_to_pending" model="ir.actions.server">
         <field name="name">Apply Rules to Pending Requests</field>
         <field name="model_id" ref="model_disbursement_assignment_rule" />

@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_disbursement_request_form" model="ir.ui.view">
+        <field name="name">disbursement.request.form (disbursement_wc)</field>
+        <field name="model">disbursement.request</field>
+        <field name="inherit_id" ref="disbursement.view_disbursement_request_form" />
+        <field name="arch" type="xml">
+            <button name="action_draft" position="before">
+                <button
+                    name="action_work_center_forward"
+                    string="Forward"
+                    type="object"
+                    class="oe_highlight"
+                    context="{'expected_station': work_center_id}"
+                    attrs="{'invisible': ['|', ('state', '!=', 'in_progress'), ('work_center_can_move', '=', False)]}"
+                />
+                <button
+                    name="action_work_center_divert"
+                    string="Divert"
+                    type="object"
+                    context="{'expected_station': work_center_id}"
+                    attrs="{'invisible': ['|', ('state', '!=', 'in_progress'), ('work_center_can_move', '=', False)]}"
+                />
+                <field name="work_center_can_move" invisible="1" />
+            </button>
+            <!-- Inside the circuit only the people holding the request at their
+                 station may send it back or cancel it. -->
+            <xpath
+                expr="//header/button[@name='action_return_open_wizard']"
+                position="attributes"
+            >
+                <attribute
+                    name="attrs"
+                >{'invisible': ['|', '|', ('state', 'not in', ('signed', 'in_progress')), ('returned_to_source', '=', True), '&amp;', ('state', '=', 'in_progress'), ('work_center_can_move', '=', False)]}</attribute>
+            </xpath>
+            <xpath
+                expr="//header/button[@name='action_cancel'][1]"
+                position="attributes"
+            >
+                <attribute
+                    name="attrs"
+                >{'invisible': ['|', ('state', 'in', ('done', 'cancel')), '&amp;', ('state', '=', 'in_progress'), ('work_center_can_move', '=', False)]}</attribute>
+            </xpath>
+            <header position="after">
+                <div
+                    class="alert alert-info"
+                    role="status"
+                    style="margin-bottom:0px;"
+                    attrs="{'invisible': [('work_center_id', '=', False)]}"
+                >
+                    <strong>Station:</strong>
+                    <field
+                        name="work_center_id"
+                        class="oe_inline"
+                        options="{'no_open': True}"
+                    />
+                    <span attrs="{'invisible': [('work_center_next_id', '=', False)]}">
+                        → <field
+                            name="work_center_next_id"
+                            class="oe_inline"
+                            options="{'no_open': True}"
+                        />
+                    </span>
+                    <span
+                        attrs="{'invisible': [('work_center_missing_act_ids', '=', [])]}"
+                    >
+                        · <strong>Acts Still to Do:</strong>
+                        <field
+                            name="work_center_missing_act_ids"
+                            widget="many2many_tags"
+                            class="oe_inline"
+                        />
+                    </span>
+                </div>
+            </header>
+            <xpath expr="//notebook" position="inside">
+                <page string="Visit Log" name="visit_log">
+                    <field name="work_center_visit_ids" readonly="1" />
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_disbursement_request_tree" model="ir.ui.view">
+        <field name="name">disbursement.request.tree (disbursement_wc)</field>
+        <field name="model">disbursement.request</field>
+        <field name="inherit_id" ref="disbursement.view_disbursement_request_tree" />
+        <field name="arch" type="xml">
+            <field name="state" position="after">
+                <field name="work_center_id" optional="show" />
+            </field>
+        </field>
+    </record>
+
+    <record id="view_disbursement_request_search" model="ir.ui.view">
+        <field name="name">disbursement.request.search (disbursement_wc)</field>
+        <field name="model">disbursement.request</field>
+        <field name="inherit_id" ref="disbursement.view_disbursement_request_search" />
+        <field name="arch" type="xml">
+            <filter name="date" position="before">
+                <filter
+                    string="At My Stations"
+                    name="at_my_stations"
+                    domain="[('work_center_id.is_my_station', '=', True)]"
+                />
+            </filter>
+            <filter name="group_settlement_stage" position="after">
+                <filter
+                    string="Station"
+                    name="group_work_center"
+                    context="{'group_by': 'work_center_id'}"
+                />
+            </filter>
+        </field>
+    </record>
+</odoo>

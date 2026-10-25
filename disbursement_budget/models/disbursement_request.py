@@ -1,20 +1,17 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 
-from odoo import _, api, fields, models
+from odoo import _, _lt, api, fields, models
 from odoo.exceptions import UserError
-
-from odoo.addons.disbursement.models.disbursement_request import (
-    DisbursementRequest as DisbursementRequestBase,
-)
 
 
 class DisbursementRequest(models.Model):
     """Budget control on the disbursement request (ADR-0003).
 
     The request reserves nothing itself: an upstream document (PR/PO/PA/AR)
-    links a reserved ``budget.commitment``, and the Rector-delegated approval —
-    the final step of the two-approver flow — consumes it. Cancelling reverses
-    this request's own events, or the whole commitment when it is not shared.
+    links a reserved ``budget.commitment``, and the consume act — done by the
+    Rector-delegated approver at the station that requires it — consumes it.
+    Cancelling reverses this request's own events, or the whole commitment when
+    it is not shared.
     """
 
     _name = "disbursement.request"
@@ -34,7 +31,6 @@ class DisbursementRequest(models.Model):
         copy=False,
         index=True,
         ondelete="restrict",
-        states=DisbursementRequestBase.READONLY_STATES,
     )
 
     budget_account_id = fields.Many2one(
@@ -45,7 +41,18 @@ class DisbursementRequest(models.Model):
         copy=False,
         index=True,
         ondelete="restrict",
-        states=DisbursementRequestBase.READONLY_STATES,
+    )
+
+    # Off for the money that is not the university's budget (เงินรับฝากบุคคลที่สาม,
+    # เงินประกัน): the consume act is then not applicable and consumes nothing.
+    consumes_budget = fields.Boolean(
+        string="Consumes Budget",
+        default=True,
+        tracking=True,
+        copy=True,
+        help="Untick for money that does not draw on the budget, such as third "
+        "party deposits (เงินรับฝากบุคคลที่สาม) or guarantees (เงินประกัน): "
+        "the consume budget act is then not applicable.",
     )
 
     # True when the line account is locked to the budget code's own account
@@ -80,6 +87,59 @@ class DisbursementRequest(models.Model):
         string="งบจองคงเหลือ",
         currency_field="currency_id",
     )
+
+    # -------------------------------------------------------------------------
+    # The consume-budget act
+    # -------------------------------------------------------------------------
+    @api.model
+    def _disbursement_acts(self):
+        return super()._disbursement_acts() + [
+            {
+                "code": "disbursement.consume_budget",
+                "name": _lt("Consume Budget"),
+                "kind": "act",
+                "group": "disbursement.group_disbursement_rector_delegate",
+                "sequence": 40,
+                "module": "disbursement_budget",
+            }
+        ]
+
+    def _disbursement_act_applicable(self, code):
+        if code == "disbursement.consume_budget" and not self.consumes_budget:
+            return False
+        return super()._disbursement_act_applicable(code)
+
+    can_consume_budget = fields.Boolean(compute="_compute_can_consume_budget")
+
+    @api.depends("state", "consumes_budget", "budget_consumed_amount")
+    @api.depends_context("uid")
+    def _compute_can_consume_budget(self):
+        for rec in self:
+            rec.can_consume_budget = bool(
+                rec.consumes_budget
+                and not rec.budget_consumed_amount
+                and rec._disbursement_act_offered("disbursement.consume_budget")
+            )
+
+    def action_consume_budget(self):
+        """The act: consume the linked commitment. Idempotent, so pressing it
+        again after a divert back never double-cuts the budget."""
+        for rec in self:
+            rec._disbursement_check_act("disbursement.consume_budget")
+            if rec.consumes_budget:
+                rec._action_approve_budget()
+            rec._disbursement_act_done("disbursement.consume_budget")
+        return True
+
+    @api.depends("budget_commitment_id")
+    def _compute_can_edit(self):
+        super()._compute_can_edit()
+
+    def _can_edit_blocked(self, kind):
+        """The linked commitment carries the dimensions and the budget code."""
+        return super()._can_edit_blocked(kind) or (
+            kind in ("dimensions", "budget") and bool(self.budget_commitment_id)
+        )
 
     # -------------------------------------------------------------------------
     # Budget commitment methods
@@ -224,8 +284,8 @@ class DisbursementRequest(models.Model):
         would be cancelled out by the consume in the same instant anyway.
         """
         self.ensure_one()
-        # Idempotent: a request returned to verification (approved -> signed)
-        # keeps its consumption, so re-approving must not double-cut the budget.
+        # Idempotent: a request diverted back to an earlier station keeps its
+        # consumption, so consuming again must not double-cut the budget.
         if self._has_own_budget_obligation():
             return
         commitment = self._check_commitment_obligable()
@@ -265,7 +325,7 @@ class DisbursementRequest(models.Model):
         self.ensure_one()
         if not self.budget_commitment_id:
             raise UserError(
-                _("Budget commitment is required before approval. "
+                _("Budget commitment is required before consuming budget. "
                   "Please link one from the upstream document.")
             )
         commitment = self.budget_commitment_id
@@ -299,7 +359,7 @@ class DisbursementRequest(models.Model):
     def _has_own_budget_obligation(self):
         """Whether this request already has a posted consume event on its
         commitment (used to keep _action_approve_budget idempotent across a
-        return-to-verification round trip)."""
+        divert back)."""
         self.ensure_one()
         commitment = self.budget_commitment_id
         return bool(commitment) and commitment._has_budget_event(self, "consume")
@@ -307,10 +367,6 @@ class DisbursementRequest(models.Model):
     # -------------------------------------------------------------------------
     # Workflow hooks
     # -------------------------------------------------------------------------
-    def _on_final_approval(self):
-        super()._on_final_approval()
-        self._action_approve_budget()
-
     def _on_cancel(self):
         super()._on_cancel()
         for rec in self:
