@@ -81,7 +81,7 @@ upfront.
   later at disbursement. Routed for approval through e-Saraban.
 - [Approval ↔ Disbursement Bridge](./agx_approval_disbursement/CONTEXT.md) — links an
   Approval Request to the Disbursement Request it is billed into; returning a
-  disbursement keeps it intact (at `signed`) and bounces the approval request to
+  disbursement keeps it intact (at its station) and bounces the approval request to
   `returned`, where the requester corrects a limited set of fields and confirms to push
   them back onto the disbursement.
 - [KMITL Finance](./finance_kmitl/CONTEXT.md) — the finance office's side of paying
