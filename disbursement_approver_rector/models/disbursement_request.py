@@ -34,12 +34,15 @@ class DisbursementRequest(models.Model):
             }
         ]
 
-    @api.depends("state")
+    @api.depends("state", "rector_approver_id")
     @api.depends_context("uid")
     def _compute_can_approve_rector(self):
+        """The button waits for a request the Rector delegate has not approved
+        yet (a reset to draft clears the stamp)."""
         for rec in self:
-            rec.can_approve_rector = rec._disbursement_act_offered(
-                "disbursement.approve_rector"
+            rec.can_approve_rector = (
+                not rec.rector_approver_id
+                and rec._disbursement_act_offered("disbursement.approve_rector")
             )
 
     def action_approve(self):

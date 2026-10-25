@@ -19,7 +19,10 @@ class TestRector(TwoApproverCommon):
 
     def test_rector_acts_without_any_director_approval(self):
         dr = self._make_signed_dr()
+        self.assertTrue(dr.with_user(self.rector).can_approve_rector)
         dr.with_user(self.rector).action_approve()
+        self.env.invalidate_all()
+        self.assertFalse(dr.with_user(self.rector).can_approve_rector)
         self.assertEqual(dr.rector_approver_id, self.rector)
         self.assertTrue(dr.rector_approve_date)
         self.assertEqual(len(_sigs(dr, "rector_approve")), 1)

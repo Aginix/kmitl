@@ -31,11 +31,15 @@ class DisbursementRequest(models.Model):
             }
         ]
 
-    @api.depends("state")
+    @api.depends("state", "verifier_id")
     @api.depends_context("uid")
     def _compute_can_validate(self):
+        """The button waits for a request nobody has validated yet (a reset to
+        draft clears the stamp, so a corrected request is validated again)."""
         for rec in self:
-            rec.can_validate = rec._disbursement_act_offered("disbursement.validate")
+            rec.can_validate = not rec.verifier_id and rec._disbursement_act_offered(
+                "disbursement.validate"
+            )
 
     def action_validate(self):
         """The act: the officer validates the request. It changes no state, so

@@ -19,7 +19,10 @@ class TestValidation(TwoApproverCommon):
 
     def test_validate_stamps_the_verifier_and_a_signature(self):
         dr = self._make_signed_dr()
+        self.assertTrue(dr.with_user(self.officer).can_validate)
         dr.with_user(self.officer).action_validate()
+        self.env.invalidate_all()
+        self.assertFalse(dr.with_user(self.officer).can_validate)
         self.assertEqual(dr.verifier_id, self.officer)
         self.assertTrue(dr.verify_date)
         self.assertEqual(dr.state, "signed")

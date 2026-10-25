@@ -19,7 +19,10 @@ class TestDirector(TwoApproverCommon):
     def test_director_acts_on_a_never_validated_request(self):
         dr = self._make_signed_dr()
         self.assertFalse(dr.verifier_id)
+        self.assertTrue(dr.with_user(self.finance).can_approve_director)
         dr.with_user(self.finance).action_approve_finance()
+        self.env.invalidate_all()
+        self.assertFalse(dr.with_user(self.finance).can_approve_director)
         self.assertEqual(dr.finance_approver_id, self.finance)
         self.assertTrue(dr.finance_approve_date)
         self.assertEqual(len(_sigs(dr, "finance_approve")), 1)

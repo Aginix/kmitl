@@ -18,7 +18,7 @@
                 <field name="can_validate" invisible="1" />
             </button>
             <group id="dates" position="inside">
-                <field name="verify_date" string="Verification Date" widget="date" />
+                <field name="verify_date" string="Verification Date" />
             </group>
             <group id="other_information" position="inside">
                 <field
