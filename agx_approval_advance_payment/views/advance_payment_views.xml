@@ -1,9 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <record
-        id="view_advance_payment_form_approval_request"
-        model="ir.ui.view"
-    >
+    <record id="view_advance_payment_form_approval_request" model="ir.ui.view">
         <field name="name">advance.payment.form.approval.request</field>
         <field name="model">advance.payment</field>
         <field name="inherit_id" ref="advance_payment.view_advance_payment_form" />
@@ -16,56 +13,57 @@
                 </attribute>
             </xpath>
 
-            <!-- The borrower's own picker: requests they are a participant of,
-                 approved. Replaces the generic Reference widget for this model,
-                 which cannot carry a per-model domain (ADR-0003). -->
-            <xpath expr="//field[@name='reference']" position="attributes">
-                <attribute name="attrs">{
-                    'invisible': ['|', ('is_reference_visible', '=', False),
-                                  ('loan_type_reference_model', '=', 'approval.request')],
-                    'readonly': ['|', ('is_locked_by_reference', '=', True), ('id', '!=', False)]
-                }</attribute>
-            </xpath>
-
-            <xpath expr="//field[@name='reference']" position="after">
-                <field name="loan_type_reference_model" invisible="1" />
-                <field name="approval_request_id"
+            <!-- The borrower's own picker: approved requests, narrowed by the
+                 loan type's filter (advance_payment ADR-0023/0025). -->
+            <xpath expr="//field[@name='loan_type_id']" position="after">
+                <field
+                    name="approval_request_id"
                     options="{'no_create': True, 'no_create_edit': True}"
-                    domain="[('state', '=', 'approved'),
-                             ('participant_ids.partner_id', '=', partner_id)]"
+                    domain="reference_picker_domain"
                     attrs="{
                         'invisible': [('loan_type_reference_model', '!=', 'approval.request')],
                         'readonly': [('state', '!=', 'draft')],
                         'required': [('loan_type_reference_model', '=', 'approval.request')]
-                    }" />
+                    }"
+                />
             </xpath>
 
             <!-- Expense report vs what the request itemises against this loan -->
             <xpath expr="//field[@name='actual_expense_amount']" position="after">
-                <field name="allocation_expense_amount"
-                    attrs="{'invisible': [('approval_request_count', '=', 0)]}" />
+                <field
+                    name="allocation_expense_amount"
+                    attrs="{'invisible': [('approval_request_count', '=', 0)]}"
+                />
                 <field name="has_expense_divergence" invisible="1" />
-                <button name="action_prefill_expense_from_allocation"
+                <button
+                    name="action_prefill_expense_from_allocation"
                     type="object"
                     string="ดึงยอดจากใบขออนุมัติ"
                     class="btn-link"
                     attrs="{'invisible': ['|', ('state', '!=', 'in_progress'),
-                                          ('approval_request_count', '=', 0)]}" />
-                <div class="alert alert-warning mb-0" role="alert" colspan="2"
-                    attrs="{'invisible': [('has_expense_divergence', '=', False)]}">
+                                          ('approval_request_count', '=', 0)]}"
+                />
+                <div
+                    class="alert alert-warning mb-0"
+                    role="alert"
+                    colspan="2"
+                    attrs="{'invisible': [('has_expense_divergence', '=', False)]}"
+                >
                     ยอดค่าใช้จ่ายจริงที่รายงาน ไม่เท่ากับผลรวมแถวเงินยืมในใบขออนุมัติ
                     — ยืนยันว่าถูกต้องได้ แต่โปรดตรวจสอบก่อนส่ง
                 </div>
             </xpath>
 
             <xpath expr="//div[@name='button_box']" position="inside">
-                <field name="approval_request_count" invisible="1"/>
-                <button name="action_view_approval_request"
+                <field name="approval_request_count" invisible="1" />
+                <button
+                    name="action_view_approval_request"
                     type="object"
                     class="oe_stat_button"
                     icon="fa-check-circle"
                     string="Approval Request"
-                    attrs="{'invisible': [('approval_request_count', '=', 0)]}">
+                    attrs="{'invisible': [('approval_request_count', '=', 0)]}"
+                >
                 </button>
             </xpath>
 
@@ -92,8 +90,11 @@
                 <field name="approval_request_id" />
             </field>
             <filter name="group_loan_type" position="after">
-                <filter string="Approval Request" name="group_approval_request"
-                    context="{'group_by': 'approval_request_id'}" />
+                <filter
+                    string="Approval Request"
+                    name="group_approval_request"
+                    context="{'group_by': 'approval_request_id'}"
+                />
             </filter>
         </field>
     </record>

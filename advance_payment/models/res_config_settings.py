@@ -4,13 +4,6 @@ from odoo import fields, models
 class ResConfigSettings(models.TransientModel):
     _inherit = "res.config.settings"
 
-    advance_payment_allow_manual_reference = fields.Boolean(
-        string="Allow Manual Reference",
-        config_parameter="advance_payment.allow_manual_reference",
-        help="เมื่อเปิด ผู้ใช้สามารถระบุเอกสารอ้างอิง (Reference) เองได้ตอนสร้างสัญญา "
-        "หากปิด จะระบุได้เฉพาะจากระบบเท่านั้น (เช่น สร้างจากใบขอซื้อ)",
-    )
-
     advance_payment_strict_own_only = fields.Boolean(
         string="สร้างสัญญาของตนเองเท่านั้น",
         config_parameter="advance_payment.strict_own_only",
@@ -30,9 +23,7 @@ class ResConfigSettings(models.TransientModel):
             (
                 "groups_id",
                 "in",
-                self.env.ref(
-                    "advance_payment.group_advance_payment_loan_officer"
-                ).ids,
+                self.env.ref("advance_payment.group_advance_payment_loan_officer").ids,
             )
         ],
         help="ผู้ที่จะถูกตั้งเป็นเจ้าหน้าที่งานเงินยืมของสัญญาใหม่ทุกฉบับ "
@@ -52,9 +43,7 @@ class ResConfigSettings(models.TransientModel):
             (
                 "groups_id",
                 "in",
-                self.env.ref(
-                    "advance_payment.group_advance_payment_loan_approver"
-                ).ids,
+                self.env.ref("advance_payment.group_advance_payment_loan_approver").ids,
             )
         ],
         help="ผู้ที่จะถูกตั้งเป็นผู้อนุมัติของสัญญาใหม่ทุกฉบับ และได้รับงานให้อนุมัติ "

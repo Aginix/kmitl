@@ -1,5 +1,7 @@
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
+from odoo.osv import expression
+from odoo.tools import plaintext2html
 
 
 class AdvancePayment(models.Model):
@@ -7,30 +9,112 @@ class AdvancePayment(models.Model):
 
     _rec_names_search = ["name", "contract_number", "purchase_request_id.name"]
 
-    # Typed mirror of `reference` when it points at a purchase request: gives
-    # searching, grouping and referential integrity that a bare Reference
-    # (a Char at database level) cannot.
+    # The source model now lives here, not in core (advance_payment ADR-0023).
+    reference = fields.Reference(
+        selection_add=[("purchase.request", "Purchase Request")],
+    )
+
+    # Typed mirror of `reference` when it points at a purchase request, and
+    # the borrower's picker for it: compute for display, inverse for input,
+    # like agx_approval_advance_payment's approval_request_id. Gives searching,
+    # grouping and referential integrity that a bare Reference (a Char at
+    # database level) cannot.
     purchase_request_id = fields.Many2one(
         comodel_name="purchase.request",
         string="Purchase Request",
-        compute="_compute_reference",
+        compute="_compute_purchase_request_id",
+        inverse="_inverse_purchase_request_id",
         store=True,
+        readonly=False,
         index=True,
         ondelete="restrict",
         compute_sudo=False,
+        copy=False,
     )
 
     purchase_request_count = fields.Integer(
         compute="_compute_purchase_request_count",
     )
 
+    # Own compute, not core's _compute_reference: a shared compute group stays
+    # protected while the picker's inverse writes `reference`, leaving
+    # reference_model stale (see agx_approval_advance_payment).
     @api.depends("reference")
-    def _compute_reference(self):
-        super()._compute_reference()
+    def _compute_purchase_request_id(self):
         for rec in self:
+            ref = rec.reference
             rec.purchase_request_id = (
-                rec.reference if rec.reference_model == "purchase.request" else False
+                ref if ref and ref._name == "purchase.request" else False
             )
+
+    def _inverse_purchase_request_id(self):
+        """Picking a request writes it into `reference`, the source of truth."""
+        for rec in self:
+            if rec.purchase_request_id:
+                rec.reference = rec.purchase_request_id
+            elif rec.reference_model == "purchase.request":
+                rec.reference = False
+
+    @api.onchange("purchase_request_id")
+    def _onchange_purchase_request_id(self):
+        """This picker stands in for the `reference` widget, so it has to run
+        the same prefill: `reference` itself is only written by the inverse at
+        save time, long after `_onchange_reference` could fire."""
+        if self.purchase_request_id:
+            self._apply_vals_from_reference()
+
+    @api.onchange("loan_type_id")
+    def _onchange_loan_type_id(self):
+        """The picker is only written into `reference` at save, so super's
+        clear cannot see it — drop it here when the new type does not take
+        purchase requests."""
+        super()._onchange_loan_type_id()
+        if self.loan_type_id.reference_model != "purchase.request":
+            self.purchase_request_id = False
+
+    def _get_reference_picker_domain(self):
+        """Only approved advance-payment requests with no live loan of their
+        own may back a loan — the same checks as _check_reference_status and
+        _check_one_loan_per_purchase_request, offered up front (ADR-0023)."""
+        domain = super()._get_reference_picker_domain()
+        if self.loan_type_id.reference_model == "purchase.request":
+            domain = expression.AND(
+                [
+                    domain,
+                    [
+                        ("state", "=", "approved"),
+                        ("payment_type", "=", "advance"),
+                        "|",
+                        ("advance_payment_id", "=", False),
+                        ("advance_payment_id", "=", self._origin.id),
+                    ],
+                ]
+            )
+        return domain
+
+    @api.constrains("purchase_request_id", "state")
+    def _check_one_loan_per_purchase_request(self):
+        """A purchase request backs one live loan; a cancelled one frees it."""
+        for rec in self.filtered(
+            lambda r: r.purchase_request_id and r.state != "cancel"
+        ):
+            # sudo: an own-only borrower cannot see the other loan.
+            other = self.sudo().search(
+                [
+                    ("purchase_request_id", "=", rec.purchase_request_id.id),
+                    ("state", "!=", "cancel"),
+                    ("id", "!=", rec.id),
+                ],
+                limit=1,
+            )
+            if other:
+                raise ValidationError(
+                    _(
+                        "ใบขอให้จัดหา %(pr)s มีสัญญายืมเงิน %(loan)s อยู่แล้ว",
+                        pr=rec.purchase_request_id.name,
+                        loan=other.name,
+                    )
+                )
 
     @api.depends("purchase_request_id")
     def _compute_purchase_request_count(self):
@@ -40,6 +124,13 @@ class AdvancePayment(models.Model):
     def _check_reference_status(self):
         res = super()._check_reference_status()
         pr = self.purchase_request_id
+        if pr and pr.payment_type != "advance":
+            raise ValidationError(
+                _(
+                    "ใบขอให้จัดหา %(name)s ไม่ได้เลือกวิธีจ่ายเป็นเงินยืม",
+                    name=pr.name,
+                )
+            )
         if pr and pr.state != "approved":
             raise ValidationError(
                 _(
@@ -52,20 +143,20 @@ class AdvancePayment(models.Model):
         return res
 
     def _prepare_vals_from_reference(self):
-        """Pull the loan values off the source purchase request — the mirror of
-        purchase.request._prepare_advance_payment_vals for the manual path."""
+        """Pull the loan values off the picked purchase request. The borrower
+        is kept: anyone may borrow against a request, not only its requester
+        (ADR-0026)."""
         vals = super()._prepare_vals_from_reference()
         pr = self.purchase_request_id
         if pr:
-            pr._check_requested_by_has_employee()
             vals.update(
                 {
-                    "employee_id": pr.requested_by.employee_id.id,
-                    "user_id": self.env.uid,
                     "loan_amount": pr.get_estimated_cost_currency(),
-                    "loan_reason": pr.description or "",
-                    "analytic_distribution": pr.analytic_distribution,
-                    "budget_commitment_id": pr.budget_commitment_id.id,
+                    # "" not "<p></p>": an empty paragraph would satisfy the
+                    # required reason.
+                    "loan_reason": (
+                        plaintext2html(pr.description) if pr.description else ""
+                    ),
                 }
             )
         return vals

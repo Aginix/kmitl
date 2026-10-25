@@ -32,7 +32,7 @@
                 </attribute>
             </xpath>
 
-            <!-- Borrowing is pulled from the loan side: the participant opens
+            <!-- Borrowing is pulled from the loan side: the borrower opens
                  their own สัญญายืม and picks this request (ADR-0003). There is
                  deliberately no "Create Advance Payment" button here. -->
 
