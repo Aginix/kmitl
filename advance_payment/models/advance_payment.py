@@ -430,7 +430,10 @@ class AdvancePayment(models.Model):
         Override in bridge modules to provide model-specific values."""
         return {}
 
-    loan_reason = fields.Text(
+    # Html: the reason is often copied from a source document's rich-text
+    # description (the approval request's), which a Text field shows as raw
+    # tags.
+    loan_reason = fields.Html(
         string="Loan Reason",
         required=True,
         states=REASON_READONLY_STATES,

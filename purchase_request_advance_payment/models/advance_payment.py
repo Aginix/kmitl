@@ -1,6 +1,7 @@
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 from odoo.osv import expression
+from odoo.tools import plaintext2html
 
 
 class AdvancePayment(models.Model):
@@ -110,7 +111,7 @@ class AdvancePayment(models.Model):
                     "employee_id": pr.requested_by.employee_id.id,
                     "user_id": self.env.uid,
                     "loan_amount": pr.get_estimated_cost_currency(),
-                    "loan_reason": pr.description or "",
+                    "loan_reason": plaintext2html(pr.description or ""),
                     "analytic_distribution": pr.analytic_distribution,
                     "budget_commitment_id": pr.budget_commitment_id.id,
                 }

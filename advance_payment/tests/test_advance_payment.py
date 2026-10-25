@@ -1251,7 +1251,7 @@ class TestAdvancePayment(TransactionCase):
         ap = self._make(requested_by=self.user)
         ap.with_user(self.user).action_submit()
         ap.with_user(self.user).write({"loan_reason": "updated"})
-        self.assertEqual(ap.loan_reason, "updated")
+        self.assertIn("updated", ap.loan_reason)
 
     def test_bank_editable_by_officer_until_transfer(self):
         ap = self._make(requested_by=self.user)

@@ -1,5 +1,6 @@
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
+from odoo.tools import plaintext2html
 
 
 class PurchaseRequest(models.Model):
@@ -55,7 +56,7 @@ class PurchaseRequest(models.Model):
             "reference": "purchase.request,%s" % self.id,
             "loan_amount": self.get_estimated_cost_currency(),
             "loan_type_id": loan_type.id,
-            "loan_reason": self.description or "",
+            "loan_reason": plaintext2html(self.description or ""),
             "analytic_distribution": self.analytic_distribution,
             "budget_commitment_id": self.budget_commitment_id.id,
         }
@@ -64,11 +65,17 @@ class PurchaseRequest(models.Model):
         """Create a draft advance payment agreement from this purchase request."""
         self.ensure_one()
         if self.state != "approved":
-            raise UserError(_("Only approved purchase requests can create advance payments."))
+            raise UserError(
+                _("Only approved purchase requests can create advance payments.")
+            )
         if self.payment_type != "advance":
-            raise UserError(_("Payment type must be 'Advance' to create an advance payment."))
+            raise UserError(
+                _("Payment type must be 'Advance' to create an advance payment.")
+            )
         if self.advance_payment_id:
-            raise UserError(_("An advance payment already exists for this purchase request."))
+            raise UserError(
+                _("An advance payment already exists for this purchase request.")
+            )
         self._check_requested_by_has_employee()
 
         vals = self._prepare_advance_payment_vals()
