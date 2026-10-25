@@ -3,7 +3,7 @@ import logging
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError, ValidationError
-from odoo.tools import float_compare, formatLang
+from odoo.tools import float_compare, float_is_zero, formatLang
 
 _logger = logging.getLogger(__name__)
 
@@ -518,6 +518,14 @@ class BudgetCommitment(models.Model):
             if (
                 float_compare(reserved, 0.0, precision_rounding=rounding) > 0
                 and float_compare(consumed, reserved, precision_rounding=rounding) >= 0
+            ) or (
+                # Returned in full: an emptied reservation otherwise stays
+                # 'reserved' (a transfer may top it up again), but returning
+                # its whole leftover is how a commitment closes.
+                float_is_zero(reserved, precision_rounding=rounding)
+                and record.line_ids.filtered(
+                    lambda line: line.state == "posted" and line.is_return
+                )
             ):
                 new_state = "done"
             elif (
@@ -539,7 +547,7 @@ class BudgetCommitment(models.Model):
         for record in self:
             if record.amount < 0:
                 raise UserError(_("Commitment cap amount cannot be negative."))
-            if record.state != "draft" and record.amount <= 0:
+            if record.state not in ("draft", "cancel") and record.amount <= 0:
                 raise UserError(_("Commitment cap amount must be positive."))
 
     # --- Display ---
@@ -1086,7 +1094,7 @@ class BudgetCommitment(models.Model):
         amount = self.available_to_obligate
         if amount <= 0:
             return False
-        line = self.with_context(skip_plan_autoclose=True)._post_budget_event(
+        return self.with_context(skip_plan_autoclose=True)._post_budget_event(
             "reserve",
             -amount,
             source=source,
@@ -1094,12 +1102,6 @@ class BudgetCommitment(models.Model):
             is_return=True,
             date=date,
         )
-        # Nothing consumed: _sync_state leaves an emptied reservation
-        # 'reserved' (a transfer may top it up again), but returning its whole
-        # leftover is how a commitment closes.
-        if self.state == "reserved" and self.currency_id.is_zero(self.total_reserved):
-            self.state = "done"
-        return line
 
     def action_view_budget_moves(self):
         """View related budget moves"""

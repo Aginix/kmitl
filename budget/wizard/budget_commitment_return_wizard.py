@@ -69,22 +69,6 @@ class BudgetCommitmentReturnWizard(models.TransientModel):
         required=True,
     )
 
-    # Display fields from the header (readonly) — echo the line that gets posted.
-    account_id = fields.Many2one(
-        related="commitment_id.account_id", string="รหัสงบประมาณ"
-    )
-    department_analytic_id = fields.Many2one(
-        related="commitment_id.department_analytic_id", string="ส่วนงาน"
-    )
-    source_analytic_id = fields.Many2one(
-        related="commitment_id.source_analytic_id", string="แหล่งเงิน"
-    )
-    activity_analytic_id = fields.Many2one(
-        related="commitment_id.activity_analytic_id", string="กิจกรรม"
-    )
-    fund_analytic_id = fields.Many2one(
-        related="commitment_id.fund_analytic_id", string="กองทุน"
-    )
     currency_id = fields.Many2one(related="commitment_id.currency_id")
 
     # --- read by the budget_commitment_return widget ----------------------
@@ -148,14 +132,13 @@ class BudgetCommitmentReturnWizard(models.TransientModel):
         source = None
         if ctx.get("default_res_model") and ctx.get("default_res_id"):
             source = self.env[ctx["default_res_model"]].browse(ctx["default_res_id"])
-        amount = self.return_amount
         line = self.commitment_id._return_leftover(
             source=source, name=self.name, date=self.date
         )
         if not line:
             raise UserError(_("No leftover reserved budget to return."))
         self.write(
-            {"step": "done", "return_line_id": line.id, "returned_amount": amount}
+            {"step": "done", "return_line_id": line.id, "returned_amount": -line.amount}
         )
         return {
             "type": "ir.actions.act_window",
