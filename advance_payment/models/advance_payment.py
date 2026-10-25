@@ -328,7 +328,10 @@ class AdvancePayment(models.Model):
         loan_type = self.loan_type_id
         if not loan_type.reference_model or not loan_type.reference_domain:
             return []
-        return safe_eval(loan_type.reference_domain, self._get_reference_eval_context())
+        # list(): the constraint accepts a tuple, which `[...] + domain` cannot.
+        return list(
+            safe_eval(loan_type.reference_domain, self._get_reference_eval_context())
+        )
 
     def _get_reference_picker_domain(self):
         """Hook: the documents the typed picker offers. Bridges AND their

@@ -14,6 +14,7 @@ A purchase request had a **สร้างสัญญาเงินยืม**
 
 ## Consequences
 
-- The button's other check, that only the requester (`requested_by`) could create the loan, is not built in. The picked request still sets the borrower to its requester, and only the borrower can submit. A narrower rule can go in the loan type's Reference filter (ADR-0023), e.g. `[('requested_by', '=', user_id)]`.
-- On a database with loans made by the button (UAT), `advance_payment_id` keeps its stored value until a loan of that request changes. Those values were set by the same link the compute uses, so they agree.
+- **Anyone may borrow against a request**, not only its requester: someone else may borrow for the purchase. The button's requester-only check is not carried over, and picking a request no longer sets the borrower to its requester — it fills only the amount and the reason. A narrower rule can still go in the loan type's Reference filter (ADR-0023) if one is ever needed.
+- **Cancelling a loan leaves the request alone.** `advance_payment_disbursement` used to reject the purchase request when its loan was cancelled; that override is removed. The request may still go ahead another way (e.g. สำรองจ่าย), and it is free for a new loan.
+- On a database with loans made by the button (UAT), `advance_payment_id` keeps its stored value until a loan of that request changes, so a request whose loan was cancelled still points at it. Recompute once after deploying: `env.add_to_compute(env['purchase.request']._fields['advance_payment_id'], env['purchase.request'].search([('advance_payment_id', '!=', False)]))` then `env['purchase.request'].flush_model()` in an Odoo shell. Production never had the module.
 - The PR's สัญญาเงินยืม smart button counts the loan as the reader (`advance_payment_count`, `depends_context("uid")`). A PR approver or buyer who may not read the loan sees no button, rather than a button that opens an AccessError.

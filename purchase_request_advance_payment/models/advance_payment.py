@@ -143,16 +143,20 @@ class AdvancePayment(models.Model):
         return res
 
     def _prepare_vals_from_reference(self):
-        """Pull the loan values off the picked purchase request."""
+        """Pull the loan values off the picked purchase request. The borrower
+        is kept: anyone may borrow against a request, not only its requester
+        (ADR-0026)."""
         vals = super()._prepare_vals_from_reference()
         pr = self.purchase_request_id
         if pr:
-            pr._check_requested_by_has_employee()
             vals.update(
                 {
-                    "employee_id": pr.requested_by.employee_id.id,
                     "loan_amount": pr.get_estimated_cost_currency(),
-                    "loan_reason": plaintext2html(pr.description or ""),
+                    # "" not "<p></p>": an empty paragraph would satisfy the
+                    # required reason.
+                    "loan_reason": (
+                        plaintext2html(pr.description) if pr.description else ""
+                    ),
                 }
             )
         return vals

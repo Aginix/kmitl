@@ -1,5 +1,4 @@
-from odoo import _, api, fields, models
-from odoo.exceptions import UserError
+from odoo import api, fields, models
 
 
 class PurchaseRequest(models.Model):
@@ -44,21 +43,6 @@ class PurchaseRequest(models.Model):
                 AdvancePayment.search_count([("id", "=", rec.advance_payment_id.id)])
                 if rec.advance_payment_id
                 else 0
-            )
-
-    def _check_requested_by_has_employee(self):
-        """`requested_by` is a res.users here (OCA's purchase.request), but the
-        advance payment it seeds requires an hr.employee (ADR-0014) — guard
-        with a readable error instead of letting the required field on
-        advance.payment raise an ambiguous one."""
-        self.ensure_one()
-        if not self.requested_by.employee_id:
-            raise UserError(
-                _(
-                    "ผู้ขอของใบขอให้จัดหายังไม่ถูกผูกกับข้อมูลบุคลากร"
-                    " (%(user)s) จึงสร้างสัญญายืมเงินไม่ได้",
-                    user=self.requested_by.name,
-                )
             )
 
     def action_view_advance_payment(self):

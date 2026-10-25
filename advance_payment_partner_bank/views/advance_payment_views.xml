@@ -11,7 +11,7 @@
                     string="สร้างบัญชีธนาคาร"
                     type="object"
                     class="btn-primary"
-                    attrs="{'invisible': ['|', ('state', '!=', 'to_verify'), ('use_unlisted_bank', '=', False)]}"
+                    attrs="{'invisible': ['|', '|', ('state', '!=', 'to_verify'), ('use_unlisted_bank', '=', False), ('can_verify', '=', False)]}"
                     groups="advance_payment.group_advance_payment_loan_officer"
                 />
             </xpath>

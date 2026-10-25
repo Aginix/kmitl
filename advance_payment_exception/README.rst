@@ -21,4 +21,8 @@ Deployment
 ==========
 
 ``-u`` does not install a new auto-install module: run
-``-i advance_payment_exception`` on existing databases.
+``-i advance_payment_exception`` on existing databases, **in the same
+command** as ``-u advance_payment``. Upgrading ``advance_payment`` alone
+first drops the ``advance.payment`` value of ``exception.rule.model``
+(``ondelete`` cascade), which deletes every advance-payment rule, custom
+ones included, before ``pre_init_hook`` can adopt them.

@@ -41,6 +41,9 @@ class AdvancePaymentPartnerBankWizard(models.TransientModel):
             "advance_payment.group_advance_payment_loan_officer"
         ):
             raise AccessError(_("Only a loan officer can create the bank account."))
+        # Same authority as verify: the named officer, not any group member
+        # (ADR-0013) — the account is created under sudo below.
+        loan._check_verify_permission()
         if loan.state != "to_verify":
             raise UserError(
                 _(

@@ -1,4 +1,4 @@
-from odoo.exceptions import UserError, ValidationError
+from odoo.exceptions import ValidationError
 from odoo.tests.common import TransactionCase, tagged
 
 
@@ -16,8 +16,7 @@ class TestPurchaseRequestAdvancePayment(TransactionCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.manager = cls.env.ref("base.user_admin")
-        # The advance payment borrower is now hr.employee (ADR-0014); PR's
-        # requested_by needs one to seed the loan's borrower. hr's
+        # The advance payment borrower is now hr.employee (ADR-0014). hr's
         # own data.xml already seeds hr.employee_admin with
         # user_id=base.user_admin on every database — reuse it instead of
         # creating a second one, which would violate hr_employee_user_uniq.
@@ -176,11 +175,15 @@ class TestPurchaseRequestAdvancePayment(TransactionCase):
         self.assertEqual(pr.with_user(outsider).advance_payment_count, 0)
         self.assertEqual(pr.with_user(self.manager).advance_payment_count, 1)
 
-    def test_picking_pr_prefills_loan(self):
+    def test_picking_pr_prefills_loan_and_keeps_borrower(self):
+        """Anyone may borrow against a request, not only its requester: the
+        amount and reason come from the PR, the borrower stays (ADR-0026)."""
         pr = self._make_pr(estimated_cost=7500)
         pr.description = "Need it"
+        pr.requested_by = self.officer
         ap = self.env["advance.payment"].new(
             {
+                "employee_id": self.manager_employee.id,
                 "loan_type_id": self.env.ref(
                     "advance_payment.loan_type_procurement"
                 ).id,
@@ -188,7 +191,7 @@ class TestPurchaseRequestAdvancePayment(TransactionCase):
             }
         )
         ap._onchange_purchase_request_id()
-        self.assertEqual(ap.employee_id, pr.requested_by.employee_id)
+        self.assertEqual(ap.employee_id, self.manager_employee)
         self.assertEqual(ap.loan_amount, 7500)
         self.assertIn("Need it", ap.loan_reason)
 
@@ -256,22 +259,6 @@ class TestPurchaseRequestAdvancePayment(TransactionCase):
         pr = self._make_pr(payment_type="direct")
         with self.assertRaises(ValidationError):
             self._make_ap(pr)
-
-    def test_pick_requires_requested_by_employee(self):
-        """PR whose requested_by has no linked hr.employee cannot seed a loan —
-        a readable UserError, not the required-field error (ADR-0014)."""
-        no_employee_user = self.env["res.users"].create(
-            {
-                "name": "No Employee Requester",
-                "login": "no_employee_requester_pr_ap",
-                "email": "no_employee_requester_pr_ap@test.local",
-            }
-        )
-        pr = self._make_pr()
-        pr.requested_by = no_employee_user
-        ap = self.env["advance.payment"].new({"purchase_request_id": pr.id})
-        with self.assertRaises(UserError):
-            ap._onchange_purchase_request_id()
 
     # ------------------------------------------------------------------ #
     # Cross-post on disbursement (action_start)                            #
