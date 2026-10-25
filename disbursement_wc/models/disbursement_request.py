@@ -144,12 +144,18 @@ class DisbursementRequest(models.Model):
         approved it get a Todo to see to it."""
         super()._on_settlement_walked_back(previous_stage)
         stages = dict(self._fields["settlement_stage"]._description_selection(self.env))
+        walked_back = self.env.ref("disbursement_wc.mail_activity_dr_money_walked_back")
         for rec in self.filtered(lambda r: r.state == "done"):
             station = rec._work_center_last_visit().work_center_id
             if not station:
                 continue
             users, _source = station._responsible_users()
-            for user in users:
+            # A voucher cancelled through its payment and its move fires the
+            # hook twice for the one walk back: one Todo per person is enough.
+            pending = rec.sudo().activity_ids.filtered(
+                lambda a: a.activity_type_id == walked_back
+            ).user_id
+            for user in users - pending:
                 rec.sudo().activity_schedule(
                     "disbursement_wc.mail_activity_dr_money_walked_back",
                     user_id=user.id,

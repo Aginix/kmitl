@@ -19,8 +19,11 @@ What entering the circuit means
 * Sending back (the Return wizard), resetting to draft and cancelling take the request
   out of the circuit. Inside it only the people responsible at the station holding the
   request may do so; there is no manager override. A ``done`` request cannot be reset.
-* With no active route the request stays ``signed`` and a warning is logged, so
-  installing the module locks nobody out.
+* With no active route the request stays ``signed`` and a warning is logged.
+  The module does seed an active route, so a request signed after the install enters
+  its first station at once: configure the stations (below) before signing starts, or
+  until then only a Station Administrator can move the request and no act is offered.
+  Requests that were already ``signed`` when the module was installed stay ``signed``.
 * If the money of a ``done`` request goes back a step (a bill reset, a cheque bounced),
   the request stays ``done`` and the people of the station that last approved it get a
   Todo.

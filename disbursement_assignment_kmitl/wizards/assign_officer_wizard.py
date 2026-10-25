@@ -1,6 +1,7 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import UserError
 
 OFFICER_GROUP = "disbursement.group_disbursement_officer"
 
@@ -57,6 +58,11 @@ class DisbursementAssignOfficerWizard(models.TransientModel):
         self.ensure_one()
         request = self.request_id
         request._work_center_check_move()
+        if self.user_id not in self.allowed_user_ids:
+            raise UserError(
+                _("%s is not one of the people responsible at this station.")
+                % self.user_id.display_name
+            )
         old_officer = request.assigned_to
         request.assigned_to = self.user_id
         if old_officer and old_officer != self.user_id:

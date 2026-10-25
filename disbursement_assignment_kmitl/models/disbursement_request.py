@@ -115,6 +115,8 @@ class DisbursementRequest(models.Model):
         for rec in self:
             if rec.assigned_to == me:
                 continue
+            if rec.state == "in_progress":
+                rec._work_center_check_move()
             if not rec._assignment_can_claim():
                 raise UserError(
                     _("This document is already assigned to %s.")

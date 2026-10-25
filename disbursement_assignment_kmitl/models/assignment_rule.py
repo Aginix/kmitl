@@ -148,7 +148,12 @@ class DisbursementAssignmentRule(models.Model):
         domain.append(
             ("partner_type_id", "in", ptype.ids + [False])
         )
-        return self.search(domain, limit=1)
+        for rule in self.search(domain):
+            # The officer was checked when the rule was saved; the station's
+            # people may have changed since.
+            if not rule.work_center_id or rule.user_id in rule.allowed_user_ids:
+                return rule
+        return self.browse()
 
     @api.model
     def action_apply_to_pending(self):

@@ -31,6 +31,13 @@ msgid "%(user)s is not a member of %(station)s."
 msgstr "%(user)s ไม่ได้เป็นสมาชิกของ %(station)s"
 
 #. module: disbursement_assignment_kmitl
+#. odoo-python
+#: code:addons/disbursement_assignment_kmitl/wizards/assign_officer_wizard.py:0
+#, python-format
+msgid "%s is not one of the people responsible at this station."
+msgstr "%s ไม่ใช่ผู้รับผิดชอบที่สถานีนี้"
+
+#. module: disbursement_assignment_kmitl
 #: model:ir.model.fields,field_description:disbursement_assignment_kmitl.field_disbursement_assignment_rule__active
 msgid "Active"
 msgstr "ใช้งาน"
