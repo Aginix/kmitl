@@ -427,10 +427,19 @@ export class AnnotationEditor {
             const canvas = htmlElement("canvas", "o_agx_annotation_source");
             canvas.width = Math.round(viewport.width);
             canvas.height = Math.round(viewport.height);
-            await sheet.pdfPage.render({
-                canvasContext: canvas.getContext("2d"),
-                viewport,
-            }).promise;
+            try {
+                await sheet.pdfPage.render({
+                    canvasContext: canvas.getContext("2d"),
+                    viewport,
+                }).promise;
+            } catch (error) {
+                // Callers do not wait for the page: a failed or cancelled
+                // render (the viewer moved on) must not become an uncaught error.
+                if (error?.name !== "RenderingCancelledException") {
+                    console.error(error);
+                }
+                return;
+            }
             if (!sheet.visible) {
                 // Scrolled away while rendering.
                 canvas.width = 0;
