@@ -90,6 +90,16 @@ class BudgetSupportRequest(models.Model):
         name = (analytic.complete_name or analytic.name or "") if analytic else ""
         return name.replace(" / ", " ")
 
+    def _prepare_transfer_vals(self):
+        """The transfer posts on the strength of this request's หนังสือ (no
+        letter of its own), so it carries that letter's number. The field
+        comes from budget_transfer_sarabun's เลขที่หนังสือ (PR #1570) — skipped
+        until that is installed."""
+        vals = super()._prepare_transfer_vals()
+        if "sarabun_document_number" in self.env["budget.transfer"]._fields:
+            vals["sarabun_document_number"] = self.sarabun_document_number
+        return vals
+
     # --- submit: wrap super() to enclose the attachments -----------------
     def action_submit_to_sarabun(self):
         action = super().action_submit_to_sarabun()

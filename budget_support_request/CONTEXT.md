@@ -62,8 +62,9 @@ cannot be `create()`-d before central has picked the funding account; pre-fillin
 context defaults (`default_*`) lets the web-client new-record form carry
 `support_request_id` and the known amounts without violating that constraint — the record
 is only persisted once central fills in the account and saves. No second e-Saraban letter
-is issued — the request's own approval is the authority; the generated transfer is posted
-via the Budget Manager direct-post fallback, the commitment reserved directly. The request
+is issued — the request's own approval is the authority; the generated transfer posts the
+moment central confirms it (ยืนยัน), with no second approver and no สร้างหนังสือ, and carries
+the request's เลขที่หนังสือ; the commitment is reserved directly. The request
 links to the generated document and moves to `in_progress` the moment that document is
 posted/reserved (not merely opened); central marks the request `done` by hand.
 _Avoid_: execute, allocate, "spawns a draft" (nothing is persisted until central saves)
