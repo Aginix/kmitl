@@ -272,6 +272,20 @@ class DisbursementRequest(models.Model):
         )
         return True
 
+    def _disbursement_check_act(self, code):
+        """Block every act while a correction is pending on the source side:
+        the DR stays at its station when returned, so without this guard an act
+        (validate, approve, consume the budget …) could run against the stale
+        data before the requester confirms the correction."""
+        if self.filtered("returned_to_source"):
+            raise UserError(
+                _(
+                    "This request was returned to its source document. "
+                    "Please wait for the correction to be confirmed."
+                )
+            )
+        return super()._disbursement_check_act(code)
+
     def _resolve_source_correction_todos(self):
         """The officer acted on the corrected request: auto-resolve the
         "continue" / "correction submitted" To-Dos on both sides. Called by the

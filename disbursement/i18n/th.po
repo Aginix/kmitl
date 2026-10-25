@@ -869,3 +869,11 @@ msgstr "หัก ณ ที่จ่าย"
 #, python-format
 msgid "You do not hold the role this act requires."
 msgstr "คุณไม่มีบทบาทที่การกระทำนี้ต้องการ"
+
+#. module: disbursement
+#: code:addons/disbursement/models/disbursement_return_source.py:0
+#, python-format
+msgid ""
+"This request was returned to its source document. Please wait for the "
+"correction to be confirmed."
+msgstr "ใบขอเบิกนี้ถูกตีกลับไปยังต้นเรื่องแล้ว กรุณารอการยืนยันการแก้ไข"

@@ -24,7 +24,8 @@ class DisbursementRequestLine(models.Model):
         return super().create(vals_list)
 
     def write(self, vals):
-        if "amount" in vals:
+        # The consumed amount is the request's total, taxes included.
+        if {"amount", "tax_ids"} & set(vals):
             self._check_budget_not_consumed(self.request_id)
         return super().write(vals)
 

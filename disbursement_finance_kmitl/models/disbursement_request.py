@@ -136,16 +136,6 @@ class DisbursementRequest(models.Model):
     # ------------------------------------------------------------------
     # Settlement stage: the voucher legs
     # ------------------------------------------------------------------
-    def init(self):
-        super().init()
-        # The column was filled with "none" when core was installed or upgraded,
-        # before the bridges were loaded: recompute it from the bills and the
-        # vouchers.
-        self.env.add_to_compute(
-            self._fields["settlement_stage"],
-            self.with_context(active_test=False).search([]),
-        )
-
     def _bills_all_posted(self):
         """The request has bills and every live one is posted: a payee whose bill
         is still to come must not be left behind by an audit or a voucher batch,
@@ -171,6 +161,7 @@ class DisbursementRequest(models.Model):
         )
 
     @api.depends(
+        "bill_ids.payment_state",
         "payment_ids.state",
         "payment_ids.finance_state",
         "payment_line_ids.payment_id",
@@ -221,14 +212,16 @@ class DisbursementRequest(models.Model):
     can_authorize_payment = fields.Boolean(compute="_compute_payment_acts")
     can_edit_payment_subject = fields.Boolean(compute="_compute_payment_acts")
 
-    @api.depends("state", "bill_ids.state", "payment_ids.state")
+    @api.depends("state", "bill_ids.state", "payment_ids.state", "payment_authorizer_id")
     @api.depends_context("uid")
     def _compute_payment_acts(self):
         for rec in self:
             audit = rec._disbursement_act_offered("disbursement.audit_payment")
             rec.can_audit_payment = audit and rec._bills_all_posted()
-            rec.can_authorize_payment = rec._disbursement_act_offered(
-                "disbursement.authorize_payment"
+            # Once authorized, Create Payment is the way back in: authorizing
+            # again would only re-stamp and fan the To-pay Todo out twice.
+            rec.can_authorize_payment = not rec.payment_authorizer_id and (
+                rec._disbursement_act_offered("disbursement.authorize_payment")
             )
             # The subject is the auditor's to choose, until a voucher exists.
             rec.can_edit_payment_subject = audit and not any(
@@ -773,6 +766,10 @@ class DisbursementRequest(models.Model):
         why the chatter can name them.
         """
         self.ensure_one()
+        if not self.payment_authorizer_id:
+            raise UserError(
+                _("The disbursement must be authorized before creating the payment.")
+            )
         if not self._bills_all_posted():
             raise UserError(_("Post the bills first."))
         existing_payments = self.payment_ids.filtered(lambda p: p.state != "cancel")

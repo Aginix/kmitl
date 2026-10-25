@@ -715,3 +715,9 @@ msgstr "มีใบจ่ายเงิน %s แล้ว"
 #, python-format
 msgid "the request is cancelled."
 msgstr "ใบขอเบิกถูกยกเลิกแล้ว"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
+#, python-format
+msgid "The disbursement must be authorized before creating the payment."
+msgstr "ต้องอนุมัติเบิกจ่ายก่อนจึงจะสร้างใบจ่ายได้"

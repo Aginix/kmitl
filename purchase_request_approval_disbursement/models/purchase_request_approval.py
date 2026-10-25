@@ -153,18 +153,17 @@ class PurchaseRequestApproval(models.Model):
 
     @api.model
     def _dr_billing_status(self, dr):
-        """Billing status a single request contributes: it is in progress once
-        the circuit has it (`in_progress`/`done`) and done when the books have
-        it (`settlement_stage == 'booked'`)."""
+        """Billing status a single (non-cancelled) request contributes: done
+        when the books have it (`settlement_stage == 'booked'`), in progress
+        once the circuit has it (`in_progress`/`done`) or its money has started
+        — a request may be billed while still `signed`."""
         if dr.state == "draft":
             return "draft"
-        if dr.state in ("submitted", "signed"):
-            return "submitted"
-        if dr.state == "cancel":
-            return "cancel"
         if dr.settlement_stage == "booked":
             return "done"
-        return "in_progress"
+        if dr.state in ("in_progress", "done") or dr.settlement_stage != "none":
+            return "in_progress"
+        return "submitted"
 
     @api.depends(
         "disbursement_request_ids",
