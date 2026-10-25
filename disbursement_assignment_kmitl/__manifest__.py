@@ -11,6 +11,7 @@
     "license": "LGPL-3",
     "depends": [
         "disbursement",
+        "disbursement_validation",
     ],
     "data": [
         "security/security.xml",

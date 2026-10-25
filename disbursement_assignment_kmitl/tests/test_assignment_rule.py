@@ -284,7 +284,7 @@ class TestDisbursementAssignment(TransactionCase):
         dr = self._make_dr()
         self.assertTrue(self._todos(dr, self.officer_a))
         dr.with_user(self.officer_b).action_validate()
-        self.assertEqual(dr.state, "verified")
+        self.assertEqual(dr.verifier_id, self.officer_b)
         self.assertFalse(self._todos(dr, self.officer_a))
 
     # -- takeover guard --------------------------------------------------
