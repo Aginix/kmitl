@@ -1,6 +1,6 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 
-from odoo import _, api, fields, models
+from odoo import _, _lt, api, fields, models
 from odoo.exceptions import UserError
 from odoo.fields import Command
 from odoo.osv import expression
@@ -8,38 +8,6 @@ from odoo.osv import expression
 
 class DisbursementRequest(models.Model):
     _inherit = "disbursement.request"
-
-    state = fields.Selection(
-        selection_add=[
-            ("bills_posted", "Bills Posted"),
-            ("cancel",),
-        ],
-        ondelete={"bills_posted": "set default"},
-    )
-
-    pipeline_status = fields.Selection(
-        selection_add=[
-            ("bill_draft", "Bill Draft"),
-            ("bill_posted", "Bill Posted"),
-        ],
-        ondelete={
-            "bill_draft": "set default",
-            "bill_posted": "set default",
-        },
-    )
-
-    display_status = fields.Selection(
-        selection_add=[
-            ("bill_draft", "Bill Draft"),
-            ("bill_posted", "Bill Posted"),
-            ("bills_posted", "Bills Posted"),
-        ],
-        ondelete={
-            "bill_draft": "set default",
-            "bill_posted": "set default",
-            "bills_posted": "set default",
-        },
-    )
 
     bill_ids = fields.One2many(
         comodel_name="account.move",
@@ -53,6 +21,8 @@ class DisbursementRequest(models.Model):
         string="Bill Count",
         compute="_compute_bill_count",
     )
+
+    can_create_bill = fields.Boolean(compute="_compute_can_create_bill")
 
     move_line_count = fields.Integer(
         string="Move Line Count",
@@ -121,26 +91,71 @@ class DisbursementRequest(models.Model):
             rec.related_move_ids = moves
             rec.related_move_count = len(moves)
 
-    @api.depends("bill_ids", "bill_ids.state")
-    def _compute_pipeline_status(self):
-        super()._compute_pipeline_status()
-        for rec in self:
-            if rec.state not in ("approved", "bills_posted"):
-                continue
-            active_bills = rec.bill_ids.filtered(lambda b: b.state != "cancel")
-            if not active_bills:
-                continue
-            if all(b.state == "posted" for b in active_bills):
-                rec.pipeline_status = "bill_posted"
-            else:
-                rec.pipeline_status = "bill_draft"
+    # ------------------------------------------------------------------
+    # Settlement stage: the bill leg
+    # ------------------------------------------------------------------
+    def init(self):
+        super().init()
+        # The column was filled with "none" when core was installed or upgraded,
+        # before this override was loaded: recompute it from the bills.
+        self.env.add_to_compute(
+            self._fields["settlement_stage"],
+            self.with_context(active_test=False).search([]),
+        )
 
-    @api.depends("state", "pipeline_status")
-    def _compute_display_status(self):
-        super()._compute_display_status()
+    @api.depends("bill_ids", "bill_ids.state")
+    def _compute_settlement_stage(self):
+        """Billed once every active bill is posted. Read from ``bill_ids``,
+        never from ``related_move_ids``, so a cash and revenue handover never
+        counts as a bill."""
+        super()._compute_settlement_stage()
         for rec in self:
-            if rec.state == "bills_posted":
-                rec.display_status = "bills_posted"
+            active = rec.bill_ids.filtered(lambda b: b.state != "cancel")
+            if active and all(b.state == "posted" for b in active):
+                rec.settlement_stage = "billed"
+
+    @api.depends("bill_ids", "bill_ids.state")
+    def _compute_can_edit(self):
+        super()._compute_can_edit()
+
+    def _can_edit_blocked(self, kind):
+        """A bill, even a draft one, was raised from the lines, the dimensions
+        and the budget: they are frozen until it is cancelled."""
+        return super()._can_edit_blocked(kind) or (
+            kind in ("lines", "dimensions", "budget")
+            and any(bill.state != "cancel" for bill in self.bill_ids)
+        )
+
+    def _on_bills_posted(self):
+        """Every active bill of the request is now posted. Bridges hang what
+        follows a posted bill on this (the payment lines)."""
+
+    # ------------------------------------------------------------------
+    # The create-bill act
+    # ------------------------------------------------------------------
+    @api.model
+    def _disbursement_acts(self):
+        return super()._disbursement_acts() + [
+            {
+                "code": "disbursement.create_bill",
+                "name": _lt("Create Bill"),
+                "kind": "act",
+                "group": "accounting_kmitl.group_accounting_kmitl_user",
+                # Money can walk back after the circuit is done: a bill may be
+                # raised again then.
+                "states": ("signed", "in_progress", "done"),
+                "sequence": 50,
+                "module": "disbursement_accounting_kmitl",
+            }
+        ]
+
+    @api.depends("state", "bill_ids.state")
+    @api.depends_context("uid")
+    def _compute_can_create_bill(self):
+        for rec in self:
+            rec.can_create_bill = rec._disbursement_act_offered(
+                "disbursement.create_bill"
+            ) and not any(bill.state != "cancel" for bill in rec.bill_ids)
 
     # ------------------------------------------------------------------
     # Bill creation
@@ -149,8 +164,8 @@ class DisbursementRequest(models.Model):
         """Create vendor bill(s) from disbursement request."""
         self.ensure_one()
 
-        if self.state != "approved":
-            raise UserError(_("Only approved requests can be used to create bills."))
+        if self.state == "cancel":
+            raise UserError(_("A cancelled request cannot be billed."))
 
         bills = self._create_bills()
 
@@ -233,6 +248,7 @@ class DisbursementRequest(models.Model):
     # ------------------------------------------------------------------
     def action_create_bill(self):
         self.ensure_one()
+        self._disbursement_check_act("disbursement.create_bill")
         existing_bills = self.bill_ids.filtered(lambda b: b.state != "cancel")
         if existing_bills:
             raise UserError(
@@ -243,6 +259,7 @@ class DisbursementRequest(models.Model):
                 % ", ".join(existing_bills.mapped("name"))
             )
         bills = self._create_bill()
+        self._disbursement_act_done("disbursement.create_bill")
         if len(bills) == 1:
             return {
                 "type": "ir.actions.act_window",
@@ -261,24 +278,20 @@ class DisbursementRequest(models.Model):
         }
 
     def action_post_bills(self):
-        """Post all unposted bills and transition DR state to bills_posted.
+        """Post all unposted bills.
 
         Programmatic/demo entry point only — it posts bills directly, bypassing
         the account.move approval. In the UI bills are posted by approving them
         on the account.move (Approve = post); there is no "Post Bills" button.
+        The request's settlement stage follows the bills by itself.
         """
         for record in self:
-            if record.state != "approved":
-                raise UserError(
-                    _("Only approved disbursement requests can post bills.")
-                )
             unposted_bills = record.bill_ids.filtered(
                 lambda b: b.state in ("draft", "submitted")
             )
             if not unposted_bills:
                 raise UserError(_("No bills to post."))
             unposted_bills.action_post()
-            record.state = "bills_posted"
         return True
 
     # ------------------------------------------------------------------
@@ -337,18 +350,3 @@ class DisbursementRequest(models.Model):
             if draft_bills:
                 draft_bills.button_cancel()
         return super().action_cancel()
-
-    def _action_return_to_verification(self, reason):
-        """Accounting may return a request to verification only before a bill
-        exists; once billed the accountant must cancel the bill(s) first."""
-        for record in self:
-            active_bills = record.bill_ids.filtered(lambda b: b.state != "cancel")
-            if active_bills:
-                raise UserError(
-                    _(
-                        "Cannot return to verification: bill(s) %s exist. "
-                        "Cancel the bill(s) first."
-                    )
-                    % ", ".join(active_bills.mapped("name"))
-                )
-        return super()._action_return_to_verification(reason)

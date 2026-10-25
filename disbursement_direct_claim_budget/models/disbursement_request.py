@@ -9,7 +9,7 @@ class DisbursementRequest(models.Model):
 
     A direct claim may still draw a reservation and is then consumed through
     it like any request. Without one it carries its own dimensions and budget
-    code, and its final approval posts a direct consumption (ตัดงบตรง, budget
+    code, and its consume-budget act posts a direct consumption (ตัดงบตรง, budget
     ADR-0019) that cancelling the request undoes.
     """
 
@@ -33,17 +33,17 @@ class DisbursementRequest(models.Model):
         """Post a direct consumption for the request's amount on its own
         dimensions and budget code.
 
-        The request's approval chain stands in for the Budget-Manager right
+        The consume act's role stands in for the Budget-Manager right
         (``budget_direct_consume_by_document``); the pool and dimension checks
-        still run on posting, so an exhausted pool aborts the approval.
+        still run on posting, so an exhausted pool aborts the act.
         """
         self.ensure_one()
         # Idempotent across a return-to-verification round trip. Read as sudo:
-        # the approver need not hold any budget right.
+        # the actor need not hold any budget right.
         if self.sudo().budget_direct_move_id.state == "posted":
             return
         if not self.budget_account_id:
-            raise UserError(_("A direct claim needs a budget code before approval."))
+            raise UserError(_("A direct claim needs a budget code before consuming budget."))
         move = self.env["budget.move"].sudo().create(self._prepare_direct_consume_vals())
         move.action_review()
         move.with_context(budget_direct_consume_by_document=True).action_post()
@@ -58,7 +58,7 @@ class DisbursementRequest(models.Model):
 
     def _prepare_direct_consume_vals(self):
         """The direct consumption of this request's amount on its own
-        dimensions and budget code — posted on approval, checked unsaved on
+        dimensions and budget code — posted by the consume act, checked unsaved on
         Submit."""
         self.ensure_one()
         dims = self.env["budget.controller"]._parse_dimensions(
@@ -107,8 +107,8 @@ class DisbursementRequest(models.Model):
         """Whether the pool cannot cover this direct claim without a
         reservation — the Submit pre-check. It runs the posting's own check
         (budget.move.line._check_direct_consume) on the unsaved move, so the
-        two cannot disagree; the posting re-checks on the final approval. A
-        linked reservation is checked on approval instead."""
+        two cannot disagree; the posting re-checks when the act runs. A
+        linked reservation is checked by the act instead."""
         self.ensure_one()
         if self.budget_commitment_id or not self.budget_account_id:
             return False

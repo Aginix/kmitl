@@ -1,5 +1,6 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 
+from contextlib import contextmanager
 from datetime import date
 from unittest.mock import patch
 
@@ -43,9 +44,15 @@ class TestDirectClaim(TwoApproverCommon):
         }
         return dr
 
+    @contextmanager
     def _no_exceptions(self):
         # Budget bridges add their own submit rules; this is about the memo.
-        return patch.object(type(self.DR), "detect_exceptions", return_value=[])
+        # The circuit entry is stubbed too: a signed request stays signed
+        # whichever bridge routes it to a station.
+        with patch.object(
+            type(self.DR), "detect_exceptions", return_value=[]
+        ), patch.object(type(self.DR), "_on_signed"):
+            yield
 
     def test_direct_claim_needs_memo_number_and_attachment(self):
         """Memo number, date and scan are blocking exceptions on Submit."""

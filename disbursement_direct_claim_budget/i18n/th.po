@@ -19,8 +19,8 @@ msgstr "ตัดงบตรง"
 
 #. module: disbursement_direct_claim_budget
 #: code:addons/disbursement_direct_claim_budget/models/disbursement_request.py:0
-msgid "A direct claim needs a budget code before approval."
-msgstr "ใบขอเบิกตั้งเบิกตรงต้องระบุรหัสงบประมาณก่อนอนุมัติ"
+msgid "A direct claim needs a budget code before consuming budget."
+msgstr "ใบขอเบิกตั้งเบิกตรงต้องระบุรหัสงบประมาณก่อนตัดงบประมาณ"
 
 #. module: disbursement_direct_claim_budget
 #: code:addons/disbursement_direct_claim_budget/models/disbursement_request.py:0

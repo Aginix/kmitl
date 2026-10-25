@@ -1,5 +1,7 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 
+from unittest.mock import patch
+
 from odoo.exceptions import UserError
 from odoo.tests.common import tagged
 
@@ -8,10 +10,10 @@ from odoo.addons.budget.tests.test_budget_ledger import BudgetLedgerCommon
 
 @tagged("post_install", "-at_install")
 class TestDirectClaimBudget(BudgetLedgerCommon):
-    """A ตั้งเบิกตรง request (ADR-0005) has no reservation: its final approval
+    """A ตั้งเบิกตรง request (ADR-0005) has no reservation: its consume-budget act
     posts a direct consumption (budget ADR-0019) on its own dimensions and
-    budget code, gated by its approval chain rather than the Budget-Manager
-    right; cancelling it gives the budget back."""
+    budget code, gated by the act's role rather than the Budget-Manager right;
+    cancelling it gives the budget back."""
 
     @classmethod
     def setUpClass(cls):
@@ -81,27 +83,26 @@ class TestDirectClaimBudget(BudgetLedgerCommon):
         self.assertEqual(dr.amount_total, amount)
         return dr
 
-    def _to_rector(self, dr):
-        dr.action_submit()
+    def _to_signed(self, dr):
+        """Submit: a direct claim goes straight to ``signed``, and stays there
+        whichever bridge routes it to a station."""
+        with patch.object(type(dr), "_on_signed"):
+            dr.action_submit()
         self.assertEqual(dr.state, "signed")
-        dr.action_validate()
-        dr.action_approve_finance()
-        self.assertEqual(dr.approval_state, "pending_rector")
 
     def test_rector_consumes_directly_and_cancel_restores(self):
         self._appropriate(100_000)
         dr = self._claim(30_000)
-        self._to_rector(dr)
+        self._to_signed(dr)
         # The Rector delegate holds no budget right at all.
-        dr.with_user(self.rector).action_approve()
-        self.assertEqual(dr.state, "approved")
+        dr.with_user(self.rector).action_consume_budget()
         move = dr.budget_direct_move_id
         self.assertEqual(move.state, "posted")
         self.assertEqual(move.move_type, "consume")
         self.assertFalse(move.line_ids.commitment_id)
         self.assertEqual(dr.budget_consumed_amount, 30_000)
         self.assertEqual(self._available(), 70_000)
-        # idempotent across a return to verification
+        # idempotent after a divert back
         dr._action_approve_budget()
         self.assertEqual(self._available(), 70_000)
 
@@ -117,10 +118,10 @@ class TestDirectClaimBudget(BudgetLedgerCommon):
         commitment = self._reserve(50_000)
         dr = self._claim(30_000)
         dr.budget_commitment_id = commitment
-        self._to_rector(dr)
+        self._to_signed(dr)
         # Which path consumes is the point here, not the approver's rights
         # (the reservation path reads the commitment under the OU rules).
-        dr.action_approve()
+        dr.action_consume_budget()
         self.assertFalse(dr.budget_direct_move_id)
         self.assertTrue(commitment._has_budget_event(dr, "consume"))
         self.assertEqual(commitment.available_to_obligate, 20_000)
@@ -142,9 +143,9 @@ class TestDirectClaimBudget(BudgetLedgerCommon):
     def test_approval_fails_when_pool_drained_meanwhile(self):
         self._appropriate(50_000)
         dr = self._claim(30_000)
-        self._to_rector(dr)
+        self._to_signed(dr)
         self._reserve(40_000)
         with self.assertRaises(UserError), self.env.cr.savepoint():
-            dr.with_user(self.rector).action_approve()
-        self.assertEqual(dr.state, "verified")
+            dr.with_user(self.rector).action_consume_budget()
+        self.assertEqual(dr.state, "signed")
         self.assertFalse(dr.budget_direct_move_id)
