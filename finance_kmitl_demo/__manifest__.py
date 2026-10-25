@@ -18,6 +18,7 @@
         "disbursement_validation",
         "disbursement_approver_director",
         "disbursement_approver_rector",
+        "disbursement_wc",
         "accounting_kmitl",
         "account_asset_kmitl",
         "account_asset_depreciation_board",
