@@ -16,7 +16,7 @@ class AdvancePayment(models.Model):
     approval_request_id = fields.Many2one(
         comodel_name="approval.request",
         string="Approval Request",
-        compute="_compute_reference",
+        compute="_compute_approval_request_id",
         inverse="_inverse_approval_request_id",
         store=True,
         readonly=False,
@@ -32,13 +32,17 @@ class AdvancePayment(models.Model):
 
     # Sum of the request's เงินยืม allocation rows that name this loan as their
     # Funding Loan — used to prefill the expense report and to warn on drift.
+    # compute_sudo: the endorser may open the loan with no access to the
+    # request (advance_payment ADR-0020); these only summarise its rows.
     allocation_expense_amount = fields.Monetary(
         string="ค่าใช้จ่ายจริงตามใบขออนุมัติ",
         compute="_compute_allocation_expense_amount",
+        compute_sudo=True,
     )
 
     has_expense_divergence = fields.Boolean(
         compute="_compute_allocation_expense_amount",
+        compute_sudo=True,
     )
 
     exceeds_ar_headroom = fields.Boolean(
@@ -50,12 +54,16 @@ class AdvancePayment(models.Model):
         selection_add=[("approval.request", "Approval Request")],
     )
 
+    # Its own compute, not an extension of core's _compute_reference: Odoo
+    # protects every field of a compute group while one of them is inverted,
+    # so sharing it left reference_model stale after the picker wrote
+    # `reference` — and excep_missing_reference fired on a picked request.
     @api.depends("reference")
-    def _compute_reference(self):
-        super()._compute_reference()
+    def _compute_approval_request_id(self):
         for rec in self:
+            ref = rec.reference
             rec.approval_request_id = (
-                rec.reference if rec.reference_model == "approval.request" else False
+                ref if ref and ref._name == "approval.request" else False
             )
 
     def _inverse_approval_request_id(self):

@@ -8,7 +8,7 @@
         <field name="arch" type="xml">
             <!-- The borrower's picker, shown when the loan type requires a
                  purchase request (advance_payment ADR-0023). -->
-            <xpath expr="//field[@name='reference']" position="after">
+            <xpath expr="//field[@name='loan_type_id']" position="after">
                 <field
                     name="purchase_request_id"
                     options="{'no_create': True, 'no_create_edit': True}"

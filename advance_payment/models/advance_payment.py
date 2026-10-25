@@ -199,16 +199,19 @@ class AdvancePayment(models.Model):
     # "ผู้จัดทำ" field, in the UI (ADR-0014).
     can_edit_drafter = fields.Boolean(compute="_compute_can_edit_drafter")
 
+    # employee_id.sudo(): a non-HR reader (endorser, borrower) goes through
+    # hr.employee.public, which crashes on private custom fields prefetched
+    # alongside user_id (title_dr on real data).
     @api.depends("employee_id")
     def _compute_is_requester(self):
         for rec in self:
-            rec.is_requester = rec.employee_id.user_id == self.env.user
+            rec.is_requester = rec.employee_id.sudo().user_id == self.env.user
 
     @api.depends("employee_id")
     def _compute_can_submit(self):
         is_admin = self.env.user.has_group("base.group_system")
         for rec in self:
-            rec.can_submit = is_admin or rec.employee_id.user_id == self.env.user
+            rec.can_submit = is_admin or rec.employee_id.sudo().user_id == self.env.user
 
     def _is_strict_own_only(self):
         """Strict mode: a request may only ever be created for oneself — the
@@ -227,11 +230,16 @@ class AdvancePayment(models.Model):
             "advance_payment.group_advance_payment_user"
         )
 
+    # The depends is only there for the new-record form: without one, the
+    # first onchange keeps the client's False and the borrower picker stays
+    # read-only for the `user` tier it exists for.
+    @api.depends("employee_id")
     def _compute_can_draft_on_behalf(self):
         allowed = self._can_draft_on_behalf()
         for rec in self:
             rec.can_draft_on_behalf = allowed
 
+    @api.depends("employee_id")
     def _compute_can_edit_drafter(self):
         allowed = self.env.user.has_group(
             "advance_payment.group_advance_payment_manager"
@@ -282,8 +290,9 @@ class AdvancePayment(models.Model):
 
     # Model of the source document, derived from `reference` — the counterpart
     # of the requirement declared on loan_type_id.reference_model. Stored so it
-    # is searchable and usable in exception-rule domains. Bridge modules extend
-    # _compute_reference to also fill their own typed Many2one mirror.
+    # is searchable and usable in exception-rule domains. Bridges compute their
+    # own typed Many2one mirror from `reference` in a separate method — never
+    # by extending _compute_reference (ADR-0023).
     reference_model = fields.Char(
         string="Reference Model",
         compute="_compute_reference",
@@ -302,10 +311,13 @@ class AdvancePayment(models.Model):
         """Variables a loan type's Reference filter may use — the borrower's,
         not the acting user's, except `uid` (ADR-0023)."""
         self.ensure_one()
+        # sudo: a borrower without HR rights reads hr.employee through
+        # hr.employee.public, which crashes on private custom fields prefetched
+        # with user_id (seen on real data: title_dr).
         return {
             "employee_id": self.employee_id.id,
             "partner_id": self.partner_id.id,
-            "user_id": self.employee_id.user_id.id,
+            "user_id": self.employee_id.sudo().user_id.id,
             "uid": self.env.uid,
             "company_id": self.env.company.id,
         }

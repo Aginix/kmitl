@@ -347,6 +347,9 @@ class TestPurchaseRequestAdvancePayment(TransactionCase):
             }
         )
         self.assertEqual(ap.reference, pr)
+        # Not left stale by the picker's inverse (excep_missing_reference
+        # reads it).
+        self.assertEqual(ap.reference_model, "purchase.request")
 
     # ------------------------------------------------------------------ #
     # View action                                                          #

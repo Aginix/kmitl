@@ -16,7 +16,7 @@
             <!-- The borrower's own picker: approved requests they are a
                  participant of, narrowed by the loan type's filter (ADR-0003,
                  advance_payment ADR-0023). -->
-            <xpath expr="//field[@name='reference']" position="after">
+            <xpath expr="//field[@name='loan_type_id']" position="after">
                 <field
                     name="approval_request_id"
                     options="{'no_create': True, 'no_create_edit': True}"

@@ -311,9 +311,12 @@
                                 widget="selection"
                                 attrs="{'readonly': [('state', '!=', 'draft')]}"
                             />
-                            <!-- Anchor only: each bridge inserts its typed
-                                 picker after it (ADR-0023). -->
-                            <field name="reference" invisible="1" />
+                            <!-- `reference` stays off the form: each bridge
+                                 inserts its typed picker after loan_type_id
+                                 and writes `reference` through the picker's
+                                 inverse (ADR-0023). Even invisible, the
+                                 Reference widget name_get()s the document,
+                                 which an endorser may not read (ADR-0020). -->
                             <field name="currency_id" invisible="1" />
                             <field
                                 name="loan_amount"

@@ -21,7 +21,7 @@ class AdvancePayment(models.Model):
     purchase_request_id = fields.Many2one(
         comodel_name="purchase.request",
         string="Purchase Request",
-        compute="_compute_reference",
+        compute="_compute_purchase_request_id",
         inverse="_inverse_purchase_request_id",
         store=True,
         readonly=False,
@@ -35,12 +35,15 @@ class AdvancePayment(models.Model):
         compute="_compute_purchase_request_count",
     )
 
+    # Own compute, not core's _compute_reference: a shared compute group stays
+    # protected while the picker's inverse writes `reference`, leaving
+    # reference_model stale (see agx_approval_advance_payment).
     @api.depends("reference")
-    def _compute_reference(self):
-        super()._compute_reference()
+    def _compute_purchase_request_id(self):
         for rec in self:
+            ref = rec.reference
             rec.purchase_request_id = (
-                rec.reference if rec.reference_model == "purchase.request" else False
+                ref if ref and ref._name == "purchase.request" else False
             )
 
     def _inverse_purchase_request_id(self):
