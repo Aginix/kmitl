@@ -58,13 +58,12 @@ class DisbursementRequest(models.Model):
         the PO one in the MRO."""
         return self.wa_ids[:1] or super()._get_return_source()
 
-    def action_sign(self):
-        """Override: mark WA as disbursed เมื่อ submitted → unlock สร้าง WA ใหม่ได้"""
-        res = super().action_sign()
+    def _on_signed(self):
+        """Override: mark WA as disbursed เมื่อเข้าวงจร (รวม resubmit) → unlock สร้าง WA ใหม่ได้"""
+        super()._on_signed()
         for rec in self:
             if rec.wa_ids:
                 rec.wa_ids.write({"is_disbursed": True})
-        return res
 
     def action_draft(self):
         """Override: reset WA flag เมื่อ reset to draft"""
