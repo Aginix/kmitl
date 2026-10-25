@@ -81,6 +81,7 @@
         "disbursement_validation",
         "disbursement_approver_director",
         "disbursement_approver_rector",
+        "disbursement_wc",
         "disbursement_sarabun",
         "purchase_order_disbursement_auto_submit",
         "purchase_request_approval_disbursement_budget",

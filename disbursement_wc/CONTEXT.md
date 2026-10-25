@@ -4,9 +4,13 @@ Routing the **work** on a ใบขอเบิก (DR) through a configured cha
 own state no longer says which step it is at — the **station** does. Decisions
 captured during design; this file is a glossary, not a specification.
 
-> **Status: design in progress.** The terms below are settled. Stations are
-> `work.center` records: the station engine lives in `work_center` (its ADR-0002, which
-> supersedes the "owning unit" ADR-0001), and this module only plugs the DR into it.
+> **Status: built.** Stations are `work.center` records: the station engine lives in
+> `work_center` (its ADR-0002, which supersedes the "owning unit" ADR-0001), and this
+> module only plugs the DR into it. The act modules (`disbursement_validation`,
+> `disbursement_approver_director`, `disbursement_approver_rector`,
+> `disbursement_budget`, `disbursement_accounting_kmitl`,
+> `disbursement_finance_kmitl`) contribute the acts; the terms for every one of them
+> are defined here.
 
 ## Language
 
@@ -48,6 +52,33 @@ act can be skipped by forwarding with a reason. Adding a station never needs a n
 adding a kind of act does. _Avoid_: method (the developer's word for it), permission
 (allowing an act at a station does not give anyone the right to perform it), step.
 
+**ส่วนที่แก้ไขได้ (Editable part)**: A part of the DR a station lets its people edit —
+the header, the lines, the attachments, the dimensions, the budget code. It is a
+permission, not an act: it is never required before forwarding and never recorded as
+done. It closes for good once the money has started (the ขั้นการชำระ is past none).
+_Avoid_: Act (nothing is "done" by editing), field-level security.
+
+**The acts** (การกระทำของใบขอเบิก): each is declared by the module that implements it
+and stamps who did it.
+- **ตรวจสอบ (Validate)** — the officer checks the signed request
+  (`disbursement_validation`, `verifier_id`). Not `assigned_to`, who was merely
+  assigned the check.
+- **อนุมัติ (ผอ.กองคลัง)** — the Finance Division Director's approval
+  (`disbursement_approver_director`).
+- **อนุมัติ (ผู้รับมอบอำนาจอธิการบดี)** — the Rector-delegated approver's approval
+  (`disbursement_approver_rector`). It touches no budget.
+- **ตัดงบประมาณ (Consume budget)** — consumes the linked commitment or, for a direct
+  claim, draws on the pool (`disbursement_budget`). A DR that draws no budget does
+  not need it: the act is *not applicable* to it.
+- **ตั้งหนี้ (Create bill)**, **ตรวจจ่าย (Audit payment)**, **อนุมัติจ่าย (Authorize
+  payment)** — the money acts (`disbursement_accounting_kmitl`,
+  `disbursement_finance_kmitl`). They act on the DR, while the bill and the payment
+  they lead to are other documents: the ขั้นการชำระ follows those.
+
+No act needs another first and none changes the DR's state. The station route says
+in which order they are expected, and records what was skipped and why.
+_Avoid_: Step, approval state.
+
 **สมาชิกสถานี (Station member)**: Someone who may act on a DR while it sits at that
 station — but only the acts their role already entitles them to. Membership **narrows,
 never grants**: it says "this DR at this desk is yours", while the role says "you may
@@ -88,8 +119,6 @@ _Avoid_: chatter, tracking (those record field changes, not custody).
 
 ## Flagged ambiguities
 
-- **Member** — `work_center/CONTEXT.md` defines a member as someone who merely
-  *follows* a ศูนย์งาน ("grants no access and restricts no action"). Here a station
-  member is someone who may *act*, within their role. Resolved in favour of acting, for
-  every document: a station *is* a `work.center` (work_center ADR-0002). The
-  `work_center` glossary is still to be rewritten to match.
+- **Member** — resolved: a station member is someone who may *act*, within their role,
+  for every document (a station *is* a `work.center`, work_center ADR-0002). The old
+  "member follows a ศูนย์งาน" reading is gone from `work_center/CONTEXT.md` too.
