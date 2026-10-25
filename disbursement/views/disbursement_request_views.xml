@@ -297,7 +297,8 @@
                                         options="{'no_open': True, 'no_create': True, 'no_edit': True}"
                                     />
                                     <field name="account_id" />
-                                    <field name="name" />
+                                    <field name="name" invisible="1" />
+                                    <field name="note" />
                                     <field name="amount" />
                                     <field
                                         name="tax_ids"

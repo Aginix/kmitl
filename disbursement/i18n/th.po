@@ -421,6 +421,11 @@ msgid "Not Billed"
 msgstr "ยังไม่ตั้งหนี้"
 
 #. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request_line__note
+msgid "Note"
+msgstr "หมายเหตุ"
+
+#. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__name
 msgid "Number"
 msgstr "เลขที่ใบขอเบิก"
