@@ -12,6 +12,7 @@
         "l10n_th_amount_to_text",
         "kmitl_hr_employee_full_name",
         "hr_employee_academic_standing_thailand",
+        "hr_employee_digitized_signature",
     ],
     "data": [
         "report/paperformat.xml",

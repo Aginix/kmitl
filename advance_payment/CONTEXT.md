@@ -39,7 +39,7 @@ The formal loan-contract number, assigned only when the disbursement transfer co
 _Avoid_: ADV number, running number
 
 **Loan Contract Form (แบบ สค.001 / ใบสัญญาการยืมเงิน)**:
-The printed paper contract, signed by hand (`advance_payment_contract_pdf`, header button พิมพ์สัญญา, printable in any state). Page 1 is filled from the agreement; page 2 is the blank รายการส่งใช้เงินยืม ledger for handwriting. Its เลขที่ is the Contract Number, not the ADV Running Number.
+The printed paper contract (`advance_payment_contract_pdf`, header button พิมพ์สัญญา, printable in any state). Each signature block — borrower, supervisor (เสนอ), approver (คำอนุมัติ), borrower again on ใบรับเงิน — carries the signer's digitized `hr.employee` signature once the record is past that signer's step; before that (or after ดึงกลับ / ส่งกลับแก้ไข / cancel) it is left blank to sign by hand. Page 1 is filled from the agreement; page 2 is the blank รายการส่งใช้เงินยืม ledger for handwriting. Its เลขที่ is the Contract Number, not the ADV Running Number.
 _Avoid_: loan report, contract PDF (bare)
 
 **Effective Date (วันที่มีผลของสัญญา)**:
