@@ -159,7 +159,9 @@ class DisbursementRequest(models.Model):
         head who may not read rules) still routes correctly.
         """
         Rule = self.env["disbursement.assignment.rule"].sudo()
-        for rec in self.filtered(lambda r: r.state == "signed"):
+        # In progress too: signing hands the request to ``_on_signed``, which
+        # moves it into the circuit before this runs.
+        for rec in self.filtered(lambda r: r.state in ("signed", "in_progress")):
             if not rec.assigned_to:
                 rule = Rule._find_for_request(rec)
                 if not rule:

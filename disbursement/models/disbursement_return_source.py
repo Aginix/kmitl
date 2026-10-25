@@ -1,5 +1,7 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 
+from markupsafe import Markup
+
 from odoo import _, fields, models
 from odoo.exceptions import UserError
 from odoo.tools import plaintext2html
@@ -32,8 +34,8 @@ class DisbursementReturnSourceMixin(models.AbstractModel):
     """Contract for a source document that a disbursement request can be
     returned to for correction-in-place.
 
-    When the verification officer returns a signed DR, the DR is kept as-is at
-    ``signed`` (no cancel, no budget change) and its source document is bounced
+    When a station returns a request in the circuit, the DR is kept as-is at its
+    station (no cancel, no budget change) and its source document is bounced
     into a ``returned`` state where a limited set of fields can be corrected.
     Confirming the correction pushes those fields back onto the DR and returns
     the source to its prior state.
@@ -158,9 +160,8 @@ class DisbursementReturnSourceMixin(models.AbstractModel):
 class DisbursementRequest(models.Model):
     """Generic return-to-source layer on the DR.
 
-    Loaded after ``disbursement_request_assignment`` so the ``_action_return_for_edit``
-    dispatcher and the ``action_validate`` guard sit on top of the base
-    signed -> draft return-for-correction behaviour in the MRO.
+    Loaded after the base send-back flow so the ``_action_return_for_edit``
+    dispatcher sits on top of it in the MRO.
     """
 
     _inherit = "disbursement.request"
@@ -170,7 +171,7 @@ class DisbursementRequest(models.Model):
         copy=False,
         tracking=True,
         help="Set when this request was returned to its source document for "
-             "correction: the DR is kept at 'signed' and the source is bounced "
+             "correction: the DR stays at its station and the source is bounced "
              "to 'returned'. Cleared once the correction is confirmed.",
     )
     return_source_reason = fields.Text(
@@ -193,8 +194,8 @@ class DisbursementRequest(models.Model):
     # -- return-for-correction dispatch ----------------------------------
     def _action_return_for_edit(self, reason):
         """Dispatch a return: DRs with a correctable source bounce the source to
-        'returned' (DR kept at 'signed'); the rest fall back to the base
-        signed -> draft return-for-correction."""
+        'returned' (DR kept at its station); the rest fall back to the base
+        send-back to draft."""
         to_source = self.filtered(lambda d: d._get_return_source())
         for record in to_source:
             record._return_to_source(record._get_return_source(), reason)
@@ -204,14 +205,13 @@ class DisbursementRequest(models.Model):
         return True
 
     def _return_to_source(self, source, reason):
-        """Bounce ``source`` to 'returned' without touching this DR (kept at
-        'signed', no budget change). Records the reason, posts chatter on both
+        """Bounce ``source`` to 'returned' without touching this DR (kept at its
+        station, no budget change). Records the reason, posts chatter on both
         sides, and raises To-Dos for the requester and the officer."""
         self.ensure_one()
-        if self.state != "signed":
-            raise UserError(
-                _("Only a request under verification (signed) can be returned.")
-            )
+        if self.state not in ("signed", "in_progress"):
+            raise UserError(_("Only a request in the circuit can be returned."))
+        self._disbursement_check_send_back()
         self.returned_to_source = True
         self.return_source_reason = reason
         # The officer may not have write access to the source document; sudo the
@@ -219,25 +219,29 @@ class DisbursementRequest(models.Model):
         source = source.sudo()
         source._disbursement_return(self, reason)
         self.message_post(
-            body=_(
-                "<p><b>Returned to source for correction</b></p>"
-                "<p>This request was returned to its source document "
-                "<b>%(source)s</b> by the verification officer. It stays under "
-                "verification until the correction is confirmed.<br/>"
-                "Reason: <b>%(reason)s</b></p>"
-            ) % {"source": source.display_name, "reason": reason},
+            body=Markup(
+                _(
+                    "<p><b>Returned to source for correction</b></p>"
+                    "<p>This request was returned to its source document "
+                    "<b>%(source)s</b>. It stays at its station until the "
+                    "correction is confirmed.<br/>"
+                    "Reason: <b>%(reason)s</b></p>"
+                )
+            )
+            % {"source": source.display_name, "reason": reason},
             subtype_xmlid="mail.mt_comment",
         )
         source.message_post(
-            body=_(
-                "<p><b>Returned for correction</b></p>"
-                "<p>Disbursement <b>%(dr)s</b> was returned by the "
-                "verification officer.<br/>Reason: <b>%(reason)s</b><br/>"
-                "Please correct the payee bank, description or evidence, then "
-                "click <b>Confirm Correction</b>.</p>",
-                dr=self.name,
-                reason=reason,
-            ),
+            body=Markup(
+                _(
+                    "<p><b>Returned for correction</b></p>"
+                    "<p>Disbursement <b>%(dr)s</b> was returned.<br/>"
+                    "Reason: <b>%(reason)s</b><br/>"
+                    "Please correct the payee bank, description or evidence, then "
+                    "click <b>Confirm Correction</b>.</p>"
+                )
+            )
+            % {"dr": self.name, "reason": reason},
             subtype_xmlid="mail.mt_comment",
         )
         _schedule_todo(
@@ -247,8 +251,8 @@ class DisbursementRequest(models.Model):
         return True
 
     def _apply_source_correction(self, source):
-        """Pull ``source``'s corrected fields onto this signed DR, clear the
-        returned banner, and resolve/raise the return To-Dos on both sides."""
+        """Pull ``source``'s corrected fields onto this DR, clear the returned
+        banner, and resolve/raise the return To-Dos on both sides."""
         self.ensure_one()
         source._disbursement_apply_correction(self)
         self.returned_to_source = False
@@ -263,32 +267,31 @@ class DisbursementRequest(models.Model):
         self.message_post(
             body=_(
                 "Source correction applied: payee bank, description and "
-                "evidence updated. Please continue verification."
+                "evidence updated. Please continue."
             )
         )
         return True
 
-    def action_validate(self):
-        """Block validation while a correction is pending on the source side.
-
-        The DR is kept at 'signed' when returned, so without this guard the
-        officer could validate/approve (and obligate budget) against the stale
+    def _disbursement_check_act(self, code):
+        """Block every act while a correction is pending on the source side:
+        the DR stays at its station when returned, so without this guard an act
+        (validate, approve, consume the budget …) could run against the stale
         data before the requester confirms the correction."""
-        for record in self:
-            if record.returned_to_source:
-                raise UserError(
-                    _(
-                        "This request was returned to its source document. "
-                        "Please wait for the correction to be confirmed before "
-                        "validating."
-                    )
+        if self.filtered("returned_to_source"):
+            raise UserError(
+                _(
+                    "This request was returned to its source document. "
+                    "Please wait for the correction to be confirmed."
                 )
-        res = super().action_validate()
-        # The officer acted on the correction: auto-resolve the "continue
-        # verification" / "correction submitted" To-Dos on both sides.
+            )
+        return super()._disbursement_check_act(code)
+
+    def _resolve_source_correction_todos(self):
+        """The officer acted on the corrected request: auto-resolve the
+        "continue" / "correction submitted" To-Dos on both sides. Called by the
+        act that picks the request up again (validate)."""
         for record in self:
             _resolve_todos(record, _ACT_DR_CONTINUE)
             source = record._get_return_source()
             if source:
                 _resolve_todos(source.sudo(), _ACT_SOURCE_DONE)
-        return res

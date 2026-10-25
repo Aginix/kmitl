@@ -190,10 +190,12 @@ class DisbursementRequestLine(models.Model):
     @api.depends("partner_id", "partner_id.bank_ids", "request_id.company_id")
     def _compute_line_partner_bank_id(self):
         for line in self:
-            # Only a draft follows the partner's accounts: a submitted or paid
-            # line keeps the account it was checked and paid against even if
-            # the partner's accounts are archived or replaced later.
-            if line.request_id.state not in (False, "draft"):
+            # Only a line that can still be edited (a draft, or a station that
+            # opens the lines) follows the partner's accounts: a submitted or
+            # paid line keeps the account it was checked and paid against even
+            # if the partner's accounts are archived or replaced later.
+            request = line.request_id
+            if request.state not in (False, "draft") and not request.can_edit_lines:
                 line.partner_bank_id = line.partner_bank_id
             elif line.partner_id:
                 banks = line.partner_id.bank_ids.filtered(

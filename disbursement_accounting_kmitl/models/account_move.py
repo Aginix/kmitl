@@ -43,25 +43,34 @@ class AccountMove(models.Model):
         }
 
     def _post(self, soft=True):
-        """Advance the linked disbursement request to ``bills_posted`` once all
-        of its active bills are posted.
+        """Tell the linked disbursement request once all of its active bills
+        are posted.
 
         Bills no longer post directly from the request — they go through the
         account.move approval (Approve = post). This reacts to that posting,
-        regardless of how it was triggered.
+        regardless of how it was triggered; the request's settlement stage
+        follows the bills by itself.
         """
         res = super()._post(soft=soft)
-        requests = self.mapped("disbursement_request_id").filtered(
-            lambda d: d.state == "approved"
-        )
-        for request in requests:
-            active_bills = request.bill_ids.filtered(
-                lambda b: b.state != "cancel"
-            )
-            if active_bills and all(
-                b.state == "posted" for b in active_bills
-            ):
-                request.state = "bills_posted"
+        for request in self.mapped("disbursement_request_id"):
+            active_bills = request.bill_ids.filtered(lambda b: b.state != "cancel")
+            if active_bills and all(b.state == "posted" for b in active_bills):
+                request._on_bills_posted()
+        return res
+
+    def button_draft(self):
+        """Resetting a posted bill walks the request's settlement stage back."""
+        requests = self.mapped("disbursement_request_id")
+        before = requests._settlement_snapshot()
+        res = super().button_draft()
+        requests._settlement_check(before)
+        return res
+
+    def button_cancel(self):
+        requests = self.mapped("disbursement_request_id")
+        before = requests._settlement_snapshot()
+        res = super().button_cancel()
+        requests._settlement_check(before)
         return res
 
 

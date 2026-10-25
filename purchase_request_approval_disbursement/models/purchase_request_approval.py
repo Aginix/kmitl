@@ -140,27 +140,36 @@ class PurchaseRequestApproval(models.Model):
             )
             approval.disbursement_request_count = len(approval.disbursement_request_ids)
 
-    # Vocabulary read off disbursement.request.state — never pipeline_status,
-    # which lives on a different field and was never reachable from here.
-    # bills_posted/payment_*/cleared are added by disbursement_accounting_kmitl
-    # and disbursement_finance_kmitl via selection_add; if neither bridge is
-    # installed a request simply never reaches those keys and stays
-    # "in_progress" once approved, which is correct.
-    _DR_STATE_TO_BILLING_STATUS = {
-        "draft": "draft",
-        "submitted": "submitted",
-        "signed": "submitted",
-        "verified": "submitted",
-        "approved": "in_progress",
-        "bills_posted": "in_progress",
-        "payment_audited": "in_progress",
-        "payment_authorized": "in_progress",
-        "paid": "in_progress",
-        "cleared": "done",
-    }
     _BILLING_STATUS_RANK = {"draft": 0, "submitted": 1, "in_progress": 2, "done": 3}
 
-    @api.depends("disbursement_request_ids", "disbursement_request_ids.state")
+    def init(self):
+        super().init()
+        # The rule behind the stored billing_status changed: recompute every
+        # row, because rewriting a compute does not refresh the stored values.
+        self.env.add_to_compute(
+            self._fields["billing_status"],
+            self.with_context(active_test=False).search([]),
+        )
+
+    @api.model
+    def _dr_billing_status(self, dr):
+        """Billing status a single (non-cancelled) request contributes: done
+        when the books have it (`settlement_stage == 'booked'`), in progress
+        once the circuit has it (`in_progress`/`done`) or its money has started
+        — a request may be billed while still `signed`."""
+        if dr.state == "draft":
+            return "draft"
+        if dr.settlement_stage == "booked":
+            return "done"
+        if dr.state in ("in_progress", "done") or dr.settlement_stage != "none":
+            return "in_progress"
+        return "submitted"
+
+    @api.depends(
+        "disbursement_request_ids",
+        "disbursement_request_ids.state",
+        "disbursement_request_ids.settlement_stage",
+    )
     def _compute_billing_status(self):
         for approval in self:
             active = approval.disbursement_request_ids.filtered(
@@ -174,10 +183,7 @@ class PurchaseRequestApproval(models.Model):
                 # Reflect the least-advanced request: the source document is
                 # only as far along as its slowest disbursement request, not
                 # whichever one happens to be first in the recordset.
-                statuses = [
-                    self._DR_STATE_TO_BILLING_STATUS.get(r.state, "draft")
-                    for r in active
-                ]
+                statuses = [self._dr_billing_status(r) for r in active]
                 approval.billing_status = min(
                     statuses, key=self._BILLING_STATUS_RANK.get
                 )

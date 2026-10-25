@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Disbursement users read/commit budget: consume on the Rector approval,
+    <!-- Disbursement users read/commit budget: consume on the budget act,
          reverse on cancel. Cascades to head / officer / manager. -->
     <record id="disbursement.group_disbursement_user" model="res.groups">
         <field name="implied_ids" eval="[(4, ref('budget.group_budget_user'))]"/>

@@ -118,14 +118,17 @@ class TestSignatureBlock(TransactionCase):
             str(self.activity.id): 100,
         }
         dr.action_submit()
-        dr.action_sign()
+        # A signed request stays signed whatever bridge routes it to a station.
+        with patch.object(type(self.DR), "_on_signed"):
+            dr.action_sign()
         return dr
 
     def _approve_fully(self, dr):
-        dr.with_user(self.officer).action_validate()
-        dr.with_user(self.finance).action_approve_finance()
-        with patch.object(type(self.DR), "_on_final_approval"):
-            dr.with_user(self.rector).action_approve()
+        """Each act stamps its own row (the act modules are tested on their
+        own): stamp in the order the circuit normally runs."""
+        dr.with_user(self.officer)._stamp_signature("verify")
+        dr.with_user(self.finance)._stamp_signature("finance_approve")
+        dr.with_user(self.rector)._stamp_signature("rector_approve")
         return dr
 
     # ------------------------------------------------------------------
@@ -135,18 +138,6 @@ class TestSignatureBlock(TransactionCase):
         """Self-limiting: nothing to print before anything is signed."""
         dr = self._make_signed_dr()
         self.assertFalse(dr.signature_ids)
-
-    def test_validate_stamps_the_verifier_and_a_signature(self):
-        dr = self._make_signed_dr()
-        dr.with_user(self.officer).action_validate()
-        self.assertEqual(dr.verifier_id, self.officer)
-        self.assertTrue(dr.verify_date)
-        sig = self._sigs(dr, "verify")
-        self.assertEqual(len(sig), 1)
-        self.assertEqual(sig.signed_by_id, self.officer)
-        self.assertEqual(sig.signed_name, "Officer")
-        self.assertEqual(sig.signed_position_name, "Finance Analyst")
-        self.assertTrue(sig.signed_signature)
 
     def test_each_step_leaves_one_row_in_flow_order(self):
         dr = self._approve_fully(self._make_signed_dr())
@@ -215,50 +206,24 @@ class TestSignatureBlock(TransactionCase):
     # ------------------------------------------------------------------
     # Superseded rounds are archived, not deleted
     # ------------------------------------------------------------------
-    def test_reject_and_re_approve_archives_the_previous_round(self):
+    def test_restamping_a_step_archives_its_previous_row(self):
         dr = self._make_signed_dr()
-        dr.with_user(self.officer).action_validate()
-        dr.with_user(self.finance).action_approve_finance()
-        dr._action_reject("bad evidence")
+        dr.with_user(self.officer)._stamp_signature("verify")
+        dr.with_user(self.finance)._stamp_signature("finance_approve")
+        first = self._sigs(dr, "finance_approve")
+        dr.with_user(self.finance)._stamp_signature("finance_approve")
 
-        # The approval row only goes when the round actually restarts.
-        self.assertTrue(self._sigs(dr, "finance_approve"))
-        dr.action_request_approval()
-        self.assertFalse(self._sigs(dr, "finance_approve"))
-        self.assertEqual(
-            len(self._sigs(dr, "finance_approve", active=False)), 1
-        )
-        # The verification was never redone, so its signature stands.
-        self.assertTrue(self._sigs(dr, "verify"))
-
-        dr.with_user(self.finance).action_approve_finance()
+        # One active row per step; the superseded one stays as history.
         self.assertEqual(len(self._sigs(dr, "finance_approve")), 1)
-        self.assertEqual(
-            len(self._sigs(dr, "finance_approve", active=False)), 1
-        )
-
-    def test_return_to_verification_archives_verify_and_approvals(self):
-        dr = self._make_signed_dr()
-        dr.with_user(self.officer).action_validate()
-        dr.with_user(self.finance).action_approve_finance()
-        dr._action_return_to_verification("recheck")
-
-        self.assertEqual(dr.state, "signed")
-        self.assertFalse(dr.verifier_id)
-        self.assertFalse(dr.verify_date)
-        self.assertFalse(dr.signature_ids)
-        self.assertEqual(
-            len(self.env[_SIG].with_context(active_test=False).search([
-                ("request_id", "=", dr.id),
-            ])),
-            2,
-        )
+        self.assertNotEqual(self._sigs(dr, "finance_approve"), first)
+        self.assertEqual(self._sigs(dr, "finance_approve", active=False), first)
+        # The other step is untouched.
+        self.assertEqual(len(self._sigs(dr, "verify")), 1)
 
     def test_reset_to_draft_archives_everything(self):
         dr = self._make_signed_dr()
-        dr.with_user(self.officer).action_validate()
-        dr.with_user(self.finance).action_approve_finance()
+        dr.with_user(self.officer)._stamp_signature("verify")
+        dr.with_user(self.finance)._stamp_signature("finance_approve")
         dr.action_cancel()
         dr.action_draft()
-        self.assertFalse(dr.verifier_id)
         self.assertFalse(dr.signature_ids)

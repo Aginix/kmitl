@@ -3,7 +3,7 @@
 {
     "name": "Disbursement Direct Claim Budget",
     "summary": "ตั้งเบิกตรง without a reservation: consume the pool directly "
-    "on the final approval",
+    "when its consume-budget act runs",
     "version": "16.0.1.0.0",
     "category": "Disbursement",
     "license": "LGPL-3",

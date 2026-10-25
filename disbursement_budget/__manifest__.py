@@ -2,7 +2,7 @@
 
 {
     "name": "Disbursement Budget",
-    "summary": "Consume the linked budget commitment on the disbursement request's final approval",
+    "summary": "Consume the linked budget commitment as the disbursement request's own act",
     "version": "16.0.1.3.0",
     "category": "Disbursement",
     "license": "LGPL-3",

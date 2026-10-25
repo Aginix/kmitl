@@ -1,5 +1,8 @@
 # 0005 — The finance office and the accounting office each run their own lifecycle on the payment voucher
 
+> **Superseded in part (station model).** Where it speaks of the request being
+> `paid` or `cleared`, read the ขั้นการชำระ `settled` and `booked`.
+
 - Status: accepted (designed; **not yet built**)
 - Date: 2026-08-12
 - Supersedes: ADR-0004

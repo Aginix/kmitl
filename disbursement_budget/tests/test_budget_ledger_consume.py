@@ -43,6 +43,7 @@ class TestDisbursementLedgerConsume(BudgetLedgerCommon):
             }
         )
         dr.budget_commitment_id = commitment
+        dr.consumes_budget = True
         self.assertEqual(dr.amount_total, amount)
         return dr
 
@@ -60,7 +61,7 @@ class TestDisbursementLedgerConsume(BudgetLedgerCommon):
             self._buckets(commitment),
             {"reserve": -70_000, "obligate": 0.0, "consume": -30_000},
         )
-        # re-approving after a return to verification never double-cuts
+        # consuming again after a divert back never double-cuts
         first._action_approve_budget()
         self.assertEqual(commitment.total_consumed, 30_000)
 

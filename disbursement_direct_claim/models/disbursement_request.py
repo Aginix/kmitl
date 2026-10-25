@@ -3,10 +3,6 @@
 from odoo import _, api, fields, models
 from odoo.exceptions import AccessError
 
-from odoo.addons.disbursement.models.disbursement_request import (
-    DisbursementRequest as DisbursementRequestBase,
-)
-
 
 class DisbursementRequest(models.Model):
     """ตั้งเบิกตรง (disbursement ADR-0005).
@@ -26,7 +22,6 @@ class DisbursementRequest(models.Model):
         string="Direct Claim",
         tracking=True,
         copy=False,
-        states=DisbursementRequestBase.READONLY_STATES,
     )
 
     @api.model_create_multi
