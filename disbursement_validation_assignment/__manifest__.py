@@ -21,7 +21,6 @@
         "views/assignment_rule_views.xml",
         "views/disbursement_verification_menus.xml",
     ],
-    "pre_init_hook": "pre_init_hook",
     "installable": True,
     "auto_install": False,
 }
