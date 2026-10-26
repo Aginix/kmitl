@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="work_center_area_view_tree" model="ir.ui.view">
+        <field name="name">work.center.area.tree</field>
+        <field name="model">work.center.area</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="sequence" widget="handle" />
+                <field name="name" />
+                <field name="code" />
+                <field name="model_ids" widget="many2many_tags" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="work_center_area_view_form" model="ir.ui.view">
+        <field name="name">work.center.area.form</field>
+        <field name="model">work.center.area</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name" />
+                        <field name="code" />
+                        <field name="model_ids" widget="many2many_tags" />
+                        <field name="unassigned_work_center_id" />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="work_center_area_action" model="ir.actions.act_window">
+        <field name="name">Work Areas</field>
+        <field name="res_model">work.center.area</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+</odoo>
