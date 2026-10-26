@@ -768,16 +768,13 @@ class ApprovalRequest(models.Model):
             raise UserError(
                 _("ตีกลับได้เฉพาะสถานะ 'รอตรวจสอบข้อมูล' หรือ 'รอยืนยันงบประมาณ'")
             )
-        wizard = self.env["approval.request.send.back.confirm"].create(
-            {"request_id": self.id}
-        )
         return {
             "type": "ir.actions.act_window",
             "name": _("ตีกลับคำขอ"),
             "res_model": "approval.request.send.back.confirm",
             "view_mode": "form",
-            "res_id": wizard.id,
             "target": "new",
+            "context": {"default_request_id": self.id},
         }
 
     def _send_back(self, reason):
