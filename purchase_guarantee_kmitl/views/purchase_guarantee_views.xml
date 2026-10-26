@@ -4,7 +4,7 @@
         id="kmitl_guarantee_purchase"
         name="Guarantee"
         parent="purchase.menu_purchase_root"
-        sequence="10"
+        sequence="60"
     />
 
     <menuitem

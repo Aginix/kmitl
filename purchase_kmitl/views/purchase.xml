@@ -19,7 +19,7 @@
     <menuitem id="menu_purchase_contract_root"
               name="Purchase Contract"
               parent="purchase.menu_purchase_root"
-              sequence="1"/>
+              sequence="30"/>
 
     <menuitem id="menu_purchase_contract_orders"
               name="Contract Orders"
@@ -31,10 +31,10 @@
     <menuitem id="menu_purchase_tracking"
               name="Contract Tracking"
               parent="purchase.menu_purchase_root"
-              sequence="2"/>
+              sequence="40"/>
 
     <!-- Vendor -->
     <menuitem id="menu_vendor" name="Vendors"
             parent="purchase.menu_purchase_root"
-            action="account.res_partner_action_supplier" sequence="5"/>
+            action="account.res_partner_action_supplier" sequence="50"/>
 </odoo>

@@ -476,7 +476,7 @@
         name="Purchase Request Approvals"
         parent="purchase.menu_purchase_root"
         groups="purchase.group_purchase_user"
-        sequence="4"
+        sequence="20"
     />
     <menuitem
         id="purchase_request_approval_menu_my"
