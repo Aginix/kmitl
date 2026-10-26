@@ -599,7 +599,7 @@
         id="purchase_request_kmitl_root_menu"
         name="Purchase Request"
         parent="purchase.menu_purchase_root"
-        sequence="3"
+        sequence="10"
     />
     <menuitem
         id="menu_purchase_order_request_my"
