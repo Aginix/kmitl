@@ -1,6 +1,6 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-# 	* disbursement_assignment_kmitl
+# 	* disbursement_validation_assignment
 #
 msgid ""
 msgstr ""
@@ -17,135 +17,135 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Poedit 3.8\n"
 
-#. module: disbursement_assignment_kmitl
-#: model:ir.model.fields,field_description:disbursement_assignment_kmitl.field_disbursement_assignment_rule__active
+#. module: disbursement_validation_assignment
+#: model:ir.model.fields,field_description:disbursement_validation_assignment.field_disbursement_assignment_rule__active
 msgid "Active"
 msgstr "ใช้งาน"
 
-#. module: disbursement_assignment_kmitl
-#: model:ir.model.fields,field_description:disbursement_assignment_kmitl.field_disbursement_assignment_rule__activity_analytic_id
+#. module: disbursement_validation_assignment
+#: model:ir.model.fields,field_description:disbursement_validation_assignment.field_disbursement_assignment_rule__activity_analytic_id
 msgid "Activity"
 msgstr "กิจกรรม"
 
-#. module: disbursement_assignment_kmitl
-#: model:ir.model.fields,field_description:disbursement_assignment_kmitl.field_disbursement_assignment_rule__department_analytic_id
+#. module: disbursement_validation_assignment
+#: model:ir.model.fields,field_description:disbursement_validation_assignment.field_disbursement_assignment_rule__department_analytic_id
 msgid "Department"
 msgstr "ส่วนงาน"
 
-#. module: disbursement_assignment_kmitl
-#: model:ir.model.fields,field_description:disbursement_assignment_kmitl.field_disbursement_assignment_rule__fund_analytic_id
+#. module: disbursement_validation_assignment
+#: model:ir.model.fields,field_description:disbursement_validation_assignment.field_disbursement_assignment_rule__fund_analytic_id
 msgid "Fund"
 msgstr "กองทุน"
 
-#. module: disbursement_assignment_kmitl
-#: model:ir.model.fields,field_description:disbursement_assignment_kmitl.field_disbursement_assignment_rule__partner_type_id
+#. module: disbursement_validation_assignment
+#: model:ir.model.fields,field_description:disbursement_validation_assignment.field_disbursement_assignment_rule__partner_type_id
 msgid "Partner Type"
 msgstr "จ่ายตาม"
 
-#. module: disbursement_assignment_kmitl
-#: model:ir.model.fields,field_description:disbursement_assignment_kmitl.field_disbursement_assignment_rule__source_analytic_id
+#. module: disbursement_validation_assignment
+#: model:ir.model.fields,field_description:disbursement_validation_assignment.field_disbursement_assignment_rule__source_analytic_id
 msgid "Source"
 msgstr "แหล่งเงิน"
 
-#. module: disbursement_assignment_kmitl
+#. module: disbursement_validation_assignment
 msgid "Disbursement Assignment Rule"
 msgstr "กฎการมอบหมายใบขอเบิก"
 
-#. module: disbursement_assignment_kmitl
+#. module: disbursement_validation_assignment
 msgid "Assign Disbursement Verification Officer"
 msgstr "มอบหมายเจ้าหน้าที่หมวดตรวจใบขอเบิก"
 
-#. module: disbursement_assignment_kmitl
-#: model:ir.actions.act_window,name:disbursement_assignment_kmitl.action_disbursement_assignment_rule
-#: model:ir.ui.menu,name:disbursement_assignment_kmitl.menu_disbursement_assignment_rule
+#. module: disbursement_validation_assignment
+#: model:ir.actions.act_window,name:disbursement_validation_assignment.action_disbursement_assignment_rule
+#: model:ir.ui.menu,name:disbursement_validation_assignment.menu_disbursement_assignment_rule
 msgid "Assignment Rules"
 msgstr "กฎการมอบหมาย"
 
-#. module: disbursement_assignment_kmitl
-#: model:ir.model.fields,field_description:disbursement_assignment_kmitl.field_disbursement_assignment_rule__user_id
-#: model:ir.model.fields,field_description:disbursement_assignment_kmitl.field_disbursement_request__assigned_to
+#. module: disbursement_validation_assignment
+#: model:ir.model.fields,field_description:disbursement_validation_assignment.field_disbursement_assignment_rule__user_id
+#: model:ir.model.fields,field_description:disbursement_validation_assignment.field_disbursement_request__assigned_to
 msgid "Assigned Officer"
 msgstr "เจ้าหน้าที่ผู้รับผิดชอบ"
 
-#. module: disbursement_assignment_kmitl
+#. module: disbursement_validation_assignment
 msgid "Assign to me"
 msgstr "รับงานนี้"
 
-#. module: disbursement_assignment_kmitl
+#. module: disbursement_validation_assignment
 msgid "Assign…"
 msgstr "มอบหมาย…"
 
-#. module: disbursement_assignment_kmitl
+#. module: disbursement_validation_assignment
 msgid "Unassign"
 msgstr "ถอนผู้รับผิดชอบ"
 
-#. module: disbursement_assignment_kmitl
+#. module: disbursement_validation_assignment
 msgid "Assign"
 msgstr "มอบหมาย"
 
-#. module: disbursement_assignment_kmitl
+#. module: disbursement_validation_assignment
 msgid "Assign Officer"
 msgstr "มอบหมายเจ้าหน้าที่"
 
-#. module: disbursement_assignment_kmitl
+#. module: disbursement_validation_assignment
 msgid "My Verifications"
 msgstr "งานตรวจของฉัน"
 
-#. module: disbursement_assignment_kmitl
+#. module: disbursement_validation_assignment
 msgid "Unassigned"
 msgstr "ยังไม่มีผู้รับผิดชอบ"
 
-#. module: disbursement_assignment_kmitl
+#. module: disbursement_validation_assignment
 msgid "Assigned as responsible verification officer"
 msgstr "ได้รับมอบหมายเป็นเจ้าหน้าที่หมวดตรวจผู้รับผิดชอบ"
 
-#. module: disbursement_assignment_kmitl
+#. module: disbursement_validation_assignment
 msgid "Apply Rules to Pending Requests"
 msgstr "นำกฎไปใช้กับใบขอเบิกที่รอตรวจ"
 
-#. module: disbursement_assignment_kmitl
+#. module: disbursement_validation_assignment
 msgid "Assignment Rules Applied"
 msgstr "นำกฎการมอบหมายไปใช้แล้ว"
 
-#. module: disbursement_assignment_kmitl
+#. module: disbursement_validation_assignment
 #, python-format
 msgid "%(assigned)s of %(total)s pending request(s) were assigned."
 msgstr "มอบหมายแล้ว %(assigned)s จาก %(total)s ใบที่รอตรวจ"
 
-#. module: disbursement_assignment_kmitl
+#. module: disbursement_validation_assignment
 #, python-format
 msgid "This document is already assigned to %s."
 msgstr "เอกสารนี้มีผู้รับผิดชอบแล้วคือ %s"
 
-#. module: disbursement_assignment_kmitl
+#. module: disbursement_validation_assignment
 msgid "Only a manager can unassign the officer."
 msgstr "เฉพาะผู้จัดการเท่านั้นที่ถอนผู้รับผิดชอบได้"
 
-#. module: disbursement_assignment_kmitl
+#. module: disbursement_validation_assignment
 msgid "Only a manager can assign another officer."
 msgstr "เฉพาะผู้จัดการเท่านั้นที่มอบหมายผู้รับผิดชอบคนอื่นได้"
 
-#. module: disbursement_assignment_kmitl
+#. module: disbursement_validation_assignment
 msgid "Disbursement Verification"
 msgstr "หมวดตรวจ"
 
-#. module: disbursement_assignment_kmitl
-#: model:ir.ui.menu,name:disbursement_assignment_kmitl.menu_disbursement_verification
+#. module: disbursement_validation_assignment
+#: model:ir.ui.menu,name:disbursement_validation_assignment.menu_disbursement_verification
 msgid "Verification"
 msgstr "หมวดตรวจ"
 
-#. module: disbursement_assignment_kmitl
-#: model:ir.actions.act_window,name:disbursement_assignment_kmitl.action_disbursement_my_verifications
-#: model:ir.ui.menu,name:disbursement_assignment_kmitl.menu_disbursement_my_verifications
+#. module: disbursement_validation_assignment
+#: model:ir.actions.act_window,name:disbursement_validation_assignment.action_disbursement_my_verifications
+#: model:ir.ui.menu,name:disbursement_validation_assignment.menu_disbursement_my_verifications
 msgid "My Work"
 msgstr "งานของฉัน"
 
-#. module: disbursement_assignment_kmitl
-#: model:ir.actions.act_window,name:disbursement_assignment_kmitl.action_disbursement_all
-#: model:ir.ui.menu,name:disbursement_assignment_kmitl.menu_disbursement_all_requests
+#. module: disbursement_validation_assignment
+#: model:ir.actions.act_window,name:disbursement_validation_assignment.action_disbursement_all
+#: model:ir.ui.menu,name:disbursement_validation_assignment.menu_disbursement_all_requests
 msgid "All Disbursement Requests"
 msgstr "ใบขอเบิกทั้งหมด"
 
-#. module: disbursement_assignment_kmitl
+#. module: disbursement_validation_assignment
 msgid "No disbursement request is assigned to you."
 msgstr "ยังไม่มีใบขอเบิกที่มอบหมายให้คุณ"

@@ -765,7 +765,7 @@ class DisbursementRequest(models.Model):
 
     def _disbursement_act_done(self, code):
         """Call at the end of an act: records it where the request is routed
-        (disbursement_wc) and lets bridges react (disbursement_assignment_kmitl)."""
+        (disbursement_wc) and lets bridges react (disbursement_validation_assignment)."""
 
     def _on_signed(self):
         """The request has just been signed (or, with the context key

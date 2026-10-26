@@ -15,7 +15,7 @@ class DisbursementRequest(models.Model):
 
     A request in the circuit goes back to ``draft`` for its maker to fix and
     resubmit (``action_resubmit_verification``). It is independent of who (if
-    anyone) is the responsible officer -- the ``disbursement_assignment_kmitl``
+    anyone) is the responsible officer -- the ``disbursement_validation_assignment``
     addon layers officer assignment on top and overrides
     ``_verification_officer`` so the To-Dos reach the assigned officer instead
     of the creator.

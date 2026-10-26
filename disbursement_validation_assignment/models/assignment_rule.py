@@ -111,7 +111,7 @@ class DisbursementAssignmentRule(models.Model):
 
     @api.model
     def action_apply_to_pending(self):
-        """Re-run the rules against already-signed, still-unassigned requests.
+        """Re-run the rules against requests still to validate that have no officer.
 
         Exposed through a server action on the rule list so an admin can route
         a backlog after adding or editing rules. Idempotent: requests that
@@ -119,7 +119,11 @@ class DisbursementAssignmentRule(models.Model):
         """
         Request = self.env["disbursement.request"]
         pending = Request.search(
-            [("state", "=", "signed"), ("assigned_to", "=", False)]
+            [
+                ("state", "in", ("signed", "in_progress")),
+                ("verifier_id", "=", False),
+                ("assigned_to", "=", False),
+            ]
         )
         pending._assignment_auto_assign()
         assigned = pending.filtered("assigned_to")

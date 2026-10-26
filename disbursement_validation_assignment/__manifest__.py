@@ -1,8 +1,8 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 
 {
-    "name": "Disbursement Assignment KMITL",
-    "version": "16.0.1.0.1",
+    "name": "Disbursement Validation Assignment",
+    "version": "16.0.1.0.0",
     "category": "Disbursement",
     "summary": "Auto-assign a responsible verification officer to disbursement "
     "requests by rules",
@@ -21,6 +21,7 @@
         "views/assignment_rule_views.xml",
         "views/disbursement_verification_menus.xml",
     ],
+    "pre_init_hook": "pre_init_hook",
     "installable": True,
     "auto_install": False,
 }
