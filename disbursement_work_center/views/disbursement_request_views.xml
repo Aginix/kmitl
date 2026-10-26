@@ -5,24 +5,6 @@
         <field name="model">disbursement.request</field>
         <field name="inherit_id" ref="disbursement.view_disbursement_request_form" />
         <field name="arch" type="xml">
-            <button name="action_draft" position="before">
-                <button
-                    name="action_work_center_forward"
-                    string="Forward"
-                    type="object"
-                    class="oe_highlight"
-                    context="{'expected_station': work_center_id}"
-                    attrs="{'invisible': ['|', '|', ('state', '!=', 'in_progress'), ('work_center_can_move', '=', False), ('returned_to_source', '=', True)]}"
-                />
-                <button
-                    name="action_work_center_divert"
-                    string="Divert"
-                    type="object"
-                    context="{'expected_station': work_center_id}"
-                    attrs="{'invisible': ['|', '|', ('state', '!=', 'in_progress'), ('work_center_can_move', '=', False), ('returned_to_source', '=', True)]}"
-                />
-                <field name="work_center_can_move" invisible="1" />
-            </button>
             <!-- Inside the circuit only the people holding the request at their
                  station may send it back or cancel it. -->
             <xpath
@@ -43,36 +25,59 @@
             </xpath>
             <header position="after">
                 <div
-                    class="alert alert-info"
+                    class="alert alert-info d-flex justify-content-between align-items-center"
                     role="status"
                     style="margin-bottom:0px;"
                     attrs="{'invisible': [('work_center_id', '=', False)]}"
                 >
                     <div>
-                        <strong>Current Station:</strong>
-                        <field
-                            name="work_center_id"
-                            class="oe_inline"
-                            options="{'no_open': True}"
-                        />
+                        <div>
+                            <strong>Current Station:</strong>
+                            <field
+                                name="work_center_id"
+                                class="oe_inline"
+                                options="{'no_open': True}"
+                            />
+                        </div>
+                        <div
+                            attrs="{'invisible': [('work_center_next_id', '=', False)]}"
+                        >
+                            <strong>Next Station on the Route:</strong>
+                            <field
+                                name="work_center_next_id"
+                                class="oe_inline"
+                                options="{'no_open': True}"
+                            />
+                        </div>
+                        <div
+                            attrs="{'invisible': [('work_center_missing_act_ids', '=', [])]}"
+                        >
+                            <strong>Acts Still to Do:</strong>
+                            <field
+                                name="work_center_missing_act_ids"
+                                widget="many2many_tags"
+                                class="oe_inline"
+                            />
+                        </div>
                     </div>
-                    <div attrs="{'invisible': [('work_center_next_id', '=', False)]}">
-                        <strong>Next Station on the Route:</strong>
-                        <field
-                            name="work_center_next_id"
-                            class="oe_inline"
-                            options="{'no_open': True}"
+                    <div class="text-nowrap">
+                        <button
+                            name="action_work_center_forward"
+                            string="Forward"
+                            type="object"
+                            class="oe_highlight"
+                            context="{'expected_station': work_center_id}"
+                            attrs="{'invisible': ['|', '|', ('state', '!=', 'in_progress'), ('work_center_can_move', '=', False), ('returned_to_source', '=', True)]}"
                         />
-                    </div>
-                    <div
-                        attrs="{'invisible': [('work_center_missing_act_ids', '=', [])]}"
-                    >
-                        <strong>Acts Still to Do:</strong>
-                        <field
-                            name="work_center_missing_act_ids"
-                            widget="many2many_tags"
-                            class="oe_inline"
+                        <button
+                            name="action_work_center_divert"
+                            string="Divert"
+                            type="object"
+                            class="btn btn-secondary"
+                            context="{'expected_station': work_center_id}"
+                            attrs="{'invisible': ['|', '|', ('state', '!=', 'in_progress'), ('work_center_can_move', '=', False), ('returned_to_source', '=', True)]}"
                         />
+                        <field name="work_center_can_move" invisible="1" />
                     </div>
                 </div>
             </header>
