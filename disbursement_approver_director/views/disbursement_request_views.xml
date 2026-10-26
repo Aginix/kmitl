@@ -8,7 +8,7 @@
             <button name="action_draft" position="before">
                 <button
                     name="action_approve_finance"
-                    string="Approve (Finance Director)"
+                    string="Endorse (Finance Director)"
                     type="object"
                     class="oe_highlight"
                     attrs="{'invisible': [('can_approve_director', '=', False)]}"

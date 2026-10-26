@@ -63,7 +63,7 @@ and stamps who did it.
 - **ตรวจสอบ (Validate)** — the officer checks the signed request
   (`disbursement_validation`, `verifier_id`). Not `assigned_to`, who was merely
   assigned the check.
-- **อนุมัติ (ผอ.กองคลัง)** — the Finance Division Director's approval
+- **เห็นชอบ (ผอ.กองคลัง)** — the Finance Division Director's endorsement
   (`disbursement_approver_director`).
 - **อนุมัติ (ผู้รับมอบอำนาจอธิการบดี)** — the Rector-delegated approver's approval
   (`disbursement_approver_rector`). It touches no budget.

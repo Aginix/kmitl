@@ -21,13 +21,13 @@ msgstr ""
 #: code:addons/disbursement_approver_director/models/disbursement_request.py:0
 #: model_terms:ir.ui.view,arch_db:disbursement_approver_director.view_disbursement_request_form
 #, python-format
-msgid "Approve (Finance Director)"
-msgstr "อนุมัติ (ผอ.กองคลัง)"
+msgid "Endorse (Finance Director)"
+msgstr "เห็นชอบ (ผอ.กองคลัง)"
 
 #. module: disbursement_approver_director
 #: model:ir.model.fields,field_description:disbursement_approver_director.field_disbursement_request__can_approve_director
-msgid "Can Approve Director"
-msgstr "อนุมัติ (ผอ.กองคลัง) ได้"
+msgid "Can Endorse (Finance Director)"
+msgstr "เห็นชอบ (ผอ.กองคลัง) ได้"
 
 #. module: disbursement_approver_director
 #: model:ir.model,name:disbursement_approver_director.model_disbursement_request
@@ -36,8 +36,8 @@ msgstr "ใบขอเบิก"
 
 #. module: disbursement_approver_director
 #: model:ir.model.fields,field_description:disbursement_approver_director.field_disbursement_request__finance_approve_date
-msgid "Finance Approved On"
-msgstr "ผอ.กองคลังอนุมัติเมื่อ"
+msgid "Finance Endorsed On"
+msgstr "ผอ.กองคลังเห็นชอบเมื่อ"
 
 #. module: disbursement_approver_director
 #: model:ir.model.fields,field_description:disbursement_approver_director.field_disbursement_request__finance_approver_id

@@ -2,7 +2,7 @@
 Disbursement Approver (Finance Director)
 ========================================
 
-The Finance Division Director (ผอ.กองคลัง) approves a disbursement request. The act
+The Finance Division Director (ผอ.กองคลัง) endorses a disbursement request. The act
 needs no prior validation.
 
 The act code ``disbursement.approve_director`` is the one stations list as allowed or required (see

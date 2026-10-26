@@ -2,8 +2,8 @@
 
 {
     "name": "Disbursement Approver (Finance Director)",
-    "summary": "The ผอ.กองคลัง act: the Finance Division Director approves a disbursement request",
-    "version": "16.0.1.0.0",
+    "summary": "The ผอ.กองคลัง act: the Finance Division Director endorses a disbursement request",
+    "version": "16.0.1.0.1",
     "category": "Disbursement",
     "license": "LGPL-3",
     "author": "KMITL",
