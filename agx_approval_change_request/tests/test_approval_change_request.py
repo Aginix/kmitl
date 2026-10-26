@@ -39,10 +39,18 @@ class TestApprovalChangeRequest(TransactionCase):
                     "agx_approval.approval_category_5102010000"
                 ).id,
                 "user_id": cls.requestor.id,
+                "owner_id": cls.env["hr.employee"]
+                .create({"name": "Requestor", "user_id": cls.requestor.id})
+                .id,
                 "account_fiscal_year_id": fiscal_year.id,
             }
         )
         cls.request.state = "to_verify"
+        if cls.request._fields.get("operating_unit_id"):
+            # agx_approval_operating_unit: the users work in the request's OU.
+            (cls.requestor | cls.verifier | cls.verifier2).write(
+                {"assigned_operating_unit_ids": [(4, cls.request.operating_unit_id.id)]}
+            )
         # The fixture has no lines nor participants: only the rule under test.
         cls.env["exception.rule"].search(
             [("model", "=", "approval.request"), ("id", "!=", cls.env.ref(RULE).id)]
