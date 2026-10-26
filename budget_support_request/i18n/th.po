@@ -1,0 +1,969 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* budget_support_request
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-23 14:36+0000\n"
+"PO-Revision-Date: 2026-10-23 14:36+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: budget_support_request
+#. odoo-python
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#, python-format
+msgid "%s ไม่มีสิทธิ์เข้าถึงคำขอนี้ กรุณาเลือกเจ้าหน้าที่ Buddy คนอื่น"
+msgstr ""
+
+#. module: budget_support_request
+#: model:mail.activity.type,summary:budget_support_request.mail_activity_support_ack
+msgid ""
+"Acknowledge the allocation central has made for your budget support request"
+msgstr "รับทราบผลการจัดสรรงบประมาณจากส่วนกลางตามคำขอรับการสนับสนุนของท่าน"
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__message_needaction
+msgid "Action Needed"
+msgstr "ต้องดำเนินการ"
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__activity_ids
+msgid "Activities"
+msgstr "กิจกรรม"
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr "การตกแต่งข้อยกเว้นกิจกรรม"
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__activity_state
+msgid "Activity State"
+msgstr "สถานะกิจกรรม"
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__activity_type_icon
+msgid "Activity Type Icon"
+msgstr "ไอคอนประเภทกิจกรรม"
+
+#. module: budget_support_request
+#: model:ir.ui.menu,name:budget_support_request.action_budget_support_request_menu
+msgid "All Support Requests"
+msgstr "คำขอรับการสนับสนุนทั้งหมด"
+
+#. module: budget_support_request
+#. odoo-python
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#, python-format
+msgid "An approved or fulfilled request cannot be cancelled."
+msgstr "ไม่สามารถยกเลิกคำขอที่อนุมัติหรือจัดสรรแล้วได้"
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__analytic_distribution
+msgid "Analytic"
+msgstr "บัญชีวิเคราะห์"
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__analytic_distribution_search
+msgid "Analytic Distribution Search"
+msgstr "ค้นหาการกระจายบัญชีวิเคราะห์"
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__analytic_precision
+msgid "Analytic Precision"
+msgstr "ความแม่นยำบัญชีวิเคราะห์"
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__approval_date
+msgid "Approval Date"
+msgstr "วันที่อนุมัติ"
+
+#. module: budget_support_request
+#: model_terms:ir.ui.view,arch_db:budget_support_request.view_budget_support_request_form
+msgid "Approve"
+msgstr "อนุมัติ"
+
+#. module: budget_support_request
+#: model:ir.model.fields.selection,name:budget_support_request.selection__budget_support_request__state__approved
+#: model_terms:ir.ui.view,arch_db:budget_support_request.view_budget_support_request_search
+msgid "Approved"
+msgstr "อนุมัติแล้ว"
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__approver_id
+msgid "Approved by"
+msgstr "ผู้อนุมัติ"
+
+#. module: budget_support_request
+#: model_terms:ir.actions.act_window,help:budget_support_request.action_budget_support_request
+msgid ""
+"Ask central for budget support on your department's dimension —\n"
+"                central will choose the funding source when fulfilling it."
+msgstr ""
+"ขอรับการสนับสนุนงบประมาณจากส่วนกลางเข้าส่วนงานของท่าน —\n"
+"                ส่วนกลางจะเป็นผู้เลือกก้อนงบที่ใช้เมื่อจัดสรร"
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__message_attachment_count
+msgid "Attachment Count"
+msgstr "จำนวนเอกสารแนบ"
+
+#. module: budget_support_request
+#. odoo-python
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#: model:ir.model,name:budget_support_request.model_budget_commitment
+#, python-format
+msgid "Budget Commitment"
+msgstr "จองงบประมาณ"
+
+#. module: budget_support_request
+#. odoo-python
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__commitment_ids
+#, python-format
+msgid "Budget Commitments"
+msgstr "ใบจองงบประมาณ"
+
+#. module: budget_support_request
+#: model:ir.model,name:budget_support_request.model_budget_support_request
+#: model:ir.ui.menu,name:budget_support_request.budget_support_request_management
+#: model_terms:ir.ui.view,arch_db:budget_support_request.view_budget_support_request_form
+msgid "Budget Support Request"
+msgstr "คำขอรับการสนับสนุนงบประมาณ"
+
+#. module: budget_support_request
+#: model:ir.model,name:budget_support_request.model_budget_support_request_verify_return_wizard
+msgid "Budget Support Request — Buddy Return for Correction"
+msgstr "คำขอรับการสนับสนุนงบประมาณ — Buddy ส่งกลับแก้ไข"
+
+#. module: budget_support_request
+#: model:ir.actions.act_window,name:budget_support_request.action_budget_support_request
+#: model_terms:ir.ui.view,arch_db:budget_support_request.view_budget_support_request_tree
+msgid "Budget Support Requests"
+msgstr "คำขอรับการสนับสนุนงบประมาณ"
+
+#. module: budget_support_request
+#. odoo-python
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#: model:ir.model,name:budget_support_request.model_budget_transfer
+#, python-format
+msgid "Budget Transfer"
+msgstr "โอนงบประมาณ"
+
+#. module: budget_support_request
+#. odoo-python
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__transfer_ids
+#, python-format
+msgid "Budget Transfers"
+msgstr "ใบโอนงบประมาณ"
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__can_edit
+msgid "Can Edit"
+msgstr "แก้ไขได้"
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__can_edit_officer
+msgid "Can Edit Officer"
+msgstr "เปลี่ยนเจ้าหน้าที่ Buddy ได้"
+
+#. module: budget_support_request
+#: model_terms:ir.ui.view,arch_db:budget_support_request.view_budget_support_request_form
+msgid "Cancel"
+msgstr "ยกเลิก"
+
+#. module: budget_support_request
+#: model:ir.model.fields.selection,name:budget_support_request.selection__budget_support_request__state__cancelled
+#: model_terms:ir.ui.view,arch_db:budget_support_request.view_budget_support_request_form
+#: model_terms:ir.ui.view,arch_db:budget_support_request.view_budget_support_request_search
+msgid "Cancelled"
+msgstr "ยกเลิกแล้ว"
+
+#. module: budget_support_request
+#: model:mail.activity.type,summary:budget_support_request.mail_activity_support_verify
+msgid ""
+"Check the submitted budget support request before it goes out for approval"
+msgstr "ตรวจสอบคำขอรับการสนับสนุนงบประมาณก่อนส่งขออนุมัติ"
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__commitment_count
+msgid "Commitment Count"
+msgstr "จำนวนใบจอง"
+
+#. module: budget_support_request
+#: model_terms:ir.ui.view,arch_db:budget_support_request.view_budget_support_request_form
+msgid "Commitments"
+msgstr "ใบจอง"
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__company_id
+msgid "Company"
+msgstr "บริษัท"
+
+#. module: budget_support_request
+#: model:mail.activity.type,summary:budget_support_request.mail_activity_support_correct
+msgid ""
+"Correct the budget support request the Buddy returned, then confirm it again"
+msgstr ""
+"แก้ไขคำขอรับการสนับสนุนงบประมาณที่ Buddy ส่งกลับ แล้วยืนยันคำขออีกครั้ง"
+
+#. module: budget_support_request
+#: model_terms:ir.actions.act_window,help:budget_support_request.action_budget_support_request
+msgid "Create your first budget support request!"
+msgstr "สร้างคำขอรับการสนับสนุนงบประมาณรายการแรก!"
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__create_uid
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request_verify_return_wizard__create_uid
+msgid "Created by"
+msgstr "สร้างโดย"
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__create_date
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request_verify_return_wizard__create_date
+msgid "Created on"
+msgstr "สร้างเมื่อ"
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__currency_id
+msgid "Currency"
+msgstr "สกุลเงิน"
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__date
+msgid "Date"
+msgstr "วันที่"
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__display_name
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request_verify_return_wizard__display_name
+msgid "Display Name"
+msgstr "ชื่อที่แสดง"
+
+#. module: budget_support_request
+#: model:ir.model.fields.selection,name:budget_support_request.selection__budget_support_request__state__done
+#: model_terms:ir.ui.view,arch_db:budget_support_request.view_budget_support_request_search
+msgid "Done"
+msgstr "เสร็จสิ้น"
+
+#. module: budget_support_request
+#: model:ir.model.fields.selection,name:budget_support_request.selection__budget_support_request__state__draft
+#: model_terms:ir.ui.view,arch_db:budget_support_request.view_budget_support_request_search
+msgid "Draft"
+msgstr "แบบร่าง"
+
+#. module: budget_support_request
+#: model_terms:ir.ui.view,arch_db:budget_support_request.view_budget_support_request_search
+msgid "Fiscal Year"
+msgstr "ปีงบประมาณ"
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__fiscal_year_locked
+msgid "Fiscal Year Locked"
+msgstr "ล็อกปีงบประมาณ"
+
+#. module: budget_support_request
+#: model:ir.model.fields,help:budget_support_request.field_budget_support_request__source_analytic_id
+msgid "Fixed: central supports units out of งบประมาณเงินรายได้ only."
+msgstr "กำหนดตายตัว: ส่วนกลางสนับสนุนหน่วยงานจากงบประมาณเงินรายได้เท่านั้น"
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__message_follower_ids
+msgid "Followers"
+msgstr "ผู้ติดตาม"
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "ผู้ติดตาม (คู่ค้า)"
+
+#. module: budget_support_request
+#: model:ir.model.fields,help:budget_support_request.field_budget_support_request__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr "ไอคอน Font Awesome เช่น fa-tasks"
+
+#. module: budget_support_request
+#: model:mail.activity.type,summary:budget_support_request.mail_activity_support_fulfil
+msgid ""
+"Fulfil the approved budget support request by transfer (โอน) or reservation "
+"(จอง)"
+msgstr ""
+"จัดสรรงบประมาณตามคำขอรับการสนับสนุนที่อนุมัติแล้ว ด้วยการโอนหรือการจอง"
+
+#. module: budget_support_request
+#: model_terms:ir.ui.view,arch_db:budget_support_request.view_budget_support_request_search
+msgid "Group By"
+msgstr "จัดกลุ่มตาม"
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__has_message
+msgid "Has Message"
+msgstr "มีข้อความ"
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__id
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request_verify_return_wizard__id
+msgid "ID"
+msgstr "รหัส"
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__activity_exception_icon
+msgid "Icon"
+msgstr "ไอคอน"
+
+#. module: budget_support_request
+#: model:ir.model.fields,help:budget_support_request.field_budget_support_request__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr "ไอคอนแสดงกิจกรรมที่มีข้อยกเว้น"
+
+#. module: budget_support_request
+#: model:ir.model.fields,help:budget_support_request.field_budget_support_request__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr "หากทำเครื่องหมาย ข้อความใหม่ต้องการความสนใจของคุณ"
+
+#. module: budget_support_request
+#: model:ir.model.fields,help:budget_support_request.field_budget_support_request__message_has_error
+#: model:ir.model.fields,help:budget_support_request.field_budget_support_request__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr "หากทำเครื่องหมาย บางข้อความมีข้อผิดพลาดในการส่ง"
+
+#. module: budget_support_request
+#: model:ir.model.fields.selection,name:budget_support_request.selection__budget_support_request__state__in_progress
+#: model_terms:ir.ui.view,arch_db:budget_support_request.view_budget_support_request_search
+msgid "In Progress"
+msgstr "อยู่ระหว่างดำเนินการ"
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__message_is_follower
+msgid "Is Follower"
+msgstr "เป็นผู้ติดตาม"
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request____last_update
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request_verify_return_wizard____last_update
+msgid "Last Modified on"
+msgstr "แก้ไขล่าสุดเมื่อ"
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__write_uid
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request_verify_return_wizard__write_uid
+msgid "Last Updated by"
+msgstr "อัปเดตล่าสุดโดย"
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__write_date
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request_verify_return_wizard__write_date
+msgid "Last Updated on"
+msgstr "อัปเดตล่าสุดเมื่อ"
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__message_main_attachment_id
+msgid "Main Attachment"
+msgstr "เอกสารแนบหลัก"
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__message_has_error
+msgid "Message Delivery error"
+msgstr "ข้อผิดพลาดในการส่งข้อความ"
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__message_ids
+msgid "Messages"
+msgstr "ข้อความ"
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr "กำหนดเวลากิจกรรมของฉัน"
+
+#. module: budget_support_request
+#: model_terms:ir.ui.view,arch_db:budget_support_request.view_budget_support_request_search
+msgid "My Requests"
+msgstr "คำขอของฉัน"
+
+#. module: budget_support_request
+#: model:ir.actions.act_window,name:budget_support_request.action_my_budget_support_requests
+#: model:ir.ui.menu,name:budget_support_request.action_my_budget_support_requests_menu
+msgid "My Support Requests"
+msgstr "คำขอรับการสนับสนุนของฉัน"
+
+#. module: budget_support_request
+#. odoo-python
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#, python-format
+msgid "New"
+msgstr "ใหม่"
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__activity_calendar_event_id
+msgid "Next Activity Calendar Event"
+msgstr "กิจกรรมปฏิทินถัดไป"
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr "กำหนดเวลากิจกรรมถัดไป"
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__activity_summary
+msgid "Next Activity Summary"
+msgstr "สรุปกิจกรรมถัดไป"
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__activity_type_id
+msgid "Next Activity Type"
+msgstr "ประเภทกิจกรรมถัดไป"
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__message_needaction_counter
+msgid "Number of Actions"
+msgstr "จำนวนการดำเนินการ"
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__message_has_error_counter
+msgid "Number of errors"
+msgstr "จำนวนข้อผิดพลาด"
+
+#. module: budget_support_request
+#: model:ir.model.fields,help:budget_support_request.field_budget_support_request__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr "จำนวนข้อความที่ต้องดำเนินการ"
+
+#. module: budget_support_request
+#: model:ir.model.fields,help:budget_support_request.field_budget_support_request__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "จำนวนข้อความที่มีข้อผิดพลาดในการส่ง"
+
+#. module: budget_support_request
+#. odoo-python
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#, python-format
+msgid "Only %s, the Buddy named on this request, can check it."
+msgstr ""
+"เฉพาะ %s ซึ่งเป็นเจ้าหน้าที่ Buddy ที่ระบุในคำขอนี้เท่านั้นที่ตรวจสอบได้"
+
+#. module: budget_support_request
+#. odoo-python
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#, python-format
+msgid "Only Budget Managers can approve support requests."
+msgstr ""
+"เฉพาะผู้จัดการงบประมาณ (Budget Manager) "
+"เท่านั้นที่อนุมัติคำขอรับการสนับสนุนได้"
+
+#. module: budget_support_request
+#. odoo-python
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#, python-format
+msgid "Only Budget Managers can close a support request."
+msgstr ""
+"เฉพาะผู้จัดการงบประมาณ (Budget Manager) เท่านั้นที่ปิดคำขอรับการสนับสนุนได้"
+
+#. module: budget_support_request
+#. odoo-python
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#, python-format
+msgid "Only Budget Managers can fulfil a support request."
+msgstr ""
+"เฉพาะผู้จัดการงบประมาณ (Budget Manager) "
+"เท่านั้นที่จัดสรรงบประมาณตามคำขอรับการสนับสนุนได้"
+
+#. module: budget_support_request
+#. odoo-python
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#, python-format
+msgid "Only Budget Managers can reopen this request."
+msgstr ""
+"เฉพาะผู้จัดการงบประมาณ (Budget Manager) เท่านั้นที่เปิดคำขอนี้กลับมาแก้ไขได้"
+
+#. module: budget_support_request
+#. odoo-python
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#, python-format
+msgid "Only Budget Users can submit a support request."
+msgstr ""
+"เฉพาะผู้ใช้งานงบประมาณ (Budget User) เท่านั้นที่ยืนยันคำขอรับการสนับสนุนได้"
+
+#. module: budget_support_request
+#. odoo-python
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#, python-format
+msgid "Only a checked request can be approved."
+msgstr "อนุมัติได้เฉพาะคำขอที่ Buddy ตรวจสอบแล้วเท่านั้น"
+
+#. module: budget_support_request
+#. odoo-python
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#, python-format
+msgid "Only a request in progress can be marked done."
+msgstr "ปิดเป็นเสร็จสิ้นได้เฉพาะคำขอที่อยู่ระหว่างดำเนินการเท่านั้น"
+
+#. module: budget_support_request
+#. odoo-python
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#, python-format
+msgid "Only a request waiting to be checked can be verified."
+msgstr "ยืนยันตรวจสอบได้เฉพาะคำขอที่อยู่ในสถานะรอตรวจสอบเท่านั้น"
+
+#. module: budget_support_request
+#. odoo-python
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#, python-format
+msgid "Only an approved support request can be fulfilled."
+msgstr "จัดสรรได้เฉพาะคำขอรับการสนับสนุนที่อนุมัติแล้วเท่านั้น"
+
+#. module: budget_support_request
+#. odoo-python
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#, python-format
+msgid "Only the requester can reset a submitted request to draft."
+msgstr "เฉพาะผู้ขอเท่านั้นที่นำคำขอที่ยืนยันแล้วกลับเป็นแบบร่างได้"
+
+#. module: budget_support_request
+#. odoo-python
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#, python-format
+msgid "Only the requester can submit their own support request."
+msgstr "เฉพาะผู้ขอเท่านั้นที่ยืนยันคำขอรับการสนับสนุนของตนเองได้"
+
+#. module: budget_support_request
+#: model:ir.actions.act_window,name:budget_support_request.action_budget_support_requests_pending
+#: model:ir.ui.menu,name:budget_support_request.action_budget_support_requests_pending_menu
+#: model_terms:ir.ui.view,arch_db:budget_support_request.view_budget_support_request_search
+msgid "Pending Approval"
+msgstr "รอส่งขออนุมัติ"
+
+#. module: budget_support_request
+#: model:ir.model.fields,help:budget_support_request.field_budget_support_request__reason
+msgid "Please explain why this budget support is needed."
+msgstr "กรุณาระบุเหตุผลความจำเป็นในการขอรับการสนับสนุนงบประมาณ"
+
+#. module: budget_support_request
+#. odoo-python
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#, python-format
+msgid "Please provide a reason/justification."
+msgstr "กรุณาระบุเหตุผล/ความจำเป็น"
+
+#. module: budget_support_request
+#. odoo-python
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#, python-format
+msgid "Please select the requesting unit's department dimension."
+msgstr "กรุณาเลือกส่วนงานของหน่วยงานผู้ขอ"
+
+#. module: budget_support_request
+#. odoo-python
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#, python-format
+msgid "Please set the fiscal year."
+msgstr "กรุณาระบุปีงบประมาณ"
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request_verify_return_wizard__request_id
+msgid "Request"
+msgstr "คำขอ"
+
+#. module: budget_support_request
+#: model_terms:ir.ui.view,arch_db:budget_support_request.view_budget_support_request_form
+msgid "Request Information"
+msgstr "ข้อมูลคำขอ"
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__name
+#: model_terms:ir.ui.view,arch_db:budget_support_request.view_budget_support_request_search
+msgid "Request Number"
+msgstr "เลขที่คำขอ"
+
+#. module: budget_support_request
+#: model_terms:ir.ui.view,arch_db:budget_support_request.view_budget_support_request_form
+msgid "Reset to Draft"
+msgstr "กลับเป็นแบบร่าง"
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__activity_user_id
+msgid "Responsible User"
+msgstr "ผู้รับผิดชอบ"
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "ข้อผิดพลาดในการส่ง SMS"
+
+#. module: budget_support_request
+#: model_terms:ir.ui.view,arch_db:budget_support_request.view_budget_support_request_search
+msgid "Search Budget Support Requests"
+msgstr "ค้นหาคำขอรับการสนับสนุนงบประมาณ"
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__show_approve_button
+msgid "Show Approve Button"
+msgstr "แสดงปุ่มอนุมัติ"
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__show_cancel_button
+msgid "Show Cancel Button"
+msgstr "แสดงปุ่มยกเลิก"
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__show_done_button
+msgid "Show Done Button"
+msgstr "แสดงปุ่มเสร็จสิ้น"
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__show_fulfil_reserve_button
+msgid "Show Fulfil Reserve Button"
+msgstr "แสดงปุ่มจัดสรร → จอง"
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__show_fulfil_transfer_button
+msgid "Show Fulfil Transfer Button"
+msgstr "แสดงปุ่มจัดสรร → โอน"
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__show_reset_button
+msgid "Show Reset Button"
+msgstr "แสดงปุ่มกลับเป็นแบบร่าง"
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__show_submit_button
+msgid "Show Submit Button"
+msgstr "แสดงปุ่มยืนยันคำขอ"
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__show_verify_button
+msgid "Show Verify Button"
+msgstr "แสดงปุ่มยืนยันตรวจสอบ"
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__show_verify_return_button
+msgid "Show Verify Return Button"
+msgstr "แสดงปุ่มส่งกลับแก้ไข"
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__state
+#: model_terms:ir.ui.view,arch_db:budget_support_request.view_budget_support_request_search
+msgid "Status"
+msgstr "สถานะ"
+
+#. module: budget_support_request
+#: model:ir.model.fields,help:budget_support_request.field_budget_support_request__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+"สถานะตามกิจกรรม\n"
+"เกินกำหนด: เลยวันครบกำหนดแล้ว\n"
+"วันนี้: วันที่กิจกรรมเป็นวันนี้\n"
+"วางแผน: กิจกรรมในอนาคต"
+
+#. module: budget_support_request
+#: model_terms:ir.ui.view,arch_db:budget_support_request.view_budget_support_request_form
+msgid "Submit for Approval"
+msgstr "ยืนยันคำขอ"
+
+#. module: budget_support_request
+#: model:ir.model.fields.selection,name:budget_support_request.selection__budget_support_request__state__submitted
+msgid "Submitted"
+msgstr "รอส่งขออนุมัติ"
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_commitment__support_request_id
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_transfer__support_request_id
+msgid "Support Request"
+msgstr "คำขอรับการสนับสนุน"
+
+#. module: budget_support_request
+#: model:ir.model.fields,help:budget_support_request.field_budget_support_request__officer_id
+msgid ""
+"The one central-office Buddy who will fulfil this request and who receives "
+"the Todo when it is approved. Defaults (in draft) to the Buddy covering this"
+" unit in the Buddy settings; the requesting unit may name another."
+msgstr ""
+"เจ้าหน้าที่ Buddy ของส่วนกลางหนึ่งคนที่ตรวจสอบและจัดสรรงบประมาณตามคำขอนี้ "
+"และได้รับ Todo เมื่อคำขอได้รับอนุมัติ ขณะเป็นแบบร่างระบบจะเติม Buddy "
+"ที่ดูแลส่วนงานนี้ในการตั้งค่า Buddy ให้ หน่วยงานผู้ขอเลือกคนอื่นได้"
+
+#. module: budget_support_request
+#. odoo-python
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#, python-format
+msgid "The requested amount must be greater than zero."
+msgstr "จำนวนเงินที่ขอต้องมากกว่าศูนย์"
+
+#. module: budget_support_request
+#: model_terms:ir.ui.view,arch_db:budget_support_request.view_budget_support_request_tree
+msgid "Total"
+msgstr "รวม"
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__transfer_count
+msgid "Transfer Count"
+msgstr "จำนวนใบโอน"
+
+#. module: budget_support_request
+#: model_terms:ir.ui.view,arch_db:budget_support_request.view_budget_support_request_form
+msgid "Transfers"
+msgstr "ใบโอน"
+
+#. module: budget_support_request
+#: model:ir.model.fields,help:budget_support_request.field_budget_support_request__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr "ประเภทของกิจกรรมข้อยกเว้นในเอกสาร"
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__website_message_ids
+msgid "Website Messages"
+msgstr "ข้อความเว็บไซต์"
+
+#. module: budget_support_request
+#: model:ir.model.fields,help:budget_support_request.field_budget_support_request__website_message_ids
+msgid "Website communication history"
+msgstr "ประวัติการสื่อสารทางเว็บไซต์"
+
+#. module: budget_support_request
+#. odoo-python
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#, python-format
+msgid "You cannot approve your own budget support request."
+msgstr "ไม่สามารถอนุมัติคำขอรับการสนับสนุนงบประมาณของตนเองได้"
+
+#. module: budget_support_request
+#. odoo-python
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#, python-format
+msgid ""
+"กรุณาระบุเจ้าหน้าที่ Buddy ผู้รับผิดชอบ (ส่วนงาน %s ยังไม่มีเจ้าหน้าที่ "
+"Buddy ที่มีสิทธิ์เข้าถึงคำขอนี้ในการตั้งค่า)"
+msgstr ""
+
+#. module: budget_support_request
+#: model_terms:ir.ui.view,arch_db:budget_support_request.view_budget_support_request_form
+msgid "จัดสรร → จอง"
+msgstr ""
+
+#. module: budget_support_request
+#: model_terms:ir.ui.view,arch_db:budget_support_request.view_budget_support_request_form
+msgid "จัดสรร → โอน"
+msgstr ""
+
+#. module: budget_support_request
+#. odoo-python
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#, python-format
+msgid "จัดสรรงบประมาณตามคำขอ %s"
+msgstr ""
+
+#. module: budget_support_request
+#: model_terms:ir.ui.view,arch_db:budget_support_request.view_budget_support_request_form
+msgid "จำนวนเงิน"
+msgstr ""
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__amount_requested
+msgid "จำนวนเงินที่ขอ"
+msgstr ""
+
+#. module: budget_support_request
+#: model:mail.activity.type,name:budget_support_request.mail_activity_support_fulfil
+msgid "ดำเนินการจัดสรรงบประมาณ"
+msgstr ""
+
+#. module: budget_support_request
+#: model:mail.activity.type,name:budget_support_request.mail_activity_support_verify
+msgid "ตรวจสอบคำขอรับการสนับสนุน"
+msgstr ""
+
+#. module: budget_support_request
+#. odoo-python
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#, python-format
+msgid "ตรวจสอบคำขอรับการสนับสนุน %s"
+msgstr ""
+
+#. module: budget_support_request
+#: model_terms:ir.ui.view,arch_db:budget_support_request.view_budget_support_request_search
+msgid "ที่ฉันรับผิดชอบ"
+msgstr ""
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__account_fiscal_year_id
+msgid "ปีงบประมาณ"
+msgstr ""
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__user_id
+#: model_terms:ir.ui.view,arch_db:budget_support_request.view_budget_support_request_search
+msgid "ผู้ขอ"
+msgstr ""
+
+#. module: budget_support_request
+#: model_terms:ir.ui.view,arch_db:budget_support_request.view_budget_support_request_verify_return_wizard_form
+msgid "ยกเลิก"
+msgstr ""
+
+#. module: budget_support_request
+#: model_terms:ir.ui.view,arch_db:budget_support_request.view_budget_support_request_form
+msgid "ยืนยันตรวจสอบ"
+msgstr ""
+
+#. module: budget_support_request
+#: model_terms:ir.ui.view,arch_db:budget_support_request.view_budget_support_request_search
+msgid "รอฉันตรวจสอบ"
+msgstr ""
+
+#. module: budget_support_request
+#: model:ir.model.fields.selection,name:budget_support_request.selection__budget_support_request__state__to_verify
+#: model_terms:ir.ui.view,arch_db:budget_support_request.view_budget_support_request_search
+msgid "รอตรวจสอบ"
+msgstr ""
+
+#. module: budget_support_request
+#: model_terms:ir.ui.view,arch_db:budget_support_request.view_budget_support_request_verify_return_wizard_form
+msgid "ระบุสิ่งที่ต้องแก้ไข เพื่อให้ผู้ขอทราบว่าต้องทำอะไรต่อ..."
+msgstr ""
+
+#. module: budget_support_request
+#: model:mail.activity.type,name:budget_support_request.mail_activity_support_ack
+msgid "รับทราบผลการจัดสรร"
+msgstr ""
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__verify_date
+msgid "วันที่ตรวจสอบ"
+msgstr ""
+
+#. module: budget_support_request
+#. odoo-python
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#, python-format
+msgid "สนับสนุน %s"
+msgstr ""
+
+#. module: budget_support_request
+#. odoo-python
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#: model_terms:ir.ui.view,arch_db:budget_support_request.view_budget_support_request_form
+#: model_terms:ir.ui.view,arch_db:budget_support_request.view_budget_support_request_verify_return_wizard_form
+#, python-format
+msgid "ส่งกลับแก้ไข"
+msgstr ""
+
+#. module: budget_support_request
+#. odoo-python
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#, python-format
+msgid "ส่งกลับแก้ไขโดย Buddy: %s"
+msgstr ""
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__department_analytic_id
+#: model_terms:ir.ui.view,arch_db:budget_support_request.view_budget_support_request_search
+msgid "ส่วนงาน"
+msgstr ""
+
+#. module: budget_support_request
+#: model_terms:ir.ui.view,arch_db:budget_support_request.view_budget_support_request_search
+msgid "เจ้าหน้าที่ Buddy"
+msgstr ""
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__officer_id
+msgid "เจ้าหน้าที่ Buddy ผู้รับผิดชอบ"
+msgstr ""
+
+#. module: budget_support_request
+#: model_terms:ir.ui.view,arch_db:budget_support_request.view_budget_support_request_form
+msgid "เสร็จสิ้น"
+msgstr ""
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__reason
+#: model_terms:ir.ui.view,arch_db:budget_support_request.view_budget_support_request_form
+msgid "เหตุผล/ความจำเป็น"
+msgstr ""
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request_verify_return_wizard__reason
+msgid "เหตุผลที่ส่งกลับแก้ไข"
+msgstr ""
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__attachment_ids
+#: model_terms:ir.ui.view,arch_db:budget_support_request.view_budget_support_request_form
+msgid "เอกสารแนบ"
+msgstr ""
+
+#. module: budget_support_request
+#. odoo-python
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#, python-format
+msgid "แก้ไขคำขอรับการสนับสนุน %s"
+msgstr ""
+
+#. module: budget_support_request
+#: model:mail.activity.type,name:budget_support_request.mail_activity_support_correct
+msgid "แก้ไขคำขอรับการสนับสนุนตามที่ Buddy ส่งกลับ"
+msgstr ""
+
+#. module: budget_support_request
+#. odoo-python
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#: code:addons/budget_support_request/models/budget_support_request.py:0
+#, python-format
+msgid ""
+"แหล่งเงินของคำขอรับการสนับสนุนถูกกำหนดเป็น %(fixed)s เท่านั้น (ได้รับ "
+"%(given)s)"
+msgstr ""
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__source_analytic_id
+msgid "แหล่งเงินงบประมาณ"
+msgstr ""

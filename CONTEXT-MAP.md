@@ -29,6 +29,11 @@ upfront.
     ผังงบประมาณ, or draw the reservation of a โครงการ or a แผนจัดซื้อจัดจ้าง. Each
     bridge owns its own answer; a source-less ใบจองงบประมาณ is not an option here
     (budget ADR-0015).
+- [Budget Support Request](./budget_support_request/CONTEXT.md) — a requesting unit's
+  application for central to allocate budget onto its own `department` dimension
+  (ขอรับการสนับสนุนงบประมาณ); routed for approval through e-Saraban, then **fulfilled**
+  by central choosing either `budget.transfer` (โอน) or `budget.commitment` (จอง) —
+  structurally mirrors `budget_transfer`'s core + Operating Unit + e-Saraban module split.
 - [Budget Appropriation Summary](./budget_appropriation_summary/CONTEXT.md) —
   institution-wide roll-up of unit appropriations for one fiscal year × source
   (สรุปภาพรวมสถาบัน gathering รวมเล่มหน่วยงาน), rendering the F-series summary reports
@@ -117,6 +122,14 @@ upfront.
   by **Cash Route** (`kmitl.cash.route`), one row per (paying account × sources of
   funds); a row naming no intermediate account means "pays directly", a missing row is a
   setup gap.
+- [KMITL Student](./partner_student_kmitl/CONTEXT.md) — a student as an Odoo contact,
+  keyed by the institute's **Student ID** and named from the **Student catalog**
+  (ทะเบียนนักศึกษา สจล.) API — an optional connector, `partner_student_kmitl_api`; the
+  catalog supplies identity only, never a bank account or a national ID.
+- [Disbursement — Student List Import](./disbursement_student_import/CONTEXT.md) —
+  appends one line per row of a requester's Excel list (scholarships, TA pay) to a draft
+  นักศึกษา-type disbursement request; unknown students are **skipped rows**, never a
+  rejected list.
 - [Advance Payment](./advance_payment/CONTEXT.md) — employee cash-advance loans
   (สัญญายืมเงิน); a single-disbursement loan to one borrower, tracked from request
   through clearing to closure. A borrower may hold only one active agreement at a time,
@@ -144,9 +157,38 @@ upfront.
   academic staff get their [[hr-employee-academic-standing-thailand]] title, everyone
   else their personal honorific (`prefix_id`), glued to the
   [[kmitl-hr-employee-full-name]] first/middle/last name.
+- [Photo Viewer — Annotation](./agx_photoviewer_annotation/CONTEXT.md) — reviewers tick,
+  draw, highlight and comment directly on an image or PDF attachment inside the photo
+  viewer; marks are an overlay stored beside the untouched file, exportable on demand as
+  an annotated PDF.
+  - **`agx_photoviewer_annotation_revision`** (no own glossary — part of this context):
+    Revisions of an annotated file — a corrected file is uploaded as the next revision,
+    never over the annotated one (ADR-0003).
+  - **`agx_photoviewer_change_request`** (no own glossary — bridge to Change Requests):
+    pins a Change request on a file and cancels it when the file is deleted
+    (agx_change_request ADR-0001).
+- [Change Requests](./agx_change_request/CONTEXT.md) — a reviewer asks a record's maker
+  to fix or explain something, on the record or pinned on one of its files; Assignees get
+  an activity, every step lands in the chatter, and its author (or someone on their
+  behalf) closes it. Opt-in
+  per model through a mixin.
+- [Photo Viewer — Annotation History](./agx_photoviewer_annotation_history/CONTEXT.md) —
+  a side panel listing who added, changed or removed marks on a file in each visit, and
+  drawing the layer as any of those Changes left it.
+- [Disbursement — Acts](./disbursement/CONTEXT.md) — the ตรวจสอบ, ผอ.กองคลัง and
+  ผู้รับมอบอำนาจอธิการบดี acts on the DR (`disbursement_validation`,
+  `disbursement_approver_director`, `disbursement_approver_rector`): each stamps who
+  acted and one signature row, none changes the DR's state.
 
 ## Relationships
 
+- **Budget → Change Requests**: budget transfers take Change requests
+  (`budget_transfer_change_request`, on top of Buddy Verification): the Buddy details
+  what to fix as requests, ยืนยันตรวจสอบ is refused while any is outstanding, and a
+  covering Buddy may close one on its author's behalf.
+- **Photo Viewer — Annotation → Change Requests**: a Pinned Change request's pin is a
+  Comment of a file's Annotation layer; deleting the file cancels the request
+  (agx_change_request ADR-0001).
 - **Budget → Procurement Plan**: posting a `budget.appropriation` line creates a
   `procurement.plan` and reserves its `budget.commitment` for the full amount
   (ADR-0005).
@@ -164,6 +206,12 @@ upfront.
 - **KMITL Project → Budget**: the project's purchase requests (พ.1) and disbursements
   draw that one shared commitment down (obligate+consume); a project may hold many PRs,
   capped at the commitment (ADR-0007).
+- **Budget Support Request → Budget**: once approved (via e-Saraban), central fulfils the
+  request by opening a pre-filled, unsaved `budget.transfer` or `budget.commitment` form
+  (`support_request_id` carried via context defaults) for central to complete and
+  post/reserve; the request moves `approved → in_progress` the moment that document is
+  posted/reserved (an idempotent hook on the transfer's `_post_transfer()` /
+  commitment's `action_reserve()`).
 - **Disbursement ↔ Finance (paying account)**: a **หัวจ่าย** is one of Odoo's own
   `account.payment.method.line` records — bank account × method × voucher × GL — seeded
   by `account_kmitl` on ใบสำคัญจ่าย (PV) and administered in `finance_kmitl`
@@ -252,6 +300,12 @@ upfront.
   surfaced as a non-blocking warning at Submit. Scoped to vouchers raised from a
   disbursement request; the budget ledger and the bank reconciliation view are both
   untouched by design (`disbursement_cash_movement_kmitl` ADR-0001/0002).
+- **Student List Import → Disbursement / KMITL Student**: the import resolves each row to a
+  **Student** (by Student ID, then national ID, else created from the **Student
+  catalog**), adds or reuses the row's bank account on that contact, and appends an
+  ordinary request line paying them — the request's own **Payee** rules apply unchanged,
+  and downstream finance still raises one voucher per payee (`partner_student_kmitl`
+  ADR-0001).
 - **Budget ↔ Operating Units (cross-OU reservation)**: a standalone `budget.commitment`
   (ใบจองงบประมาณ) may be reserved by one OU (the **Owning Unit** / funder — normally
   central) _for_ another (the **Beneficiary Unit** — the requesting unit); both OUs see

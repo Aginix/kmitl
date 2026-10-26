@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- ตั้งเบิกตรง is granted to selected users only (disbursement ADR-0005).
+         No category: an independent tick on top of whatever disbursement level
+         the user holds. -->
+    <record id="group_disbursement_direct_claim" model="res.groups">
+        <field name="name">Disbursement Direct Claim</field>
+        <field name="implied_ids" eval="[(4, ref('disbursement.group_disbursement_user'))]" />
+        <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]" />
+    </record>
+</odoo>

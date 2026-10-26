@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from markupsafe import escape
 
 from odoo import _, models
@@ -22,9 +21,7 @@ class KmitlProject(models.Model):
     def _get_sarabun_subject(self):
         # เรื่อง: ขออนุมัติจัดโครงการและขออนุมัติใช้เงิน<แหล่งเงิน>ในการจัด<ชื่อโครงการ>.
         self.ensure_one()
-        return _(
-            "ขออนุมัติจัดโครงการและขออนุมัติใช้เงิน%(src)sในการจัด%(name)s"
-        ) % {
+        return _("ขออนุมัติจัดโครงการและขออนุมัติใช้เงิน%(src)sในการจัด%(name)s") % {
             "src": self._sarabun_dim_name(self.source_analytic_id),
             "name": self.name or "",
         }
@@ -52,8 +49,7 @@ class KmitlProject(models.Model):
         }
         url = escape(self._get_sarabun_portal_url())
         return (
-            '<p style="text-indent: 2.5em;">%s</p>'
-            '<p>%s <a href="%s">%s</a></p>'
+            '<p style="text-indent: 2.5em;">%s</p><p>%s <a href="%s">%s</a></p>'
         ) % (body, _("รายละเอียดโครงการ:"), url, _("เปิดดูในระบบ"))
 
     def _get_sarabun_portal_url(self):
@@ -63,10 +59,13 @@ class KmitlProject(models.Model):
         return "%s/my/kmitl-project/%s" % (self.get_base_url(), self.id)
 
     def _get_sarabun_document_type(self):
-        return self.env.ref(
-            "kmitl_project_sarabun.document_type_kmitl_project",
-            raise_if_not_found=False,
-        ) or super()._get_sarabun_document_type()
+        return (
+            self.env.ref(
+                "kmitl_project_sarabun.document_type_kmitl_project",
+                raise_if_not_found=False,
+            )
+            or super()._get_sarabun_document_type()
+        )
 
     def _get_sarabun_route_template(self):
         """เส้นทาง seed ที่ตรงกับอำนาจอนุมัติ (เรียนหัวหน้าส่วนงาน / เรียนอธิการบดี),
@@ -163,16 +162,28 @@ class KmitlProject(models.Model):
         ดึงกลับ for revision) still attached when the project is reset to draft or
         cancelled — otherwise ``sarabun_has_live_document`` keeps blocking a fresh
         submission. Completed (numbered, signed) and terminal docs are audit
-        records and are kept; only ``draft``/``returned`` docs — which never
-        consumed a register number — are removed (unlink cascades their routing
-        steps). The engine offers no withdraw for a non-circulating doc, so an
-        unlink is the supported discard here."""
+        records and are kept. agx_sarabun deletes only an un-numbered draft
+        (unlink cascades its routing steps); a ``returned`` doc already went out,
+        so it is voided the way ยกเลิกการส่ง does — the engine offers no withdraw
+        for a non-circulating doc — and kept as the audit record."""
         for project in self:
-            stale = project.sarabun_document_ids.filtered(
+            stale = project._all_sarabun_documents().filtered(
                 lambda d: d.state in ("draft", "returned")
             )
-            if stale:
-                stale.sudo().unlink()
+            deletable = stale.filtered(
+                lambda d: d.state == "draft" and not d.register_number_id
+            )
+            for document in stale - deletable:
+                document.routing_step_ids._clear_activities()
+                document.routing_step_ids.filtered(
+                    lambda s: s.state in ("waiting", "active")
+                ).write({"state": "skipped"})
+                document.state = "cancelled"
+                document._void_register("cancelled")
+                document.message_post(
+                    body=_("ยกเลิกหนังสือ เนื่องจากโครงการถูกรีเซ็ตเป็นร่างหรือถูกลบ")
+                )
+            deletable.unlink()
 
     def action_draft(self):
         res = super().action_draft()
@@ -183,3 +194,30 @@ class KmitlProject(models.Model):
         res = super().action_cancel()
         self._abandon_stale_sarabun_documents()
         return res
+
+    def _must_soft_delete(self):
+        """A หนังสือ that ever went out (anything but an un-numbered draft) is an
+        audit record pointing at the project, so the project is soft-deleted
+        rather than removed (ADR-0011)."""
+        return super()._must_soft_delete() or bool(
+            self._all_sarabun_documents().filtered(
+                lambda d: d.state != "draft" or d.register_number_id
+            )
+        )
+
+    def _all_sarabun_documents(self):
+        """Every หนังสือ of the project, sudo: ``sarabun_document_ids`` is
+        computed under the user's record rules (sender / reached users only),
+        so a project officer would not see another owner's หนังสือ."""
+        self.ensure_one()
+        return (
+            self.env["sarabun.document"]
+            .sudo()
+            .search(
+                [("origin_model", "=", self._name), ("origin_res_id", "=", self.id)]
+            )
+        )
+
+    def unlink(self):
+        self._abandon_stale_sarabun_documents()
+        return super().unlink()

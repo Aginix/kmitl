@@ -19,13 +19,9 @@ class TestDisbursementLedgerConsume(BudgetLedgerCommon):
             # submit is guarded on every payee having an account
             "bank_ids": [(0, 0, {"acc_number": "1234567890"})],
         })
-        cls.product = cls.env["product.product"].create(
-            {
-                "name": "Ledger Service",
-                "type": "service",
-                "taxes_id": [(5, 0, 0)],
-                "supplier_taxes_id": [(5, 0, 0)],
-            }
+        cls.expense_account = cls.env["account.account"].search(
+            [("account_type", "=", "expense"), ("company_id", "=", cls.env.company.id)],
+            limit=1,
         )
 
     def _request(self, commitment, amount):
@@ -37,10 +33,9 @@ class TestDisbursementLedgerConsume(BudgetLedgerCommon):
                         0,
                         0,
                         {
-                            "product_id": self.product.id,
+                            "account_id": self.expense_account.id,
                             "name": "line",
-                            "quantity": 1.0,
-                            "price_unit": amount,
+                            "amount": amount,
                             "partner_id": self.partner.id,
                         },
                     )
@@ -48,6 +43,7 @@ class TestDisbursementLedgerConsume(BudgetLedgerCommon):
             }
         )
         dr.budget_commitment_id = commitment
+        dr.consumes_budget = True
         self.assertEqual(dr.amount_total, amount)
         return dr
 
@@ -65,7 +61,7 @@ class TestDisbursementLedgerConsume(BudgetLedgerCommon):
             self._buckets(commitment),
             {"reserve": -70_000, "obligate": 0.0, "consume": -30_000},
         )
-        # re-approving after a return to verification never double-cuts
+        # consuming again after a divert back never double-cuts
         first._action_approve_budget()
         self.assertEqual(commitment.total_consumed, 30_000)
 

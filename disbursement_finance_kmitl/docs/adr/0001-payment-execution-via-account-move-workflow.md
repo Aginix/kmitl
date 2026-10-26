@@ -1,5 +1,12 @@
 # 0001 — Payment posts via the account.move maker-checker after bank confirmation
 
+> **Superseded in part (station model).** The request's `state` no longer walks
+> `bills_posted → payment_audited → payment_authorized → paid → cleared`: the audit and the
+> authorization are acts of the stations that list them (`disbursement_wc`), and `paid` /
+> `cleared` are the request's ขั้นการชำระ — `settled` / `booked` — derived from the vouchers.
+> The decision itself (the voucher posts through the account.move maker-checker after the
+> bank confirmation) stands.
+
 - Status: accepted
 - Date: 2026-07-21
 

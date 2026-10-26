@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+    <t t-inherit="web.FormView" t-inherit-mode="extension" owl="1">
+        <xpath expr="//t[@t-set-slot='control-panel-action-menu']" position="inside">
+            <button
+                t-if="changeRequests.enabled"
+                type="button"
+                class="btn btn-light o_cr_button ms-1"
+                t-att-class="{'active': changeRequests.open}"
+                t-att-disabled="!model.root.resId"
+                t-on-click="toggleChangeRequests"
+                title="Change requests"
+            >
+                <i class="fa fa-exclamation-circle" />
+                <span class="d-none d-md-inline ms-1">Change requests</span>
+                <span
+                    t-if="changeRequests.count"
+                    class="badge rounded-pill text-bg-warning ms-1"
+                    t-esc="changeRequests.count"
+                />
+            </button>
+        </xpath>
+        <xpath expr="//div[hasclass('o_form_view_container')]" position="after">
+            <ChangeRequestPanel
+                t-if="changeRequests.enabled and changeRequests.open and model.root.resId"
+                resModel="props.resModel"
+                resId="model.root.resId"
+                onChanged.bind="onChangeRequestsChanged"
+                onClose.bind="toggleChangeRequests"
+            />
+        </xpath>
+    </t>
+
+    <t t-name="agx_change_request.AssigneePicker" owl="1">
+        <div class="o_cr_assignees">
+            <div class="d-flex flex-wrap gap-1 mb-1">
+                <span
+                    t-foreach="props.selected"
+                    t-as="user"
+                    t-key="user.id"
+                    class="badge rounded-pill text-bg-primary o_cr_assignee"
+                >
+                    <t t-esc="user.name" />
+                    <i
+                        class="fa fa-times ms-1"
+                        role="button"
+                        title="Remove"
+                        t-on-click="() => this.remove(user)"
+                    />
+                </span>
+            </div>
+            <AutoComplete
+                value="''"
+                sources="sources()"
+                onSelect.bind="onSelect"
+                placeholder="placeholder()"
+                resetOnSelect="true"
+            />
+            <div t-if="unselectedSuggestions().length" class="o_cr_suggestions mt-1">
+                <span class="text-muted me-1">Followers:</span>
+                <button
+                    t-foreach="unselectedSuggestions()"
+                    t-as="user"
+                    t-key="user.id"
+                    type="button"
+                    class="btn btn-link btn-sm p-0 me-2"
+                    t-on-click="() => this.add(user)"
+                >+ <t t-esc="user.name" /></button>
+            </div>
+        </div>
+    </t>
+
+    <t t-name="agx_change_request.Panel" owl="1">
+        <aside class="o_cr_panel">
+            <div class="o_cr_panel_header">
+                <h5 class="m-0 flex-grow-1">Change requests</h5>
+                <button
+                    type="button"
+                    class="btn btn-sm btn-primary"
+                    t-on-click="openComposer"
+                    t-att-disabled="state.composer"
+                >
+                    <i class="fa fa-plus" /> New
+                </button>
+                <button
+                    type="button"
+                    class="btn btn-sm btn-link text-muted"
+                    title="Close"
+                    t-on-click="props.onClose"
+                >
+                    <i class="fa fa-times" />
+                </button>
+            </div>
+            <div class="o_cr_panel_body">
+                <div t-if="state.composer" class="o_cr_form">
+                    <textarea
+                        class="form-control form-control-sm"
+                        rows="3"
+                        placeholder="What should be fixed or explained?"
+                        t-model="state.composer.text"
+                    />
+                    <AssigneePicker
+                        selected="state.composer.assignees"
+                        suggestions="state.suggestions"
+                        onChange="(users) => state.composer.assignees = users"
+                    />
+                    <div class="o_cr_actions">
+                        <button
+                            type="button"
+                            class="btn btn-sm btn-primary"
+                            t-on-click="create"
+                        >Ask for a fix</button>
+                        <button
+                            type="button"
+                            class="btn btn-sm btn-secondary"
+                            t-on-click="() => state.composer = null"
+                        >Cancel</button>
+                    </div>
+                </div>
+                <div
+                    t-if="state.loaded and !groups().length"
+                    class="text-muted p-2"
+                >No outstanding change requests.</div>
+                <t t-foreach="groups()" t-as="group" t-key="group.key">
+                    <div class="o_cr_group_title">
+                        <i t-if="group.pinned" class="fa fa-paperclip me-1" />
+                        <t t-esc="group.title" />
+                    </div>
+                    <t t-foreach="group.requests" t-as="request" t-key="request.id">
+                        <t t-call="agx_change_request.Request" />
+                    </t>
+                </t>
+                <button
+                    t-if="hiddenCount()"
+                    type="button"
+                    class="btn btn-link btn-sm"
+                    t-on-click="() => state.showAll = !state.showAll"
+                >
+                    <t t-if="state.showAll">Hide closed and cancelled</t>
+                    <t t-else="">Show closed and cancelled (<t
+                            t-esc="hiddenCount()"
+                        />)</t>
+                </button>
+            </div>
+        </aside>
+    </t>
+
+    <t t-name="agx_change_request.Request" owl="1">
+        <div
+            class="o_cr_request"
+            t-attf-class="o_cr_request_{{ request.state }}"
+            t-att-data-request-id="request.id"
+        >
+            <div class="o_cr_meta">
+                <span class="o_cr_state" t-attf-class="o_cr_state_{{ request.state }}">
+                    <t t-esc="stateLabels[request.state]" />
+                </span>
+                <span class="text-muted">
+                    #<t t-esc="request.id" /> · <t t-esc="request.author_name" /> ·
+                    <t t-esc="formatDate(request.create_date)" />
+                </span>
+                <span t-if="request.pin" class="text-muted">
+                    · Page <t t-esc="request.pin.page" />
+                </span>
+            </div>
+            <t t-if="state.editing and state.editing.id === request.id">
+                <textarea
+                    class="form-control form-control-sm"
+                    rows="3"
+                    t-model="state.editing.text"
+                />
+                <AssigneePicker
+                    selected="state.editing.assignees"
+                    suggestions="state.suggestions"
+                    onChange="(users) => state.editing.assignees = users"
+                />
+                <div class="o_cr_actions">
+                    <button
+                        type="button"
+                        class="btn btn-sm btn-primary"
+                        t-on-click="saveEdit"
+                    >Save</button>
+                    <button
+                        type="button"
+                        class="btn btn-sm btn-secondary"
+                        t-on-click="() => state.editing = null"
+                    >Cancel</button>
+                </div>
+            </t>
+            <t t-else="">
+                <div class="o_cr_text" t-esc="request.text" />
+                <div t-if="request.previous_texts.length" class="o_cr_edited">
+                    <a href="#" t-on-click.prevent="() => this.toggleHistory(request)">
+                        Edited — see earlier texts
+                    </a>
+                    <ul t-if="state.historyOf === request.id" class="o_cr_history">
+                        <li
+                            t-foreach="request.previous_texts"
+                            t-as="previous"
+                            t-key="previous_index"
+                        >
+                            <span class="text-muted"><t
+                                    t-esc="formatDate(previous.date)"
+                                /> · </span>
+                            <t t-esc="previous.text" />
+                        </li>
+                    </ul>
+                </div>
+                <div t-if="request.assignees.length" class="o_cr_assigned text-muted">
+                    <i class="fa fa-user-o me-1" />
+                    <t t-esc="request.assignees.map((user) => user.name).join(', ')" />
+                </div>
+            </t>
+            <div t-if="request.replies.length" class="o_cr_replies">
+                <div
+                    t-foreach="request.replies"
+                    t-as="reply"
+                    t-key="reply.id"
+                    class="o_cr_reply"
+                    t-att-class="{'o_cr_reply_author': reply.by_request_author}"
+                >
+                    <div class="text-muted">
+                        <t t-esc="reply.author_name" /> ·
+                        <t t-esc="formatDate(reply.date)" />
+                    </div>
+                    <div class="o_cr_reply_body" t-esc="reply.body" />
+                </div>
+            </div>
+            <div t-if="request.state === 'closed'" class="o_cr_closed text-muted">
+                Closed by <t t-esc="request.closed_name" /> ·
+                <t t-esc="formatDate(request.closed_date)" />
+            </div>
+            <div t-if="request.cancel_reason" class="o_cr_closed text-muted">
+                <t t-esc="request.cancel_reason" />
+            </div>
+            <t t-if="state.replying and state.replying.id === request.id">
+                <textarea
+                    class="form-control form-control-sm mt-1"
+                    rows="2"
+                    placeholder="Fixed in the next revision, or a question..."
+                    t-model="state.replying.text"
+                />
+                <div class="o_cr_actions">
+                    <button
+                        type="button"
+                        class="btn btn-sm btn-primary"
+                        t-on-click="saveReply"
+                    >Send</button>
+                    <button
+                        type="button"
+                        class="btn btn-sm btn-secondary"
+                        t-on-click="() => state.replying = null"
+                    >Cancel</button>
+                </div>
+            </t>
+            <div
+                t-elif="!(state.editing and state.editing.id === request.id)"
+                class="o_cr_actions"
+            >
+                <button
+                    t-if="request.pin and request.pin.attachment_id"
+                    type="button"
+                    class="btn btn-link btn-sm p-0"
+                    t-on-click="() => this.showPin(request)"
+                >Show on the file</button>
+                <button
+                    t-if="request.can_reply"
+                    type="button"
+                    class="btn btn-link btn-sm p-0"
+                    t-on-click="() => this.reply(request)"
+                >Reply</button>
+                <t t-if="request.can_close">
+                    <button
+                        t-if="request.state === 'closed'"
+                        type="button"
+                        class="btn btn-link btn-sm p-0"
+                        t-on-click="() => this.setClosed(request, false)"
+                    >Reopen</button>
+                    <button
+                        t-else=""
+                        type="button"
+                        class="btn btn-link btn-sm p-0"
+                        t-on-click="() => this.setClosed(request, true)"
+                    >Close</button>
+                </t>
+                <t t-if="request.is_own">
+                    <button
+                        type="button"
+                        class="btn btn-link btn-sm p-0"
+                        t-on-click="() => this.edit(request)"
+                    >Edit</button>
+                    <button
+                        type="button"
+                        class="btn btn-link btn-sm p-0 text-danger"
+                        t-on-click="() => this.remove(request)"
+                    >Delete</button>
+                </t>
+            </div>
+        </div>
+    </t>
+
+</templates>

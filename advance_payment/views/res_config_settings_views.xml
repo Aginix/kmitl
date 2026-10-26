@@ -1,36 +1,27 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <record id="res_config_settings_view_form_advance_payment" model="ir.ui.view">
         <field name="name">res.config.settings.view.form.inherit.advance_payment</field>
         <field name="model">res.config.settings</field>
-        <field name="priority" eval="20"/>
-        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="priority" eval="20" />
+        <field name="inherit_id" ref="base.res_config_settings_view_form" />
         <field name="arch" type="xml">
             <xpath expr="//div[hasclass('settings')]" position="inside">
-                <div class="app_settings_block"
+                <div
+                    class="app_settings_block"
                     data-string="สัญญายืมเงิน"
                     string="สัญญายืมเงิน"
                     data-key="advance_payment"
-                    groups="advance_payment.group_advance_payment_manager">
+                    groups="advance_payment.group_advance_payment_manager"
+                >
                     <h2>แบบฟอร์ม</h2>
                     <div class="row mt16 o_settings_container">
                         <div class="col-12 col-lg-6 o_setting_box">
                             <div class="o_setting_left_pane">
-                                <field name="advance_payment_allow_manual_reference"/>
+                                <field name="advance_payment_strict_own_only" />
                             </div>
                             <div class="o_setting_right_pane">
-                                <label for="advance_payment_allow_manual_reference"/>
-                                <div class="text-muted">
-                                    อนุญาตให้ผู้ใช้ระบุเอกสารอ้างอิง (Reference) เองได้ตอนสร้างสัญญา
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12 col-lg-6 o_setting_box">
-                            <div class="o_setting_left_pane">
-                                <field name="advance_payment_strict_own_only"/>
-                            </div>
-                            <div class="o_setting_right_pane">
-                                <label for="advance_payment_strict_own_only"/>
+                                <label for="advance_payment_strict_own_only" />
                                 <div class="text-muted">
                                     ผู้ยืมบนสัญญาจะเป็นตัวผู้จัดทำเองเสมอ ปิดสิทธิ์ดราฟต์แทนผู้ยืมคนอื่นของระดับ User ขึ้นไป (ยกเว้นผู้ดูแลระบบ)
                                 </div>
@@ -41,22 +32,26 @@
                     <div class="row mt16 o_settings_container">
                         <div class="col-12 col-lg-6 o_setting_box">
                             <div class="o_setting_right_pane">
-                                <label for="advance_payment_default_loan_verifier_id"/>
+                                <label for="advance_payment_default_loan_verifier_id" />
                                 <div class="text-muted">
                                     ผู้ที่จะถูกตั้งเป็นเจ้าหน้าที่งานเงินยืมของสัญญาใหม่ทุกฉบับ หากไม่ระบุ ระบบจะเลือกให้เองเมื่อมีเจ้าหน้าที่เพียงคนเดียว
                                 </div>
-                                <field name="advance_payment_default_loan_verifier_id"
-                                    options="{'no_create': True, 'no_open': True}"/>
+                                <field
+                                    name="advance_payment_default_loan_verifier_id"
+                                    options="{'no_create': True, 'no_open': True}"
+                                />
                             </div>
                         </div>
                         <div class="col-12 col-lg-6 o_setting_box">
                             <div class="o_setting_right_pane">
-                                <label for="advance_payment_default_approver_id"/>
+                                <label for="advance_payment_default_approver_id" />
                                 <div class="text-muted">
                                     ผู้ที่จะถูกตั้งเป็นผู้อนุมัติของสัญญาใหม่ทุกฉบับ และได้รับงานให้อนุมัติเมื่อเจ้าหน้าที่ตรวจสอบคำขอเรียบร้อยแล้ว
                                 </div>
-                                <field name="advance_payment_default_approver_id"
-                                    options="{'no_create': True, 'no_open': True}"/>
+                                <field
+                                    name="advance_payment_default_approver_id"
+                                    options="{'no_create': True, 'no_open': True}"
+                                />
                             </div>
                         </div>
                     </div>
@@ -64,11 +59,14 @@
                     <div class="row mt16 o_settings_container">
                         <div class="col-12 o_setting_box">
                             <div class="o_setting_right_pane">
-                                <label for="advance_payment_terms_conditions"/>
+                                <label for="advance_payment_terms_conditions" />
                                 <div class="text-muted">
                                     ข้อความเงื่อนไขและข้อตกลงเริ่มต้น แสดงบนสัญญายืมเงินทุกฉบับ (รองรับ Rich Text)
                                 </div>
-                                <field name="advance_payment_terms_conditions" widget="html"/>
+                                <field
+                                    name="advance_payment_terms_conditions"
+                                    widget="html"
+                                />
                             </div>
                         </div>
                     </div>

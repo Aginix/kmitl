@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+    <t
+        t-inherit="web.Many2ManyBinaryField.attachment_preview"
+        t-inherit-mode="extension"
+        owl="1"
+    >
+        <xpath expr="//div[hasclass('o_attachment_wrap')]" position="inside">
+            <span
+                t-if="file.annotation_count"
+                class="o_agx_annotation_badge"
+                title="Annotations"
+            >✎ <t t-esc="file.annotation_count" /></span>
+        </xpath>
+    </t>
+
+    <t t-inherit="mail.AttachmentCard" t-inherit-mode="extension" owl="1">
+        <xpath expr="//div[hasclass('o_AttachmentCard_image')]" position="inside">
+            <span
+                t-if="attachmentCard.attachment.annotationCount"
+                class="o_agx_annotation_badge"
+                title="Annotations"
+            >✎ <t t-esc="attachmentCard.attachment.annotationCount" /></span>
+        </xpath>
+    </t>
+
+    <t t-inherit="mail.AttachmentImage" t-inherit-mode="extension" owl="1">
+        <xpath expr="//div[hasclass('o_AttachmentImage')]" position="inside">
+            <span
+                t-if="attachmentImage.attachment.annotationCount"
+                class="o_agx_annotation_badge"
+                title="Annotations"
+            >✎ <t t-esc="attachmentImage.attachment.annotationCount" /></span>
+        </xpath>
+    </t>
+
+</templates>

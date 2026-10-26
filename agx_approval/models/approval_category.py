@@ -103,7 +103,7 @@ class ApprovalCategory(models.Model):
         domain=[
             ("budgetable", "=", True),
             ("budget_type", "=", "expense"),
-            ("purchase_ok", "=", False),
+            ("approval_ok", "=", True),
         ],
     )
 

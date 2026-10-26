@@ -2,9 +2,15 @@ import io
 from datetime import date
 
 from odoo.tests.common import TransactionCase, tagged
+from odoo.tools.misc import file_open
 from odoo.tools.pdf import PdfFileReader
 
 REPORT = "advance_payment_contract_pdf.action_report_advance_payment_contract"
+# 1x1 transparent PNG
+SIGNATURE = (
+    b"iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8"
+    b"AAAAASUVORK5CYII="
+)
 
 
 @tagged("post_install", "-at_install")
@@ -25,14 +31,24 @@ class TestContractPdf(TransactionCase):
             }
         )
 
-    def test_draft_contract_has_static_second_page(self):
+    def test_draft_contract_ends_with_static_page(self):
         pdf, _ = (
             self.env["ir.actions.report"]
             .with_context(force_report_rendering=True)
             ._render_qweb_pdf(REPORT, self.agreement.ids)
         )
         reader = PdfFileReader(io.BytesIO(pdf), strict=False)
-        self.assertEqual(reader.getNumPages(), 2)
+        # Page 1 may run over when the report CSS (fonts) cannot load, as
+        # under --test-enable — so check the last page, not the page count.
+        path = (
+            "advance_payment_contract_pdf/static/pdf/advance_payment_contract_page2.pdf"
+        )
+        with file_open(path, "rb") as f:
+            static = PdfFileReader(f, strict=False).getPage(0).getContents().getData()
+        self.assertGreaterEqual(reader.getNumPages(), 2)
+        self.assertEqual(
+            reader.getPage(reader.getNumPages() - 1).getContents().getData(), static
+        )
 
     def test_contract_date_th(self):
         self.assertEqual(
@@ -40,3 +56,30 @@ class TestContractPdf(TransactionCase):
             "23 กรกฎาคม 2569",
         )
         self.assertEqual(self.agreement._contract_date_th(False), "")
+
+    def test_signatures_follow_workflow(self):
+        """A block carries its signer's signature only once the record is
+        past the signer's step — not in draft, and not once cancelled."""
+        self.agreement.employee_id.signature = SIGNATURE
+        self.agreement.approver_id.employee_id.signature = SIGNATURE
+        sigs = self.agreement._contract_signatures()
+        self.assertFalse(sigs["borrower"]["signature"])
+        self.assertEqual(sigs["borrower"]["date"], "")
+
+        self.agreement.write(
+            {"state": "to_approve", "date_submitted": "2026-07-23 03:00:00"}
+        )
+        sigs = self.agreement._contract_signatures()
+        self.assertEqual(sigs["borrower"]["signature"], SIGNATURE)
+        self.assertEqual(sigs["borrower"]["date"], "23 กรกฎาคม 2569")
+        self.assertFalse(sigs["approver"]["signature"])
+        self.assertFalse(sigs["receiver"]["signature"])
+
+        self.agreement.state = "in_progress"
+        sigs = self.agreement._contract_signatures()
+        self.assertEqual(sigs["approver"]["signature"], SIGNATURE)
+        self.assertEqual(sigs["receiver"]["signature"], SIGNATURE)
+
+        self.agreement.state = "cancel"
+        sigs = self.agreement._contract_signatures()
+        self.assertFalse(any(sig["signature"] for sig in sigs.values()))

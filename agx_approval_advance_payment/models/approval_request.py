@@ -5,7 +5,7 @@ from odoo.exceptions import UserError, ValidationError
 class ApprovalRequest(models.Model):
     _inherit = "approval.request"
 
-    # A request may back several loans — one per participant who chose to borrow
+    # A request may back several loans — one per person who chose to borrow
     # (ADR-0003). Loans are pulled from the loan side; the request never creates
     # them, so there is no create button here.
     advance_payment_ids = fields.One2many(
@@ -99,9 +99,7 @@ class ApprovalRequest(models.Model):
             )
             if orphans:
                 raise ValidationError(
-                    _(
-                        "กรุณาระบุสัญญายืมเงินที่เป็นแหล่งเงินของทุกแถวเงินยืมก่อนส่งเบิก: %s"
-                    )
+                    _("กรุณาระบุสัญญายืมเงินที่เป็นแหล่งเงินของทุกแถวเงินยืมก่อนส่งเบิก: %s")
                     % ", ".join(orphans.mapped("partner_id.name"))
                 )
 
