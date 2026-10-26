@@ -30,6 +30,23 @@ def pre_init_hook(cr):
         """,
         (NEW_MODULE, OLD_MODULE, NEW_MODULE),
     )
+    # The reflected SQL/FK constraints and m2m tables point at the module row.
+    cr.execute(
+        """
+        UPDATE ir_model_constraint SET module = to_mod.id
+        FROM ir_module_module to_mod, ir_module_module from_mod
+        WHERE to_mod.name = %s AND from_mod.name = %s AND module = from_mod.id
+        """,
+        (NEW_MODULE, OLD_MODULE),
+    )
+    cr.execute(
+        """
+        UPDATE ir_model_relation SET module = to_mod.id
+        FROM ir_module_module to_mod, ir_module_module from_mod
+        WHERE to_mod.name = %s AND from_mod.name = %s AND module = from_mod.id
+        """,
+        (NEW_MODULE, OLD_MODULE),
+    )
     # Retire the old module record: its code is gone and nothing it owned is left.
     cr.execute(
         "UPDATE ir_module_module SET state = 'uninstalled' WHERE name = %s",

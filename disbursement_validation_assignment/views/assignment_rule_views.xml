@@ -34,7 +34,7 @@
         </field>
     </record>
 
-    <!-- Gear-menu action to route already-signed requests after editing rules -->
+    <!-- Gear-menu action to route requests still to validate after editing rules -->
     <record id="action_apply_rules_to_pending" model="ir.actions.server">
         <field name="name">Apply Rules to Pending Requests</field>
         <field name="model_id" ref="model_disbursement_assignment_rule" />

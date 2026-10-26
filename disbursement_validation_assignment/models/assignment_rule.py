@@ -6,7 +6,7 @@ from odoo import _, api, fields, models
 class DisbursementAssignmentRule(models.Model):
     """Routing rule that maps a disbursement request to a verification officer.
 
-    When a request reaches the ``signed`` state it is matched against these
+    When a request is signed into the circuit it is matched against these
     rules (ordered by ``sequence``) and the first matching rule's officer is
     stored in ``disbursement.request.assigned_to``. Matching is advisory: it
     only pre-fills the responsible officer and raises a To-Do; it never locks
