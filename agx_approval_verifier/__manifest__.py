@@ -4,8 +4,8 @@
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "Accounting",
-    "summary": "ผู้ขอระบุผู้ตรวจสอบคำขอ (ผู้ตรวจสอบที่ระบุ) ก่อนส่งตรวจสอบ "
-    "และแจ้ง Todo ให้ผู้ตรวจสอบที่ระบุเมื่อคำขอเข้าสถานะรอตรวจสอบข้อมูล",
+    "summary": "ผู้ขอระบุผู้ตรวจสอบคำขอ (ผู้ตรวจสอบ) ก่อนส่งตรวจสอบ "
+    "และแจ้ง Todo ให้ผู้ตรวจสอบเมื่อคำขอเข้าสถานะรอตรวจสอบข้อมูล",
     "depends": [
         "agx_approval",
         "mail_activity_todo",

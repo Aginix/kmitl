@@ -10,7 +10,7 @@ class ApprovalRequest(models.Model):
 
     def _get_budget_verifier_candidates(self):
         """Only confirmers of the request's own OU may be named
-        ผู้ยืนยันงบประมาณที่ระบุ."""
+        ผู้ยืนยันงบประมาณ."""
         # sudo: regular users cannot read other users' OUs
         return (
             super()._get_budget_verifier_candidates()
@@ -19,7 +19,10 @@ class ApprovalRequest(models.Model):
 
     @api.constrains("operating_unit_id")
     def _check_budget_verifier_operating_unit(self):
-        self._check_budget_verifier()
+        # Only while the confirmer is still in play (see the verifier OU layer).
+        self.filtered(
+            lambda r: r.state in ("draft", "to_verify", "to_commit")
+        )._check_budget_verifier()
 
     @api.onchange("operating_unit_id")
     def _onchange_budget_verifier_candidates(self):

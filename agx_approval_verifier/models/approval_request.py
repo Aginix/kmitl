@@ -8,17 +8,25 @@ RETURNED_TODO = "agx_approval_verifier.mail_activity_request_returned"
 class ApprovalRequest(models.Model):
     _inherit = "approval.request"
 
-    # ผู้ตรวจสอบที่ระบุ: the one Request Verifier named on this request, who
+    # ผู้ตรวจสอบ: the one Request Verifier named on this request, who
     # gets its to_verify Todo. Any member of the Verifier group may still act.
     verifier_id = fields.Many2one(
         comodel_name="res.users",
-        string="ผู้ตรวจสอบที่ระบุ",
+        string="ผู้ตรวจสอบ",
         tracking=True,
         index=True,
         domain="[('id', 'in', verifier_candidate_ids)]",
         help="ผู้ตรวจสอบคำขอที่ผู้ขอระบุให้ตรวจสอบคำขอนี้ — รับ Todo เมื่อคำขอเข้า "
         "สถานะรอตรวจสอบข้อมูล. ไม่ได้ล็อกสิทธิ์: ผู้ตรวจสอบคำขอคนอื่นยังยืนยัน"
         "ตรวจสอบหรือตีกลับได้",
+    )
+    date_verified = fields.Date(
+        string="วันที่ตรวจสอบ",
+        copy=False,
+        readonly=True,
+        tracking=True,
+        help="วันที่ยืนยันตรวจสอบ (รอตรวจสอบข้อมูล → ขั้นถัดไป); ล้างเมื่อคำขอย้อนกลับ"
+        "มารอตรวจสอบข้อมูลหรือแบบร่าง",
     )
     verifier_candidate_ids = fields.Many2many(
         comodel_name="res.users",
@@ -33,7 +41,7 @@ class ApprovalRequest(models.Model):
             rec.verifier_candidate_ids = rec._get_verifier_candidates()
 
     def _get_verifier_candidates(self):
-        """Who may be named ผู้ตรวจสอบที่ระบุ; extension hook (OU layer narrows).
+        """Who may be named ผู้ตรวจสอบ; extension hook (OU layer narrows).
 
         A plain method, not a read of ``verifier_candidate_ids``: on a new
         record that x2many reads back as new-record ids, which never
@@ -65,7 +73,7 @@ class ApprovalRequest(models.Model):
         for rec in self:
             if rec.state == "to_verify" and not rec.verifier_id:
                 raise ValidationError(
-                    _("คำขอ %s อยู่ระหว่างรอตรวจสอบข้อมูล ต้องระบุผู้ตรวจสอบที่ระบุ") % rec.name
+                    _("คำขอ %s อยู่ระหว่างรอตรวจสอบข้อมูล ต้องระบุผู้ตรวจสอบ") % rec.name
                 )
             if (
                 rec.verifier_id
@@ -79,7 +87,7 @@ class ApprovalRequest(models.Model):
     def action_to_verify(self):
         # Superuser mode (demo data, hooks, sudo'ed programmatic flows) passes.
         if not self.env.su and not self.verifier_id:
-            raise UserError(_("กรุณาระบุผู้ตรวจสอบที่ระบุก่อนส่งคำขอ"))
+            raise UserError(_("กรุณาระบุผู้ตรวจสอบก่อนส่งคำขอ"))
         return super().action_to_verify()
 
     def write(self, vals):
@@ -89,7 +97,19 @@ class ApprovalRequest(models.Model):
         res = super().write(vals)
         for rec in self:
             rec._sync_verifier_todos(*before[rec.id])
+            rec._stamp_date_verified(before[rec.id][0])
         return res
+
+    def _stamp_date_verified(self, old_state):
+        """Stamp วันที่ตรวจสอบ when the request moves on from to_verify; clear it
+        whenever it comes back for (re)verification."""
+        self.ensure_one()
+        if self.state == old_state:
+            return
+        if old_state == "to_verify" and self.state not in ("draft", "rejected"):
+            self.date_verified = fields.Date.context_today(self)
+        elif self.state in ("draft", "to_verify") and self.date_verified:
+            self.date_verified = False
 
     def _sync_verifier_todos(self, old_state, old_assignee):
         """Keep the to_verify and returned Todos in step with the state.
@@ -113,7 +133,14 @@ class ApprovalRequest(models.Model):
                 and self.state not in ("draft", "rejected"),
             )
         elif self.state == "to_verify" and self.verifier_id != old_assignee:
-            verify_todos.sudo().write({"user_id": self.verifier_id.id})
+            if verify_todos:
+                verify_todos.sudo().write({"user_id": self.verifier_id.id})
+            elif self.verifier_id:
+                self.activity_schedule(
+                    VERIFY_TODO,
+                    summary=_("กรุณาตรวจสอบคำขออนุมัติเลขที่ %s") % self.name,
+                    user_id=self.verifier_id.id,
+                )
         if self.state in ("to_verify", "rejected") and old_state != self.state:
             # Resubmitted or rejected: the presser's returned Todo is done,
             # anyone else's is simply withdrawn.

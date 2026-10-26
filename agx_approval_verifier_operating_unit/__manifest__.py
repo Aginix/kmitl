@@ -4,7 +4,7 @@
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
-    "summary": "จำกัดผู้ตรวจสอบที่ระบุให้เลือกได้เฉพาะผู้ใช้ที่อยู่ใน หน่วยปฏิบัติงาน (OU) ของคำขอ",
+    "summary": "จำกัดผู้ตรวจสอบให้เลือกได้เฉพาะผู้ใช้ที่อยู่ใน หน่วยปฏิบัติงาน (OU) ของคำขอ",
     "depends": [
         "agx_approval_verifier",
         "agx_approval_operating_unit",

@@ -9,7 +9,7 @@ class ApprovalRequest(models.Model):
         return super()._compute_verifier_candidate_ids()
 
     def _get_verifier_candidates(self):
-        """Only verifiers of the request's own OU may be named ผู้ตรวจสอบที่ระบุ."""
+        """Only verifiers of the request's own OU may be named ผู้ตรวจสอบ."""
         # sudo: regular users cannot read other users' OUs
         return (
             super()._get_verifier_candidates() & self.operating_unit_id.sudo().user_ids
@@ -17,7 +17,9 @@ class ApprovalRequest(models.Model):
 
     @api.constrains("operating_unit_id")
     def _check_verifier_operating_unit(self):
-        self._check_verifier()
+        # Only while the verifier is still in play: once the request is past
+        # to_verify an OU change must not trip over the historical verifier.
+        self.filtered(lambda r: r.state in ("draft", "to_verify"))._check_verifier()
 
     @api.onchange("operating_unit_id")
     def _onchange_verifier_candidates(self):
