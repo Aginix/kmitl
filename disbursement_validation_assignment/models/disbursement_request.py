@@ -151,7 +151,8 @@ class DisbursementRequest(models.Model):
 
     # -- auto-assign + workflow hooks ------------------------------------
     def _assignment_auto_assign(self):
-        """Assign the matching officer to signed requests and raise a To-Do.
+        """Assign the matching officer to signed / in-progress requests and
+        raise a To-Do.
 
         Requests that already carry a responsible officer (manual override or
         a previous sign) keep their officer -- the rules never overwrite them.
