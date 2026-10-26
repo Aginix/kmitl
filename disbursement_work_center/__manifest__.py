@@ -11,7 +11,6 @@
     "depends": ["disbursement", "work_center"],
     "data": [
         "data/work_center_data.xml",
-        "data/mail_activity_type_data.xml",
         "views/disbursement_request_views.xml",
         "views/work_center_menus.xml",
     ],

@@ -19,14 +19,10 @@ What entering the circuit means
 * Sending back (the Return wizard), resetting to draft and cancelling take the request
   out of the circuit. Inside it only the people responsible at the station holding the
   request may do so; there is no manager override. A ``done`` request cannot be reset.
-* With no active route the request stays ``signed`` and a warning is logged.
-  The module does seed an active route, so a request signed after the install enters
-  its first station at once: configure the stations (below) before signing starts, or
-  until then only a Station Administrator can move the request and no act is offered.
-  Requests that were already ``signed`` when the module was installed stay ``signed``.
-* If the money of a ``done`` request goes back a step (a bill reset, a cheque bounced),
-  the request stays ``done`` and the people of the station that last approved it get a
-  Todo.
+* With no active route the request stays ``signed`` and a warning is logged. The route
+  is seeded **archived**, so nothing changes at install: configure the stations (below),
+  activate the route, then select the requests that stayed ``signed`` and run
+  *Action > Send to Stations* (officers) to put them at the first station.
 
 Configuration
 =============
@@ -60,7 +56,8 @@ What is deliberately not enforced
 Installing
 ==========
 
-Install ``work_center`` and this module (``-i disbursement_work_center``); nothing else
-of the disbursement family changes. Requests that were already ``signed`` stay
-``signed``, and a request that sits in a state the six-key ``state`` no longer has
-needs a one-off placement: there is no migration.
+Install ``work_center`` and this module (``-i disbursement_work_center``). Install it
+with ``disbursement_validation_assignment`` in place of ``disbursement_assignment_kmitl``:
+the old module's assign buttons and backlog only look at ``signed`` requests, which a
+routed request leaves at once. Requests that were already ``signed`` stay ``signed``
+until they are sent to the stations (above); there is no migration.

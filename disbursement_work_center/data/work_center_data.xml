@@ -46,8 +46,12 @@
             <field name="sequence">60</field>
         </record>
 
+        <!-- Archived: a request signed before the stations are configured would
+             wait at an empty station. Activate it once they are, then send the
+             requests already signed with the "Send to Stations" action. -->
         <record id="route_disbursement" model="work.center.route">
             <field name="name">Disbursement Route</field>
+            <field name="active" eval="False" />
             <field name="area_id" ref="area_disbursement" />
             <field name="model_id" ref="disbursement.model_disbursement_request" />
         </record>

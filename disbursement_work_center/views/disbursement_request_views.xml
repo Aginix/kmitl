@@ -12,14 +12,14 @@
                     type="object"
                     class="oe_highlight"
                     context="{'expected_station': work_center_id}"
-                    attrs="{'invisible': ['|', ('state', '!=', 'in_progress'), ('work_center_can_move', '=', False)]}"
+                    attrs="{'invisible': ['|', '|', ('state', '!=', 'in_progress'), ('work_center_can_move', '=', False), ('returned_to_source', '=', True)]}"
                 />
                 <button
                     name="action_work_center_divert"
                     string="Divert"
                     type="object"
                     context="{'expected_station': work_center_id}"
-                    attrs="{'invisible': ['|', ('state', '!=', 'in_progress'), ('work_center_can_move', '=', False)]}"
+                    attrs="{'invisible': ['|', '|', ('state', '!=', 'in_progress'), ('work_center_can_move', '=', False), ('returned_to_source', '=', True)]}"
                 />
                 <field name="work_center_can_move" invisible="1" />
             </button>
@@ -115,5 +115,20 @@
                 />
             </filter>
         </field>
+    </record>
+
+    <!-- For the requests signed while no route was active (or before this
+         module was installed). -->
+    <record id="action_server_enter_stations" model="ir.actions.server">
+        <field name="name">Send to Stations</field>
+        <field name="model_id" ref="disbursement.model_disbursement_request" />
+        <field name="binding_model_id" ref="disbursement.model_disbursement_request" />
+        <field name="binding_view_types">list</field>
+        <field
+            name="groups_id"
+            eval="[(4, ref('disbursement.group_disbursement_officer'))]"
+        />
+        <field name="state">code</field>
+        <field name="code">records.action_work_center_enter_circuit()</field>
     </record>
 </odoo>

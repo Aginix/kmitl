@@ -3,6 +3,7 @@
 import logging
 
 from odoo import _, _lt, api, models
+from odoo.exceptions import AccessError, UserError
 
 _logger = logging.getLogger(__name__)
 
@@ -49,9 +50,10 @@ class DisbursementRequest(models.Model):
         return self._disbursement_act_applicable(code)
 
     def _disbursement_act_offered(self, code):
+        offered = super()._disbursement_act_offered(code)
         if self.state == "in_progress":
-            return self._work_center_offers(code)
-        return super()._disbursement_act_offered(code)
+            return offered and self._work_center_offers(code)
+        return offered
 
     def _disbursement_check_act(self, code):
         super()._disbursement_check_act(code)
@@ -86,21 +88,68 @@ class DisbursementRequest(models.Model):
                     rec.display_name,
                 )
                 continue
-            # In progress first, so the arrival hooks see the state they expect.
-            rec.state = "in_progress"
-            # sudo: the Saraban head who signs may not read the stations; the
-            # signer is still recorded as the mover.
-            rec.sudo()._work_center_enter(
+            rec._work_center_enter_circuit(
                 "resubmit" if rec.env.context.get("disbursement_resubmit") else "enter"
             )
+
+    def _work_center_enter_circuit(self, act="enter"):
+        self.ensure_one()
+        # In progress first, so the arrival hooks see the state they expect.
+        self.state = "in_progress"
+        # sudo: the Saraban head who signs may not read the stations; the
+        # signer is still recorded as the mover.
+        self.sudo()._work_center_enter(act)
+
+    def action_work_center_enter_circuit(self):
+        """Send requests that stayed signed (signed while no route was active,
+        or before this module was installed) to the first station."""
+        if not self.env.su and not self.env.user.has_group(
+            "disbursement.group_disbursement_officer"
+        ):
+            raise AccessError(
+                _("Only a disbursement officer can send requests to the stations.")
+            )
+        if self.filtered(lambda r: r.state != "signed"):
+            raise UserError(_("Only signed requests can be sent to the stations."))
+        for rec in self:
+            if not rec._work_center_route():
+                raise UserError(
+                    _("There is no active route for disbursement requests.")
+                )
+            rec._work_center_enter_circuit()
+        return True
 
     def _work_center_on_exit(self):
         self.state = "done"
 
-    def _work_center_on_send_back(self, reason):
-        # A DR's own send-back is the Return wizard; this keeps the engine's
-        # generic one ending the same way.
-        self.sudo()._action_return_for_edit(reason)
+    def _disbursement_check_not_returned(self):
+        if self.returned_to_source:
+            raise UserError(
+                _(
+                    "This request was returned to its source document. "
+                    "Please wait for the correction to be confirmed."
+                )
+            )
+
+    def _work_center_forward(self, reason=None, expected_station=None):
+        self._disbursement_check_not_returned()
+        return super()._work_center_forward(reason, expected_station)
+
+    def _work_center_divert(self, station, reason=None, expected_station=None):
+        self._disbursement_check_not_returned()
+        return super()._work_center_divert(station, reason, expected_station)
+
+    # A DR is sent back only through its own Return wizard: a request whose
+    # source can be corrected stays at its station, which the engine's
+    # send-back (it leaves the station first) cannot do.
+    def action_work_center_send_back(self):
+        self.ensure_one()
+        self._work_center_check_move()
+        return self.action_return_open_wizard()
+
+    def _work_center_send_back(self, reason, expected_station=None):
+        self.ensure_one()
+        return self._action_return_for_edit(reason)
 
     def action_draft(self):
         """Core checks who may and resets the request; the station is left
@@ -134,36 +183,3 @@ class DisbursementRequest(models.Model):
             and self.settlement_stage == "none"
             and self._work_center_offers("disbursement.edit_" + kind)
         )
-
-    # ------------------------------------------------------------------
-    # The money walking back after the circuit is done
-    # ------------------------------------------------------------------
-    def _on_settlement_walked_back(self, previous_stage):
-        """A finished request whose money went back a step (a bill reset, a
-        cheque bounced) stays done; the people of the station that last
-        approved it get a Todo to see to it."""
-        super()._on_settlement_walked_back(previous_stage)
-        stages = dict(self._fields["settlement_stage"]._description_selection(self.env))
-        walked_back = self.env.ref(
-            "disbursement_work_center.mail_activity_dr_money_walked_back"
-        )
-        for rec in self.filtered(lambda r: r.state == "done"):
-            station = rec._work_center_last_visit().work_center_id
-            if not station:
-                continue
-            users, _source = station._responsible_users()
-            # A voucher cancelled through its payment and its move fires the
-            # hook twice for the one walk back: one Todo per person is enough.
-            pending = rec.sudo().activity_ids.filtered(
-                lambda a: a.activity_type_id == walked_back
-            ).user_id
-            for user in users - pending:
-                rec.sudo().activity_schedule(
-                    "disbursement_work_center.mail_activity_dr_money_walked_back",
-                    user_id=user.id,
-                    note=_("The money went back from %(previous)s to %(current)s.")
-                    % {
-                        "previous": stages[previous_stage],
-                        "current": stages[rec.settlement_stage],
-                    },
-                )

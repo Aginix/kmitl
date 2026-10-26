@@ -127,11 +127,6 @@ msgid "Forward"
 msgstr "ส่งต่อ"
 
 #. module: disbursement_work_center
-#: model:mail.activity.type,name:disbursement_work_center.mail_activity_dr_money_walked_back
-msgid "Money went back on a finished request"
-msgstr "เงินย้อนกลับในใบขอเบิกที่เสร็จสิ้นแล้ว"
-
-#. module: disbursement_work_center
 #: model:ir.model.fields,field_description:disbursement_work_center.field_disbursement_request__work_center_next_id
 msgid "Next Station"
 msgstr "สถานีถัดไป"
@@ -145,6 +140,20 @@ msgstr "ยังไม่มีสถานี"
 #: model:work.center.counter,name:disbursement_work_center.counter_not_billed
 msgid "Not yet billed"
 msgstr "ยังไม่ตั้งหนี้"
+
+#. module: disbursement_work_center
+#. odoo-python
+#: code:addons/disbursement_work_center/models/disbursement_request.py:0
+#, python-format
+msgid "Only a disbursement officer can send requests to the stations."
+msgstr "เฉพาะเจ้าหน้าที่การเงินเท่านั้นที่ส่งใบขอเบิกเข้าสถานีได้"
+
+#. module: disbursement_work_center
+#. odoo-python
+#: code:addons/disbursement_work_center/models/disbursement_request.py:0
+#, python-format
+msgid "Only signed requests can be sent to the stations."
+msgstr "ส่งเข้าสถานีได้เฉพาะใบขอเบิกที่ลงนามแล้ว"
 
 #. module: disbursement_work_center
 #: model:work.center,name:disbursement_work_center.station_audit
@@ -170,6 +179,11 @@ msgid "Required at this station and not yet done in this visit."
 msgstr "ต้องทำที่สถานีนี้และยังไม่ได้ทำในการเยี่ยมครั้งนี้"
 
 #. module: disbursement_work_center
+#: model:ir.actions.server,name:disbursement_work_center.action_server_enter_stations
+msgid "Send to Stations"
+msgstr "ส่งเข้าสถานี"
+
+#. module: disbursement_work_center
 #: model:ir.model.fields,field_description:disbursement_work_center.field_disbursement_request__work_center_id
 #: model_terms:ir.ui.view,arch_db:disbursement_work_center.view_disbursement_request_search
 msgid "Station"
@@ -187,16 +201,25 @@ msgid "Technical: the current user may forward, divert or send back."
 msgstr "ค่าทางเทคนิค: ผู้ใช้ปัจจุบันส่งต่อ เบี่ยงเส้นทาง หรือส่งคืนได้"
 
 #. module: disbursement_work_center
-#. odoo-python
-#: code:addons/disbursement_work_center/models/disbursement_request.py:0
-#, python-format
-msgid "The money went back from %(previous)s to %(current)s."
-msgstr "เงินย้อนกลับจาก %(previous)s เป็น %(current)s"
-
-#. module: disbursement_work_center
 #: model:ir.model.fields,help:disbursement_work_center.field_disbursement_request__work_center_id
 msgid "The station holding the document. It only changes through the forward, divert, send back and exit actions."
 msgstr "สถานีที่ถือเอกสารอยู่ เปลี่ยนได้ผ่านการส่งต่อ เบี่ยงเส้นทาง ส่งคืน และออกจากสถานีสุดท้ายเท่านั้น"
+
+#. module: disbursement_work_center
+#. odoo-python
+#: code:addons/disbursement_work_center/models/disbursement_request.py:0
+#, python-format
+msgid "There is no active route for disbursement requests."
+msgstr "ยังไม่มีเส้นทางมาตรฐานของใบขอเบิกที่เปิดใช้งาน"
+
+#. module: disbursement_work_center
+#. odoo-python
+#: code:addons/disbursement_work_center/models/disbursement_request.py:0
+#, python-format
+msgid ""
+"This request was returned to its source document. Please wait for the "
+"correction to be confirmed."
+msgstr "ใบขอเบิกนี้ถูกตีกลับไปยังต้นเรื่องแล้ว กรุณารอการยืนยันการแก้ไข"
 
 #. module: disbursement_work_center
 #: model:ir.model.fields,field_description:disbursement_work_center.field_disbursement_request__work_center_visit_ids

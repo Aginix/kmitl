@@ -19,6 +19,8 @@ class TestDisbursementWorkCenter(TwoApproverCommon):
         super().setUpClass()
         env = cls.env
         env["work.center.act"]._reflect_acts()
+        # The route is seeded archived, until the stations are configured.
+        env.ref("disbursement_work_center.route_disbursement").active = True
         cls.stations = {
             key: env.ref("disbursement_work_center.station_" + key) for key in STATIONS
         }
@@ -156,18 +158,6 @@ class TestDisbursementWorkCenter(TwoApproverCommon):
         self._forward(dr)
         self.env.invalidate_all()
         self.assertFalse(dr.with_user(self.finance).can_edit_lines)
-
-    def test_money_walking_back_after_done_goes_to_the_last_station(self):
-        dr = self._signed_dr()
-        for _i in range(6):
-            self._forward(dr)
-        walked = self.env.ref(
-            "disbursement_work_center.mail_activity_dr_money_walked_back"
-        )
-        dr._on_settlement_walked_back("billed")
-        todos = dr.activity_ids.filtered(lambda a: a.activity_type_id == walked)
-        self.assertEqual(dr.state, "done")
-        self.assertEqual(todos.user_id, self.finance)
 
     def test_act_names_follow_the_language(self):
         act = self.env["work.center.act"].search(
