@@ -1,0 +1,225 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* disbursement_wc
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-24 17:00+0000\n"
+"PO-Revision-Date: 2026-10-24 17:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: disbursement_wc
+#: model_terms:ir.ui.view,arch_db:disbursement_wc.view_disbursement_request_form
+msgid "<strong>Current Station:</strong>"
+msgstr "<strong>สถานีปัจจุบัน:</strong>"
+
+#. module: disbursement_wc
+#: model_terms:ir.actions.act_window,help:disbursement_wc.action_disbursement_stations
+msgid ""
+"A station is a desk a disbursement request passes through. Remove\n"
+"                the \"My Stations\" filter to see them all."
+msgstr "สถานีคือโต๊ะที่ใบขอเบิกเดินผ่าน ลบตัวกรอง \"สถานีของฉัน\" เพื่อดูทั้งหมด"
+
+#. module: disbursement_wc
+#: model:ir.model.fields,field_description:disbursement_wc.field_disbursement_request__work_center_missing_act_ids
+msgid "Acts Still to Do"
+msgstr "การกระทำที่ยังไม่ได้ทำ"
+
+#. module: disbursement_wc
+#: model_terms:ir.ui.view,arch_db:disbursement_wc.view_disbursement_request_search
+msgid "At My Stations"
+msgstr "อยู่ที่สถานีของฉัน"
+
+#. module: disbursement_wc
+#: model:work.center,name:disbursement_wc.station_bill
+#: model:work.center.route.line,name:disbursement_wc.route_line_bill
+msgid "Billing"
+msgstr "ตั้งหนี้"
+
+#. module: disbursement_wc
+#: model:ir.model.fields,field_description:disbursement_wc.field_disbursement_request__work_center_can_move
+msgid "Can Move"
+msgstr "ย้ายได้"
+
+#. module: disbursement_wc
+#: model:work.center,name:disbursement_wc.station_check
+#: model:work.center.route.line,name:disbursement_wc.route_line_check
+msgid "Check"
+msgstr "หมวดตรวจ"
+
+#. module: disbursement_wc
+#: model:ir.model.fields,field_description:disbursement_wc.field_disbursement_request__work_center_open_visit_id
+msgid "Current Visit"
+msgstr "การเยี่ยมปัจจุบัน"
+
+#. module: disbursement_wc
+#: model:work.center.area,name:disbursement_wc.area_disbursement
+msgid "Disbursement"
+msgstr "ใบขอเบิก"
+
+#. module: disbursement_wc
+#: model:ir.model,name:disbursement_wc.model_disbursement_request
+msgid "Disbursement Request"
+msgstr "ใบขอเบิก"
+
+#. module: disbursement_wc
+#: model:work.center.route,name:disbursement_wc.route_disbursement
+msgid "Disbursement Route"
+msgstr "เส้นทางมาตรฐานของใบขอเบิก"
+
+#. module: disbursement_wc
+#: model_terms:ir.ui.view,arch_db:disbursement_wc.view_disbursement_request_form
+msgid "Divert"
+msgstr "เบี่ยงเส้นทาง"
+
+#. module: disbursement_wc
+#. odoo-python
+#: code:addons/disbursement_wc/models/disbursement_request.py:0
+#, python-format
+msgid "Edit the Attachments"
+msgstr "แก้ไขไฟล์แนบ"
+
+#. module: disbursement_wc
+#. odoo-python
+#: code:addons/disbursement_wc/models/disbursement_request.py:0
+#, python-format
+msgid "Edit the Budget"
+msgstr "แก้ไขงบประมาณ"
+
+#. module: disbursement_wc
+#. odoo-python
+#: code:addons/disbursement_wc/models/disbursement_request.py:0
+#, python-format
+msgid "Edit the Dimensions"
+msgstr "แก้ไขมิติการเงิน"
+
+#. module: disbursement_wc
+#. odoo-python
+#: code:addons/disbursement_wc/models/disbursement_request.py:0
+#, python-format
+msgid "Edit the Header"
+msgstr "แก้ไขส่วนหัว"
+
+#. module: disbursement_wc
+#. odoo-python
+#: code:addons/disbursement_wc/models/disbursement_request.py:0
+#, python-format
+msgid "Edit the Lines"
+msgstr "แก้ไขรายการ"
+
+#. module: disbursement_wc
+#: model:work.center,name:disbursement_wc.station_director
+#: model:work.center.route.line,name:disbursement_wc.route_line_director
+msgid "Finance Director"
+msgstr "ผอ.กองคลัง"
+
+#. module: disbursement_wc
+#: model_terms:ir.ui.view,arch_db:disbursement_wc.view_disbursement_request_form
+msgid "Forward"
+msgstr "ส่งต่อ"
+
+#. module: disbursement_wc
+#: model:mail.activity.type,name:disbursement_wc.mail_activity_dr_money_walked_back
+msgid "Money went back on a finished request"
+msgstr "เงินย้อนกลับในใบขอเบิกที่เสร็จสิ้นแล้ว"
+
+#. module: disbursement_wc
+#: model:ir.model.fields,field_description:disbursement_wc.field_disbursement_request__work_center_next_id
+msgid "Next Station"
+msgstr "สถานีถัดไป"
+
+#. module: disbursement_wc
+#: model_terms:ir.actions.act_window,help:disbursement_wc.action_disbursement_stations
+msgid "No station yet"
+msgstr "ยังไม่มีสถานี"
+
+#. module: disbursement_wc
+#: model:work.center.counter,name:disbursement_wc.counter_not_billed
+msgid "Not yet billed"
+msgstr "ยังไม่ตั้งหนี้"
+
+#. module: disbursement_wc
+#: model:work.center,name:disbursement_wc.station_audit
+#: model:work.center.route.line,name:disbursement_wc.route_line_audit
+msgid "Payment Audit"
+msgstr "ตรวจจ่าย"
+
+#. module: disbursement_wc
+#: model:work.center,name:disbursement_wc.station_authorize
+#: model:work.center.route.line,name:disbursement_wc.route_line_authorize
+msgid "Payment Authorization"
+msgstr "อนุมัติจ่าย"
+
+#. module: disbursement_wc
+#: model:work.center,name:disbursement_wc.station_rector
+#: model:work.center.route.line,name:disbursement_wc.route_line_rector
+msgid "Rector Delegate"
+msgstr "ผู้รับมอบอำนาจอธิการบดี"
+
+#. module: disbursement_wc
+#: model:ir.model.fields,help:disbursement_wc.field_disbursement_request__work_center_missing_act_ids
+msgid "Required at this station and not yet done in this visit."
+msgstr "ต้องทำที่สถานีนี้และยังไม่ได้ทำในการเยี่ยมครั้งนี้"
+
+#. module: disbursement_wc
+#: model:ir.model.fields,field_description:disbursement_wc.field_disbursement_request__work_center_id
+#: model_terms:ir.ui.view,arch_db:disbursement_wc.view_disbursement_request_search
+msgid "Station"
+msgstr "สถานี"
+
+#. module: disbursement_wc
+#: model:ir.actions.act_window,name:disbursement_wc.action_disbursement_stations
+#: model:ir.ui.menu,name:disbursement_wc.menu_disbursement_stations
+msgid "Stations"
+msgstr "สถานี"
+
+#. module: disbursement_wc
+#: model:ir.model.fields,help:disbursement_wc.field_disbursement_request__work_center_can_move
+msgid "Technical: the current user may forward, divert or send back."
+msgstr "ค่าทางเทคนิค: ผู้ใช้ปัจจุบันส่งต่อ เบี่ยงเส้นทาง หรือส่งคืนได้"
+
+#. module: disbursement_wc
+#. odoo-python
+#: code:addons/disbursement_wc/models/disbursement_request.py:0
+#, python-format
+msgid "The money went back from %(previous)s to %(current)s."
+msgstr "เงินย้อนกลับจาก %(previous)s เป็น %(current)s"
+
+#. module: disbursement_wc
+#: model:ir.model.fields,help:disbursement_wc.field_disbursement_request__work_center_id
+msgid "The station holding the document. It only changes through the forward, divert, send back and exit actions."
+msgstr "สถานีที่ถือเอกสารอยู่ เปลี่ยนได้ผ่านการส่งต่อ เบี่ยงเส้นทาง ส่งคืน และออกจากสถานีสุดท้ายเท่านั้น"
+
+#. module: disbursement_wc
+#: model:ir.model.fields,field_description:disbursement_wc.field_disbursement_request__work_center_visit_ids
+#: model_terms:ir.ui.view,arch_db:disbursement_wc.view_disbursement_request_form
+msgid "Visit Log"
+msgstr "สมุดเยี่ยม"
+
+#. module: disbursement_wc
+#: model:work.center.counter,name:disbursement_wc.counter_waiting
+msgid "Waiting here"
+msgstr "รอที่สถานีนี้"
+
+#. module: disbursement_wc
+#: model:ir.model.fields,help:disbursement_wc.field_disbursement_request__work_center_next_id
+msgid "Where forwarding would send the document now, on the live route."
+msgstr "สถานีที่การส่งต่อจะส่งเอกสารไปในตอนนี้ ตามเส้นทางมาตรฐานปัจจุบัน"
+
+#. module: disbursement_wc
+#: model_terms:ir.ui.view,arch_db:disbursement_wc.view_disbursement_request_form
+msgid "<strong>Acts Still to Do:</strong>"
+msgstr "<strong>การกระทำที่ยังไม่ได้ทำ:</strong>"
+
+#. module: disbursement_wc
+#: model_terms:ir.ui.view,arch_db:disbursement_wc.view_disbursement_request_form
+msgid "<strong>Next Station on the Route:</strong>"
+msgstr "<strong>เส้นทางที่จะส่งต่อไป:</strong>"
