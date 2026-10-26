@@ -121,6 +121,14 @@ class ApprovalRequest(models.Model):
         tracking=True,
     )
 
+    owner_name = fields.Char(
+        string="ชื่อผู้ขออนุมัติ",
+        compute="_compute_owner_name",
+        store=True,
+        readonly=False,
+        index=True,
+    )
+
     user_id = fields.Many2one(
         string="Responsible Person",
         comodel_name="res.users",
@@ -128,6 +136,13 @@ class ApprovalRequest(models.Model):
         required=True,
         tracking=True,
     )
+
+    @api.depends("owner_id")
+    def _compute_owner_name(self):
+        for rec in self:
+            rec.owner_name = (
+                rec.owner_id.display_name if rec.owner_id else ""
+            )
 
     @api.constrains("owner_id")
     def _check_owner_is_self_for_own_group(self):
