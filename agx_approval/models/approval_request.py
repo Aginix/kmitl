@@ -415,12 +415,13 @@ class ApprovalRequest(models.Model):
     )
 
     def _domain_budget_account_id(self):
-        # An approval is not a procurement (ADR-0004): reserve against
-        # non-procurement expense codes, not product-backed purchase codes.
+        # Approval-eligible expense codes (ADR-0004, amended): the approval_ok
+        # flag is the sole gate, independent of purchase_ok, so a code may be
+        # reservable from both purchase requests and approval requests.
         return [
             ("budgetable", "=", True),
             ("budget_type", "=", "expense"),
-            ("purchase_ok", "=", False),
+            ("approval_ok", "=", True),
         ]
 
     budget_account_domain = fields.Binary(
@@ -438,7 +439,7 @@ class ApprovalRequest(models.Model):
     def _reservation_account_domain(self):
         """Budget codes selectable in the reservation picker for this request.
 
-        Non-procurement expense codes (ADR-0004) on top of the mixin's
+        Approval-eligible expense codes (approval_ok, ADR-0004) on top of the mixin's
         budgetable/expense baseline, so the picker cannot offer — and
         apply_reservation_selection cannot write — a code the request rejects.
         When the category pins a budget code, that code is the request's hard
@@ -541,7 +542,7 @@ class ApprovalRequest(models.Model):
     def action_open_reservation_picker(self):
         """Browse the picker in only-selectable mode: the requester may pick only
         codes this request accepts (a category-pinned code, else the
-        non-procurement baseline), so the picker collapses the ประเภทงบ chart to
+        approval-eligible baseline), so the picker collapses the ประเภทงบ chart to
         those codes and the dimension path to them instead of showing every code
         of the root category with only one clickable."""
         action = super().action_open_reservation_picker()
@@ -1174,7 +1175,7 @@ class ApprovalRequest(models.Model):
         """Block drawing a reservation this request must not use: a plan/project
         shared commitment (drawn only through their create-from-source flows,
         ADR-0006/0007) or a budget code this request could not itself select
-        (non-procurement expense code, ADR-0004)."""
+        (approval-eligible expense code, ADR-0004)."""
         for fname, label in (
             ("procurement_plan_id", _("แผนจัดซื้อจัดจ้าง")),
             ("kmitl_project_id", _("โครงการ")),

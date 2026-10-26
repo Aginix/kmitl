@@ -30,3 +30,49 @@ class KmitlProject(models.Model):
                 )
             )
         return allowed
+
+    def action_submit_to_sarabun(self):
+        action = super().action_submit_to_sarabun()
+        if action:
+            self._sync_sarabun_owner_followers()
+        return action
+
+    def write(self, vals):
+        if "coordinator_ids" not in vals and "manager_id" not in vals:
+            return super().write(vals)
+        previous = {rec: rec._sarabun_owner_partners() for rec in self}
+        res = super().write(vals)
+        for rec in self:
+            rec._sync_sarabun_owner_followers(previous[rec])
+        return res
+
+    def _sarabun_owner_partners(self):
+        self.ensure_one()
+        return (
+            self.manager_id.sudo().user_id
+            | self.coordinator_ids
+            | self.creating_user_id
+        ).partner_id
+
+    def _sync_sarabun_owner_followers(self, previous_partners=None):
+        """Make the project's owners followers of its หนังสือ — the follower read
+        rule lets them open it (ADR-0013) — and unsubscribe owners who were
+        removed from the still-open หนังสือ, except its sender and anyone it
+        reached (still a Route actor, kept notified). A finished
+        หนังสือ (completed / rejected / cancelled) keeps them: they stay able to
+        read what was decided while they owned the project."""
+        for rec in self:
+            documents = rec._all_sarabun_documents()
+            if not documents:
+                continue
+            owners = rec._sarabun_owner_partners()
+            documents.message_subscribe(partner_ids=owners.ids)
+            removed = (previous_partners or owners.browse()) - owners
+            if removed:
+                for document in documents.filtered(
+                    lambda d: d.state not in ("completed", "rejected", "cancelled")
+                ):
+                    keep = (
+                        document.sender_user_id | document.reached_user_ids
+                    ).partner_id
+                    document.message_unsubscribe(partner_ids=(removed - keep).ids)

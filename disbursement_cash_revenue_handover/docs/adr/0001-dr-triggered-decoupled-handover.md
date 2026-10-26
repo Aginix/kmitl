@@ -1,5 +1,9 @@
 # Cash & revenue handover is raised from the disbursement request, and then let go
 
+> **Superseded in part (station model).** The request's `bills_posted` state is gone: read it
+> as the settlement stage `billed`, which follows the request's own bills and never the
+> handover.
+
 Government-budget money is held centrally, but it is spent by faculties, so the
 cash and the recognised revenue have to end up under the spending unit's
 dimensions. KMITL funds this **just in time**: exactly what is being spent, at the
@@ -36,7 +40,8 @@ afterwards.
 - **The handover needs its own link field.** `account.move.disbursement_request_id`
   is the inverse of the request's `bill_ids`, which carries no `move_type` filter, so
   reusing it would make the handover *be* a vendor bill — blocking bill creation and
-  advancing the request to `bills_posted` the moment the handover posted. Hence
+  billing the request (its settlement stage would read `billed`) the moment the
+  handover posted. Hence
   `cash_revenue_handover_request_id`.
 - **The header carries the funded request's dimensions, and is stopped from reaching
   the lines.** `accounting_kmitl` copies a header `analytic_distribution` onto every

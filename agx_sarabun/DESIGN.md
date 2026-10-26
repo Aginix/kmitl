@@ -1922,7 +1922,7 @@ tracked, not gating — "ค้างรับทราบ N"); (3) **no write i
 |---|---|---|---|---|---|
 | `purchase_request_sarabun` | `purchase.request` | `action_submit_to_sarabun` | `button_approved()` | `button_rejected()` | `purchase_request.action_report_purchase_requests` |
 | `purchase_request_approval` | `sarabun.document` (patch) + `purchase.request` | overrides `action_send` to fire `_on_sarabun_sent` | — | — | — |
-| `disbursement_sarabun` | `disbursement.request` | `action_submit_to_sarabun` (guards `state == "submitted"`) | `action_sign()` | clears `main_sarabun_document_id`, stays `submitted` | `disbursement.action_report_disbursement_request` |
+| `disbursement_sarabun` | `disbursement.request` | `action_submit_to_sarabun` (guards `state == "submitted"`) | `action_sign()` | clears `main_sarabun_document_id`, stays `submitted` | `disbursement_pdf.action_report_disbursement_request` |
 | `agx_approval_sarabun` | `approval.request` | `action_submit_to_sarabun` | `state = "approved"` | `action_cancel()` | `agx_approval.action_report_approval_request` |
 | `agx_construction` | `purchase.request` (transitive) | inherits `purchase_request_sarabun` | (inherited) | (inherited) | (inherited) |
 

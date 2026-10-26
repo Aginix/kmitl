@@ -1,21 +1,12 @@
 from odoo import Command, _, api, fields, models
 from odoo.exceptions import UserError
+from odoo.tools import plaintext2html
 
 
 class ApprovalRequest(models.Model):
     _name = "approval.request"
     _inherit = ["approval.request", "disbursement.return.source.mixin"]
     _disbursement_return_state = "billed"
-
-    # A DR is "billed" once its budget has been committed at ``approved`` and
-    # stays billed through every downstream state a finance/accounting bridge
-    # may add (bills_posted, payment_*, paid, cleared) — those states are not
-    # owned by this module and must never be enumerated here. Excluding the
-    # states that precede budget commitment, plus ``cancel``, is the only
-    # comparison that stays correct regardless of which bridges are installed.
-    _DISBURSEMENT_NOT_BILLED_STATES = (
-        "draft", "submitted", "signed", "verified", "cancel",
-    )
 
     # -- return-correction editability (D3) --------------------------------
     def _compute_is_correction(self):
@@ -32,12 +23,20 @@ class ApprovalRequest(models.Model):
         self.ensure_one()
         return self._disbursement_pick_request(self.disbursement_request_ids)
 
+    def _disbursement_note(self):
+        """The DR's Html note from ``description`` — Text here, Html when
+        agx_approval_description_html is installed."""
+        self.ensure_one()
+        if not self.description or self._fields["description"].type == "html":
+            return self.description
+        return plaintext2html(self.description)
+
     def _disbursement_apply_correction(self, dr):
         """Push the corrected recipient bank, description and disbursement
         evidence onto the still-signed DR. The banner/To-Do/state bookkeeping
         is handled generically by disbursement.request._apply_source_correction."""
         self.ensure_one()
-        dr.note = self.description
+        dr.note = self._disbursement_note()
         allocs = self.allocation_ids.filtered("partner_bank_id")
         for line in dr.line_ids:
             candidates = allocs.filtered(lambda a: a.partner_id == line.partner_id)
@@ -47,9 +46,9 @@ class ApprovalRequest(models.Model):
                 # allocation row) — narrow to this line's own row so the other
                 # rows' banks are not clobbered.
                 exact = candidates.filtered(
-                    lambda a: a.product_id == line.product_id
-                    and a.currency_id.compare_amounts(a.amount, line.price_unit)
-                    == 0
+                    lambda a: (a.description or a.product_id.display_name)
+                    == line.name
+                    and a.currency_id.compare_amounts(a.amount, line.amount) == 0
                 )
                 banks = exact.mapped("partner_bank_id")
             if len(banks) == 1 and line.partner_bank_id != banks:
@@ -116,12 +115,30 @@ class ApprovalRequest(models.Model):
                 record.disbursement_request_ids
             )
 
-    @api.depends("disbursement_request_ids", "disbursement_request_ids.state")
+    def init(self):
+        super().init()
+        # The rule behind the stored billing_status changed: recompute every
+        # row, because rewriting a compute does not refresh the stored values.
+        self.env.add_to_compute(
+            self._fields["billing_status"],
+            self.with_context(active_test=False).search([]),
+        )
+
+    @api.depends(
+        "disbursement_request_ids",
+        "disbursement_request_ids.state",
+        "disbursement_request_ids.budget_consumed_amount",
+        "disbursement_request_ids.settlement_stage",
+    )
     def _compute_billing_status(self):
+        """A DR counts as billed once its budget is consumed or its money has
+        started (a bill exists), unless it is cancelled. Both are facts that
+        outlive whatever states the request goes through."""
         for record in self:
             disbursements = record.disbursement_request_ids
             billed = disbursements.filtered(
-                lambda d: d.state not in self._DISBURSEMENT_NOT_BILLED_STATES
+                lambda d: d.state != "cancel"
+                and (d.budget_consumed_amount or d.settlement_stage != "none")
             )
             if not disbursements or not billed:
                 record.billing_status = "no"
@@ -169,7 +186,7 @@ class ApprovalRequest(models.Model):
                 Command.create(alloc._prepare_disbursement_request_line_vals())
                 for alloc in allocations
             ],
-            "note": self.description,
+            "note": self._disbursement_note(),
             "budget_commitment_id": self.budget_commitment_id.id,
             "budget_account_id": self.budget_account_id.id,
             "analytic_distribution": self.analytic_distribution,
@@ -220,7 +237,7 @@ class ApprovalRequest(models.Model):
             self.message_post(
                 body=_(
                     "Disbursement %(dr_name)s created successfully.",
-                    dr_name=disbursement.name,
+                    dr_name=disbursement.display_name,
                 ),
                 message_type="comment",
             )

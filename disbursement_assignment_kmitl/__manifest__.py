@@ -2,7 +2,7 @@
 
 {
     "name": "Disbursement Assignment KMITL",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.0.1",
     "category": "Disbursement",
     "summary": "Auto-assign a responsible verification officer to disbursement "
     "requests by rules",
@@ -11,6 +11,7 @@
     "license": "LGPL-3",
     "depends": [
         "disbursement",
+        "disbursement_validation",
     ],
     "data": [
         "security/security.xml",

@@ -2,7 +2,7 @@
 
 {
     "name": "Disbursement",
-    "version": "16.0.12.0.0",
+    "version": "16.0.17.0.0",
     "category": "Disbursement",
     "license": "LGPL-3",
     "author": "KMITL",
@@ -12,8 +12,6 @@
         "account_fiscal_year_enhance",
         "base_exception",
         "l10n_th_account_tax",
-        "l10n_th_amount_to_text",
-        "l10n_th_fonts",
         "base_fontawesome",
         "partner_type_kmitl_accounting",
         "mail_activity_todo",
@@ -29,27 +27,10 @@
         "data/exception_rule_data.xml",
         "wizards/disbursement_exception_confirm.xml",
         "wizards/return_request_wizard_views.xml",
-        "wizards/disbursement_reject_wizard_views.xml",
         "views/disbursement_request_views.xml",
-        "views/disbursement_approval_queue_views.xml",
         "views/disbursement_return_views.xml",
         "views/exception_rule_views.xml",
-        "report/paperformat.xml",
-        "report/report_disbursement_request_action.xml",
-        "report/report_disbursement_request.xml",
-        "views/portal_templates.xml",
     ],
-    "assets": {
-        "web.assets_frontend": [
-            "disbursement/static/src/js/disbursement_sidebar.js",
-        ],
-        "web.assets_backend": [
-            "disbursement/static/src/approval_queue/multi_record_select.js",
-            "disbursement/static/src/approval_queue/approval_queue.js",
-            "disbursement/static/src/approval_queue/approval_queue.xml",
-            "disbursement/static/src/approval_queue/approval_queue.scss",
-        ],
-    },
     "installable": True,
     "application": True,
 }

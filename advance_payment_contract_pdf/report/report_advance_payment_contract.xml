@@ -108,7 +108,7 @@
                                         />
                                     </div>
                                     <div>เพื่อเป็นค่าใช้จ่ายในการ <t
-                                            t-out="o.loan_reason or dots"
+                                            t-out="(o.loan_reason and o.loan_reason.striptags()) or dots"
                                         /> ดังรายละเอียดแนบท้าย</div>
                                 </td>
                             </tr>

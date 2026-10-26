@@ -1,0 +1,35 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* disbursement_direct_claim_budget
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: disbursement_direct_claim_budget
+#: model:ir.model.fields,field_description:disbursement_direct_claim_budget.field_disbursement_request__budget_direct_move_id
+msgid "Direct Consumption"
+msgstr "ตัดงบตรง"
+
+#. module: disbursement_direct_claim_budget
+#: code:addons/disbursement_direct_claim_budget/models/disbursement_request.py:0
+msgid "A direct claim needs a budget code before consuming budget."
+msgstr "ใบขอเบิกตั้งเบิกตรงต้องระบุรหัสงบประมาณก่อนตัดงบประมาณ"
+
+#. module: disbursement_direct_claim_budget
+#: code:addons/disbursement_direct_claim_budget/models/disbursement_request.py:0
+#, python-format
+msgid "Budget consumed directly: %(amount)s (%(move)s)"
+msgstr "ตัดงบประมาณตรงแล้ว: %(amount)s (%(move)s)"
+
+#. module: disbursement_direct_claim_budget
+#: code:addons/disbursement_direct_claim_budget/models/disbursement_request.py:0
+#, python-format
+msgid "Direct consumption %s cancelled."
+msgstr "ยกเลิกการตัดงบตรง %s แล้ว"

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_budget_account_form" model="ir.ui.view">
+        <field name="name">budget.account.form.agx_approval</field>
+        <field name="model">budget.account</field>
+        <field name="inherit_id" ref="budget_product.view_budget_account_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//group//field[@name='purchase_ok']" position="after">
+                <field
+                    name="approval_ok"
+                    attrs="{'invisible': [('budget_type', '!=', 'expense')]}"
+                />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_budget_account_tree" model="ir.ui.view">
+        <field name="name">budget.account.tree.agx_approval</field>
+        <field name="model">budget.account</field>
+        <field name="inherit_id" ref="budget_product.view_budget_account_tree" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='purchase_ok']" position="after">
+                <field name="approval_ok" optional="hide" />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_budget_account_search" model="ir.ui.view">
+        <field name="name">budget.account.search.agx_approval</field>
+        <field name="model">budget.account</field>
+        <field name="inherit_id" ref="budget_product.view_budget_account_search" />
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='non_purchase_ok']" position="after">
+                <separator />
+                <filter
+                    string="ใช้ในคำขออนุมัติ"
+                    name="approval_ok"
+                    domain="[('approval_ok', '=', True)]"
+                />
+                <filter
+                    string="ไม่ใช้ในคำขออนุมัติ"
+                    name="non_approval_ok"
+                    domain="[('approval_ok', '=', False)]"
+                />
+            </xpath>
+        </field>
+    </record>
+</odoo>

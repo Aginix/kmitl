@@ -26,10 +26,9 @@ class TestPayeeType(TwoApproverCommon):
         dr = self.DR.create({
             "partner_type_id": self.partner.partner_type_id.id,
             "line_ids": [(0, 0, {
-                "product_id": self.product.id,
+                "account_id": self.expense_account.id,
                 "name": "line",
-                "quantity": 1.0,
-                "price_unit": 100.0,
+                "amount": 100.0,
                 "partner_id": partner.id,
             })],
             **vals,
@@ -100,7 +99,14 @@ class TestPayeeType(TwoApproverCommon):
         })
         dr = self._draft(self.partner, account_fiscal_year_id=fy.id)
         self.assertEqual(dr.account_fiscal_year_id, fy)
+        # Numbered on submit, not on create: a draft is still "/".
+        self.assertEqual(dr.name, "/")
+        dr.action_submit()
         self.assertTrue(dr.name.startswith("DR/99/"))
+        # ...and keeps its number when reset to draft.
+        number = dr.name
+        dr.action_draft()
+        self.assertEqual(dr.name, number)
         self.assertIn(dr, self.DR.search([("account_fiscal_year_id", "=", fy.id)]))
 
     def test_missing_bank_can_be_ignored_for_cash(self):
@@ -129,6 +135,8 @@ class TestPayeeType(TwoApproverCommon):
             "company_id": self.env.company.id,
         })
         dr = self._draft(self.partner)
+        dr.action_submit()
+        dr.action_draft()
         dr.account_fiscal_year_id = fy
         self.assertTrue(dr.name.startswith("DR/98/"))
 

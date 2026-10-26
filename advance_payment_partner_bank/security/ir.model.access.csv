@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_advance_payment_partner_bank_wizard,advance.payment.partner.bank.wizard,model_advance_payment_partner_bank_wizard,advance_payment.group_advance_payment_loan_officer,1,1,1,1

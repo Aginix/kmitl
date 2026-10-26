@@ -1,0 +1,27 @@
+{
+    "name": "KMITL Budget Support Request",
+    "version": "16.0.1.0.0",
+    "summary": """ ขอรับการสนับสนุนงบประมาณ — request budget support from central """,
+    "category": "KMITL/Budgeting",
+    "author": "Aginix Technologies",
+    "website": "https://github.com/aginix/kmitl",
+    "depends": [
+        "budget",
+        "budget_transfer",
+        "budget_buddy",
+        "mail_activity_todo",
+    ],
+    "data": [
+        "security/ir.model.access.csv",
+        "data/ir_sequence.xml",
+        "data/mail_activity_type.xml",
+        "wizard/budget_support_request_verify_return_wizard_views.xml",
+        "views/budget_support_request_views.xml",
+        "views/budget_fulfilment_views.xml",
+        "views/budget_support_request_menus.xml",
+    ],
+    "installable": True,
+    "auto_install": False,
+    "application": False,
+    "license": "AGPL-3",
+}

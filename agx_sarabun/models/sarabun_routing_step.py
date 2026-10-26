@@ -406,36 +406,26 @@ class SarabunRoutingStep(models.Model):
             )
         return Markup("<p>%s</p>") % detail
 
-    def _activity_type_xmlid(self):
-        """The awaiting-action activity type for this step (ADR-0014): EXECUTION iff
-        the step gates or physically signs the letter (``gating`` OR
-        ``show_signature`` — so รับทราบและลงนาม is execution, a signature can't be
-        Mark-as-Read'd away), else ACKNOWLEDGEMENT (a pure read-only รับทราบ)."""
-        self.ensure_one()
-        if self.gating or self.verb.show_signature:
-            return "agx_sarabun.mail_activity_sarabun_action"
-        return "agx_sarabun.mail_activity_sarabun_ack"
-
     def _schedule_activities(self):
         """One awaiting-action mail.activity per snapshot holder of each ACTIVE step
         — gating AND non-gating (รับทราบ / สำเนาเรียน / รับทราบและลงนาม) alike
         (ADR-0014); the old gating-only filter is gone so no awaiting-action work is
-        invisible once the systray is dissolved. The type is picked per step by
-        ``_activity_type_xmlid`` (execution vs acknowledgement). Base e-Saraban
-        stands on native mail.activity; the agx_sarabun_todo bridge tags the types
-        with ``todo_category`` to route them into the unified Todo inbox.
+        invisible once the systray is dissolved. The type is the step's verb's own
+        activity type (ADR-0020), so the Todo reads as the verb ("ตรวจเอกสาร").
+        Base e-Saraban stands on native mail.activity; the agx_sarabun_todo bridge
+        sets ``todo_category`` per verb to route them into the unified Todo inbox.
 
         The step↔activity Link is engine-owned bookkeeping (like the recipient
         rows): created via sudo so a plain sender/actor needs no write on it."""
         Link = self.env["sarabun.routing.step.activity"].sudo()
         for step in self.filtered(lambda s: s.state == "active"):
-            xmlid = step._activity_type_xmlid()
-            if not self.env.ref(xmlid, raise_if_not_found=False):
+            act_type = step.verb.activity_type_id
+            if not act_type:
                 continue
             doc = step.document_id
             for usr in step.actor_user_ids:
                 act = doc.activity_schedule(
-                    act_type_xmlid=xmlid,
+                    activity_type_id=act_type.id,
                     summary=step._activity_summary(),
                     note=step._activity_note(),
                     user_id=usr.id,

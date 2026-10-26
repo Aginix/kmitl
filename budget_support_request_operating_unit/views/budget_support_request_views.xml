@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_budget_support_request_form_operating_unit" model="ir.ui.view">
+        <field name="name">budget.support.request.form.operating.unit</field>
+        <field name="model">budget.support.request</field>
+        <field name="inherit_id" ref="budget_support_request.view_budget_support_request_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='department_analytic_id']" position="after">
+                <field name="operating_unit_id" widget="selection" groups="operating_unit.group_multi_operating_unit" attrs="{'readonly': [('can_edit', '=', False)]}"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

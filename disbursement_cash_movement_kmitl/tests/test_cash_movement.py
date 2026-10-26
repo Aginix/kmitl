@@ -60,9 +60,6 @@ class TestCashMovement(TransactionCase):
             limit=1,
         )
         cls.purchase_journal = cls.env.ref("account_kmitl.journal_ap")
-        cls.product = cls.env["product.product"].create(
-            {"name": "Service", "type": "service"}
-        )
 
         # Seeded paying accounts (หัวจ่าย) — KTB is on 4 of the 18 routes (a
         # different hop chain for REV and for GOV), cash and the REV/GOV
@@ -91,7 +88,7 @@ class TestCashMovement(TransactionCase):
         return {str(account.id): 100.0 for account in accounts}
 
     def _billed_line(self, source, price=1000.0):
-        """A payment line at ``bills_posted``, before any ``account.payment``
+        """A payment line of a billed request, before any ``account.payment``
         exists — the exact point the auditor is choosing a paying account,
         which is what the live preview has to work from."""
         distribution = self._distribution(source)
@@ -106,10 +103,8 @@ class TestCashMovement(TransactionCase):
                         0,
                         {
                             "partner_id": self.payee.id,
-                            "product_id": self.product.id,
                             "name": "Service",
-                            "quantity": 1,
-                            "price_unit": price,
+                            "amount": price,
                             "account_id": self.expense_account.id,
                             "analytic_distribution": distribution,
                         },
@@ -117,7 +112,8 @@ class TestCashMovement(TransactionCase):
                 ],
             }
         )
-        request.state = "approved"
+        # The acts only run on a request in the circuit.
+        request.state = "signed"
         bill = self.env["account.move"].create(
             {
                 "move_type": "in_invoice",
@@ -130,10 +126,8 @@ class TestCashMovement(TransactionCase):
                         0,
                         0,
                         {
-                            "product_id": self.product.id,
                             "name": "Service",
-                            "quantity": 1,
-                            "price_unit": price,
+                            "amount": price,
                             "account_id": self.expense_account.id,
                             "analytic_distribution": distribution,
                         },

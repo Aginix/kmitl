@@ -1,5 +1,10 @@
 # Dissolve the e-Saraban inbox tray onto native `mail.activity` + the `agx_sarabun_todo` bridge
 
+> **Superseded in part by [ADR-0020](./0020-one-activity-type-per-verb.md):** the two
+> activity types (`_action` / `_ack`) and the `gating OR show_signature`
+> discriminator are replaced by one activity type per verb, with the Todo category set
+> per verb. The rest of this ADR stands.
+
 e-Saraban shipped its **own** systray (the Action tray, `agx_sarabun.SarabunSystray`)
 with its own `sarabun_inbox/updated` bus and a count computed from the routing
 model (`get_my_sarabun_inbox`) — a surface parallel to the cross-cutting Todos

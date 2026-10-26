@@ -4,11 +4,11 @@ Three demo stories run in order from ``seed``:
 
 * the disbursement flow (``PR -> PA -> PO -> Work Acceptance -> DR``), moved here
   from ``kmitl_demo``;
-* vendor bills created and posted from those DRs, leaving every request at
-  ``bills_posted``;
+* vendor bills created and posted from those DRs, leaving every request
+  billed (ขั้นการชำระ ``billed``);
 * fixed assets with posted depreciation.
 
-The demo deliberately stops at ``bills_posted``: the payment tail (audit ->
+The demo deliberately stops once billed: the payment tail (audit ->
 authorize -> pay) is left untouched so the finance queue can be exercised by
 hand in the UI, and no ``account.payment`` is created here.
 
@@ -500,7 +500,7 @@ def _create_disbursement_flow_demo(
 # === Step B: vendor bills ===
 #
 # Continue every disbursement request into a posted vendor bill (ตั้งหนี้), which
-# leaves it at ``bills_posted``. The payment tail (audit -> authorize -> pay) is
+# leaves it billed. The payment tail (audit -> authorize -> pay) is
 # deliberately not run so the finance payment queue can be demoed by hand.
 
 WHT_DR_INDEX = 7  # one case carries withholding tax
@@ -532,11 +532,11 @@ def _create_bill_demo(env, drs):
                 _bill_dr(dr, wht_tax if index == WHT_DR_INDEX else None)
         except Exception as error:  # noqa: BLE001 - demo must never abort install
             _logger.warning(
-                "finance_kmitl_demo: DR %s stopped before 'bills_posted' (%s)",
+                "finance_kmitl_demo: DR %s stopped before it was billed (%s)",
                 dr.name,
                 error,
             )
-    _logger.info("Vendor-bill demo created (requests left at 'bills_posted').")
+    _logger.info("Vendor-bill demo created (requests left billed).")
 
 
 def _dr_commitment(dr):
@@ -552,7 +552,7 @@ def _dr_commitment(dr):
 
 
 def _approve_dr(dr):
-    """Link the reserved commitment and drive the DR draft -> approved."""
+    """Link the reserved commitment, sign the DR and do its approval acts."""
     if dr.state != "draft":
         return
     commitment = _dr_commitment(dr)
@@ -567,9 +567,11 @@ def _approve_dr(dr):
     dr.action_sign()
     dr.action_validate()
     # Two approvers sign off before the budget is committed: the Finance
-    # Division Director first, then the Rector-delegated approver.
+    # Division Director first, then the Rector-delegated approver. Consuming
+    # the budget is its own act.
     dr.action_approve_finance()
     dr.action_approve()
+    dr.action_consume_budget()
 
 
 def _bill_dr(dr, wht_tax=None):

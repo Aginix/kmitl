@@ -80,7 +80,7 @@ route). This matches the non-signing-drafter case (ADR-0008).
 
 ## Considered options
 
-- **Follower-based read** (rejected) — Odoo `mail.thread` followers get **no**
+- **Follower-based read** (rejected; reversed by the amendment below) — Odoo `mail.thread` followers get **no**
   record read; adding a follower rule would silently widen access beyond the
   route. Involvement must come from the route (a recipient row), not ad-hoc
   following. If the Todo bridge auto-subscribes assignees as followers, that must
@@ -108,3 +108,21 @@ route). This matches the non-signing-drafter case (ADR-0008).
   plain-user send (which, post-ADR-0014, schedules activities for CC holders).
 - Pre-production — the whole stack is on the feature branch, not in
   `origin/16.0`; no data migration.
+
+## Amendment (2569-10-24): followers may read
+
+Followers of a หนังสือ get **read-only** access to it, its Route, and its side
+models (`sarabun.step.recipient`, `sarabun.routing.step.activity`): sharing a
+หนังสือ = adding a follower. Write/create/delete stay with the sender (Route
+writes stay with the sender and reached actors). Followers are **not** added to
+`reached_user_ids`, so the Incoming box and the reach ledger are unchanged.
+
+- Only someone with **write** on the หนังสือ (the sender, managers) can add another
+  follower (`message_subscribe` checks write; `mail.followers` create is
+  system-only). A reader can only follow it themselves.
+- Accepted side effect: when the sender or a manager uses chatter **Send message**,
+  its recipients and @mentions are auto-subscribed (`mail_post_autofollow`), so
+  they get read too. Activity assignees are auto-subscribed as well, but they are
+  already on the reach ledger.
+- Route-edit revoke (`agx_sarabun_route_edit`) unfollows a removed actor, so the
+  follower rule does not keep their read.
