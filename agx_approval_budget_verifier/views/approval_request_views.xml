@@ -53,7 +53,7 @@
             <filter name="my_to_verify" position="after">
                 <filter
                     name="my_to_commit"
-                    string="รอฉันยืนยันงบประมาณ"
+                    string="Waiting for My Budget Confirmation"
                     domain="[('budget_verifier_id', '=', uid), ('state', '=', 'to_commit')]"
                 />
             </filter>

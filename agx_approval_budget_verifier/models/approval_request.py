@@ -11,22 +11,27 @@ class ApprovalRequest(models.Model):
     # who gets its to_commit Todo. Any member of the group may still act.
     budget_verifier_id = fields.Many2one(
         comodel_name="res.users",
-        string="ผู้ยืนยันงบประมาณ",
+        string="Budget Confirmer",
+        help="The Budget Confirmer named on this request, who gets its Todo when it "
+        "reaches Awaiting Budget Confirmation. Advisory only: any Budget Confirmer "
+        "may still reserve the budget or send the request back.",
         copy=False,
         tracking=True,
         index=True,
         domain="[('id', 'in', budget_verifier_candidate_ids)]",
     )
     date_budget_committed = fields.Date(
-        string="วันที่ยืนยันงบประมาณ",
+        string="Budget Confirmed Date",
         copy=False,
         readonly=True,
         tracking=True,
-        help="วันที่ยืนยันงบประมาณ (รอยืนยันงบประมาณ → ขั้นถัดไป); ล้างเมื่อคำขอ"
-        "ย้อนกลับมาก่อนหรือที่ขั้นรอยืนยันงบประมาณ",
+        help="Date the budget was confirmed (reserved or drawn) and the request "
+        "moved past Awaiting Budget Confirmation. Cleared when it comes back to "
+        "that step or earlier.",
     )
     budget_verifier_candidate_ids = fields.Many2many(
         comodel_name="res.users",
+        string="Budget Confirmer Candidates",
         compute="_compute_budget_verifier_candidate_ids",
     )
 
@@ -48,14 +53,17 @@ class ApprovalRequest(models.Model):
         for rec in self:
             if rec.state == "to_commit" and not rec.budget_verifier_id:
                 raise ValidationError(
-                    _("คำขอ %s อยู่ระหว่างรอยืนยันงบประมาณ ต้องระบุผู้ยืนยันงบประมาณ") % rec.name
+                    _(
+                        "Request %s is awaiting budget confirmation: a Budget Confirmer is required."
+                    )
+                    % rec.name
                 )
             if (
                 rec.budget_verifier_id
                 and rec.budget_verifier_id not in rec._get_budget_verifier_candidates()
             ):
                 raise ValidationError(
-                    _("%(user)s ไม่ใช่ผู้ยืนยันงบประมาณคำขออนุมัติ %(request)s")
+                    _("%(user)s is not a Budget Confirmer for request %(request)s.")
                     % {"user": rec.budget_verifier_id.display_name, "request": rec.name}
                 )
 
@@ -64,7 +72,9 @@ class ApprovalRequest(models.Model):
         if not self.env.su and any(
             r.state == "to_verify" and not r.budget_verifier_id for r in self
         ):
-            raise UserError(_("กรุณาระบุผู้ยืนยันงบประมาณก่อนยืนยันตรวจสอบ"))
+            raise UserError(
+                _("Please set the Budget Confirmer before confirming the verification.")
+            )
         return super().action_confirm_verify()
 
     def write(self, vals):
@@ -106,7 +116,8 @@ class ApprovalRequest(models.Model):
             if self.budget_verifier_id and not todos:
                 self.activity_schedule(
                     RESERVE_TODO,
-                    summary=_("กรุณายืนยันงบประมาณ สำหรับคำขออนุมัติเลขที่ %s") % self.name,
+                    summary=_("Please confirm the budget for approval request %s")
+                    % self.name,
                     user_id=self.budget_verifier_id.id,
                 )
         elif old_state == "to_commit" and self.state != "to_commit":
@@ -123,6 +134,7 @@ class ApprovalRequest(models.Model):
             elif self.budget_verifier_id:
                 self.activity_schedule(
                     RESERVE_TODO,
-                    summary=_("กรุณายืนยันงบประมาณ สำหรับคำขออนุมัติเลขที่ %s") % self.name,
+                    summary=_("Please confirm the budget for approval request %s")
+                    % self.name,
                     user_id=self.budget_verifier_id.id,
                 )

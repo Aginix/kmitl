@@ -12,24 +12,25 @@ class ApprovalRequest(models.Model):
     # gets its to_verify Todo. Any member of the Verifier group may still act.
     verifier_id = fields.Many2one(
         comodel_name="res.users",
-        string="ผู้ตรวจสอบ",
+        string="Verifier",
         tracking=True,
         index=True,
         domain="[('id', 'in', verifier_candidate_ids)]",
-        help="ผู้ตรวจสอบคำขอที่ผู้ขอระบุให้ตรวจสอบคำขอนี้ — รับ Todo เมื่อคำขอเข้า "
-        "สถานะรอตรวจสอบข้อมูล. ไม่ได้ล็อกสิทธิ์: ผู้ตรวจสอบคำขอคนอื่นยังยืนยัน"
-        "ตรวจสอบหรือตีกลับได้",
+        help="The Request Verifier named on this request, who gets its Todo when it "
+        "reaches Awaiting Verification. Advisory only: any Request Verifier may "
+        "still confirm or send the request back.",
     )
     date_verified = fields.Date(
-        string="วันที่ตรวจสอบ",
+        string="Verified Date",
         copy=False,
         readonly=True,
         tracking=True,
-        help="วันที่ยืนยันตรวจสอบ (รอตรวจสอบข้อมูล → ขั้นถัดไป); ล้างเมื่อคำขอย้อนกลับ"
-        "มารอตรวจสอบข้อมูลหรือแบบร่าง",
+        help="Date the request was confirmed past Awaiting Verification. Cleared "
+        "when it comes back to Awaiting Verification or Draft.",
     )
     verifier_candidate_ids = fields.Many2many(
         comodel_name="res.users",
+        string="Verifier Candidates",
         compute="_compute_verifier_candidate_ids",
     )
 
@@ -73,21 +74,22 @@ class ApprovalRequest(models.Model):
         for rec in self:
             if rec.state == "to_verify" and not rec.verifier_id:
                 raise ValidationError(
-                    _("คำขอ %s อยู่ระหว่างรอตรวจสอบข้อมูล ต้องระบุผู้ตรวจสอบ") % rec.name
+                    _("Request %s is awaiting verification: a Verifier is required.")
+                    % rec.name
                 )
             if (
                 rec.verifier_id
                 and rec.verifier_id not in rec._get_verifier_candidates()
             ):
                 raise ValidationError(
-                    _("%(user)s ไม่ใช่ผู้ตรวจสอบคำขออนุมัติ %(request)s")
+                    _("%(user)s is not a Request Verifier for request %(request)s.")
                     % {"user": rec.verifier_id.display_name, "request": rec.name}
                 )
 
     def action_to_verify(self):
         # Superuser mode (demo data, hooks, sudo'ed programmatic flows) passes.
         if not self.env.su and not self.verifier_id:
-            raise UserError(_("กรุณาระบุผู้ตรวจสอบก่อนส่งคำขอ"))
+            raise UserError(_("Please set the Verifier before submitting the request."))
         return super().action_to_verify()
 
     def write(self, vals):
@@ -123,7 +125,7 @@ class ApprovalRequest(models.Model):
             if self.verifier_id and not verify_todos:
                 self.activity_schedule(
                     VERIFY_TODO,
-                    summary=_("กรุณาตรวจสอบคำขออนุมัติเลขที่ %s") % self.name,
+                    summary=_("Please verify approval request %s") % self.name,
                     user_id=self.verifier_id.id,
                 )
         elif old_state == "to_verify" and self.state != "to_verify":
@@ -138,7 +140,7 @@ class ApprovalRequest(models.Model):
             elif self.verifier_id:
                 self.activity_schedule(
                     VERIFY_TODO,
-                    summary=_("กรุณาตรวจสอบคำขออนุมัติเลขที่ %s") % self.name,
+                    summary=_("Please verify approval request %s") % self.name,
                     user_id=self.verifier_id.id,
                 )
         if self.state in ("to_verify", "rejected") and old_state != self.state:
@@ -183,7 +185,7 @@ class ApprovalRequest(models.Model):
                 continue
             self.activity_schedule(
                 RETURNED_TODO,
-                summary=_("คำขออนุมัติเลขที่ %s ถูกตีกลับ") % self.name,
+                summary=_("Approval request %s was sent back") % self.name,
                 note=reason,
                 user_id=user.id,
             )

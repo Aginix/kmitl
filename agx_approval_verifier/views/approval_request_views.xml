@@ -44,7 +44,7 @@
             <filter name="created_by_me" position="after">
                 <filter
                     name="my_to_verify"
-                    string="รอฉันตรวจสอบ"
+                    string="Waiting for My Verification"
                     domain="[('verifier_id', '=', uid), ('state', '=', 'to_verify')]"
                 />
             </filter>
