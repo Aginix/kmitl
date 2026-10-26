@@ -6,10 +6,13 @@
         <field name="inherit_id" ref="agx_approval.approval_request_view_form" />
         <field name="arch" type="xml">
             <field name="owner_id" position="after">
+                <!-- editable until the request ends; required while it waits
+                     at รอตรวจสอบข้อมูล -->
+                <field name="verifier_candidate_ids" invisible="1" />
                 <field
                     name="verifier_id"
                     options="{'no_create': True, 'no_open': True}"
-                    attrs="{'readonly': [('state', 'not in', ('draft', 'to_verify'))]}"
+                    attrs="{'readonly': [('state', 'in', ('billed', 'rejected'))], 'required': [('state', '=', 'to_verify')]}"
                 />
             </field>
         </field>

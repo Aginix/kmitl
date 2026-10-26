@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo noupdate="1">
+    <!-- Execution Todo: the Designated Verifier checks the request while it sits at to_verify -->
     <record id="mail_activity_verify_request" model="mail.activity.type">
         <field name="name">ตรวจสอบคำขออนุมัติ</field>
         <field
@@ -8,6 +9,16 @@
         <field name="todo_category">execution</field>
         <field name="res_model">approval.request</field>
         <field name="icon">fa-check-square-o</field>
+        <field name="delay_count">0</field>
+    </record>
+
+    <!-- Execution Todo: the requester fixes and resubmits a request the verifier returned -->
+    <record id="mail_activity_request_returned" model="mail.activity.type">
+        <field name="name">แก้ไขคำขออนุมัติที่ถูกตีกลับ</field>
+        <field name="summary">แก้ไขและส่งคำขออนุมัติใหม่</field>
+        <field name="todo_category">execution</field>
+        <field name="res_model">approval.request</field>
+        <field name="icon">fa-undo</field>
         <field name="delay_count">0</field>
     </record>
 </odoo>

@@ -1,63 +1,28 @@
-from odoo import _, api, fields, models
-from odoo.exceptions import ValidationError
-
-from odoo.addons.agx_approval_verifier.models.approval_request import VERIFY_GROUP
+from odoo import api, models
 
 
 class ApprovalRequest(models.Model):
     _inherit = "approval.request"
 
-    # res.users carries no OU rule, so scope the picker to verifiers assigned to
-    # the request's OU. A string domain lets the client evaluate
-    # operating_unit_id; it filters on the stored assigned_operating_unit_ids
-    # because the computed operating_unit_ids is not searchable.
-    verifier_id = fields.Many2one(
-        domain=lambda self: (
-            "[('groups_id', 'in', %s), "
-            "('assigned_operating_unit_ids', 'in', operating_unit_id)]"
-            % self.env.ref(VERIFY_GROUP).ids
-        ),
-    )
+    @api.depends("operating_unit_id")
+    def _compute_verifier_candidate_ids(self):
+        return super()._compute_verifier_candidate_ids()
 
-    def _verifier_outside_operating_unit(self):
-        self.ensure_one()
+    def _get_verifier_candidates(self):
+        """Only verifiers of the request's own OU may be named ผู้ตรวจสอบที่ระบุ."""
+        # sudo: regular users cannot read other users' OUs
         return (
-            self.verifier_id
-            and self.operating_unit_id
-            and self.operating_unit_id
-            not in self.verifier_id.sudo().assigned_operating_unit_ids
+            super()._get_verifier_candidates() & self.operating_unit_id.sudo().user_ids
         )
 
-    @api.model
-    def _verifier_default_domain(self):
-        return super()._verifier_default_domain() + [
-            (
-                "operating_unit_id",
-                "=",
-                self.env["res.users"].operating_unit_default_get().id,
-            )
-        ]
+    @api.constrains("operating_unit_id")
+    def _check_verifier_operating_unit(self):
+        self._check_verifier()
 
     @api.onchange("operating_unit_id")
-    def _onchange_operating_unit_id_verifier(self):
-        # Guarded: Odoo runs every onchange on a new record's first pass, so only
-        # clear a verifier that really falls outside the OU.
-        if self._verifier_outside_operating_unit():
+    def _onchange_verifier_candidates(self):
+        candidates = self._get_verifier_candidates()
+        if self.verifier_id and self.verifier_id not in candidates:
             self.verifier_id = False
-
-    @api.constrains("verifier_id", "operating_unit_id")
-    def _check_verifier_operating_unit(self):
-        # Only while the verifier is still pickable: past to_verify it is
-        # readonly, so an OU change there could never be fixed by the user.
-        for rec in self:
-            if (
-                rec.state in ("draft", "to_verify")
-                and rec._verifier_outside_operating_unit()
-            ):
-                raise ValidationError(
-                    _(
-                        "ผู้ตรวจสอบที่ระบุ %(user)s ไม่ได้อยู่ในหน่วยปฏิบัติงาน %(ou)s ของคำขอ",
-                        user=rec.verifier_id.name,
-                        ou=rec.operating_unit_id.name,
-                    )
-                )
+        if not self.verifier_id and len(candidates) == 1:
+            self.verifier_id = candidates

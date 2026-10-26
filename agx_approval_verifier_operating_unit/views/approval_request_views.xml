@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <!-- verifier_id's domain reads operating_unit_id client-side, but the visible
-         operating_unit_id is gated on group_multi_operating_unit: keep an
-         ungated invisible copy so single-OU users can still open the picker. -->
     <record id="approval_request_view_form" model="ir.ui.view">
         <field name="name">approval.request.form.verifier.operating_unit</field>
         <field name="model">approval.request</field>
@@ -11,6 +8,9 @@
             ref="agx_approval_verifier.approval_request_view_form"
         />
         <field name="arch" type="xml">
+            <!-- the visible OU field is gated on multi-OU: without this one a
+                 plain requester's new form never loads the default OU, so the
+                 candidates (and the dropdown) come up empty -->
             <field name="verifier_id" position="before">
                 <field name="operating_unit_id" invisible="1" />
             </field>

@@ -9,12 +9,10 @@
     "depends": [
         "agx_approval",
         "mail_activity_todo",
-        "base_automation",
     ],
     "data": [
-        "views/approval_request_views.xml",
         "data/mail_activity_type.xml",
-        "data/base_automation.xml",
+        "views/approval_request_views.xml",
     ],
     "installable": True,
     "auto_install": False,
