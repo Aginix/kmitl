@@ -8,9 +8,7 @@ $timeline-indent: 30px;   // padding-left for step content (dot + gap)
 
 .o_sarabun_timeline {
     .o_sarabun_timeline_toggle {
-        text-decoration: none;
-        color: inherit;
-        &:hover { text-decoration: underline; }
+        font-weight: 500;
     }
 
     // The body carries the vertical connector line.
