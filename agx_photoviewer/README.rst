@@ -20,6 +20,12 @@ Other file types can be added by registering a renderer::
     registry.category("agx_photoviewer.renderers").add("my_type", {
         match: (attachment) => attachment.mimetype === "...",
         render: (attachment, page) => { /* replace the page content */ },
+        // Optional:
+        leave: (attachment, page) => { /* the viewer left the file */ },
+        decorateThumbnail: (attachment, button) => { /* add a badge */ },
     });
 
-See ``agx_photoviewer_filetypes`` for PDF, video, Word, Excel and PowerPoint.
+A renderer matching an image takes it over from the native image stage.
+
+See ``agx_photoviewer_filetypes`` for PDF, video, Word, Excel and PowerPoint, and
+``agx_photoviewer_annotation`` to mark up images and PDFs.

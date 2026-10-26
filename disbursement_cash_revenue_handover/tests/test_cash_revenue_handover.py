@@ -86,9 +86,6 @@ class TestCashRevenueHandover(TransactionCase):
             }
         )
 
-        cls.product = cls.env["product.product"].create(
-            {"name": "Handover Service", "type": "service"}
-        )
         cls.payee = cls.env["res.partner"].create(
             {
                 "name": "Handover Payee",
@@ -158,10 +155,8 @@ class TestCashRevenueHandover(TransactionCase):
                         0,
                         {
                             "partner_id": payee.id,
-                            "product_id": self.product.id,
                             "name": "Handover Service",
-                            "quantity": 1,
-                            "price_unit": price,
+                            "amount": price,
                             "account_id": self.expense_account.id,
                             "analytic_distribution": distribution,
                         },
@@ -170,7 +165,8 @@ class TestCashRevenueHandover(TransactionCase):
                 ],
             }
         )
-        request.state = "approved"
+        # In the circuit: the create-bill act needs it.
+        request.state = "signed"
         return request
 
     @staticmethod
@@ -365,7 +361,7 @@ class TestCashRevenueHandover(TransactionCase):
     # ------------------------------------------------------------------
     def test_handover_is_not_one_of_the_bills(self):
         """Sharing ``disbursement_request_id`` would make the handover a bill:
-        bill creation would refuse, and posting it would advance the request."""
+        bill creation would refuse, and posting it would bill the request."""
         request = self._request()
         request.action_create_bill()
         handover = request.cash_revenue_handover_move_ids
@@ -377,7 +373,9 @@ class TestCashRevenueHandover(TransactionCase):
         request = self._request()
         request.action_create_bill()
         request.cash_revenue_handover_move_ids.action_post()
-        self.assertEqual(request.state, "approved")
+        self.assertEqual(request.state, "signed")
+        # The handover is no bill: the request is still not billed.
+        self.assertEqual(request.settlement_stage, "none")
 
     def test_cancelling_the_request_leaves_the_handover_standing(self):
         request = self._request()

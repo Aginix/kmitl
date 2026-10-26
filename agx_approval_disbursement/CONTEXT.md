@@ -9,7 +9,7 @@ The upstream request (`approval.request`) that reserves budget and, once approve
 _Avoid_: expense request, claim
 
 **Disbursement Request (DR)**:
-The downstream payment document (`disbursement.request`) created from a billed Approval Request; it draws the reservation down when approved.
+The downstream payment document (`disbursement.request`) created from a billed Approval Request; it draws the reservation down when its budget act consumes it.
 _Avoid_: bill, payment request
 
 **Bill**:
@@ -17,7 +17,7 @@ The act of turning an approved Approval Request into a Disbursement Request; mov
 _Avoid_: invoice, charge
 
 **Return (ตีกลับ)**:
-The verification officer sending an approval request back because its data is wrong. The Disbursement Request is kept as-is at `signed`; only the Approval Request moves to `returned`.
+The verification officer sending an approval request back because its data is wrong. The Disbursement Request stays at its station, untouched; only the Approval Request moves to `returned`.
 _Avoid_: reject, refuse, cancel
 
 **Returned (state)**:

@@ -61,4 +61,54 @@
         </field>
     </record>
 
+    <record id="view_budget_transfer_form_floating" model="ir.ui.view">
+        <field name="name">budget.transfer.form.floating.allocation</field>
+        <field name="model">budget.transfer</field>
+        <field name="inherit_id" ref="budget_transfer.view_budget_transfer_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('oe_title')]" position="before">
+                <field name="is_floating_allocation" invisible="1" />
+                <field name="is_floating_return" invisible="1" />
+                <div
+                    class="alert alert-warning"
+                    role="status"
+                    attrs="{'invisible': [('is_floating_allocation', '=', False), ('is_floating_return', '=', False)]}"
+                >
+                    <i class="fa fa-bolt" />
+                    <span attrs="{'invisible': [('is_floating_allocation', '=', False)]}">จัดสรรตรงจากงบลอย</span>
+                    <span attrs="{'invisible': [('is_floating_return', '=', False)]}">โอนคืนงบลอย</span>
+                    — ใบโอนนี้สร้างจากหน้าโครงการ <field
+                        name="kmitl_project_id"
+                        readonly="1"
+                        class="oe_inline fw-bold"
+                    />
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_budget_transfer_search" model="ir.ui.view">
+        <field name="name">budget.transfer.search.floating.allocation</field>
+        <field name="model">budget.transfer</field>
+        <field name="inherit_id" ref="budget_transfer.view_budget_transfer_search" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='reason']" position="after">
+                <field name="kmitl_project_id" />
+            </xpath>
+            <xpath expr="//filter[@name='cancelled']" position="after">
+                <separator />
+                <filter
+                    name="floating_allocation"
+                    string="จัดสรรตรงจากงบลอย"
+                    domain="[('is_floating_allocation', '=', True)]"
+                />
+                <filter
+                    name="floating_return"
+                    string="โอนคืนงบลอย"
+                    domain="[('is_floating_return', '=', True)]"
+                />
+            </xpath>
+        </field>
+    </record>
+
 </odoo>

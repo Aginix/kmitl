@@ -1,6 +1,6 @@
 {
     "name": "Aginix Approval",
-    "version": "16.0.1.8.0",
+    "version": "16.0.1.9.0",
     "category": "Accounting",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
@@ -29,6 +29,7 @@
         "views/approval_category_views.xml",
         "views/approval_category_group_views.xml",
         "views/approval_request_views.xml",
+        "views/budget_account_views.xml",
         "views/res_partner_views.xml",
         "views/hr_employee_views.xml",
         "views/approval_menus.xml",
@@ -38,5 +39,6 @@
         "data/approval_request_exception_data.xml",
         "reports/report_approval_request.xml",
     ],
+    "post_init_hook": "post_init_hook",
     "license": "LGPL-3",
 }

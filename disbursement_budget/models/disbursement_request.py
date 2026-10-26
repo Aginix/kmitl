@@ -1,20 +1,17 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 
-from odoo import _, api, fields, models
+from odoo import _, _lt, api, fields, models
 from odoo.exceptions import UserError
-
-from odoo.addons.disbursement.models.disbursement_request import (
-    DisbursementRequest as DisbursementRequestBase,
-)
 
 
 class DisbursementRequest(models.Model):
     """Budget control on the disbursement request (ADR-0003).
 
     The request reserves nothing itself: an upstream document (PR/PO/PA/AR)
-    links a reserved ``budget.commitment``, and the Rector-delegated approval —
-    the final step of the two-approver flow — consumes it. Cancelling reverses
-    this request's own events, or the whole commitment when it is not shared.
+    links a reserved ``budget.commitment``, and the consume act — done by the
+    Rector-delegated approver at the station that requires it — consumes it.
+    Cancelling reverses this request's own events, or the whole commitment when
+    it is not shared.
     """
 
     _name = "disbursement.request"
@@ -34,7 +31,6 @@ class DisbursementRequest(models.Model):
         copy=False,
         index=True,
         ondelete="restrict",
-        states=DisbursementRequestBase.READONLY_STATES,
     )
 
     budget_account_id = fields.Many2one(
@@ -45,17 +41,29 @@ class DisbursementRequest(models.Model):
         copy=False,
         index=True,
         ondelete="restrict",
-        states=DisbursementRequestBase.READONLY_STATES,
     )
 
-    # True when the budget code drives the line product itself (see
-    # ``_budget_account_line_product``): the product column is then hidden and
-    # stamped automatically. False for ordinary disbursements, where the user
-    # picks a product per line. Bridges that own such budget codes contribute to
-    # this single flag so the line list has one condition to key on.
-    is_budget_account_product_expense = fields.Boolean(
-        string="Product Derived From Budget Account",
-        compute="_compute_is_budget_account_product_expense",
+    # Off for the money that is not the university's budget (เงินรับฝากบุคคลที่สาม,
+    # เงินประกัน): the consume act is then not applicable and consumes nothing.
+    consumes_budget = fields.Boolean(
+        string="Consumes Budget",
+        default=True,
+        tracking=True,
+        copy=True,
+        help="Untick for money that does not draw on the budget, such as third "
+        "party deposits (เงินรับฝากบุคคลที่สาม) or guarantees (เงินประกัน): "
+        "the consume budget act is then not applicable.",
+    )
+
+    # True when the line account is locked to the budget code's own account
+    # (see ``_budget_account_default_account``): the account column is then
+    # hidden and stamped automatically. False for ordinary disbursements, where
+    # lines start on that account and the user may pick another. Bridges that
+    # own such budget codes contribute to this single flag so the line list has
+    # one condition to key on.
+    is_line_account_locked = fields.Boolean(
+        string="Line Account Locked to Budget Code",
+        compute="_compute_is_line_account_locked",
     )
 
     budget_consumed_amount = fields.Monetary(
@@ -81,6 +89,62 @@ class DisbursementRequest(models.Model):
     )
 
     # -------------------------------------------------------------------------
+    # The consume-budget act
+    # -------------------------------------------------------------------------
+    @api.model
+    def _disbursement_acts(self):
+        return super()._disbursement_acts() + [
+            {
+                "code": "disbursement.consume_budget",
+                "name": _lt("Consume Budget"),
+                "kind": "act",
+                "group": "disbursement.group_disbursement_rector_delegate",
+                "sequence": 40,
+                "module": "disbursement_budget",
+            }
+        ]
+
+    def _disbursement_act_applicable(self, code):
+        if code == "disbursement.consume_budget" and not self.consumes_budget:
+            return False
+        return super()._disbursement_act_applicable(code)
+
+    can_consume_budget = fields.Boolean(compute="_compute_can_consume_budget")
+
+    @api.depends("state", "consumes_budget", "budget_consumed_amount")
+    @api.depends_context("uid")
+    def _compute_can_consume_budget(self):
+        for rec in self:
+            rec.can_consume_budget = bool(
+                rec.consumes_budget
+                and not rec.budget_consumed_amount
+                and rec._disbursement_act_offered("disbursement.consume_budget")
+            )
+
+    def action_consume_budget(self):
+        """The act: consume the linked commitment. Idempotent, so pressing it
+        again after a divert back never double-cuts the budget."""
+        for rec in self:
+            rec._disbursement_check_act("disbursement.consume_budget")
+            if rec.consumes_budget:
+                rec._action_approve_budget()
+            rec._disbursement_act_done("disbursement.consume_budget")
+        return True
+
+    @api.depends("budget_commitment_id")
+    def _compute_can_edit(self):
+        super()._compute_can_edit()
+
+    def _can_edit_blocked(self, kind):
+        """The linked commitment carries the dimensions. (It also carries the
+        budget code, which the form locks on the field itself: the budget part
+        must stay open, or picking a commitment would lock the commitment
+        field and the value would never be saved.)"""
+        return super()._can_edit_blocked(kind) or (
+            kind == "dimensions" and bool(self.budget_commitment_id)
+        )
+
+    # -------------------------------------------------------------------------
     # Budget commitment methods
     # -------------------------------------------------------------------------
     @api.onchange("budget_commitment_id")
@@ -98,7 +162,7 @@ class DisbursementRequest(models.Model):
             body=_(
                 'The disbursement request <a href="%(link)s" target="_blank">\'%(name)s\'</a> has been linked to this record.'
             )
-            % {"name": self.name, "link": link},
+            % {"name": self.display_name, "link": link},
             subtype_xmlid="mail.mt_comment",
         )
 
@@ -107,7 +171,7 @@ class DisbursementRequest(models.Model):
         link = f"/web#id={self.id}&model={self._name}&view_type=form"
         self.budget_commitment_id.message_post(
             body=_("The disbursement request '%(name)s' has been unlinked.")
-            % {"name": self.name},
+            % {"name": self.display_name},
             subtype_xmlid="mail.mt_comment",
         )
 
@@ -133,7 +197,7 @@ class DisbursementRequest(models.Model):
         for rec in records:
             if rec.budget_commitment_id:
                 rec._log_budget_commitment_linked()
-        records._fill_budget_account_product_on_lines()
+        records._fill_budget_account_account_on_lines()
         return records
 
     def write(self, values):
@@ -155,59 +219,62 @@ class DisbursementRequest(models.Model):
                 rec._log_budget_commitment_linked()
 
         if "budget_account_id" in values or "line_ids" in values:
-            self._fill_budget_account_product_on_lines()
+            self._fill_budget_account_account_on_lines()
 
         return res
 
     # -------------------------------------------------------------------------
-    # Budget-account driven line product
+    # Budget-account driven line account
     # -------------------------------------------------------------------------
-    # Some budget codes carry their own product (budget_product): the line
-    # product is then a mapping of the budget code, not a purchased item, so the
-    # user must not pick it by hand. A bridge that owns such codes raises
-    # ``is_budget_account_product_expense`` and returns the product from
-    # ``_budget_account_line_product``; the stamping itself lives here and runs
+    # A line's GL account is the one sharing the request's budget code: lines
+    # start on it and the user may pick another. For some budget codes the user
+    # must not pick it by hand: a bridge that owns such codes raises
+    # ``is_line_account_locked`` and the account is then stamped on every line
     # at ORM level, so it also lands on requests created programmatically and on
-    # fields the interactive onchange cannot reach (the product column is hidden).
+    # fields the interactive onchange cannot reach (the account column is
+    # hidden).
     # A bridge overriding the compute declares the dependency it actually reads
     # (its own budget-code flag); Odoo merges ``@api.depends`` across every class
     # in the MRO that defines the method, so the base dependency below always
     # holds on top of it.
     @api.depends("budget_account_id")
-    def _compute_is_budget_account_product_expense(self):
+    def _compute_is_line_account_locked(self):
         for rec in self:
-            rec.is_budget_account_product_expense = False
+            rec.is_line_account_locked = False
 
-    def _budget_account_line_product(self):
-        """Product every line must carry, or an empty recordset when the user
-        picks the product by hand. Overridden per budget-code type."""
+    def _budget_account_default_account(self):
+        """GL account sharing the budget code: the account every line starts
+        with."""
         self.ensure_one()
-        return self.env["product.product"]
+        if not self.budget_account_id.code:
+            return self.env["account.account"]
+        return self.env["account.account"].search(
+            [
+                ("code", "=", self.budget_account_id.code),
+                ("company_id", "=", (self.company_id or self.env.company).id),
+                ("deprecated", "=", False),
+            ],
+            limit=1,
+        )
 
-    def _fill_budget_account_product_on_lines(self):
+    def _fill_budget_account_account_on_lines(self):
         for rec in self:
-            product = rec._budget_account_line_product()
-            if not product:
+            if not rec.is_line_account_locked:
                 continue
-            account = (
-                product.property_account_expense_id
-                or product.categ_id.property_account_expense_categ_id
-            )
-            for line in rec.line_ids.filtered(lambda l: l.product_id != product):
-                line.product_id = product
-                if not line.name:
-                    line.name = product.display_name
-                # The account follows the product unconditionally, blank
-                # included: budget_product binds the budget code's own GL account
-                # to its product, and the product column is hidden for these
-                # codes — so keeping the previous code's account would silently
-                # book the expense against the wrong account with no way for the
-                # user to correct it. An empty account is visible and fixable.
+            # The account follows the budget code unconditionally, blank
+            # included: the account column is hidden for these codes — so
+            # keeping the previous code's account would silently book the
+            # expense against the wrong account with no way for the user to
+            # correct it. A blank account is refused on submit.
+            account = rec._budget_account_default_account()
+            for line in rec.line_ids.filtered(lambda l: l.account_id != account):
                 line.account_id = account
+                if not line.name:
+                    line.name = account.name
 
     @api.onchange("budget_account_id", "line_ids")
-    def _onchange_fill_budget_account_product(self):
-        self._fill_budget_account_product_on_lines()
+    def _onchange_fill_budget_account_account(self):
+        self._fill_budget_account_account_on_lines()
 
     def _action_approve_budget(self):
         """Consume from the pre-linked budget commitment.
@@ -220,8 +287,8 @@ class DisbursementRequest(models.Model):
         would be cancelled out by the consume in the same instant anyway.
         """
         self.ensure_one()
-        # Idempotent: a request returned to verification (approved -> signed)
-        # keeps its consumption, so re-approving must not double-cut the budget.
+        # Idempotent: a request diverted back to an earlier station keeps its
+        # consumption, so consuming again must not double-cut the budget.
         if self._has_own_budget_obligation():
             return
         commitment = self._check_commitment_obligable()
@@ -261,7 +328,7 @@ class DisbursementRequest(models.Model):
         self.ensure_one()
         if not self.budget_commitment_id:
             raise UserError(
-                _("Budget commitment is required before approval. "
+                _("Budget commitment is required before consuming budget. "
                   "Please link one from the upstream document.")
             )
         commitment = self.budget_commitment_id
@@ -295,7 +362,7 @@ class DisbursementRequest(models.Model):
     def _has_own_budget_obligation(self):
         """Whether this request already has a posted consume event on its
         commitment (used to keep _action_approve_budget idempotent across a
-        return-to-verification round trip)."""
+        divert back)."""
         self.ensure_one()
         commitment = self.budget_commitment_id
         return bool(commitment) and commitment._has_budget_event(self, "consume")
@@ -303,10 +370,6 @@ class DisbursementRequest(models.Model):
     # -------------------------------------------------------------------------
     # Workflow hooks
     # -------------------------------------------------------------------------
-    def _on_final_approval(self):
-        super()._on_final_approval()
-        self._action_approve_budget()
-
     def _on_cancel(self):
         super()._on_cancel()
         for rec in self:

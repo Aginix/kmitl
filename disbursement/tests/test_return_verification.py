@@ -1,14 +1,15 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 
+from unittest.mock import patch
+
 from odoo.exceptions import UserError
 from odoo.tests.common import TransactionCase, tagged
 
 
 @tagged("post_install", "-at_install")
 class TestReturnToVerification(TransactionCase):
-    """Flow 2/3 return-to-verification: an approver (verified) or the accounting
-    room (approved) sends the request back to the officer (signed). No budget is
-    touched; the flag clears once the officer re-validates."""
+    """Send-back: a request in the circuit goes back to its maker (draft) with a
+    reason, and the maker resubmits it straight back into the circuit."""
 
     @classmethod
     def setUpClass(cls):
@@ -28,8 +29,9 @@ class TestReturnToVerification(TransactionCase):
             # submit is guarded on every payee having an account
             "bank_ids": [(0, 0, {"acc_number": "1234567890"})],
         })
-        cls.product = cls.env["product.product"].create(
-            {"name": "Svc", "type": "service"}
+        cls.expense_account = cls.env["account.account"].search(
+            [("account_type", "=", "expense"), ("company_id", "=", cls.env.company.id)],
+            limit=1,
         )
         users = cls.env["res.users"].with_context(no_reset_password=True)
         cls.manager = users.create(
@@ -49,10 +51,9 @@ class TestReturnToVerification(TransactionCase):
                 "partner_type_id": self.partner.partner_type_id.id,
                 "line_ids": [
                     (0, 0, {
-                        "product_id": self.product.id,
+                        "account_id": self.expense_account.id,
                         "name": "line",
-                        "quantity": 1.0,
-                        "price_unit": 100.0,
+                        "amount": 100.0,
                         "partner_id": self.partner.id,
                     })
                 ]
@@ -65,31 +66,14 @@ class TestReturnToVerification(TransactionCase):
             str(self.activity.id): 100,
         }
         dr.action_submit()
-        dr.action_sign()
-        self.assertEqual(dr.state, "signed")
+        with self._patch_circuit_entry():
+            dr.action_sign()
+        self.assertIn(dr.state, ("signed", "in_progress"))
         return dr
 
-    def _make_verified_dr(self):
-        dr = self._make_signed_dr()
-        dr.action_validate()
-        self.assertEqual(dr.state, "verified")
-        return dr
-
-    def test_return_from_verified_goes_to_signed(self):
-        dr = self._make_verified_dr()
-        dr._action_return_to_verification("please recheck")
-        self.assertEqual(dr.state, "signed")
-        self.assertTrue(dr.returned_to_verification)
-        self.assertEqual(dr.return_verification_reason, "please recheck")
-
-    def test_flag_cleared_on_revalidate(self):
-        dr = self._make_verified_dr()
-        dr._action_return_to_verification("recheck")
-        self.assertTrue(dr.returned_to_verification)
-        dr.action_validate()
-        self.assertEqual(dr.state, "verified")
-        self.assertFalse(dr.returned_to_verification)
-        self.assertFalse(dr.return_verification_reason)
+    def _patch_circuit_entry(self):
+        """A signed request stays signed whatever bridge routes it to a station."""
+        return patch.object(type(self.DR), "_on_signed")
 
     def test_cannot_return_from_wrong_state(self):
         dr = self.DR.create(
@@ -97,18 +81,17 @@ class TestReturnToVerification(TransactionCase):
                 "partner_type_id": self.partner.partner_type_id.id,
                 "line_ids": [
                     (0, 0, {
-                        "product_id": self.product.id,
+                        "account_id": self.expense_account.id,
                         "name": "line",
-                        "quantity": 1.0,
-                        "price_unit": 100.0,
+                        "amount": 100.0,
                         "partner_id": self.partner.id,
                     })
                 ]
             }
         )
-        # draft -> cannot return to verification
+        # draft -> not in the circuit, so it cannot be sent back
         with self.assertRaises(UserError):
-            dr._action_return_to_verification("x")
+            dr._action_return_for_edit("x")
 
     def test_return_for_edit_fallback_to_draft_without_source(self):
         """The generic _action_return_for_edit dispatcher falls back to the base
@@ -119,12 +102,16 @@ class TestReturnToVerification(TransactionCase):
         self.assertEqual(dr.state, "draft")
         self.assertTrue(dr.returned_for_edit)
 
-    def test_wizard_verification_mode_routes_to_return(self):
-        dr = self._make_verified_dr()
+    def test_wizard_routes_to_send_back(self):
+        dr = self._make_signed_dr()
         wizard = self.env["disbursement.return.request.wizard"].create(
-            {"request_id": dr.id, "reason": "via wizard", "mode": "verification"}
+            {"request_id": dr.id, "reason": "via wizard"}
         )
         wizard.action_return()
+        self.assertEqual(dr.state, "draft")
+        self.assertTrue(dr.returned_for_edit)
+        # The maker resubmits it straight back, without a second head signature.
+        with self._patch_circuit_entry():
+            dr.action_resubmit_verification()
         self.assertEqual(dr.state, "signed")
-        self.assertTrue(dr.returned_to_verification)
-        self.assertEqual(dr.return_verification_reason, "via wizard")
+        self.assertFalse(dr.returned_for_edit)

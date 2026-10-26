@@ -63,6 +63,7 @@ msgstr "กฎการมอบหมาย"
 
 #. module: disbursement_assignment_kmitl
 #: model:ir.model.fields,field_description:disbursement_assignment_kmitl.field_disbursement_assignment_rule__user_id
+#: model:ir.model.fields,field_description:disbursement_assignment_kmitl.field_disbursement_request__assigned_to
 msgid "Assigned Officer"
 msgstr "เจ้าหน้าที่ผู้รับผิดชอบ"
 

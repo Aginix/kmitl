@@ -1,6 +1,6 @@
 # Financial dimensions and budget live in `advance_payment_budget`, not in the core module
 
-Status: accepted (2026-07; UAT-only) — amends ADR-0008
+Status: superseded by ADR-0025 (2026-10) — the bridge was removed; amended ADR-0008
 
 ## Context & Decision
 

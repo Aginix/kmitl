@@ -365,15 +365,23 @@ class BudgetTransfer(models.Model):
 
     @api.onchange("department_analytic_id")
     def _onchange_department_analytic_id(self):
-        """Carry a header department change onto the lines already added.
+        """Carry a header department change onto the FROM lines only.
 
-        The lines only take the header department as a context default when
-        created; FROM lines hide it (it must equal the header) and TO lines
-        start from it, so both follow a later change of the header.
+        A FROM line's department is hidden on its own form and must always
+        equal the header — it can only follow, so a header change has to be
+        propagated or the line would silently keep drawing from the previous
+        unit's pool.
+
+        A TO line's department is shown and ``required``: it is the transfer's
+        **destination**, and a destination that differs from the source is the
+        whole point of a cross-department transfer (ADR-0009: departments "may
+        differ freely per line"). It takes the header as a context default when
+        the line is created and is the author's from then on — overwriting it
+        here discards a destination that was deliberately set, which is exactly
+        what happens when a transfer is pre-filled with its destination before
+        the source department is picked.
         """
-        (
-            self.from_line_ids | self.to_line_ids
-        ).department_analytic_id = self.department_analytic_id
+        self.from_line_ids.department_analytic_id = self.department_analytic_id
 
     # ------------------------------------------------------------------
     # Workflow

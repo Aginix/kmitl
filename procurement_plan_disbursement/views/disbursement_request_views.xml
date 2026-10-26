@@ -20,7 +20,7 @@
                     attrs="{
                         'invisible': [('is_procurement_plan_expense', '=', False)],
                         'required': [('is_procurement_plan_expense', '=', True)],
-                        'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '!=', 'draft')]
+                        'readonly': ['|', ('budget_commitment_id', '!=', False), ('can_edit_dimensions', '=', False)]
                     }"
                 />
             </xpath>

@@ -1,5 +1,10 @@
 # Budget control lives in `disbursement_budget`, not in the core request
 
+> **Superseded in part:** `_on_final_approval()` is gone. Consuming the budget is
+> `disbursement_budget`'s own act (`disbursement.consume_budget`), which a station
+> allows and requires, gated by the per-request `consumes_budget` flag. Core keeps
+> only `_on_cancel()`.
+
 `disbursement` used to depend on `budget`: the request inherited
 `budget.commitment.mixin`, carried the commitment / budget-code fields, consumed
 the commitment on the Rector-delegated approval and reversed it on cancel. A

@@ -6,16 +6,20 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-19 10:37+0000\n"
-"PO-Revision-Date: 2026-03-19 17:56+0700\n"
+"POT-Creation-Date: 2026-10-24 17:00+0000\n"
+"PO-Revision-Date: 2026-10-24 17:00+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: th\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
+"Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Poedit 3.8\n"
+
+#. module: disbursement_budget
+#: model_terms:ir.ui.view,arch_db:disbursement_budget.view_disbursement_request_form
+msgid "Are you sure you want to consume the budget of this request?"
+msgstr "ยืนยันตัดงบประมาณของใบขอเบิกนี้ใช่หรือไม่?"
 
 #. module: disbursement_budget
 #: model:ir.model.fields,field_description:disbursement_budget.field_disbursement_request__budget_account_id
@@ -34,9 +38,39 @@ msgid "Budget Consumed"
 msgstr "ตัดงบประมาณแล้ว"
 
 #. module: disbursement_budget
+#: model_terms:ir.ui.view,arch_db:disbursement_budget.view_disbursement_request_form
+msgid "Budget Consumed / Disbursed On"
+msgstr "วันที่ตัดงบประมาณ/เบิกจ่าย"
+
+#. module: disbursement_budget
 #: model:ir.model.fields,field_description:disbursement_budget.field_disbursement_request__budget_consumed_date
 msgid "Budget Consumed At"
 msgstr "วันที่ตัดงบ"
+
+#. module: disbursement_budget
+#. odoo-python
+#: code:addons/disbursement_budget/models/disbursement_request.py:0
+#, python-format
+msgid "Budget commitment is required before consuming budget. Please link one from the upstream document."
+msgstr "ต้องมีใบจองงบประมาณก่อนตัดงบประมาณ กรุณาผูกจากเอกสารต้นทาง"
+
+#. module: disbursement_budget
+#: model:ir.model.fields,field_description:disbursement_budget.field_disbursement_request__can_consume_budget
+msgid "Can Consume Budget"
+msgstr "ตัดงบประมาณได้"
+
+#. module: disbursement_budget
+#. odoo-python
+#: code:addons/disbursement_budget/models/disbursement_request.py:0
+#: model_terms:ir.ui.view,arch_db:disbursement_budget.view_disbursement_request_form
+#, python-format
+msgid "Consume Budget"
+msgstr "ตัดงบประมาณ"
+
+#. module: disbursement_budget
+#: model:ir.model.fields,field_description:disbursement_budget.field_disbursement_request__consumes_budget
+msgid "Consumes Budget"
+msgstr "ใช้งบประมาณ"
 
 #. module: disbursement_budget
 #: model:ir.model.fields,field_description:disbursement_budget.field_budget_commitment__disbursement_request_count
@@ -44,38 +78,22 @@ msgid "Disbursement Request Count"
 msgstr "จำนวนใบขอเบิก"
 
 #. module: disbursement_budget
+#. odoo-python
+#: code:addons/disbursement_budget/models/budget_commitment.py:0
 #: model:ir.model.fields,field_description:disbursement_budget.field_budget_commitment__disbursement_request_ids
-#: model:ir.model.fields,field_description:disbursement_budget.field_exception_rule__disbursement_request_ids
+#: model_terms:ir.ui.view,arch_db:disbursement_budget.view_budget_commitment_form_inherit
+#, python-format
 msgid "Disbursement Requests"
 msgstr "ใบขอเบิก"
 
 #. module: disbursement_budget
-#: code:addons/disbursement_budget/models/disbursement_request.py:0
 #. odoo-python
+#: code:addons/disbursement_budget/models/disbursement_request_line.py:0
 #, python-format
-msgid "The disbursement request '%(name)s' has been unlinked."
-msgstr ""
+msgid "The budget of this request is already consumed for its amount: its lines can no longer be added, removed or re-priced. Cancel the request to release the budget."
+msgstr "งบประมาณของใบขอเบิกนี้ถูกตัดตามยอดแล้ว จึงเพิ่ม ลบ หรือแก้ราคารายการไม่ได้อีก ยกเลิกใบขอเบิกเพื่อคืนงบประมาณ"
 
 #. module: disbursement_budget
-#: code:addons/disbursement_budget/models/disbursement_request.py:0
-#. odoo-python
-#, python-format
-msgid ""
-"The disbursement request <a href=\"%(link)s\" target=\"_blank\">'%(name)s'</"
-"a> has been linked to this record."
-msgstr ""
-
-#. module: disbursement_budget
-#: model_terms:ir.ui.view,arch_db:disbursement_budget.report_disbursement_request
-msgid "รหัสงบประมาณค่าใช้จ่าย"
-msgstr ""
-
-#. module: disbursement_budget
-#: model_terms:ir.ui.view,arch_db:disbursement_budget.report_disbursement_request
-msgid "เลขที่ใบจองงบประมาณ"
-msgstr ""
-
-#. module: disbursement_budget
-#: model_terms:ir.ui.view,arch_db:disbursement_budget.view_disbursement_request_form
-msgid "Are you sure you want to approve? This will obligate and consume the budget."
-msgstr "ยืนยันการอนุมัติ? จะทำการผูกพันและตัดงบประมาณตามยอดรวมของใบขอเบิกนี้"
+#: model:ir.model.fields,help:disbursement_budget.field_disbursement_request__consumes_budget
+msgid "Untick for money that does not draw on the budget, such as third party deposits (เงินรับฝากบุคคลที่สาม) or guarantees (เงินประกัน): the consume budget act is then not applicable."
+msgstr "ไม่ติ๊กสำหรับเงินที่ไม่ได้ใช้งบประมาณ เช่น เงินรับฝากบุคคลที่สาม หรือเงินประกัน การกระทำตัดงบประมาณจะไม่เกี่ยวข้องกับใบขอเบิกนี้"

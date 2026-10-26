@@ -119,7 +119,7 @@ class PurchaseOrder(models.Model):
             body=_(
                 'Disbursement Request <a href="%(link)s" target="_blank">%(name)s</a>'
                 " has been created from this purchase order."
-            ) % {"link": dr_link, "name": disbursement_request.name},
+            ) % {"link": dr_link, "name": disbursement_request.display_name},
             subtype_xmlid="mail.mt_note",
         )
         # Log in Disbursement chatter with full upstream chain
@@ -200,7 +200,7 @@ class PurchaseOrder(models.Model):
                 )
                 % {
                     "link": dr_link,
-                    "name": disbursement_request.name,
+                    "name": disbursement_request.display_name,
                     "po_name": self.name,
                 },
                 subtype_xmlid="mail.mt_note",
@@ -224,7 +224,7 @@ class PurchaseOrder(models.Model):
                 )
                 % {
                     "dr_link": dr_link,
-                    "dr_name": disbursement_request.name,
+                    "dr_name": disbursement_request.display_name,
                     "po_link": po_link,
                     "po_name": self.name,
                 },
