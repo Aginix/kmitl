@@ -28,8 +28,8 @@ Configuration
 =============
 
 The module seeds the work area, six central stations (หมวดตรวจ, ผอ.กองคลัง,
-ผู้รับมอบอำนาจอธิการบดี, ตั้งหนี้, ตรวจจ่าย, อนุมัติจ่าย), the route over them and two
-counters. **The seeded stations start with neither acts nor members**: the "an act or a
+ผู้รับมอบอำนาจอธิการบดี, ตั้งหนี้, ตรวจจ่าย, อนุมัติจ่าย), the route over them and a
+counter. **The seeded stations start with neither acts nor members**: the "an act or a
 member" rule is only skipped while the data loads. An administrator then lists on each
 station the acts it allows and requires, the parts of the request it lets people edit,
 and its members (Settings > Stations). Until a station has members, every holder of the
