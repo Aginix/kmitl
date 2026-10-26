@@ -52,12 +52,18 @@
                         .justify { text-align: justify; }
                         .right { text-align: right; }
                         .center { text-align: center; }
-                        table.sign { width: 100%; table-layout: fixed; border-collapse: collapse; }
+                        table.sign { width: 100%; border-collapse: collapse; }
                         table.sign td { border: none; padding: 0; font-size: 15pt; vertical-align: top; }
                         /* wkhtmltopdf draws Bootstrap's solid 0-width tbody/tr borders as a gray box */
                         table.top tbody, table.top tr, table.sign tbody, table.sign tr { border-style: none; }
                         .sig-img { height: 34pt; text-align: center; }
-                        .sig-img img { max-height: 34pt; max-width: 130pt; }
+                        /* sits on the dotted line, like a pen signature */
+                        .sig-img img { max-height: 34pt; max-width: 130pt; position: relative; top: 12pt; }
+                        table.sign td.sig-fit { width: 1%; white-space: nowrap; vertical-align: bottom; }
+                        table.sign td.sig-filler { width: 100%; }
+                        /* fixed width so วันที่ lines up across the blocks */
+                        table.sign td.sig-date { width: 200pt; min-width: 200pt; white-space: nowrap; vertical-align: bottom; }
+                        table.sign td.sig-name { white-space: nowrap; }
                     </style>
 
                     <div class="page">
@@ -210,28 +216,35 @@
         entry), label, suffix, show_position.
     -->
     <template id="contract_signature_row">
+        <!-- label | dotted line | suffix | filler | date, one table level:
+             the signature and the name centre on the dotted line's column,
+             which shrinks to fit it (wkhtmltopdf mis-paginates a nested
+             table here) -->
         <table class="sign">
             <tr>
-                <td style="width: 60%;">
+                <td class="sig-fit"><t t-out="label" /></td>
+                <td class="sig-fit center">
                     <div class="sig-img"><img
                             t-if="sig['signature']"
                             t-att-src="image_data_uri(sig['signature'])"
                         /></div>
-                    <t t-out="label" /><t t-out="long_dots" /><t t-out="suffix" />
+                    <t t-out="long_dots" />
                 </td>
-                <td>
-                    <div class="sig-img" />
-                    วันที่ <t t-out="sig['date'] or dots" />
-                </td>
+                <td class="sig-fit"><t t-out="suffix" /></td>
+                <td class="sig-filler" />
+                <td class="sig-date">วันที่ <t t-out="sig['date'] or dots" /></td>
             </tr>
             <tr t-if="sig['employee']">
-                <td class="center">
+                <td />
+                <td class="center sig-name">
                     <div>(<t t-out="sig['employee'].name" />)</div>
                     <div
                         t-if="show_position and sig['employee'].job_title"
                         t-out="sig['employee'].job_title"
                     />
                 </td>
+                <td />
+                <td />
                 <td />
             </tr>
         </table>
