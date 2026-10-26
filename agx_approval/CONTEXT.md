@@ -74,6 +74,10 @@ _Avoid_: budget officer, เจ้าหน้าที่งบ
 The one Request Verifier the requester names on a request, from those assigned to the request's operating unit. Advisory: it routes the รอตรวจสอบข้อมูล Todo to that person, but any Request Verifier may still confirm or send back. Must be named before ส่งคำขอ.
 _Avoid_: Request Verifier (that is the role, held by many), approver
 
+**Designated Budget Confirmer (ผู้ยืนยันงบประมาณที่ระบุ)**:
+The one Budget Confirmer named on a request, from those assigned to the request's operating unit. Advisory like the Designated Verifier: it routes the รอยืนยันงบประมาณ Todo to that person instead of the role broadcast, but any Budget Confirmer may still reserve or send back. Must be named before ยืนยันตรวจสอบ.
+_Avoid_: Budget Confirmer (that is the role, held by many)
+
 **Budget Confirmer (ผู้ยืนยันงบประมาณ)**:
 The person who, at รอยืนยันงบประมาณ, completes the budget code and dimensions and reserves the budget. The only role that reserves on an Approval Request.
 _Avoid_: verifier, budget officer (ambiguous with the budget module's own roles)
