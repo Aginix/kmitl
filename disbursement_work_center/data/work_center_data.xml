@@ -99,15 +99,6 @@
             <field name="domain">[('state', '=', 'in_progress')]</field>
             <field name="sequence">10</field>
         </record>
-        <record id="counter_not_billed" model="work.center.counter">
-            <field name="name">Not yet billed</field>
-            <field name="area_id" ref="area_disbursement" />
-            <field name="model_id" ref="disbursement.model_disbursement_request" />
-            <field
-                name="domain"
-            >[('state', '=', 'in_progress'), ('settlement_stage', '=', 'none')]</field>
-            <field name="sequence">20</field>
-        </record>
     </data>
 
 </odoo>

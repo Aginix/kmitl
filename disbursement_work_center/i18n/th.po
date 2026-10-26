@@ -137,11 +137,6 @@ msgid "No station yet"
 msgstr "ยังไม่มีสถานี"
 
 #. module: disbursement_work_center
-#: model:work.center.counter,name:disbursement_work_center.counter_not_billed
-msgid "Not yet billed"
-msgstr "ยังไม่ตั้งหนี้"
-
-#. module: disbursement_work_center
 #. odoo-python
 #: code:addons/disbursement_work_center/models/disbursement_request.py:0
 #, python-format
