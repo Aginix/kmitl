@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="approval_request_view_form" model="ir.ui.view">
+        <field name="name">approval.request.form.budget.verifier</field>
+        <field name="model">approval.request</field>
+        <field
+            name="inherit_id"
+            ref="agx_approval_verifier.approval_request_view_form"
+        />
+        <field name="arch" type="xml">
+            <!-- under ผู้ตรวจสอบ / วันที่ตรวจสอบ, editable until the request ends; required
+                 once the request waits for the budget step -->
+            <field name="date_verified" position="after">
+                <field name="budget_verifier_candidate_ids" invisible="1" />
+                <field
+                    name="budget_verifier_id"
+                    options="{'no_create': True, 'no_open': True}"
+                    attrs="{'readonly': [('state', 'in', ('billed', 'rejected'))], 'required': [('state', '=', 'to_commit')]}"
+                />
+                <field
+                    name="date_budget_committed"
+                    attrs="{'invisible': [('date_budget_committed', '=', False)]}"
+                />
+            </field>
+        </field>
+    </record>
+
+    <record id="approval_request_view_tree" model="ir.ui.view">
+        <field name="name">approval.request.tree.budget.verifier</field>
+        <field name="model">approval.request</field>
+        <field
+            name="inherit_id"
+            ref="agx_approval_verifier.approval_request_view_tree"
+        />
+        <field name="arch" type="xml">
+            <field name="verifier_id" position="after">
+                <field name="budget_verifier_id" optional="show" />
+            </field>
+        </field>
+    </record>
+
+    <record id="approval_request_view_search" model="ir.ui.view">
+        <field name="name">approval.request.search.budget.verifier</field>
+        <field name="model">approval.request</field>
+        <field
+            name="inherit_id"
+            ref="agx_approval_verifier.approval_request_view_search"
+        />
+        <field name="arch" type="xml">
+            <field name="verifier_id" position="after">
+                <field name="budget_verifier_id" />
+            </field>
+            <filter name="my_to_verify" position="after">
+                <filter
+                    name="my_to_commit"
+                    string="Waiting for My Budget Confirmation"
+                    domain="[('budget_verifier_id', '=', uid), ('state', '=', 'to_commit')]"
+                />
+            </filter>
+        </field>
+    </record>
+</odoo>
