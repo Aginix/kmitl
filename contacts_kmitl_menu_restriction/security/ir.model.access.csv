@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_res_partner_can_edit_contacts,res_partner can_edit_contacts,base.model_res_partner,contacts_kmitl_menu_restriction.group_can_edit_contacts,1,1,1,1
+access_res_partner_bank_can_edit_contact_bank,res_partner_bank can_edit_contact_bank,base.model_res_partner_bank,contacts_kmitl_menu_restriction.group_can_edit_contact_bank,1,1,1,1
