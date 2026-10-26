@@ -74,6 +74,21 @@
             <field name="perm_unlink" eval="False"/>
         </record>
 
+        <!-- Follower (READ ONLY): a user who follows the หนังสือ may open it. Explicit
+             exception to the reached-actor key (ADR-0013): sharing = add a follower.
+             Write/delete stay sender-only. Note: a sender's chatter "Send message"
+             auto-subscribes its recipients/@mentions, so that also grants read. -->
+        <record id="sarabun_document_follower_rule" model="ir.rule">
+            <field name="name">Sarabun Document: Follower (read)</field>
+            <field name="model_id" ref="model_sarabun_document"/>
+            <field name="groups" eval="[(4, ref('group_sarabun_user'))]"/>
+            <field name="domain_force">[('message_partner_ids', 'in', user.partner_id.ids)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
         <!-- Managers see everything -->
         <record id="sarabun_document_manager_rule" model="ir.rule">
             <field name="name">Sarabun Document: Manager Access</field>
@@ -107,14 +122,26 @@
             <field name="perm_write" eval="True"/>
             <field name="perm_create" eval="True"/>
             <field name="perm_unlink" eval="False"/>
-            <!-- A step is readable iff its parent document is: the sender, or anyone
-                 the หนังสือ has ever reached (reached_user_ids — spans archived
-                 attempts, unlike the active-scoped routing_step_ids traversal). -->
+            <!-- Sender, or anyone the หนังสือ has ever reached (reached_user_ids —
+                 spans archived attempts, unlike the active-scoped routing_step_ids
+                 traversal). Followers read via the separate read-only rule below. -->
             <field name="domain_force">[
                 '|',
                     ('document_id.sender_user_id', '=', user.id),
                     ('document_id.reached_user_ids', 'in', user.id)
             ]</field>
+        </record>
+        <!-- Follower (READ ONLY): a follower of the หนังสือ reads its Route but
+             never gains the write/create the actor rule above grants. -->
+        <record id="sarabun_routing_step_follower_rule" model="ir.rule">
+            <field name="name">Sarabun Routing Step: Follower (read)</field>
+            <field name="model_id" ref="model_sarabun_routing_step"/>
+            <field name="groups" eval="[(4, ref('group_sarabun_user'))]"/>
+            <field name="domain_force">[('document_id.message_partner_ids', 'in', user.partner_id.ids)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
         </record>
         <record id="sarabun_routing_step_manager_rule" model="ir.rule">
             <field name="name">Sarabun Routing Step: Manager Access</field>
@@ -129,7 +156,7 @@
 
         <!-- sarabun.step.recipient — the per-person reach/read ledger. Read-only for
              users (rows are engine-minted via sudo); readable iff the parent document
-             is (sender or reached). Managers see all. -->
+             is (sender, reached or follower). Managers see all. -->
         <record id="sarabun_step_recipient_user_rule" model="ir.rule">
             <field name="name">Sarabun Step Recipient: parent-document scope (read)</field>
             <field name="model_id" ref="model_sarabun_step_recipient"/>
@@ -139,9 +166,10 @@
             <field name="perm_create" eval="False"/>
             <field name="perm_unlink" eval="False"/>
             <field name="domain_force">[
-                '|',
+                '|', '|',
                     ('document_id.sender_user_id', '=', user.id),
-                    ('document_id.reached_user_ids', 'in', user.id)
+                    ('document_id.reached_user_ids', 'in', user.id),
+                    ('document_id.message_partner_ids', 'in', user.partner_id.ids)
             ]</field>
         </record>
         <record id="sarabun_step_recipient_manager_rule" model="ir.rule">
@@ -163,9 +191,10 @@
             <field name="perm_create" eval="False"/>
             <field name="perm_unlink" eval="False"/>
             <field name="domain_force">[
-                '|',
+                '|', '|',
                     ('step_id.document_id.sender_user_id', '=', user.id),
-                    ('step_id.document_id.reached_user_ids', 'in', user.id)
+                    ('step_id.document_id.reached_user_ids', 'in', user.id),
+                    ('step_id.document_id.message_partner_ids', 'in', user.partner_id.ids)
             ]</field>
         </record>
         <record id="sarabun_routing_step_activity_manager_rule" model="ir.rule">

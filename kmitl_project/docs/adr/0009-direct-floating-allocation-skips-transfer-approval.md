@@ -1,5 +1,7 @@
 # A Direct Floating Allocation posts at once, without the transfer approval
 
+> **Extended by [ADR-0011](./0011-project-deletion-replaces-cancel.md):** the reverse move, Floating Return (โอนคืนงบลอย), sends money back to the Floating Budget pool this allocation draws from; this module was merged into `kmitl_project_budget_transfer`.
+
 In practice, when Floating Budget (เงินลอย) is already sitting at a project's own
 coordinate — its รหัสงบ + four dimensions, or the coarser pool covering them — งานแผน
 simply moves it onto the project; nobody asks for approval to do so. The system only

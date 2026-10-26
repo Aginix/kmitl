@@ -14,6 +14,9 @@ consume lines carry no `commitment_id`.
 1. **Budget Managers only.** Posting a direct consumption, and undoing one (reset,
    cancel, delete, editing a posted line), requires `budget.group_budget_manager`. No
    setting: the normal process stays reservation-first, and the right is the gate.
+   One exception: a ตั้งเบิกตรง disbursement request posts and cancels its own
+   direct consumption, gated by its approval chain instead ([disbursement
+   ADR-0005](../../../disbursement/docs/adr/0005-direct-claim-consumes-without-reservation-or-esaraban.md)).
 2. **Consume only.** reserve / obligate lines still come from commitment events alone;
    a manual move in those buckets cannot be posted by anyone.
 3. **Pool control still applies.** A direct consumption skips the reservation, not the

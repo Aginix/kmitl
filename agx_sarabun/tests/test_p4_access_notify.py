@@ -2,8 +2,11 @@
 
 from unittest.mock import patch
 
+from psycopg2 import IntegrityError
+
 from odoo.exceptions import AccessError
 from odoo.tests.common import tagged
+from odoo.tools import mute_logger
 
 from odoo.addons.agx_sarabun.tests.common import SarabunCommon
 
@@ -22,6 +25,19 @@ class TestP4Access(SarabunCommon):
         """A user with no relation to the document cannot see it."""
         doc = self._make_doc(sender=self.user_a)
         self.assertFalse(self._can_read(doc, self.user_b))
+
+    def test_follower_can_read_but_not_write(self):
+        """A follower reads the หนังสือ and its Route, but cannot edit it."""
+        doc = self._make_doc(sender=self.user_a)
+        step = self._add_step(doc, order=10, verb="sign_approve", user=self.user_a)
+        doc.message_subscribe(partner_ids=self.user_b.partner_id.ids)
+        self.assertTrue(self._can_read(doc, self.user_b))
+        as_b = doc.with_user(self.user_b)
+        self.assertTrue(as_b.routing_step_ids)
+        with self.assertRaises(AccessError):
+            as_b.write({"subject": "x"})
+        with self.assertRaises(AccessError):
+            step.with_user(self.user_b).write({"order": 20})
 
     def test_waiting_step_grants_no_visibility(self):
         """A pre-seeded but still-waiting step grants NO read."""
@@ -100,13 +116,10 @@ class TestP4Access(SarabunCommon):
         self.assertIn(self._verb("sign_approve").name, act.note or "")
         self.assertIn(self.user_a.name, act.note or "")
 
-    def test_acknowledge_step_schedules_ack_activity(self):
-        """Every active step now raises an activity (ADR-0014) — gating AND a pure
-        รับทราบ / CC alike — picking the type by discriminator (gating OR
-        show_signature): a gating step → EXECUTION (_action), a read-only รับทราบ →
-        ACKNOWLEDGEMENT (_ack)."""
-        action_type = self.env.ref("agx_sarabun.mail_activity_sarabun_action")
-        ack_type = self.env.ref("agx_sarabun.mail_activity_sarabun_ack")
+    def test_step_activity_type_is_its_verb_type(self):
+        """Every active step raises an activity (ADR-0014) — gating AND a pure
+        รับทราบ / CC alike — of its verb's OWN activity type, so the Todo reads as
+        the verb (ADR-0020)."""
         doc = self._make_doc()
         self._add_step(doc, order=10, verb="sign_approve", user=self.user_a)  # gating
         self._add_step(
@@ -116,28 +129,69 @@ class TestP4Access(SarabunCommon):
         acts_a = self._activities(doc, self.user_a)
         acts_b = self._activities(doc, self.user_b)
         self.assertTrue(acts_a)
-        self.assertTrue(acts_b, "รับทราบ now raises an activity too (ADR-0014)")
-        self.assertEqual(acts_a.activity_type_id, action_type)  # gating → execution
-        self.assertEqual(acts_b.activity_type_id, ack_type)  # รับทราบ → acknowledgement
+        self.assertTrue(acts_b, "รับทราบ raises an activity too (ADR-0014)")
+        sign_type = self._verb("sign_approve").activity_type_id
+        self.assertEqual(acts_a.activity_type_id, sign_type)
+        self.assertEqual(acts_a.activity_type_id.name, self._verb("sign_approve").name)
+        self.assertEqual(
+            acts_b.activity_type_id, self._verb("acknowledge").activity_type_id
+        )
 
-    def test_acknowledge_sign_step_schedules_execution_activity(self):
-        """รับทราบและลงนาม is non-gating yet SIGNS the letter (show_signature), so its
-        activity is EXECUTION (_action) — a signature can't be Mark-as-Read'd away
-        (discriminator = gating OR show_signature)."""
-        action_type = self.env.ref("agx_sarabun.mail_activity_sarabun_action")
-        doc = self._make_doc()
-        self._add_step(doc, order=10, verb="sign_approve", user=self.user_a)  # gating
-        self._add_step(
-            doc,
-            order=10,
-            verb="acknowledge_sign",
-            target_mode="person",
-            user=self.user_b,
-        )  # non-gating but show_signature
-        doc.action_send()
-        acts_b = self._activities(doc, self.user_b)
-        self.assertTrue(acts_b)
-        self.assertEqual(acts_b.activity_type_id, action_type)
+    # ------------------------------------------- verb ↔ activity type sync (ADR-0020)
+    def test_verb_owns_synced_activity_type(self):
+        """Creating a verb creates its type (named as the verb, on sarabun.document);
+        renaming and archiving the verb follow onto the type."""
+        verb = self.env["sarabun.verb"].create({"name": "ตรวจสอบเอกสาร"})
+        act_type = verb.activity_type_id
+        self.assertTrue(act_type)
+        self.assertEqual(act_type.name, "ตรวจสอบเอกสาร")
+        self.assertEqual(act_type.res_model, "sarabun.document")
+        verb.name = "ตรวจสอบเอกสารแนบ"
+        self.assertEqual(act_type.name, "ตรวจสอบเอกสารแนบ")
+        verb.active = False
+        self.assertFalse(act_type.active)
+        verb.active = True
+        self.assertTrue(act_type.active)
+
+    def test_verb_copy_gets_own_activity_type(self):
+        verb = self._verb("verify")
+        dup = verb.copy({"name": "ตรวจเอกสาร (สำเนา)"})
+        self.assertTrue(dup.activity_type_id)
+        self.assertNotEqual(dup.activity_type_id, verb.activity_type_id)
+
+    def test_unlink_unused_verb_removes_type(self):
+        verb = self.env["sarabun.verb"].create({"name": "ชั่วคราว"})
+        act_type = verb.activity_type_id
+        verb.unlink()
+        self.assertFalse(act_type.exists())
+
+    def test_unlink_verb_archives_type_still_in_use(self):
+        """A type an activity still points at cannot be deleted (restrict) — it is
+        archived instead."""
+        verb = self.env["sarabun.verb"].create({"name": "ชั่วคราว"})
+        act_type = verb.activity_type_id
+        self._make_doc().activity_schedule(
+            activity_type_id=act_type.id, user_id=self.user_a.id
+        )
+        verb.unlink()
+        self.assertTrue(act_type.exists())
+        self.assertFalse(act_type.active)
+
+    def test_verb_type_cannot_be_deleted_alone(self):
+        """The owned type can't be deleted under its verb (restrict) — the verb's
+        steps would otherwise silently stop raising Todos."""
+        act_type = self._verb("verify").activity_type_id
+        with self.assertRaises(IntegrityError), mute_logger("odoo.sql_db"):
+            with self.cr.savepoint():
+                act_type.unlink()
+
+    def test_verb_translation_dialog_syncs_type(self):
+        """The translation dialog bypasses write(); the type name still follows."""
+        verb = self.env["sarabun.verb"].create({"name": "ตรวจสอบเอกสาร"})
+        verb.update_field_translations("name", {"en_US": "Check documents"})
+        self.assertEqual(
+            verb.activity_type_id.with_context(lang="en_US").name, "Check documents"
+        )
 
     # -------------------------------------------- acting as a non-sender actor (ACL)
     def test_non_sender_actor_can_complete(self):

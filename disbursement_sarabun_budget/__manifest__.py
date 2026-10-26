@@ -3,7 +3,7 @@
 {
     "name": "Disbursement Sarabun Budget",
     "summary": "Print the budget commitment and budget code in the Sarabun disbursement body",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.1.0",
     "category": "Disbursement",
     "license": "LGPL-3",
     "author": "KMITL",

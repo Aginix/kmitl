@@ -1,0 +1,4 @@
+id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
+access_budget_support_request_manager,budget_support_request_manager,model_budget_support_request,budget.group_budget_manager,1,1,1,1
+access_budget_support_request_user,budget_support_request_user,model_budget_support_request,budget.group_budget_user,1,1,1,0
+access_bsr_verify_return_wizard,budget_support_request_verify_return_wizard,model_budget_support_request_verify_return_wizard,budget.group_budget_user,1,1,1,1

@@ -5,7 +5,7 @@
     "category": "KMITL",
     "depends": [
         "advance_payment",
-        "advance_payment_budget",
+        "advance_payment_exception",
         "agx_approval_disbursement",
     ],
     "data": [

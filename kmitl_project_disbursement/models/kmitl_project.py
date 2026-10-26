@@ -1,15 +1,21 @@
-# -*- coding: utf-8 -*-
 from odoo import _, fields, models
-from odoo.exceptions import UserError
 
-# Disbursement states that no longer hold the project open: cancelled, or fully
-# settled by the finance bridge (paid/cleared). Everything else is "ค้าง".
-DISBURSEMENT_SETTLED_STATES = ("cancel", "paid", "cleared")
-
-# States before the approval decision (still pending).
-DISBURSEMENT_PENDING_STATES = ("draft", "submitted", "signed", "verified")
-# States at or after approval (money committed or already paid out).
-DISBURSEMENT_DONE_STATES = ("approved", "payment_authorized", "paid", "cleared")
+# What no longer holds the project open: cancelled, or paid in full (settled or
+# booked). Everything else is "ค้าง".
+DISBURSEMENT_OPEN_DOMAIN = [
+    ("state", "!=", "cancel"),
+    ("settlement_stage", "not in", ("settled", "booked")),
+]
+# Not cancelled, and its budget not consumed yet (the column is NULL until it is).
+DISBURSEMENT_PENDING_DOMAIN = [
+    ("state", "!=", "cancel"),
+    ("budget_consumed_amount", "in", (0, False)),
+]
+# Not cancelled, and its budget consumed (money committed or already paid out).
+DISBURSEMENT_DONE_DOMAIN = [
+    ("state", "!=", "cancel"),
+    ("budget_consumed_amount", ">", 0),
+]
 
 
 class KmitlProject(models.Model):
@@ -17,7 +23,7 @@ class KmitlProject(models.Model):
 
     currency_id = fields.Many2one(related="company_id.currency_id")
 
-    # Pre-approval disbursements — drafted/submitted but not yet approved.
+    # Disbursements whose budget is not consumed yet.
     disbursement_pending_count = fields.Integer(
         compute="_compute_disbursement_count",
         string="Pending Disbursement Count",
@@ -27,14 +33,14 @@ class KmitlProject(models.Model):
         string="ยอดรอดำเนินการ",
         currency_field="currency_id",
     )
-    # Post-approval disbursements — approved, authorized, paid, or cleared.
+    # Disbursements whose budget the consume act has consumed (and what follows).
     disbursement_done_count = fields.Integer(
         compute="_compute_disbursement_count",
-        string="Approved Disbursement Count",
+        string="Consumed Disbursement Count",
     )
     disbursement_done_amount = fields.Monetary(
         compute="_compute_disbursement_count",
-        string="ยอดอนุมัติแล้ว",
+        string="ยอดตัดงบแล้ว",
         currency_field="currency_id",
     )
     # Cancelled ones, counted separately so they never inflate the active badges.
@@ -56,8 +62,8 @@ class KmitlProject(models.Model):
                 rec.disbursement_cancelled_count = 0
                 continue
             base = [("kmitl_project_analytic_id", "=", rec.analytic_account_id.id)]
-            pending = DR.search(base + [("state", "in", DISBURSEMENT_PENDING_STATES)])
-            done = DR.search(base + [("state", "in", DISBURSEMENT_DONE_STATES)])
+            pending = DR.search(base + DISBURSEMENT_PENDING_DOMAIN)
+            done = DR.search(base + DISBURSEMENT_DONE_DOMAIN)
             rec.disbursement_pending_count = len(pending)
             rec.disbursement_pending_amount = sum(pending.mapped("amount_total"))
             rec.disbursement_done_count = len(done)
@@ -85,23 +91,19 @@ class KmitlProject(models.Model):
             "type": "ir.actions.act_window",
             "res_model": "disbursement.request",
             "view_mode": "tree,form",
-            "domain": [
-                ("kmitl_project_analytic_id", "=", self.analytic_account_id.id),
-                ("state", "in", DISBURSEMENT_PENDING_STATES),
-            ],
+            "domain": [("kmitl_project_analytic_id", "=", self.analytic_account_id.id)]
+            + DISBURSEMENT_PENDING_DOMAIN,
         }
 
     def action_open_done_disbursements(self):
         self.ensure_one()
         return {
-            "name": _("ใบเบิกอนุมัติแล้ว"),
+            "name": _("ใบเบิกตัดงบแล้ว"),
             "type": "ir.actions.act_window",
             "res_model": "disbursement.request",
             "view_mode": "tree,form",
-            "domain": [
-                ("kmitl_project_analytic_id", "=", self.analytic_account_id.id),
-                ("state", "in", DISBURSEMENT_DONE_STATES),
-            ],
+            "domain": [("kmitl_project_analytic_id", "=", self.analytic_account_id.id)]
+            + DISBURSEMENT_DONE_DOMAIN,
         }
 
     def action_open_cancelled_disbursements(self):
@@ -121,23 +123,30 @@ class KmitlProject(models.Model):
         if not self.analytic_account_id:
             return False
         return bool(
-            self.env["disbursement.request"].sudo().search_count(
-                [
-                    ("kmitl_project_analytic_id", "=", self.analytic_account_id.id),
-                    ("state", "not in", DISBURSEMENT_SETTLED_STATES),
-                ]
+            self.env["disbursement.request"]
+            .sudo()
+            .search_count(
+                [("kmitl_project_analytic_id", "=", self.analytic_account_id.id)]
+                + DISBURSEMENT_OPEN_DOMAIN
             )
         )
 
-    def action_complete(self):
-        """Block closing a project that still has an outstanding (ค้าง)
-        disbursement — its money is not yet fully accounted for."""
-        self.ensure_one()
+    def _get_open_downstream_documents(self):
+        """An outstanding (ค้าง) disbursement keeps the project from being
+        closed or deleted — its money is not yet fully accounted for."""
+        res = super()._get_open_downstream_documents()
         if self._has_open_disbursement():
-            raise UserError(
-                _(
-                    "ไม่สามารถปิดโครงการได้ "
-                    "เนื่องจากยังมีใบขอเบิกที่ค้างดำเนินการอยู่"
-                )
-            )
-        return super().action_complete()
+            res.append(_("ใบขอเบิกที่ค้างดำเนินการอยู่"))
+        return res
+
+    def _get_project_claims(self):
+        """The ใบขอเบิก total its cap holds within ``budget_amount``
+        (``_exceeds_project_budget``)."""
+        res = super()._get_project_claims()
+        disbursements = (
+            self.env["disbursement.request"]
+            .sudo()
+            .search([("kmitl_project_id", "=", self.id), ("state", "!=", "cancel")])
+        )
+        res.append((_("ใบขอเบิก"), sum(disbursements.mapped("amount_total"))))
+        return res
