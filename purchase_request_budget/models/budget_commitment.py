@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from odoo import _, api, fields, models
 
 
@@ -10,8 +9,7 @@ class BudgetCommitment(models.Model):
         "budget_commitment_id",
         string="ใบขอให้จัดหา",
         help=(
-            "ใบขอให้จัดหาที่ผูกกับใบจองนี้ ทั้งที่จองงบใหม่จาก พจ. เอง "
-            "และที่หยิบใบจองนี้ไปใช้ (draw down)"
+            "ใบขอให้จัดหาที่ผูกกับใบจองนี้ ทั้งที่จองงบใหม่จาก พจ. เอง และที่หยิบใบจองนี้ไปใช้ (draw down)"
         ),
     )
     purchase_request_count = fields.Integer(
@@ -43,3 +41,14 @@ class BudgetCommitment(models.Model):
         else:
             action["view_mode"] = "tree,form"
         return action
+
+    def _get_open_downstream_documents(self):
+        """A purchase request not yet closed still draws on the reservation:
+        it blocks กลับแบบร่าง and ลบใบจอง."""
+        documents = super()._get_open_downstream_documents()
+        requests = self.sudo().purchase_request_ids.filtered(
+            lambda r: r.state not in ("done", "rejected", "cancelled")
+        )
+        return documents + [
+            _("ใบขอซื้อขอจ้าง (พ.1) %s") % r.display_name for r in requests
+        ]

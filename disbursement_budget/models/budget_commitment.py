@@ -30,13 +30,26 @@ class BudgetCommitment(models.Model):
             "type": "ir.actions.act_window",
         }
         if len(self.disbursement_request_ids) == 1:
-            action.update({
-                "view_mode": "form",
-                "res_id": self.disbursement_request_ids.id,
-            })
+            action.update(
+                {
+                    "view_mode": "form",
+                    "res_id": self.disbursement_request_ids.id,
+                }
+            )
         else:
-            action.update({
-                "view_mode": "tree,form",
-                "domain": [("id", "in", self.disbursement_request_ids.ids)],
-            })
+            action.update(
+                {
+                    "view_mode": "tree,form",
+                    "domain": [("id", "in", self.disbursement_request_ids.ids)],
+                }
+            )
         return action
+
+    def _get_open_downstream_documents(self):
+        """A disbursement request not cancelled still draws on the reservation:
+        it blocks กลับแบบร่าง and ลบใบจอง."""
+        documents = super()._get_open_downstream_documents()
+        requests = self.sudo().disbursement_request_ids.filtered(
+            lambda r: r.state != "cancel"
+        )
+        return documents + [_("ใบขอเบิก %s") % r.display_name for r in requests]

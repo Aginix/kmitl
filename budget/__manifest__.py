@@ -1,6 +1,6 @@
 {
     "name": "KMITL Budgeting",
-    "version": "16.0.2.5.1",
+    "version": "16.0.2.6.0",
     "summary": """ KMITL Budgeting""",
     "category": "KMITL/Budgeting",
     "author": "Aginix Technologies",
@@ -47,6 +47,9 @@
             "budget/static/src/commitment_info/budget_commitment_info.js",
             "budget/static/src/commitment_info/budget_commitment_info.xml",
             "budget/static/src/commitment_info/budget_commitment_info.scss",
+            "budget/static/src/commitment_return/budget_commitment_return.esm.js",
+            "budget/static/src/commitment_return/budget_commitment_return.xml",
+            "budget/static/src/commitment_return/budget_commitment_return.scss",
         ],
     },
     "auto_install": False,

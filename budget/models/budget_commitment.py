@@ -3,7 +3,7 @@ import logging
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError, ValidationError
-from odoo.tools import float_compare, formatLang
+from odoo.tools import float_compare, float_is_zero, formatLang
 
 _logger = logging.getLogger(__name__)
 
@@ -78,6 +78,9 @@ class BudgetCommitment(models.Model):
         readonly=False,
         states=READONLY_STATES,
     )
+    # False = soft-deleted (ลบใบจอง with history); กลับแบบร่าง revives it.
+    # Readonly so the UI offers no Archive that would skip ลบใบจอง's rules.
+    active = fields.Boolean(default=True, readonly=True)
     state = fields.Selection(
         selection=[
             ("draft", "Draft"),
@@ -118,9 +121,9 @@ class BudgetCommitment(models.Model):
         states=READONLY_STATES,
     )
 
-    # Header amount = user-set cap (วงเงินอนุมัติ)
+    # Header amount = user-set cap (ยอดจองงบประมาณ)
     amount = fields.Monetary(
-        string="วงเงินอนุมัติ",
+        string="ยอดจองงบประมาณ",
         required=True,
         currency_field="currency_id",
         tracking=True,
@@ -515,6 +518,14 @@ class BudgetCommitment(models.Model):
             if (
                 float_compare(reserved, 0.0, precision_rounding=rounding) > 0
                 and float_compare(consumed, reserved, precision_rounding=rounding) >= 0
+            ) or (
+                # Returned in full: an emptied reservation otherwise stays
+                # 'reserved' (a transfer may top it up again), but returning
+                # its whole leftover is how a commitment closes.
+                float_is_zero(reserved, precision_rounding=rounding)
+                and record.line_ids.filtered(
+                    lambda line: line.state == "posted" and line.is_return
+                )
             ):
                 new_state = "done"
             elif (
@@ -536,7 +547,7 @@ class BudgetCommitment(models.Model):
         for record in self:
             if record.amount < 0:
                 raise UserError(_("Commitment cap amount cannot be negative."))
-            if record.state != "draft" and record.amount <= 0:
+            if record.state not in ("draft", "cancel") and record.amount <= 0:
                 raise UserError(_("Commitment cap amount must be positive."))
 
     # --- Display ---
@@ -661,7 +672,7 @@ class BudgetCommitment(models.Model):
             if record.state != "draft":
                 raise UserError(_("Only draft commitments can be reserved."))
             if record.amount <= 0:
-                raise UserError(_("กรุณาระบุวงเงินอนุมัติมากกว่า 0 ก่อนจองงบประมาณ"))
+                raise UserError(_("กรุณาระบุยอดจองงบประมาณมากกว่า 0 ก่อนจองงบประมาณ"))
             # The pending reserve events are the command to reserve (they post to
             # the ledger only once reserved), so test for them, not for a total.
             if not record._pending_reserve_lines():
@@ -698,7 +709,7 @@ class BudgetCommitment(models.Model):
         """The posted reserve events of a reservation (its reserve command)."""
         self.ensure_one()
         return self.line_ids.filtered(
-            lambda l: l.state == "posted" and l.move_type == "reserve"
+            lambda line: line.state == "posted" and line.move_type == "reserve"
         )
 
     # --- Event seam (ADR-0017) ---
@@ -718,8 +729,10 @@ class BudgetCommitment(models.Model):
         self.ensure_one()
         if move_type != "reserve" or is_return:
             first_reserve = self.line_ids.filtered(
-                lambda l: (
-                    l.move_type == "reserve" and l.state == "posted" and not l.is_return
+                lambda line: (
+                    line.move_type == "reserve"
+                    and line.state == "posted"
+                    and not line.is_return
                 )
             )[:1]
             if not first_reserve:
@@ -911,16 +924,81 @@ class BudgetCommitment(models.Model):
                 raise UserError(
                     _("Cannot cancel commitment %s - it is already done") % record.name
                 )
-            record.line_ids.filtered(lambda l: l.state == "posted").action_cancel()
+            record.line_ids.filtered(
+                lambda line: line.state == "posted"
+            ).action_cancel()
             record.state = "cancel"
             _logger.info("Cancelled budget commitment %s", record.name)
 
     def action_reset_to_draft(self):
-        """Reset cancelled commitment to draft"""
+        """กลับแบบร่าง — from cancel (also revives a soft-deleted commitment),
+        or from reserved while nothing has used the money yet: the reservation
+        is released (its posted events are cancelled) and the number is kept."""
         for record in self:
-            if record.state != "cancel":
-                raise UserError(_("Only cancelled commitments can be reset to draft."))
-            record.state = "draft"
+            if record.state == "reserved":
+                record._check_unused()
+                record.line_ids.filtered(
+                    lambda line: line.state == "posted"
+                ).action_cancel()
+            elif record.state != "cancel":
+                raise UserError(_("กลับแบบร่างได้เฉพาะใบจองที่ยังไม่มีการเบิกจ่ายหรือใช้งานยอดเงิน"))
+            record.write({"state": "draft", "active": True})
+
+    def _check_unused(self):
+        """Raise unless no event and no document draws on this reservation."""
+        self.ensure_one()
+        used = self.line_ids.filtered(
+            lambda line: (
+                line.state == "posted"
+                and (line.move_type != "reserve" or line.is_return)
+            )
+        )
+        documents = self._get_open_downstream_documents()
+        if used or documents:
+            raise UserError(
+                _("ใบจอง %(name)s มีการเบิกจ่ายหรือใช้งานยอดเงินแล้ว%(docs)s")
+                % {
+                    "name": self.name,
+                    "docs": "".join("\n- %s" % doc for doc in documents),
+                }
+            )
+
+    def _get_open_downstream_documents(self):
+        """Hook: labels of the documents still drawing on this reservation
+        (e.g. disbursement requests) — extended by the bridges that own them.
+        Blocks กลับแบบร่าง and ลบใบจอง."""
+        self.ensure_one()
+        return []
+
+    def unlink(self):
+        """ลบใบจอง, Odoo's own Delete — same rules as ลบโครงการ (kmitl_project
+        ADR-0011): only a draft or cancelled one, whose posted events have all
+        been cancelled — a reservation in use, or closed by its own history
+        (used, returned), stays as the record. One with a ledger history is
+        soft-deleted (cancelled + archived, revived by กลับแบบร่าง); a draft that
+        never reached the ledger goes for good."""
+        for record in self:
+            if record.state not in ("draft", "cancel"):
+                raise UserError(
+                    _(
+                        "ใบจอง %s ลบได้เฉพาะสถานะแบบร่าง — ใบที่ยังไม่มีการใช้งานให้กลับแบบร่างก่อน "
+                        "ใบที่มีการเบิกจ่ายหรือส่งคืนเงินเหลือจ่ายแล้วต้องเก็บไว้เป็นประวัติ"
+                    )
+                    % record.name
+                )
+            documents = record._get_open_downstream_documents()
+            if documents:
+                raise UserError(
+                    _("ไม่สามารถลบใบจอง %s ได้ เนื่องจากยังมีเอกสารที่อ้างถึง:%s")
+                    % (record.name, "".join("\n- %s" % doc for doc in documents))
+                )
+        soft = self.filtered(
+            lambda c: c.line_ids.filtered(
+                lambda line: line.budget_move_id or line.budget_move_line_id
+            )
+        )
+        soft.write({"state": "cancel", "active": False})
+        return super(BudgetCommitment, self - soft).unlink()
 
     def action_obligate(self):
         """Open wizard to add an obligate line."""

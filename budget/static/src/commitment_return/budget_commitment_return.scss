@@ -1,0 +1,246 @@
+// ส่งคืนเงินเหลือจ่าย — same look as โอนคืนงบลอย (kmitl_project_budget_transfer).
+// Neutral cards on thin borders; the theme primary marks the destination only.
+
+$bcr-ink: #1f2937;
+$bcr-muted: #6b7280;
+$bcr-faint: #9ca3af;
+$bcr-line: #e5e7eb;
+$bcr-accent: $o-brand-primary;
+$bcr-accent-soft: mix($o-brand-primary, #fff, 10%);
+$bcr-warn: #92400e;
+$bcr-radius: 10px;
+$bcr-fs: $o-font-size-base;
+
+.o_bcr {
+    color: $bcr-ink;
+    padding: 4px 4px 0;
+    font-variant-numeric: tabular-nums;
+
+    .o_bcr_kicker {
+        font-size: $bcr-fs * 0.92;
+        color: $bcr-muted;
+    }
+    .o_bcr_title {
+        margin-top: 2px;
+        font-weight: 600;
+        font-size: $bcr-fs * 1.15;
+        line-height: 1.4;
+    }
+}
+
+// --- stepper -------------------------------------------------------------
+.o_bcr_steps {
+    display: flex;
+    justify-content: center;
+    gap: 28px;
+    margin-bottom: 24px;
+    font-size: $bcr-fs;
+    color: $bcr-faint;
+
+    .o_bcr_step {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .o_bcr_step_dot {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        border: 1px solid $bcr-line;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: $bcr-fs * 0.85;
+    }
+    .o_bcr_step_on {
+        color: $bcr-ink;
+        .o_bcr_step_dot {
+            background: $bcr-accent;
+            border-color: $bcr-accent;
+            color: #fff;
+        }
+    }
+    .o_bcr_step_ok .o_bcr_step_dot {
+        background: $bcr-accent-soft;
+        border-color: $bcr-accent-soft;
+        color: $bcr-accent;
+    }
+}
+
+// --- from → to -------------------------------------------------------------
+.o_bcr_flow {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 36px minmax(0, 1fr);
+    align-items: stretch;
+}
+
+.o_bcr_acct {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    padding: 16px 18px;
+    border: 1px solid $bcr-line;
+    border-radius: $bcr-radius;
+    background: #fff;
+
+    &.o_bcr_acct_to {
+        border-color: $bcr-accent;
+        background: linear-gradient(0deg, $bcr-accent-soft, #fff 60%);
+    }
+    .o_bcr_bal {
+        margin-top: auto;
+        padding-top: 14px;
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+    }
+    .o_bcr_bal_label {
+        font-size: $bcr-fs * 0.92;
+        color: $bcr-muted;
+    }
+    .o_bcr_bal_value {
+        font-size: $bcr-fs * 1.5;
+        font-weight: 600;
+    }
+    .o_bcr_after {
+        min-height: 18px;
+        text-align: right;
+        font-size: $bcr-fs * 0.92;
+        color: $bcr-muted;
+        b {
+            color: $bcr-ink;
+            font-weight: 600;
+        }
+    }
+}
+
+.o_bcr_arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $bcr-faint;
+}
+
+// Label/value grids: the reservation figures and the complete-name dimensions.
+.o_bcr_figs,
+.o_bcr_dims {
+    display: grid;
+    grid-template-columns: 112px minmax(0, 1fr);
+    gap: 6px 12px;
+    margin: 12px 0 0;
+    font-size: $bcr-fs * 0.92;
+    line-height: 1.5;
+
+    dt {
+        font-weight: 400;
+        color: $bcr-faint;
+    }
+    dd {
+        margin: 0;
+        min-width: 0;
+    }
+}
+.o_bcr_figs dd {
+    text-align: right;
+}
+.o_bcr_dims {
+    .o_bcr_code,
+    .o_bcr_anc {
+        color: $bcr-muted;
+    }
+    .o_bcr_code {
+        margin-right: 4px;
+    }
+}
+
+// --- amount, date/description, message ----------------------------------------
+.o_bcr_amount {
+    margin-top: 28px;
+}
+.o_bcr_inputs {
+    max-width: 420px;
+    margin: 12px auto 0;
+}
+.o_bcr_msg {
+    max-width: 420px;
+    margin: 12px auto 0;
+    text-align: center;
+    font-size: $bcr-fs * 0.92;
+    color: $bcr-muted;
+
+    &.o_bcr_msg_warn {
+        color: $bcr-warn;
+    }
+}
+
+// --- slip ----------------------------------------------------------------------
+.o_bcr_sum {
+    max-width: 520px;
+    margin: 0 auto;
+}
+.o_bcr_big {
+    text-align: center;
+
+    .o_bcr_big_label {
+        font-size: $bcr-fs * 0.92;
+        color: $bcr-muted;
+    }
+    .o_bcr_big_value {
+        margin-top: 2px;
+        font-size: $bcr-fs * 2.5;
+        font-weight: 600;
+    }
+}
+.o_bcr_rows {
+    margin-top: 22px;
+    border-top: 1px solid $bcr-line;
+}
+.o_bcr_row {
+    display: grid;
+    grid-template-columns: 120px minmax(0, 1fr);
+    gap: 16px;
+    padding: 11px 0;
+    border-bottom: 1px solid $bcr-line;
+
+    .o_bcr_row_label {
+        font-size: $bcr-fs;
+        color: $bcr-muted;
+    }
+    .o_bcr_row_value {
+        text-align: right;
+        small {
+            display: block;
+            margin-top: 2px;
+            font-size: $bcr-fs * 0.92;
+            color: $bcr-faint;
+        }
+    }
+}
+.o_bcr_icon {
+    width: 44px;
+    height: 44px;
+    margin: 0 auto 12px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: $bcr-fs * 1.25;
+    background: $bcr-accent-soft;
+    color: $bcr-accent;
+}
+
+// --- small screens: stack top → bottom --------------------------------------------
+@include media-breakpoint-down(md) {
+    .o_bcr_flow {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: auto 32px auto;
+    }
+    .o_bcr_arrow i {
+        transform: rotate(90deg);
+    }
+    .o_bcr_figs,
+    .o_bcr_dims,
+    .o_bcr_row {
+        grid-template-columns: 96px minmax(0, 1fr);
+    }
+}
