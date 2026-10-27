@@ -1,6 +1,6 @@
 {
     "name": "Work Center",
-    "version": "16.0.1.0.1",
+    "version": "16.0.1.1.0",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "Productivity",
@@ -19,8 +19,10 @@
         "views/work_center_route_views.xml",
         "views/work_center_visit_views.xml",
         "wizards/work_center_move_wizard_views.xml",
+        "wizards/work_center_assign_wizard_views.xml",
         "views/work_center_views.xml",
         "views/work_center_rule_views.xml",
+        "views/work_center_assignment_rule_views.xml",
         "views/work_center_counter_views.xml",
         "views/work_center_area_views.xml",
         "views/work_center_menus.xml",

@@ -245,7 +245,6 @@ msgstr "ถัดไป"
 
 #. module: disbursement_work_center
 #: model:ir.model.fields,field_description:disbursement_work_center.field_disbursement_request__work_center_responsible_ids
-#: model_terms:ir.ui.view,arch_db:disbursement_work_center.view_disbursement_request_form
 msgid "Responsible"
 msgstr "ผู้รับผิดชอบ"
 
@@ -303,3 +302,46 @@ msgstr "ผู้ที่ส่งต่อ เบี่ยงเส้นท�
 #: model_terms:ir.ui.view,arch_db:disbursement_work_center.view_disbursement_request_form
 msgid "Your turn"
 msgstr "ถึงคิวคุณ"
+
+
+#. module: disbursement_work_center
+#: model:ir.model.fields,field_description:disbursement_work_center.field_disbursement_request__work_center_assignee_id
+#: model_terms:ir.ui.view,arch_db:disbursement_work_center.view_disbursement_request_form
+#: model_terms:ir.ui.view,arch_db:disbursement_work_center.view_disbursement_request_search
+msgid "Assignee"
+msgstr "ผู้รับผิดชอบงาน"
+
+#. module: disbursement_work_center
+#: model:ir.model.fields,help:disbursement_work_center.field_disbursement_request__work_center_assignee_id
+msgid "The person handling the document at its station. Picked by the station's assignment rules on arrival; another responsible person takes over by pressing Assign to Me. Without one, every responsible person may act."
+msgstr "ผู้ที่ดูแลเอกสารอยู่ที่สถานี กฎมอบหมายของสถานีเป็นผู้เลือกเมื่อเอกสารมาถึง คนอื่นที่รับผิดชอบรับช่วงได้ด้วยการกด \"มอบให้ฉัน\" ถ้าไม่มีผู้รับผิดชอบงาน ผู้รับผิดชอบทุกคนทำได้"
+
+#. module: disbursement_work_center
+#: model:ir.model.fields,field_description:disbursement_work_center.field_disbursement_request__work_center_can_claim
+msgid "Can Claim"
+msgstr "รับช่วงได้"
+
+#. module: disbursement_work_center
+#: model:ir.model.fields,help:disbursement_work_center.field_disbursement_request__work_center_can_claim
+msgid "Technical: the current user may take the document over, being responsible at its station without being its assignee."
+msgstr "ค่าทางเทคนิค: ผู้ใช้ปัจจุบันรับเอกสารช่วงต่อได้ เพราะรับผิดชอบที่สถานีของเอกสารแต่ไม่ใช่ผู้รับผิดชอบงาน"
+
+#. module: disbursement_work_center
+#: model_terms:ir.ui.view,arch_db:disbursement_work_center.view_disbursement_request_form
+msgid "Assign to Me"
+msgstr "มอบให้ฉัน"
+
+#. module: disbursement_work_center
+#: model_terms:ir.ui.view,arch_db:disbursement_work_center.view_disbursement_request_form
+msgid "Assign…"
+msgstr "มอบหมาย…"
+
+#. module: disbursement_work_center
+#: model_terms:ir.ui.view,arch_db:disbursement_work_center.view_disbursement_request_search
+msgid "Assigned to Me"
+msgstr "มอบให้ฉัน"
+
+#. module: disbursement_work_center
+#: model_terms:ir.ui.view,arch_db:disbursement_work_center.view_disbursement_request_search
+msgid "Not Assigned"
+msgstr "ยังไม่มีผู้รับผิดชอบ"

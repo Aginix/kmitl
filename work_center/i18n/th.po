@@ -221,6 +221,7 @@ msgstr "ย้ายได้"
 
 #. module: work_center
 #: model_terms:ir.ui.view,arch_db:work_center.work_center_move_wizard_view_form
+#: model_terms:ir.ui.view,arch_db:work_center.work_center_assign_wizard_view_form
 msgid "Cancel"
 msgstr "ยกเลิก"
 
@@ -355,6 +356,7 @@ msgstr "รหัสเอกสาร"
 #: model_terms:ir.ui.view,arch_db:work_center.work_center_act_view_search
 #: model_terms:ir.ui.view,arch_db:work_center.work_center_rule_view_search
 #: model_terms:ir.ui.view,arch_db:work_center.work_center_visit_view_search
+#: model:ir.model.fields,field_description:work_center.field_work_center_assignment_rule__model_id
 msgid "Document Model"
 msgstr "โมเดลเอกสาร"
 
@@ -379,6 +381,7 @@ msgstr "โมเดลเอกสารที่ระบบงานนี้
 #. module: work_center
 #: model:ir.model.fields,field_description:work_center.field_work_center_counter__domain
 #: model:ir.model.fields,field_description:work_center.field_work_center_rule__domain
+#: model:ir.model.fields,field_description:work_center.field_work_center_assignment_rule__domain
 msgid "Domain"
 msgstr "เงื่อนไข"
 
@@ -499,6 +502,7 @@ msgstr "โมเดล"
 #. odoo-python
 #: code:addons/work_center/models/work_center_counter.py:0
 #: code:addons/work_center/models/work_center_rule.py:0
+#: code:addons/work_center/models/work_center_assignment_rule.py:0
 #, python-format
 msgid "Model %s is not installed."
 msgstr "ยังไม่ได้ติดตั้งโมเดล %s"
@@ -695,6 +699,7 @@ msgstr "ส่งคืนผู้จัดทำแล้ว"
 #: model:ir.model.fields,field_description:work_center.field_work_center_counter__sequence
 #: model:ir.model.fields,field_description:work_center.field_work_center_route_line__sequence
 #: model:ir.model.fields,field_description:work_center.field_work_center_rule__sequence
+#: model:ir.model.fields,field_description:work_center.field_work_center_assignment_rule__sequence
 msgid "Sequence"
 msgstr "ลำดับ"
 
@@ -725,6 +730,7 @@ msgstr "เส้นทางมาตรฐาน"
 #: model:ir.model.fields,field_description:work_center.field_work_center_rule__work_center_id
 #: model:ir.model.fields,field_description:work_center.field_work_center_visit__work_center_id
 #: model_terms:ir.ui.view,arch_db:work_center.work_center_visit_view_search
+#: model:ir.model.fields,field_description:work_center.field_work_center_assignment_rule__work_center_id
 msgid "Station"
 msgstr "สถานี"
 
@@ -957,6 +963,7 @@ msgstr "เอกสารนี้ไม่ได้อยู่ที่สถ
 #. module: work_center
 #. odoo-python
 #: code:addons/work_center/wizards/work_center_move_wizard.py:0
+#: code:addons/work_center/wizards/work_center_assign_wizard.py:0
 #, python-format
 msgid "This document no longer exists."
 msgstr "ไม่มีเอกสารนี้แล้ว"
@@ -1099,3 +1106,119 @@ msgstr "ตำแหน่งของเอกสารบนเส้นทา
 #: model:ir.model.fields,help:work_center.field_work_center_mixin__work_center_responsible_ids
 msgid "Who may forward, divert or send back the document now."
 msgstr "ผู้ที่ส่งต่อ เบี่ยงเส้นทาง หรือส่งคืนเอกสารได้ในตอนนี้"
+
+
+#. module: work_center
+#. odoo-python
+#: code:addons/work_center/models/work_center_assignment_rule.py:0
+#, python-format
+msgid "A rule cannot assign on the Unassigned card."
+msgstr "กฎไม่สามารถมอบหมายบนการ์ดยังไม่มีสถานีได้"
+
+#. module: work_center
+#. odoo-python
+#: code:addons/work_center/models/work_center_assignment_rule.py:0
+#, python-format
+msgid "Invalid domain on assignment rule of %(wc)s: %(error)s"
+msgstr "เงื่อนไขของกฎมอบหมายของ %(wc)s ไม่ถูกต้อง: %(error)s"
+
+#. module: work_center
+#. odoo-python
+#: code:addons/work_center/models/work_center_mixin.py:0
+#, python-format
+msgid "%s is not responsible at the station holding this document."
+msgstr "%s ไม่ได้รับผิดชอบที่สถานีซึ่งถือเอกสารนี้อยู่"
+
+#. module: work_center
+#. odoo-python
+#: code:addons/work_center/models/work_center_mixin.py:0
+#, python-format
+msgid "Only a station administrator can assign the document to someone."
+msgstr "เฉพาะผู้ดูแลสถานีเท่านั้นที่มอบหมายเอกสารให้ผู้อื่นได้"
+
+#. module: work_center
+#. odoo-python
+#: code:addons/work_center/models/work_center_mixin.py:0
+#, python-format
+msgid "This document is assigned to %s. Press Assign to Me first."
+msgstr "เอกสารนี้มอบหมายให้ %s กด \"มอบให้ฉัน\" ก่อน"
+
+#. module: work_center
+#. odoo-python
+#: code:addons/work_center/models/work_center_mixin.py:0
+#, python-format
+msgid "A document is assigned within its station by the station engine, not by hand."
+msgstr "เอกสารถูกมอบหมายภายในสถานีโดยระบบสถานี ไม่ใช่ด้วยมือ"
+
+#. module: work_center
+#. odoo-python
+#: code:addons/work_center/models/work_center_mixin.py:0
+#, python-format
+msgid "The assignee of a document is set by the station engine, not by hand."
+msgstr "ผู้รับผิดชอบงานของเอกสารถูกกำหนดโดยระบบสถานี ไม่ใช่ด้วยมือ"
+
+#. module: work_center
+#. odoo-python
+#: code:addons/work_center/models/work_center_mixin.py:0
+#: model_terms:ir.ui.view,arch_db:work_center.work_center_assign_wizard_view_form
+msgid "Assign"
+msgstr "มอบหมาย"
+
+#. module: work_center
+#: model:ir.model,name:work_center.model_work_center_assignment_rule
+msgid "Station Assignment Rule"
+msgstr "กฎมอบหมายของสถานี"
+
+#. module: work_center
+#: model:ir.model,name:work_center.model_work_center_assign_wizard
+msgid "Assign a Document Within its Station"
+msgstr "มอบหมายเอกสารภายในสถานี"
+
+#. module: work_center
+#: model:ir.model.fields,field_description:work_center.field_work_center_assignment_rule__user_id
+#: model:ir.model.fields,field_description:work_center.field_work_center_mixin__work_center_assignee_id
+#: model_terms:ir.ui.view,arch_db:work_center.work_center_view_form
+msgid "Assignee"
+msgstr "ผู้รับผิดชอบงาน"
+
+#. module: work_center
+#: model:ir.model.fields,help:work_center.field_work_center_mixin__work_center_assignee_id
+msgid "The person handling the document at its station. Picked by the station's assignment rules on arrival; another responsible person takes over by pressing Assign to Me. Without one, every responsible person may act."
+msgstr "ผู้ที่ดูแลเอกสารอยู่ที่สถานี กฎมอบหมายของสถานีเป็นผู้เลือกเมื่อเอกสารมาถึง คนอื่นที่รับผิดชอบรับช่วงได้ด้วยการกด \"มอบให้ฉัน\" ถ้าไม่มีผู้รับผิดชอบงาน ผู้รับผิดชอบทุกคนทำได้"
+
+#. module: work_center
+#: model:ir.model.fields,field_description:work_center.field_work_center_mixin__work_center_can_claim
+msgid "Can Claim"
+msgstr "รับช่วงได้"
+
+#. module: work_center
+#: model:ir.model.fields,help:work_center.field_work_center_mixin__work_center_can_claim
+msgid "Technical: the current user may take the document over, being responsible at its station without being its assignee."
+msgstr "ค่าทางเทคนิค: ผู้ใช้ปัจจุบันรับเอกสารช่วงต่อได้ เพราะรับผิดชอบที่สถานีของเอกสารแต่ไม่ใช่ผู้รับผิดชอบงาน"
+
+#. module: work_center
+#: model:ir.model.fields,field_description:work_center.field_work_center__assignment_rule_ids
+#: model_terms:ir.ui.view,arch_db:work_center.work_center_view_form
+msgid "Assignment Rules"
+msgstr "กฎมอบหมาย"
+
+#. module: work_center
+#: model_terms:ir.ui.view,arch_db:work_center.work_center_view_form
+msgid "Apply Assignment Rules"
+msgstr "ใช้กฎมอบหมาย"
+
+#. module: work_center
+#: model_terms:ir.ui.view,arch_db:work_center.work_center_view_form
+msgid "A document that arrives here goes to the person of the first rule whose condition matches. The others press Assign to Me to take it over."
+msgstr "เอกสารที่มาถึงที่นี่จะไปหาผู้รับผิดชอบงานตามกฎแรกที่เงื่อนไขตรงกัน คนอื่นกด \"มอบให้ฉัน\" เพื่อรับช่วงต่อ"
+
+#. module: work_center
+#: model:ir.model.fields,field_description:work_center.field_work_center_assign_wizard__user_id
+#: model_terms:ir.ui.view,arch_db:work_center.work_center_assign_wizard_view_form
+msgid "Assign To"
+msgstr "มอบหมายให้"
+
+#. module: work_center
+#: model:ir.model.fields,field_description:work_center.field_work_center_assign_wizard__allowed_user_ids
+msgid "Responsible People"
+msgstr "ผู้รับผิดชอบ"
