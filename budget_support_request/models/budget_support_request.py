@@ -85,9 +85,37 @@ class BudgetSupportRequest(models.Model):
         tracking=True,
         help="Fixed: central supports units out of งบประมาณเงินรายได้ only.",
     )
+    fund_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="กองทุน",
+        compute="_compute_analytic_id",
+        inverse="_inverse_fund_analytic",
+        domain=[("root_plan_id.code", "=", "funds")],
+        store=True,
+        tracking=True,
+    )
+    activity_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="ด้าน/แผนงาน/กิจกรรม",
+        compute="_compute_analytic_id",
+        inverse="_inverse_activity_analytic",
+        domain=[("root_plan_id.code", "=", "activities")],
+        store=True,
+        tracking=True,
+    )
+    # รหัสงบประมาณ — the budget code the unit asks support on. Pre-fills the
+    # fulfilment document's account; central may still change it there.
+    budget_account_id = fields.Many2one(
+        comodel_name="budget.account",
+        string="รหัสงบประมาณ",
+        domain=[("budgetable", "=", True), ("budget_type", "=", "expense")],
+        tracking=True,
+    )
     _analytic_keys = {
         "departments": "department_analytic_id",
         "sources": "source_analytic_id",
+        "funds": "fund_analytic_id",
+        "activities": "activity_analytic_id",
     }
 
     def _inverse_department_analytic(self):
@@ -97,6 +125,14 @@ class BudgetSupportRequest(models.Model):
     def _inverse_source_analytic(self):
         for record in self:
             record._update_analytic_distribution("sources")
+
+    def _inverse_fund_analytic(self):
+        for record in self:
+            record._update_analytic_distribution("funds")
+
+    def _inverse_activity_analytic(self):
+        for record in self:
+            record._update_analytic_distribution("activities")
 
     @api.model
     def _default_source_analytic(self):
@@ -647,6 +683,12 @@ class BudgetSupportRequest(models.Model):
                 raise ValidationError(
                     _("Please select the requesting unit's department dimension.")
                 )
+            if not (request.fund_analytic_id and request.activity_analytic_id):
+                raise ValidationError(
+                    _("กรุณาระบุกองทุนและด้าน/แผนงาน/กิจกรรมที่ขอรับการสนับสนุน")
+                )
+            if not request.budget_account_id:
+                raise ValidationError(_("กรุณาระบุรหัสงบประมาณที่ขอรับการสนับสนุน"))
             if not request.account_fiscal_year_id:
                 raise ValidationError(_("Please set the fiscal year."))
             if request.amount_requested <= 0:
@@ -772,9 +814,10 @@ class BudgetSupportRequest(models.Model):
 
     def _prepare_transfer_vals(self):
         """Default values for the draft ``budget.transfer`` opened by
-        :meth:`action_fulfil_transfer`. ``account_id`` on the destination line is left
-        unset — it is a hard required field with no default, so it is filled
-        in by central on the (unsaved) form rather than at creation time."""
+        :meth:`action_fulfil_transfer`. The destination line's ``account_id``
+        is the requested รหัสงบประมาณ; central picks the source line's on the
+        (unsaved) form — a hard required field, so nothing is persisted
+        before central has filled it in."""
         self.ensure_one()
         return {
             # No ``move_type``: it is not on the transfer form, so default_get
@@ -801,7 +844,10 @@ class BudgetSupportRequest(models.Model):
                     {
                         "transfer_direction": "to",
                         "amount": self.amount_requested,
+                        "account_id": self.budget_account_id.id,
                         "department_analytic_id": self.department_analytic_id.id,
+                        "fund_analytic_id": self.fund_analytic_id.id,
+                        "activity_analytic_id": self.activity_analytic_id.id,
                     },
                 )
             ],
@@ -811,13 +857,18 @@ class BudgetSupportRequest(models.Model):
         """Default values for the draft ``budget.commitment`` opened by
         :meth:`action_fulfil_reserve`. No ``line_ids`` — the native Reserve
         button synthesizes the reserve line from the header. ``account_id``
-        is left for central to fill in on the form (see
-        :meth:`_prepare_transfer_vals`)."""
+        is pre-filled with the requested รหัสงบประมาณ; central may change it
+        on the form (see :meth:`_prepare_transfer_vals`)."""
         self.ensure_one()
         return {
             "title": _("สนับสนุน %s") % (self.name or ""),
             "account_fiscal_year_id": self.account_fiscal_year_id.id,
             "amount": self.amount_requested,
+            "account_id": self.budget_account_id.id,
             "source_analytic_id": self.source_analytic_id.id,
+            # The requested กองทุน/กิจกรรม; the department stays central's
+            # (budget ADR-0011), picked on the form.
+            "fund_analytic_id": self.fund_analytic_id.id,
+            "activity_analytic_id": self.activity_analytic_id.id,
             "support_request_id": self.id,
         }

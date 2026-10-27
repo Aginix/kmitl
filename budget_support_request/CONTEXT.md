@@ -14,8 +14,11 @@ routed by a separate bridge).
 **Budget Support Request (คำขอรับการสนับสนุนงบประมาณ)**:
 The document a requesting unit files to ask central for budget. It carries only the
 *request* side — the requester's `department` dimension, the amount asked for, a
-rich-text justification (เหตุผล/ความจำเป็น), and supporting attachments. It does **not**
-name the pool the money comes out of; central picks that when fulfilling.
+rich-text justification (เหตุผล/ความจำเป็น), the **รหัสงบประมาณ** (`budget.account`) it
+wants the money on, and supporting attachments. It does **not** name the pool the money comes
+out of; central picks that when fulfilling. The รหัสงบประมาณ pre-fills the fulfilment
+document's account (the transfer's destination line / the commitment), which central may
+still change there.
 _Avoid_: budget request (ambiguous with พ.1 purchase request), transfer
 
 **แหล่งเงิน of a support request**:
