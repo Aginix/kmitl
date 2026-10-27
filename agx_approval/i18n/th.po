@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-30 16:58+0000\n"
-"PO-Revision-Date: 2026-09-30 16:58+0000\n"
+"POT-Creation-Date: 2026-10-27 00:56+0000\n"
+"PO-Revision-Date: 2026-10-27 00:56+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -50,6 +50,11 @@ msgstr ""
 msgid ""
 "<span attrs=\"{'invisible': [('is_number_assigned', '=', "
 "True)]}\">New</span>"
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+msgid "<span class=\"o_stat_text\">สถานะงบ</span>"
 msgstr ""
 
 #. module: agx_approval
@@ -274,6 +279,7 @@ msgid "Budget"
 msgstr "งบประมาณ"
 
 #. module: agx_approval
+#: model:ir.model,name:agx_approval.model_budget_account
 #: model:ir.model.fields,field_description:agx_approval.field_approval_category__budget_account_id
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__budget_account_id
 msgid "Budget Account"
@@ -496,11 +502,6 @@ msgid "Draft"
 msgstr "แบบร่าง"
 
 #. module: agx_approval
-#: model:ir.model,name:agx_approval.model_hr_employee
-msgid "Employee"
-msgstr "พนักงาน"
-
-#. module: agx_approval
 #: model:ir.model,name:agx_approval.model_exception_rule
 msgid "Exception Rule"
 msgstr "กฎข้อยกเว้น"
@@ -634,6 +635,14 @@ msgid "If checked, some messages have a delivery error."
 msgstr "หากทำเครื่องหมาย บางข้อความมีข้อผิดพลาดในการส่ง"
 
 #. module: agx_approval
+#: model:ir.model.fields,help:agx_approval.field_budget_account__approval_ok
+msgid ""
+"If checked, this budget code can be selected on approval requests "
+"(คำขออนุมัติ), independent of Purchase OK — a code may be usable from both "
+"purchase requests and approval requests (ADR-0004)."
+msgstr ""
+
+#. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__ignore_exception
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request_exception_confirm__ignore
 msgid "Ignore Exceptions"
@@ -643,6 +652,11 @@ msgstr "ละเว้นข้อยกเว้น"
 #: model:ir.model.fields,field_description:agx_approval.field_approval_category__image
 msgid "Image"
 msgstr "รูปภาพ"
+
+#. module: agx_approval
+#: model:ir.model,name:agx_approval.model_hr_employee
+msgid "Inheritted Hr Employee"
+msgstr "พนักงาน"
 
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__is_actual_editable
@@ -1777,7 +1791,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:agx_approval.selection__approval_request__state__to_verify
 #: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_search
 msgid "รอตรวจสอบข้อมูล"
-msgstr ""
+msgstr "รอตรวจสอบ"
 
 #. module: agx_approval
 #: model:ir.model.fields.selection,name:agx_approval.selection__approval_request__state__to_commit
@@ -2162,6 +2176,12 @@ msgid "ใช้เงินจากแผน (จองงบใหม่)"
 msgstr ""
 
 #. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_budget_account__approval_ok
+#: model_terms:ir.ui.view,arch_db:agx_approval.view_budget_account_search
+msgid "ใช้ในคำขออนุมัติ"
+msgstr ""
+
+#. module: agx_approval
 #: model:ir.model.fields,help:agx_approval.field_approval_request__budget_commitment_state
 msgid ""
 "ใช้ในฟอร์มเพื่อแยก 'มีใบจองที่ยังใช้งานอยู่' ออกจาก 'ใบจองถูกยกเลิกแล้ว' — "
@@ -2235,4 +2255,9 @@ msgstr ""
 #: code:addons/agx_approval/models/approval_request_allocation.py:0
 #, python-format
 msgid "ไม่สามารถแก้ไขรายการค่าใช้จ่ายจริงในสถานะนี้"
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.view_budget_account_search
+msgid "ไม่ใช้ในคำขออนุมัติ"
 msgstr ""
