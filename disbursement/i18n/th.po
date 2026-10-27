@@ -393,7 +393,7 @@ msgstr "วันที่หน่วยงานลงนาม"
 #: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__state__in_progress
 #: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
 msgid "In Progress"
-msgstr "อยู่ระหว่างดำเนินการ"
+msgstr "อยู่ระหว่างการดำเนินการเบิกจ่าย"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__main_exception_id
