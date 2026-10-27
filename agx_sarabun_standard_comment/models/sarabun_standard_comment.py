@@ -20,11 +20,10 @@ class SarabunStandardComment(models.Model):
         translate=True,
         help="Short label shown in the picker.",
     )
-    body = fields.Html(
+    body = fields.Text(
         string="ข้อความ (Comment text)",
         required=True,
         translate=True,
-        sanitize=True,
         help="The เกษียน text written into the comment box when this is picked.",
     )
     sequence = fields.Integer(default=10)
