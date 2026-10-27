@@ -42,13 +42,10 @@
 
         <!-- Budget Details -->
         <div class="my-4"/>
+        <p>เลขที่ใบขอเบิก <span t-out="o.name"/></p>
         <p>รายละเอียดงบประมาณ</p>
         <table border="0" class="budget">
             <tbody>
-                <tr class="o_field_name">
-                    <td>เลขที่ใบขอเบิก</td>
-                    <td><span t-out="o.name"/></td>
-                </tr>
                 <tr class="o_field_source_analytic_id">
                     <td>แหล่งเงิน</td>
                     <td><span t-field="o.source_analytic_id"/></td>
