@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_sarabun_step_act_wizard_form_preview" model="ir.ui.view">
+        <field name="name">sarabun.step.act.wizard.form.preview</field>
+        <field name="model">sarabun.step.act.wizard</field>
+        <field
+            name="inherit_id"
+            ref="agx_sarabun.view_sarabun_step_act_wizard_form"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//footer" position="before">
+                <group string="ตรวจสอบก่อนยืนยัน (Preview)">
+                    <field name="preview_html" nolabel="1" readonly="1" />
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>
