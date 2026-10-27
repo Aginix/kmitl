@@ -50,7 +50,12 @@ How it works
   decided live, so the person who acted can be missing from that list: that is
   evidence the membership changed while the document was there, not a breach.
 * One arrival Todo is scheduled per responsible user and closed when the
-  document leaves.
+  document leaves. When the station's **assignment rules** pick a person on
+  arrival, that **assignee** gets the only Todo and the only right to act and
+  move the document: another responsible person presses *Assign to Me* to take
+  it over (the Todo follows, the chatter keeps the history), and a Station
+  Administrator can hand it to anyone responsible. The assignee is cleared when
+  the document leaves, and a station with no matching rule works as before.
 * Each area has one synthetic **Unassigned** card counting the documents in
   the circuit that no rule placed at a station. **Counters** are configurable
   per area and counted with the viewer's own access rights.
@@ -66,6 +71,9 @@ Settings ▸ Stations (group *Station Administrator*):
    unit level; leave it empty for a central station. The *Acts* page lists the
    allowed acts, the required acts and the editable parts. A real station needs
    at least one allowed act or one member.
+#. **Assignment Rules** — a page of the station: per document model, ordered;
+   the first match picks the assignee among the station's responsible people.
+   *Apply Assignment Rules* assigns the documents already waiting there.
 #. **Routes** — one active route per document model; each line holds the
    candidate stations.
 #. **Station Routing Rules** — per document model, ordered; the first match

@@ -19,6 +19,9 @@ class WorkCenterMixin(models.AbstractModel):
       ``_work_center_leave`` takes it out of the circuit.
     * Which acts a station offers, and who may press them, is decided here
       from the act registry: the role gives the right, membership only narrows.
+    * Inside a station, ``work_center_assignee_id`` names the one person
+      handling the document: the station's assignment rules pick them on
+      arrival, any other responsible person takes over by claiming it.
 
     Consumers inherit the mixin with an explicit ``_name`` next to
     ``mail.thread`` (tracking) and ``mail.activity.mixin`` (arrival Todos),
@@ -39,6 +42,18 @@ class WorkCenterMixin(models.AbstractModel):
         ondelete="restrict",
         help="The station holding the document. It only changes through the "
         "forward, divert, send back and exit actions.",
+    )
+    work_center_assignee_id = fields.Many2one(
+        comodel_name="res.users",
+        string="Assignee",
+        index=True,
+        copy=False,
+        readonly=True,
+        tracking=True,
+        help="The person handling the document at its station. Picked by the "
+        "station's assignment rules on arrival; another responsible person "
+        "takes over by pressing Assign to Me. Without one, every responsible "
+        "person may act.",
     )
     work_center_visit_ids = fields.One2many(
         comodel_name="work.center.visit",
@@ -67,6 +82,12 @@ class WorkCenterMixin(models.AbstractModel):
         string="Can Move",
         compute="_compute_work_center_state",
         help="Technical: the current user may forward, divert or send back.",
+    )
+    work_center_can_claim = fields.Boolean(
+        string="Can Claim",
+        compute="_compute_work_center_state",
+        help="Technical: the current user may take the document over, being "
+        "responsible at its station without being its assignee.",
     )
     work_center_arrival_date = fields.Datetime(
         string="Arrived",
@@ -123,6 +144,13 @@ class WorkCenterMixin(models.AbstractModel):
         """The documents that are in the circuit. The Unassigned card counts
         only these among the documents no station holds."""
         return []
+
+    def _work_center_pick_assignee(self, station):
+        """Who handles the document at ``station`` on arrival: the person the
+        station's assignment rules pick, or nobody. A document type may
+        override it."""
+        self.ensure_one()
+        return self.env["work.center.assignment.rule"]._match(self, station)
 
     def _work_center_on_arrival(self, visit):
         """The document has just arrived at ``visit.work_center_id``."""
@@ -275,8 +303,23 @@ class WorkCenterMixin(models.AbstractModel):
         self.ensure_one()
         if not act.group_id or act.group_id not in user.sudo().groups_id:
             return False
+        if self._work_center_held_by_other(user):
+            return False
         members = self._work_center_station_members()
         return not members or user in members
+
+    def _work_center_held_by_other(self, user):
+        """Whether another person, still active and still responsible at the
+        station, handles the document: on top of the role and membership, the
+        user must be its assignee, or take it over first. A document without
+        an assignee, or whose assignee has left the station, is open to every
+        responsible person."""
+        self.ensure_one()
+        assignee = self.sudo().work_center_assignee_id
+        if not assignee or not assignee.active or assignee == user:
+            return False
+        station = self._work_center_holding_station()
+        return bool(station) and assignee in station._responsible_users()[0]
 
     def _work_center_offers(self, code):
         """Whether the act (or editable part) is offered to the current user
@@ -310,6 +353,11 @@ class WorkCenterMixin(models.AbstractModel):
         if members and user not in members:
             raise AccessError(
                 _("Only the members of the station holding this document can do this.")
+            )
+        if self._work_center_held_by_other(user):
+            raise AccessError(
+                _("This document is assigned to %s. Press Assign to Me first.")
+                % self.sudo().work_center_assignee_id.name
             )
 
     def _work_center_act_done(self, code):
@@ -356,7 +404,7 @@ class WorkCenterMixin(models.AbstractModel):
         if not station:
             return False
         users, _source = station._responsible_users()
-        return user in users
+        return user in users and not self._work_center_held_by_other(user)
 
     def _work_center_check_move(self):
         self.ensure_one()
@@ -385,6 +433,7 @@ class WorkCenterMixin(models.AbstractModel):
 
     @api.depends(
         "work_center_id",
+        "work_center_assignee_id",
         "work_center_visit_ids.departure_date",
         "work_center_visit_ids.done_act_ids",
     )
@@ -401,8 +450,16 @@ class WorkCenterMixin(models.AbstractModel):
             rec.work_center_can_move = bool(station) and rec._work_center_user_may_move(
                 self.env.user
             )
-            rec.work_center_responsible_ids = (
+            users = (
                 station._responsible_users()[0] if station else self.env["res.users"]
+            )
+            rec.work_center_responsible_ids = users
+            rec.work_center_can_claim = (
+                bool(station)
+                and not station.is_unassigned
+                and self.env.user in users
+                and len(users) > 1
+                and rec.work_center_assignee_id != self.env.user
             )
             missing = self.env["work.center.act"]
             following = self.env["work.center"]
@@ -536,7 +593,7 @@ class WorkCenterMixin(models.AbstractModel):
         # 4. The pointer.
         target = station if arrival_act else self.env["work.center"]
         record.with_context(work_center_moving=True).write(
-            {"work_center_id": target.id or False}
+            {"work_center_id": target.id or False, "work_center_assignee_id": False}
         )
         # 5. The next visit, with who is responsible frozen at arrival.
         new_visit = self.env["work.center.visit"]
@@ -558,9 +615,14 @@ class WorkCenterMixin(models.AbstractModel):
                     }
                 )
             )
-            # 6. One Todo per responsible user.
+            # 6. One Todo: the assignee's, else one per responsible user.
+            assignee = record._work_center_pick_assignee(placed)
+            if assignee:
+                record.with_context(work_center_moving=True).write(
+                    {"work_center_assignee_id": assignee.id}
+                )
             if "activity_ids" in self._fields:
-                for user in users:
+                for user in assignee or users:
                     record.activity_schedule(
                         ARRIVAL_ACTIVITY, user_id=user.id, note=self.display_name
                     )
@@ -601,6 +663,68 @@ class WorkCenterMixin(models.AbstractModel):
         # Still the mover's note (the uid is unchanged under sudo), but a mover
         # with no mail address must not be able to block the move.
         mine.action_feedback()
+
+    # ------------------------------------------------------------------
+    # The assignee
+    # ------------------------------------------------------------------
+    def _work_center_assign(self, user):
+        """The one writer of the assignee. The arrival Todo follows: the
+        others' are withdrawn and ``user`` gets one if they have none."""
+        self.ensure_one()
+        record = self.sudo()
+        record.with_context(work_center_moving=True).write(
+            {"work_center_assignee_id": user.id}
+        )
+        if "activity_ids" not in self._fields:
+            return
+        arrival = self.env.ref(ARRIVAL_ACTIVITY)
+        todos = record.activity_ids.filtered(
+            lambda activity: activity.activity_type_id == arrival
+        )
+        others = todos.filtered(lambda activity: activity.user_id != user)
+        others.unlink()
+        if not todos - others:
+            record.activity_schedule(
+                ARRIVAL_ACTIVITY, user_id=user.id, note=self.display_name
+            )
+
+    def _work_center_auto_assign(self):
+        """Assign by the station's rules the documents nobody handles yet."""
+        for rec in self.filtered(lambda r: not r.work_center_assignee_id):
+            station = rec._work_center_holding_station()
+            assignee = station and rec._work_center_pick_assignee(station)
+            if assignee:
+                rec._work_center_assign(assignee)
+
+    def _work_center_check_assignable(self, user):
+        self.ensure_one()
+        station = self._work_center_holding_station()
+        if (
+            not station
+            or station.is_unassigned
+            or user not in station._responsible_users()[0]
+        ):
+            raise UserError(
+                _("%s is not responsible at the station holding this document.")
+                % user.name
+            )
+
+    def _work_center_manual_assign(self, user):
+        """A station administrator hands the document to a person of its
+        station, the first time or in place of the one who has it."""
+        self.ensure_one()
+        self._work_center_check_assigner()
+        self._work_center_check_assignable(user)
+        self._work_center_assign(user)
+
+    def _work_center_check_assigner(self):
+        if not (
+            self.env.su
+            or self.env.user.has_group("work_center.group_work_center_manager")
+        ):
+            raise AccessError(
+                _("Only a station administrator can assign the document to someone.")
+            )
 
     # ------------------------------------------------------------------
     # The moves
@@ -761,6 +885,29 @@ class WorkCenterMixin(models.AbstractModel):
         self._work_center_check_move()
         return self._work_center_wizard_action("send_back")
 
+    def action_work_center_assign_me(self):
+        """A responsible person of the station takes the document over."""
+        self.ensure_one()
+        self._work_center_check_assignable(self.env.user)
+        self._work_center_assign(self.env.user)
+        return True
+
+    def action_work_center_assign_wizard(self):
+        """Ask which responsible person is to handle the document."""
+        self.ensure_one()
+        self._work_center_check_assigner()
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("Assign"),
+            "res_model": "work.center.assign.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {
+                "default_res_model": self._name,
+                "default_res_id": self.id,
+            },
+        }
+
     # ------------------------------------------------------------------
     # Only the engine moves a document
     # ------------------------------------------------------------------
@@ -778,6 +925,13 @@ class WorkCenterMixin(models.AbstractModel):
             raise UserError(
                 _("A document is put at a station by the station engine, not by hand.")
             )
+        if not self._work_center_engine_moving() and any(
+            vals.get("work_center_assignee_id") for vals in vals_list
+        ):
+            raise UserError(
+                _("A document is assigned within its station by the station engine, "
+                  "not by hand.")
+            )
         return super().create(vals_list)
 
     def write(self, vals):
@@ -786,6 +940,13 @@ class WorkCenterMixin(models.AbstractModel):
             if any((rec.work_center_id.id or False) != target for rec in self):
                 raise UserError(
                     _("A document is moved between stations by the station engine, "
+                      "not by hand.")
+                )
+        if "work_center_assignee_id" in vals and not self._work_center_engine_moving():
+            target = vals["work_center_assignee_id"] or False
+            if any((rec.work_center_assignee_id.id or False) != target for rec in self):
+                raise UserError(
+                    _("The assignee of a document is set by the station engine, "
                       "not by hand.")
                 )
         return super().write(vals)
