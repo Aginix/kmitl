@@ -2,7 +2,7 @@
     "name": "KMITL Budget Support Request — e-Saraban Approval",
     "summary": """ Route a Budget Support Request for approval """
     """ (ขออนุมัติสนับสนุนงบประมาณ) through e-Saraban """,
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.1.0",
     "category": "KMITL/Budgeting",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",

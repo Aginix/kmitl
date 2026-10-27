@@ -1,6 +1,6 @@
 {
     "name": "KMITL Budget Support Request",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.1.0",
     "summary": """ ขอรับการสนับสนุนงบประมาณ — request budget support from central """,
     "category": "KMITL/Budgeting",
     "author": "Aginix Technologies",
