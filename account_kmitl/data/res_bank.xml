@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!--
-    The banks the institute holds its own accounts at.
+    Every bank on Thailand's interbank clearing list, the one the e-payment
+    layouts take the receiving bank code from. The Bank of Thailand (001) and
+    Thanachart (065, merged into ttb) are left out: neither holds a payee's
+    account.
 
-    Reference data, not demo data. Until now the only Thai banks in the stack
-    came from ``kmitl_demo``, which is not installed on a production database,
-    so nothing there put a bank behind either the institute's own accounts or a
-    payee's — and the e-payment file has to name the bank on both sides.
+    Reference data, not demo data. A payee's account and the institute's own
+    must point at the *same* record for their bank: auto-matching compares the
+    records themselves, not their codes, so a second copy of a bank silently
+    sends every payee at it to the fallback paying account.
 
     ``hooks._seed_bank_accounts`` matches its table against these by BIC to
     attach each paying account to its bank, and that bank is what auto-matching
@@ -14,15 +17,16 @@
 
     The BIC is the key on purpose: it is what the bank export modules themselves
     switch on (``KRTHTHBK`` for KTB, ``SICOTHBK`` for SCB, …), so a record that
-    carries the right one is a record those modules already recognise. The demo
-    copies carried truncated codes ("KTB", "SCB") that match none of them.
+    carries the right one is a record those modules already recognise. Thai
+    Credit's is left blank: the directories disagree on it.
 
-    ``bank_code`` is the bank's clearing code and is seeded here. The e-payment
-    layouts write it straight into the file as the receiving bank — KTB's D
-    record and SCB's 003 record both do — so an empty one is not "rejected
-    visibly" at all: the field goes out as spaces and the bank returns the whole
-    file. The four codes are public, fixed, and the same for every customer of
-    each bank, so there is nothing for the treasury office to decide.
+    ``bank_code`` is the bank's clearing code. The e-payment layouts write it
+    straight into the file as the receiving bank — KTB's D record and SCB's 003
+    record both do — so an empty one is not "rejected visibly" at all: the field
+    goes out as spaces and the bank returns the whole file. The codes are
+    public, fixed, and the same for every customer of each bank (taken from
+    SCB's own upload manual), so there is nothing for the treasury office to
+    decide.
 
     ``bank_branch_code`` is still left blank on purpose. It is per branch, not
     per bank, so no single value on a bank record can be right for every payee;
@@ -30,19 +34,28 @@
     the payee's own account number instead, which is where SCB puts it.
 
     ``short_name`` is the treasury office's own everyday abbreviation, read by
-    nothing but a human — no bank file uses it. Added later than the rest of
-    this record; a database where this file already loaded once needs
-    ``hooks._bind_kmitl_bank_data`` to backfill it, since ``noupdate`` means an
-    upgrade never re-applies a value added here afterwards.
+    nothing but a human — no bank file uses it.
+
+    ``noupdate`` means an upgrade never re-applies a value changed here on a
+    database where the record already exists; such a change needs a one-off
+    data fix at deploy.
 -->
 <odoo noupdate="1">
 
-    <record id="bank_scb" model="res.bank">
-        <field name="name">ธนาคารไทยพาณิชย์ (Siam Commercial Bank)</field>
-        <field name="bic">SICOTHBK</field>
+    <record id="bank_bbl" model="res.bank">
+        <field name="name">ธนาคารกรุงเทพ (Bangkok Bank)</field>
+        <field name="bic">BKKBTHBK</field>
         <field name="country" ref="base.th" />
-        <field name="bank_code">014</field>
-        <field name="short_name">SCB</field>
+        <field name="bank_code">002</field>
+        <field name="short_name">BBL</field>
+    </record>
+
+    <record id="bank_kbank" model="res.bank">
+        <field name="name">ธนาคารกสิกรไทย (Kasikorn Bank)</field>
+        <field name="bic">KASITHBK</field>
+        <field name="country" ref="base.th" />
+        <field name="bank_code">004</field>
+        <field name="short_name">KBANK</field>
     </record>
 
     <record id="bank_ktb" model="res.bank">
@@ -53,6 +66,70 @@
         <field name="short_name">KTB</field>
     </record>
 
+    <record id="bank_jpmc" model="res.bank">
+        <field name="name">ธนาคารเจพีมอร์แกน เชส สาขากรุงเทพฯ (JPMorgan Chase Bank, Bangkok Branch)</field>
+        <field name="bic">CHASTHBX</field>
+        <field name="country" ref="base.th" />
+        <field name="bank_code">008</field>
+        <field name="short_name">JPMC</field>
+    </record>
+
+    <record id="bank_ttb" model="res.bank">
+        <field name="name">ธนาคารทหารไทยธนชาต (TMBThanachart Bank)</field>
+        <field name="bic">TMBKTHBK</field>
+        <field name="country" ref="base.th" />
+        <field name="bank_code">011</field>
+        <field name="short_name">TTB</field>
+    </record>
+
+    <record id="bank_scb" model="res.bank">
+        <field name="name">ธนาคารไทยพาณิชย์ (Siam Commercial Bank)</field>
+        <field name="bic">SICOTHBK</field>
+        <field name="country" ref="base.th" />
+        <field name="bank_code">014</field>
+        <field name="short_name">SCB</field>
+    </record>
+
+    <record id="bank_citi" model="res.bank">
+        <field name="name">ธนาคารซิตี้แบงก์ สาขากรุงเทพฯ (Citibank, Bangkok Branch)</field>
+        <field name="bic">CITITHBX</field>
+        <field name="country" ref="base.th" />
+        <field name="bank_code">017</field>
+        <field name="short_name">CITI</field>
+    </record>
+
+    <record id="bank_smbc" model="res.bank">
+        <field name="name">ธนาคารซูมิโตโม มิตซุย แบงกิ้ง คอร์ปอเรชั่น (Sumitomo Mitsui Banking Corporation)</field>
+        <field name="bic">SMBCTHBK</field>
+        <field name="country" ref="base.th" />
+        <field name="bank_code">018</field>
+        <field name="short_name">SMBC</field>
+    </record>
+
+    <record id="bank_scbt" model="res.bank">
+        <field name="name">ธนาคารสแตนดาร์ดชาร์เตอร์ด (ไทย) (Standard Chartered Bank (Thai))</field>
+        <field name="bic">SCBLTHBX</field>
+        <field name="country" ref="base.th" />
+        <field name="bank_code">020</field>
+        <field name="short_name">SCBT</field>
+    </record>
+
+    <record id="bank_cimb" model="res.bank">
+        <field name="name">ธนาคารซีไอเอ็มบี ไทย (CIMB Thai Bank)</field>
+        <field name="bic">UBOBTHBK</field>
+        <field name="country" ref="base.th" />
+        <field name="bank_code">022</field>
+        <field name="short_name">CIMB</field>
+    </record>
+
+    <record id="bank_uob" model="res.bank">
+        <field name="name">ธนาคารยูโอบี (United Overseas Bank (Thai))</field>
+        <field name="bic">UOVBTHBK</field>
+        <field name="country" ref="base.th" />
+        <field name="bank_code">024</field>
+        <field name="short_name">UOB</field>
+    </record>
+
     <record id="bank_bay" model="res.bank">
         <field name="name">ธนาคารกรุงศรีอยุธยา (Bank of Ayudhya)</field>
         <field name="bic">AYUDTHBK</field>
@@ -61,12 +138,155 @@
         <field name="short_name">BAY</field>
     </record>
 
-    <record id="bank_kbank" model="res.bank">
-        <field name="name">ธนาคารกสิกรไทย (Kasikorn Bank)</field>
-        <field name="bic">KASITHBK</field>
+    <record id="bank_mega" model="res.bank">
+        <field name="name">ธนาคารเมกะ สากลพาณิชย์ (Mega International Commercial Bank)</field>
+        <field name="bic">ICBCTHBK</field>
         <field name="country" ref="base.th" />
-        <field name="bank_code">004</field>
-        <field name="short_name">KBANK</field>
+        <field name="bank_code">026</field>
+        <field name="short_name">MEGA ICBC</field>
+    </record>
+
+    <record id="bank_bofa" model="res.bank">
+        <field name="name">ธนาคารแห่งอเมริกา สาขากรุงเทพฯ (Bank of America, Bangkok Branch)</field>
+        <field name="bic">BOFATH2X</field>
+        <field name="country" ref="base.th" />
+        <field name="bank_code">027</field>
+        <field name="short_name">BOFA</field>
+    </record>
+
+    <record id="bank_gsb" model="res.bank">
+        <field name="name">ธนาคารออมสิน (Government Savings Bank)</field>
+        <field name="bic">GSBATHBK</field>
+        <field name="country" ref="base.th" />
+        <field name="bank_code">030</field>
+        <field name="short_name">GSB</field>
+    </record>
+
+    <record id="bank_hsbc" model="res.bank">
+        <field name="name">ธนาคารฮ่องกงและเซี่ยงไฮ้แบงกิ้งคอร์ปอเรชั่น (HSBC, Bangkok Branch)</field>
+        <field name="bic">HSBCTHBK</field>
+        <field name="country" ref="base.th" />
+        <field name="bank_code">031</field>
+        <field name="short_name">HSBC</field>
+    </record>
+
+    <record id="bank_db" model="res.bank">
+        <field name="name">ธนาคารดอยซ์แบงก์ สาขากรุงเทพฯ (Deutsche Bank, Bangkok Branch)</field>
+        <field name="bic">DEUTTHBK</field>
+        <field name="country" ref="base.th" />
+        <field name="bank_code">032</field>
+        <field name="short_name">DB</field>
+    </record>
+
+    <record id="bank_ghb" model="res.bank">
+        <field name="name">ธนาคารอาคารสงเคราะห์ (Government Housing Bank)</field>
+        <field name="bic">GOHUTHB1</field>
+        <field name="country" ref="base.th" />
+        <field name="bank_code">033</field>
+        <field name="short_name">GHB</field>
+    </record>
+
+    <record id="bank_baac" model="res.bank">
+        <field name="name">ธนาคารเพื่อการเกษตรและสหกรณ์การเกษตร (Bank for Agriculture and Agricultural Cooperatives)</field>
+        <field name="bic">BAABTHBK</field>
+        <field name="country" ref="base.th" />
+        <field name="bank_code">034</field>
+        <field name="short_name">BAAC</field>
+    </record>
+
+    <record id="bank_mizuho" model="res.bank">
+        <field name="name">ธนาคารมิซูโฮ สาขากรุงเทพฯ (Mizuho Bank, Bangkok Branch)</field>
+        <field name="bic">MHCBTHBK</field>
+        <field name="country" ref="base.th" />
+        <field name="bank_code">039</field>
+        <field name="short_name">MHCB</field>
+    </record>
+
+    <record id="bank_bnpp" model="res.bank">
+        <field name="name">ธนาคารบีเอ็นพี พารีบาส์ สาขากรุงเทพฯ (BNP Paribas, Bangkok Branch)</field>
+        <field name="bic">BNPATHBK</field>
+        <field name="country" ref="base.th" />
+        <field name="bank_code">045</field>
+        <field name="short_name">BNPP</field>
+    </record>
+
+    <record id="bank_boc" model="res.bank">
+        <field name="name">ธนาคารแห่งประเทศจีน (ไทย) (Bank of China (Thai))</field>
+        <field name="bic">BKCHTHBK</field>
+        <field name="country" ref="base.th" />
+        <field name="bank_code">052</field>
+        <field name="short_name">BOC</field>
+    </record>
+
+    <record id="bank_isbt" model="res.bank">
+        <field name="name">ธนาคารอิสลามแห่งประเทศไทย (Islamic Bank of Thailand)</field>
+        <field name="bic">TIBTTHBK</field>
+        <field name="country" ref="base.th" />
+        <field name="bank_code">066</field>
+        <field name="short_name">ISBT</field>
+    </record>
+
+    <record id="bank_tisco" model="res.bank">
+        <field name="name">ธนาคารทิสโก้ (TISCO Bank)</field>
+        <field name="bic">TFPCTHB1</field>
+        <field name="country" ref="base.th" />
+        <field name="bank_code">067</field>
+        <field name="short_name">TISCO</field>
+    </record>
+
+    <record id="bank_kkp" model="res.bank">
+        <field name="name">ธนาคารเกียรตินาคินภัทร (Kiatnakin Phatra Bank)</field>
+        <field name="bic">KKPBTHBK</field>
+        <field name="country" ref="base.th" />
+        <field name="bank_code">069</field>
+        <field name="short_name">KKP</field>
+    </record>
+
+    <record id="bank_icbct" model="res.bank">
+        <field name="name">ธนาคารไอซีบีซี (ไทย) (ICBC (Thai))</field>
+        <field name="bic">ICBKTHBK</field>
+        <field name="country" ref="base.th" />
+        <field name="bank_code">070</field>
+        <field name="short_name">ICBCT</field>
+    </record>
+
+    <record id="bank_tcrb" model="res.bank">
+        <field name="name">ธนาคารไทยเครดิต (Thai Credit Bank)</field>
+        <field name="country" ref="base.th" />
+        <field name="bank_code">071</field>
+        <field name="short_name">TCRB</field>
+    </record>
+
+    <record id="bank_lhb" model="res.bank">
+        <field name="name">ธนาคารแลนด์ แอนด์ เฮ้าส์ (Land and Houses Bank)</field>
+        <field name="bic">LAHRTHB2</field>
+        <field name="country" ref="base.th" />
+        <field name="bank_code">073</field>
+        <field name="short_name">LHB</field>
+    </record>
+
+    <record id="bank_anz" model="res.bank">
+        <field name="name">ธนาคารเอเอ็นแซด (ไทย) (ANZ Bank (Thai))</field>
+        <field name="bic">ANZBTHBK</field>
+        <field name="country" ref="base.th" />
+        <field name="bank_code">079</field>
+        <field name="short_name">ANZ</field>
+    </record>
+
+    <record id="bank_smtb" model="res.bank">
+        <field name="name">ธนาคารซูมิโตโม มิตซุย ทรัสต์ (ไทย) (Sumitomo Mitsui Trust Bank (Thai))</field>
+        <field name="bic">STBCTHBK</field>
+        <field name="country" ref="base.th" />
+        <field name="bank_code">080</field>
+        <field name="short_name">SMTB</field>
+    </record>
+
+    <record id="bank_smed" model="res.bank">
+        <field name="name">ธนาคารพัฒนาวิสาหกิจขนาดกลางและขนาดย่อมแห่งประเทศไทย (SME Development Bank)</field>
+        <field name="bic">SMEBTHBK</field>
+        <field name="country" ref="base.th" />
+        <field name="bank_code">098</field>
+        <field name="short_name">SME D</field>
     </record>
 
 </odoo>
