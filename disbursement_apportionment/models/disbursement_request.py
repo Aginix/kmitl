@@ -28,7 +28,7 @@ class DisbursementRequest(models.Model):
         copy=False,
     )
     apportionment_amount = fields.Monetary(
-        string="Apportioned",
+        string="Apportioned Amount",
         compute="_compute_apportionment_amount",
         store=True,
         currency_field="currency_id",
@@ -106,7 +106,9 @@ class DisbursementRequest(models.Model):
         if self.budget_commitment_id or not self.budget_account_id:
             return False
         vals = self._prepare_direct_consume_vals()
-        vals["line_ids"][0][2]["balance"] = -self.budget_total_amount
+        # A transfer kept posted across a cancel has already left the pool.
+        if self.sudo().apportionment_transfer_id.state != "posted":
+            vals["line_ids"][0][2]["balance"] -= self.apportionment_amount
         move = self.env["budget.move"].sudo().new(vals)
         try:
             move.line_ids._check_direct_consume()

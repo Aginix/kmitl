@@ -24,10 +24,8 @@
                     <tbody>
                         <tr t-foreach="o.apportionment_line_ids" t-as="line">
                             <td class="text-center" t-out="line_index + 1"/>
-                            <td t-out="line.budget_account_id.display_name"/>
-                            <td t-out="line.department_analytic_id.display_name"/>
-                            <td t-out="line.fund_analytic_id.display_name"/>
-                            <td t-out="line.activity_analytic_id.display_name"/>
+                            <!-- Code and own name only: the full hierarchy wraps a narrow column. -->
+                            <td t-foreach="(line.budget_account_id, line.department_analytic_id, line.fund_analytic_id, line.activity_analytic_id)" t-as="dim" t-out="'[%s] %s' % (dim.code, dim.name) if dim else ''"/>
                             <td class="text-end" t-out="'{0:,.2f} ฿'.format(line.amount)"/>
                         </tr>
                         <tr>

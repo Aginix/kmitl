@@ -45,7 +45,7 @@
                 <field name="apportionment_transfer_id" attrs="{'invisible': [('apportionment_transfer_id', '=', False)]}" />
             </field>
             <field name="budget_commitment_id" position="attributes">
-                <attribute name="attrs">{'readonly': [('can_edit_budget', '=', False)], 'invisible': [('is_apportioned', '=', True)]}</attribute>
+                <attribute name="attrs">{'readonly': [('can_edit_budget', '=', False)], 'invisible': [('is_apportioned', '=', True), ('budget_commitment_id', '=', False)]}</attribute>
             </field>
             <xpath expr="//notebook/page[@name='lines']" position="after">
                 <page
