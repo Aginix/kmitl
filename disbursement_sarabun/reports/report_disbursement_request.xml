@@ -42,6 +42,7 @@
 
         <!-- Budget Details -->
         <div class="my-4"/>
+        <p><strong>เลขที่ใบขอเบิก</strong> <span t-out="o.name"/></p>
         <p>รายละเอียดงบประมาณ</p>
         <table border="0" class="budget">
             <tbody>
@@ -133,9 +134,8 @@
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="doc">
                 <t t-set="header_title" t-value="'ใบขอเบิก'"/>
-                <!-- Show prefix + "/" during draft so the field is informative before
-                     the number is officially assigned at completion. -->
-                <t t-set="header_code" t-value="doc.origin_reference"/>
+                <!-- The DR number prints in the body's budget table, not the corner. -->
+                <t t-set="header_code" t-value="False"/>
                 <t t-call="agx_sarabun.sarabun_document_layout"/>
             </t>
         </t>
