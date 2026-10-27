@@ -47,6 +47,16 @@
                     attrs="{'invisible':[('hide_reserve_budget_button', '=', True)]}"
                     string="Reserve Budget"
                     class="oe_highlight btn-success"
+                    context="{'budget_reserve_dialog': True}"
+                    groups="purchase_request_budget.group_purchase_request_budget_commit"
+                />
+                <!-- ปรับถัวจ่าย: reserved, not yet sent to e-Saraban, unused
+                     (budget ADR-0020; the server re-checks the window). -->
+                <button
+                    name="action_adjust_cross_charge"
+                    type="object"
+                    string="ปรับถัวจ่าย"
+                    attrs="{'invisible': ['|', ('state', '!=', 'to_approve'), ('budget_commitment_state', '!=', 'reserved')]}"
                     groups="purchase_request_budget.group_purchase_request_budget_commit"
                 />
             </xpath>
@@ -138,7 +148,7 @@
                         widget="budget_commitment_info"
                         domain="reservation_commitment_domain"
                         options="{'no_create': True, 'no_open': True}"
-                        attrs="{'invisible': ['|', '&amp;', ('budget_selection_mode', '=', 'normal'), ('reservation_commitment_id', '=', False), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')], 'readonly': [('is_budget_editable', '=', False)]}"
+                        attrs="{'invisible': ['|', '&amp;', ('budget_selection_mode', '=', 'normal'), ('reservation_commitment_id', '=', False), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', 'not in', ['cancel', 'draft'])], 'readonly': [('is_budget_editable', '=', False)]}"
                         placeholder="เลือกใบจองงบประมาณที่จะหยิบไปใช้"
                     />
 
@@ -148,28 +158,28 @@
                     <field
                         name="budget_account_id"
                         domain="budget_account_domain"
-                        attrs="{'invisible': ['|', ('budget_selection_mode', '!=', 'normal'), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')], 'readonly': [('is_budget_editable', '=', False)]}"
+                        attrs="{'invisible': ['|', ('budget_selection_mode', '!=', 'normal'), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', 'not in', ['cancel', 'draft'])], 'readonly': [('is_budget_editable', '=', False)]}"
                         options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"
                     />
                     <field
                         name="activity_analytic_id"
-                        attrs="{'invisible': ['|', ('budget_selection_mode', '!=', 'normal'), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')], 'readonly': [('is_budget_editable', '=', False)]}"
+                        attrs="{'invisible': ['|', ('budget_selection_mode', '!=', 'normal'), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', 'not in', ['cancel', 'draft'])], 'readonly': [('is_budget_editable', '=', False)]}"
                         options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"
                     />
                     <field
                         name="department_analytic_id"
-                        attrs="{'invisible': ['|', ('budget_selection_mode', '!=', 'normal'), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')], 'readonly': [('is_budget_editable', '=', False)]}"
+                        attrs="{'invisible': ['|', ('budget_selection_mode', '!=', 'normal'), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', 'not in', ['cancel', 'draft'])], 'readonly': [('is_budget_editable', '=', False)]}"
                         options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"
                     />
                     <field
                         name="fund_analytic_id"
                         widget="selection"
-                        attrs="{'invisible': ['|', ('budget_selection_mode', '!=', 'normal'), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')], 'readonly': [('is_budget_editable', '=', False)]}"
+                        attrs="{'invisible': ['|', ('budget_selection_mode', '!=', 'normal'), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', 'not in', ['cancel', 'draft'])], 'readonly': [('is_budget_editable', '=', False)]}"
                     />
                     <field
                         name="source_analytic_id"
                         widget="selection"
-                        attrs="{'invisible': ['|', ('budget_selection_mode', '!=', 'normal'), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')], 'readonly': [('is_budget_editable', '=', False)]}"
+                        attrs="{'invisible': ['|', ('budget_selection_mode', '!=', 'normal'), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', 'not in', ['cancel', 'draft'])], 'readonly': [('is_budget_editable', '=', False)]}"
                     />
                 </group>
             </xpath>

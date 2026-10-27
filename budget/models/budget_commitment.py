@@ -326,6 +326,268 @@ class BudgetCommitment(models.Model):
         readonly=True,
     )
 
+    # The declared per-code plan of the reservation (ถัวจ่าย, ADR-0020).
+    split_ids = fields.One2many(
+        comodel_name="budget.commitment.split",
+        inverse_name="commitment_id",
+        string="รายการจองงบประมาณ",
+        copy=True,
+    )
+    split_editable = fields.Boolean(
+        compute="_compute_split_editable",
+        help="Whether the รายการจองงบประมาณ may be edited now (ADR-0020).",
+    )
+    split_account_ids = fields.Many2many(
+        comodel_name="budget.account",
+        compute="_compute_split_account_ids",
+        help="Codes a ถัว row may name: flagged ถัวจ่ายได้ and funded at this "
+        "reservation's dimensions.",
+    )
+    split_warning = fields.Text(compute="_compute_split_warning")
+
+    @api.depends("state", "kmitl_project_analytic_id", "procurement_plan_analytic_id")
+    def _compute_split_editable(self):
+        """Standalone slips: while draft. A project or plan slip (it carries a
+        Pool Tag) stays single-code. Owners widen this (the พ.1, ADR-0020)."""
+        for record in self:
+            record.split_editable = (
+                record.state == "draft" and record._is_split_capable()
+            )
+
+    def _is_split_capable(self):
+        self.ensure_one()
+        return not (self.kmitl_project_analytic_id or self.procurement_plan_analytic_id)
+
+    @api.depends(
+        "account_id",
+        "analytic_distribution",
+        "account_fiscal_year_id",
+        "split_editable",
+        "split_ids.account_id",
+    )
+    def _compute_split_account_ids(self):
+        Account = self.env["budget.account"].sudo()
+        controller = self.env["budget.controller"].sudo()
+        for record in self:
+            eligible = Account
+            if (
+                record.split_editable
+                and record.account_id.cross_chargeable
+                and record.account_fiscal_year_id
+            ):
+                distribution = record._availability_distribution()
+                candidates = Account.search(
+                    [
+                        ("cross_chargeable", "=", True),
+                        ("budgetable", "=", True),
+                        ("budget_type", "=", "expense"),
+                        ("id", "!=", record.account_id.id),
+                    ]
+                )
+                for account in candidates:
+                    available = controller.get_available_detail(
+                        account,
+                        distribution,
+                        record.account_fiscal_year_id.id,
+                        record.company_id.id,
+                    )["available"]
+                    if available > 0:
+                        eligible |= account
+            record.split_account_ids = (
+                eligible
+                | record.split_ids.filtered(lambda s: not s.is_primary).account_id
+            )
+
+    @api.depends(
+        "amount",
+        "account_id",
+        "split_ids.amount",
+        "split_ids.account_id",
+        "split_ids.available",
+    )
+    def _compute_split_warning(self):
+        for record in self:
+            record.split_warning = "\n".join(record._split_problems()) or False
+
+    def _split_problems(self):
+        """Why the รายการจองงบประมาณ cannot be reserved as it stands."""
+        self.ensure_one()
+        problems = []
+        splits = self.split_ids
+        if not splits:
+            return problems
+        currency = self.currency_id or self.env.company.currency_id
+        primary = splits.filtered("is_primary")
+        others = splits - primary
+        if primary and currency.compare_amounts(primary.amount, 0.0) <= 0:
+            problems.append(
+                _("ยอดถัวจ่ายรวม %(others)s เกินวงเงิน %(cap)s — รหัสหลักต้องเหลือยอดมากกว่า 0")
+                % {
+                    "others": formatLang(
+                        self.env, sum(others.mapped("amount")), currency_obj=currency
+                    ),
+                    "cap": formatLang(self.env, self.amount, currency_obj=currency),
+                }
+            )
+        for split in others.filtered(
+            lambda s: currency.compare_amounts(s.amount, 0.0) <= 0
+        ):
+            problems.append(
+                _("รหัส %s: ระบุยอดถัวจ่ายมากกว่า 0 หรือลบแถวนี้")
+                % split.account_id.display_name
+            )
+        if others:
+            blocked = splits.account_id.filtered(lambda a: not a.cross_chargeable)
+            if blocked:
+                problems.append(
+                    _("รหัสต่อไปนี้ยังไม่ได้ตั้งค่า ถัวจ่ายได้: %s")
+                    % ", ".join(blocked.mapped("display_name"))
+                )
+        for split in splits.filtered(lambda s: s.account_id and not s.is_sufficient):
+            problems.append(
+                _(
+                    "รหัส %(code)s: งบไม่พอ ขาด %(short)s (จอง %(amount)s งบที่จองได้ %(available)s)"
+                )
+                % {
+                    "code": split.account_id.display_name,
+                    "short": formatLang(
+                        self.env, split.amount - split.available, currency_obj=currency
+                    ),
+                    "amount": formatLang(self.env, split.amount, currency_obj=currency),
+                    "available": formatLang(
+                        self.env, split.available, currency_obj=currency
+                    ),
+                }
+            )
+        return problems
+
+    @api.onchange("amount", "account_id", "split_ids")
+    def _onchange_split_primary(self):
+        """Keep row ★ on the header code and at the remainder as the user types."""
+        if self.split_ids:
+            self._sync_split_primary()
+
+    def _sync_split_primary(self):
+        """Row ★ = the header code, amount = วงเงิน − Σ ถัว rows (ADR-0020).
+        Creates the row when missing; a ถัว row naming the header code is
+        merged into it."""
+        for record in self.with_context(budget_split_sync=True):
+            if not record.account_id:
+                continue
+            Split = record.env["budget.commitment.split"]
+            primary = record.split_ids.filtered("is_primary")[:1]
+            duplicate = record.split_ids.filtered(
+                lambda s, r=record: not s.is_primary and s.account_id == r.account_id
+            )
+            if duplicate:
+                if isinstance(record.id, models.NewId):
+                    record.split_ids -= duplicate
+                else:
+                    duplicate.unlink()
+            others = record.split_ids.filtered(lambda s: not s.is_primary)
+            amount = record.amount - sum(others.mapped("amount"))
+            if not primary:
+                vals = {
+                    "is_primary": True,
+                    "sequence": 0,
+                    "account_id": record.account_id.id,
+                    "amount": amount,
+                }
+                if isinstance(record.id, models.NewId):
+                    record.split_ids |= Split.new(vals)
+                else:
+                    Split.create(dict(vals, commitment_id=record.id))
+                continue
+            if primary.account_id != record.account_id:
+                primary.account_id = record.account_id
+            if (record.currency_id or self.env.company.currency_id).compare_amounts(
+                primary.amount, amount
+            ):
+                primary.amount = amount
+
+    def _on_split_changed(self):
+        """After a save touched the split: re-derive row ★, and re-cut a
+        reserved reservation (ADR-0020)."""
+        self._sync_split_primary()
+        for record in self:
+            if record.state == "reserved" and record.split_ids:
+                record.sudo()._recut_reserve_split()
+
+    def _check_split(self):
+        problems = self._split_problems()
+        if problems:
+            raise UserError("\n".join(problems))
+
+    def _create_reserve_lines_from_split(self):
+        """One reserve event per row, row ★ first, so ADR-0018's liquidation
+        order is the split's order."""
+        self.ensure_one()
+        vals_list = []
+        for split in self.split_ids.filtered(lambda s: s.amount > 0):
+            vals = self._prepare_budget_event_vals(
+                "reserve", split.amount, name=_("Reservation")
+            )
+            vals["account_id"] = split.account_id.id
+            vals_list.append(vals)
+        return self.env["budget.commitment.line"].create(vals_list)
+
+    def _recut_reserve_split(self):
+        """ปรับถัวจ่าย: re-cut a reserved, unused reservation to its split —
+        cancel the reserve events, re-check every pool with this reservation
+        given back, then post the new events."""
+        self.ensure_one()
+        used = self.line_ids.filtered(
+            lambda line: (
+                line.state == "posted"
+                and (line.move_type != "reserve" or line.is_return)
+            )
+        )
+        if used:
+            raise UserError(
+                _("ใบจอง %s มีการผูกพัน เบิกจ่าย หรือส่งคืนแล้ว ปรับถัวจ่ายไม่ได้") % self.name
+            )
+        self._check_split()
+        current = {
+            (line.account_id, line.amount) for line in self._pending_reserve_lines()
+        }
+        wanted = {(s.account_id, s.amount) for s in self.split_ids if s.amount > 0}
+        if current == wanted:
+            return
+        self._pending_reserve_lines().action_cancel()
+        amounts = {}
+        for split in self.split_ids.filtered(lambda s: s.amount > 0):
+            amounts[split.account_id] = split.amount
+        self._check_reserve_availability(amounts)
+        self._create_reserve_lines_from_split()
+        self.message_post(
+            body=_("ปรับรายการจองงบประมาณ (ถัวจ่าย): %s")
+            % ", ".join(
+                "%s %s"
+                % (
+                    split.account_id.display_name,
+                    formatLang(self.env, split.amount, currency_obj=self.currency_id),
+                )
+                for split in self.split_ids
+            )
+        )
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        records = super(
+            BudgetCommitment, self.with_context(budget_split_batch=True)
+        ).create(vals_list)
+        records = records.with_env(self.env)
+        records.filtered("split_ids")._sync_split_primary()
+        return records
+
+    def write(self, vals):
+        res = super(BudgetCommitment, self.with_context(budget_split_batch=True)).write(
+            vals
+        )
+        if {"split_ids", "amount", "account_id"} & set(vals):
+            self.filtered("split_ids")._on_split_changed()
+        return res
+
     @api.depends(
         "ledger_line_ids.balance",
         "ledger_line_ids.move_type",
@@ -627,6 +889,23 @@ class BudgetCommitment(models.Model):
                     "value": value.display_name if value else "-",
                 }
             )
+        if len(self.split_ids) > 1:
+            rows.append(
+                {
+                    "label": _("ถัวจ่าย"),
+                    "value": ", ".join(
+                        "%s%s %s"
+                        % (
+                            "★ " if split.is_primary else "",
+                            split.account_id.display_name,
+                            formatLang(
+                                self.env, split.amount, currency_obj=self.currency_id
+                            ),
+                        )
+                        for split in self.split_ids
+                    ),
+                }
+            )
         for fname in self._RESERVATION_INFO_FIELDS_IF_SET:
             value = self[fname]
             if value:
@@ -676,7 +955,12 @@ class BudgetCommitment(models.Model):
             # The pending reserve events are the command to reserve (they post to
             # the ledger only once reserved), so test for them, not for a total.
             if not record._pending_reserve_lines():
-                record._create_reserve_line_from_header()
+                if record.split_ids:
+                    record._sync_split_primary()
+                    record._check_split()
+                    record._create_reserve_lines_from_split()
+                else:
+                    record._create_reserve_line_from_header()
             if sum(record._pending_reserve_lines().mapped("amount")) <= 0:
                 raise UserError(
                     _(
@@ -821,7 +1105,7 @@ class BudgetCommitment(models.Model):
         self._budget_event_lines(source=source, move_types=move_types).action_cancel()
         return True
 
-    def _check_reserve_availability(self):
+    def _check_reserve_availability(self, amounts=None):
         """Block reserving more than the control-node Available (ADR-0005).
 
         Runs while the commitment is still ``draft`` (so its own reserve lines are
@@ -829,7 +1113,9 @@ class BudgetCommitment(models.Model):
         Availability is evaluated with the **header** dimension combination
         (``analytic_distribution``) — the reserve lines a host mixin builds carry
         only a subset (activity+fund) while the header carries all dimensions —
-        paired with each reserve line's own budget account.
+        paired with each reserve line's own budget account — or with
+        ``amounts`` ({budget.account: amount}) when given, for a re-cut whose
+        events are not created yet (ADR-0020).
 
         The amounts are summed **per pool**, not per budget code: the codes of a
         ถัวจ่าย reservation that resolve to the same funded ancestor draw on one
@@ -850,11 +1136,11 @@ class BudgetCommitment(models.Model):
         company_id = self.company_id.id
         rounding = self.currency_id.rounding or 0.01
         avail_distribution = self._availability_distribution()
-        reserve_lines = self._pending_reserve_lines()
-        per_account = {}
-        for line in reserve_lines:
-            per_account.setdefault(line.account_id, 0.0)
-            per_account[line.account_id] += line.amount
+        per_account = dict(amounts or {})
+        if amounts is None:
+            for line in self._pending_reserve_lines():
+                per_account.setdefault(line.account_id, 0.0)
+                per_account[line.account_id] += line.amount
         # Group the reserve amounts by the *pool* they resolve to, not by account:
         # several child codes can draw one coarse pool, so summing per account
         # would let each child pass on its own while together they overspend the

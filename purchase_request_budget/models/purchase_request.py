@@ -239,7 +239,7 @@ class PurchaseRequest(models.Model):
         for rec in self:
             if rec.state in can_edit and (
                 not rec.budget_commitment_id
-                or rec.budget_commitment_id.state == "cancel"
+                or rec.budget_commitment_id.state in ("cancel", "draft")
             ):
                 rec.is_budget_editable = can_edit[rec.state]
             else:
@@ -472,6 +472,12 @@ class PurchaseRequest(models.Model):
                 _("กรุณาระบุข้อมูลงบประมาณให้ครบก่อนจองงบประมาณ: %s") % ", ".join(missing)
             )
 
+        # From the form, Reserve opens the ใบจองงบประมาณ itself as a dialog,
+        # where ถัวจ่าย codes are added before confirming (budget ADR-0020).
+        # Called from code (demo data, tests) it still reserves the one code.
+        if self.env.context.get("budget_reserve_dialog"):
+            return self._prepare_reservation_slip()._action_open_request_dialog()
+
         amount = sum(self.line_ids.mapped("estimated_cost"))
 
         # ปีงบยึดตามเอกสาร: check/reserve against this request's own fiscal year
@@ -524,6 +530,53 @@ class PurchaseRequest(models.Model):
         except UserError as e:
             raise UserError(_("Cannot reserve budget: %s") % str(e))
 
+    def _prepare_reservation_slip(self):
+        """The draft ใบจองงบประมาณ behind the Reserve dialog (ADR-0020), built
+        from — or refreshed to — this พ.1: ปีงบ, dimensions, Primary Code and
+        วงเงิน = the พ.1 total. A slip left in draft by a closed dialog (or
+        cancelled earlier) is reused, keeping its ถัว rows."""
+        self.ensure_one()
+        vals = self.sudo()._prepare_commitment_vals(
+            sum(self.line_ids.mapped("estimated_cost")),
+            self.activity_analytic_id.id,
+            self.fund_analytic_id.id,
+            self.department_analytic_id.id,
+            self.source_analytic_id.id,
+            self.name,
+            f"Purchase Request: {self.name}",
+            self.budget_account_id,
+            account_fiscal_year_id=self.account_fiscal_year_id.id,
+            **self._get_budget_commitment_extra_kwargs(),
+        )
+        vals.pop("line_ids")
+        slip = self.sudo().budget_commitment_id
+        if slip.state == "cancel":
+            slip.action_reset_to_draft()
+        if slip.state == "draft":
+            vals.pop("company_id", None)
+            slip.write(vals)
+        else:
+            slip = self.env["budget.commitment"].sudo().create(vals)
+            self.sudo().budget_commitment_id = slip
+        slip._sync_split_primary()
+        return slip.with_env(self.env)
+
+    def _action_open_request_dialog(self):
+        return self.budget_commitment_id._action_open_request_dialog()
+
+    def action_adjust_cross_charge(self):
+        """ปรับถัวจ่าย: reopen the reserved slip's dialog while the พ.1 is
+        reserved but not yet sent to e-Saraban (ADR-0020)."""
+        self.ensure_one()
+        commitment = self.budget_commitment_id
+        if not commitment.split_editable:
+            raise UserError(
+                _("ปรับถัวจ่ายได้เฉพาะคำขอที่จองงบแล้ว ยังไม่ส่งหนังสือ และยังไม่มีการใช้เงิน")
+            )
+        if not commitment.split_ids:
+            commitment.sudo()._sync_split_primary()
+        return commitment._action_open_request_dialog()
+
     def _action_draw_from_reservation(self):
         """Draw down an existing reservation (ใบจองงบประมาณ) instead of reserving.
 
@@ -540,6 +593,9 @@ class PurchaseRequest(models.Model):
                 _("ใบจองงบประมาณ %s ไม่อยู่ในสถานะที่หยิบไปใช้ได้") % commitment.name
             )
         self._check_drawable_commitment(commitment)
+        if self.budget_commitment_id.state == "draft":
+            # A slip left in draft by the Reserve dialog; it locks nothing.
+            self.budget_commitment_id.sudo().unlink()
         self.write(
             {
                 "budget_commitment_id": commitment.id,

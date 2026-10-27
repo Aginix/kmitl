@@ -53,8 +53,16 @@ A budget account where budget may be specified — both reserved against and app
 _Avoid_: leaf, allocatable
 
 **Cross-charge (ถัวจ่าย, `cross_chargeable`)**:
-Pooling more than one budget code inside a *single* reservation. A reservation normally carries one budget code; it may carry several reserve lines only when every line's budget account is flagged `cross_chargeable`. The flag alone governs eligibility — flagged codes may be pooled together regardless of category.
+Pooling more than one budget code inside a *single* reservation, all at the **same dimensions** — only the code differs. A reservation normally carries one budget code; it may carry several only when every code, the Primary Code included, is flagged `cross_chargeable`. The flag alone governs eligibility — flagged codes may be pooled together regardless of category — and a ถัว code must also be funded at the reservation's dimensions (Available > 0). Entered on the ใบจองงบประมาณ itself, as its Reservation Split ([ADR-0020](docs/adr/0020-cross-charge-entered-on-the-reservation-form.md)).
 _Avoid_: transfer (that is `budget.transfer`, a balanced move *between* accounts; cross-charge moves nothing — it spends several pools in one reservation), virement
+
+**Primary Code (รหัสหลัก)**:
+The header `account_id` of a reservation: the code the requesting document names, liquidated first by every obligate/consume (ADR-0018). On a ถัวจ่าย reservation its share is never typed — it is the **remainder**, วงเงิน − Σ ถัว rows, so the split always totals the วงเงิน.
+_Avoid_: main account, default account
+
+**Reservation Split (รายการจองงบประมาณ, `budget.commitment.split`)**:
+The declared per-code amounts of a reservation — row ★ is the Primary Code, the others its ถัว codes. It is the **plan**, the reserve events are the **command**: จองงบ derives one reserve event per row, and re-cutting a reserved split (ปรับถัวจ่าย) cancels those events and posts new ones. Rows are editable only while the reservation's owner allows it (a draft standalone slip; for a พ.1, its two windows in ADR-0020). Once reserved each row also shows its code's จองเงิน / ผูกพัน / เบิกจ่าย / คงเหลือ.
+_Avoid_: reserve line (that is the immutable event), allocation
 
 **Control Node (โหนดคุมงบ)**:
 The single funded **coordinate** at or above a reservation on **every** axis at once — the one Budget Pool that covers the reservation's account *and* each of its controlled dimension values (each equal-or-ancestor of the reservation's), read in one grouped query. A reservation draws from its control node, and all usage in that node's subtree rolls up to it. Mostly the control node *is* the reservation's own coordinate; for coarsely-budgeted lines (personnel, project) or a **Descendant Code** draw it is an ancestor on one or more axes. Appropriation may sit at or above the reservation, **never below** it (one-way, up only): a reservation at a code with no funded coordinate at/above it is *uncovered* and has zero Available. Because pools never nest ([ADR-0016](docs/adr/0016-pools-never-nest-descendant-draw.md)) exactly one coordinate ever qualifies.

@@ -1,5 +1,7 @@
 # Reservation is a ledger of reserve lines; header budget account is a mirror
 
+> **Amended by [ADR-0020](0020-cross-charge-entered-on-the-reservation-form.md):** the `cross_chargeable` flag still governs, but the header `account_id` stays the writable Primary Code (not a mirror), and ถัวจ่าย is entered on the reservation form's Reservation Split, not through the picker widget.
+
 A budget reservation (`budget.commitment`) holds its budget codes as `budget.commitment.line` reserve lines (budget account + amount each) — **the lines are the source of truth**. The header `account_id` is kept for the common single-code case but becomes a **computed/stored mirror**: the line's account when there is exactly one reserve line, blank / labelled "ถัวจ่าย" when there are several. The five fixed analytic dimensions live on the header — one combination for the whole reservation (per ADR 0005, the same combination applies to every line).
 
 Most reservations use a **single** budget code. Multiple codes — **ถัวจ่าย / cross-charge**, pooling several pools in one reservation — are the minority and are gated by a new `budget.account.cross_chargeable` flag: a reservation may hold more than one reserve line **only when every line's account is `cross_chargeable = true`**. The flag alone governs; there is no same-category constraint.
