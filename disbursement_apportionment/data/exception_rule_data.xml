@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- ปันส่วน (disbursement ADR-0009): consumed directly from the pool, the
+         apportioned share transferred out of the same coordinate by the
+         consume-budget act. Blocking, checked on submit; the posting
+         re-checks availability. -->
+    <record id="excep_disbursement_apportionment_lines" model="exception.rule">
+        <field name="name">ใบขอเบิกที่มีการปันส่วนยังไม่ระบุปลายทางปันส่วน</field>
+        <field name="description">ใบขอเบิกที่มีการปันส่วนต้องระบุปลายทางปันส่วนอย่างน้อยหนึ่งรายการ</field>
+        <field name="sequence">24</field>
+        <field name="model">disbursement.request</field>
+        <field name="exception_type">by_py_code</field>
+        <field name="code">
+if self.is_apportioned and not self.apportionment_line_ids:
+    failed = True
+        </field>
+        <field name="is_blocking" eval="True" />
+        <field name="active" eval="True" />
+    </record>
+    <record id="excep_disbursement_apportionment_budget" model="exception.rule">
+        <field name="name">ใบขอเบิกที่มีการปันส่วนต้องตัดงบประมาณโดยไม่ผูกใบจองงบประมาณ</field>
+        <field name="description">ใบขอเบิกที่มีการปันส่วนตัดงบประมาณตรงจากงบคงเหลือ จึงต้องไม่ผูกใบจองงบประมาณ และต้องตัดงบประมาณ</field>
+        <field name="sequence">25</field>
+        <field name="model">disbursement.request</field>
+        <field name="exception_type">by_py_code</field>
+        <field name="code">
+if self.is_apportioned and (self.budget_commitment_id or not self.consumes_budget):
+    failed = True
+        </field>
+        <field name="is_blocking" eval="True" />
+        <field name="active" eval="True" />
+    </record>
+    <record id="excep_disbursement_apportionment_available" model="exception.rule">
+        <field name="name">งบประมาณคงเหลือไม่พอสำหรับยอดตัดงบรวม (รวมปันส่วน)</field>
+        <field name="description">งบประมาณคงเหลือตามมิติและรหัสงบประมาณที่ระบุไม่พอสำหรับยอดเบิกรวมยอดปันส่วน</field>
+        <field name="sequence">26</field>
+        <field name="model">disbursement.request</field>
+        <field name="exception_type">by_py_code</field>
+        <field name="code">
+if self.is_apportioned and self._direct_claim_budget_shortfall():
+    failed = True
+        </field>
+        <field name="is_blocking" eval="True" />
+        <field name="active" eval="True" />
+    </record>
+</odoo>
