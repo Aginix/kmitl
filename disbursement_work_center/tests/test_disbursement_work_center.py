@@ -148,6 +148,18 @@ class TestDisbursementWorkCenter(TwoApproverCommon):
         self.assertEqual(dr.state, "cancel")
         self.assertFalse(dr.work_center_id)
 
+    def test_verification_officer_is_the_assignee_of_the_station(self):
+        self.env["work.center.assignment.rule"].create(
+            {
+                "work_center_id": self.stations["check"].id,
+                "model_id": self.env["ir.model"]._get_id("disbursement.request"),
+                "user_id": self.members["check"].id,
+            }
+        )
+        dr = self._signed_dr()
+        self.assertEqual(dr.work_center_assignee_id, self.members["check"])
+        self.assertEqual(dr._verification_officer(), self.members["check"])
+
     def test_the_station_decides_what_can_be_edited(self):
         dr = self._signed_dr()
         self.env.invalidate_all()

@@ -34,6 +34,7 @@
                 >
                     <field name="work_center_user_in_area" invisible="1" />
                     <field name="work_center_can_move" invisible="1" />
+                    <field name="work_center_can_claim" invisible="1" />
                     <field name="work_center_route_steps" class="d-block mb-2" />
                     <div
                         class="d-flex flex-column flex-md-row justify-content-between align-items-md-start gap-2"
@@ -76,11 +77,14 @@
                                     />
                                 </div>
                             </div>
-                            <div class="small">
-                                <div class="d-inline-block text-muted">Responsible</div>
+                            <div
+                                class="small"
+                                attrs="{'invisible': [('work_center_assignee_id', '=', False)]}"
+                            >
+                                <div class="d-inline-block text-muted">Assignee</div>
                                 <field
-                                    name="work_center_responsible_ids"
-                                    widget="many2many_avatar_user"
+                                    name="work_center_assignee_id"
+                                    widget="many2one_avatar_user"
                                     class="oe_inline ms-1"
                                 />
                             </div>
@@ -134,9 +138,24 @@
                                 class="btn-secondary"
                                 attrs="{'invisible': ['|', '|', ('state', '!=', 'in_progress'), ('work_center_can_move', '=', False), ('returned_to_source', '=', True)]}"
                             />
+                            <button
+                                name="action_work_center_assign_me"
+                                string="Assign to Me"
+                                type="object"
+                                class="btn-secondary"
+                                attrs="{'invisible': ['|', ('state', '!=', 'in_progress'), ('work_center_can_claim', '=', False)]}"
+                            />
+                            <button
+                                name="action_work_center_assign_wizard"
+                                string="Assign…"
+                                type="object"
+                                class="btn-secondary"
+                                groups="work_center.group_work_center_manager"
+                                attrs="{'invisible': [('state', '!=', 'in_progress')]}"
+                            />
                             <div
                                 class="text-muted small"
-                                attrs="{'invisible': ['|', ('work_center_can_move', '=', True), ('returned_to_source', '=', True)]}"
+                                attrs="{'invisible': ['|', '|', ('work_center_can_move', '=', True), ('work_center_can_claim', '=', True), ('returned_to_source', '=', True)]}"
                             >
                                 <i class="fa fa-eye me-1" aria-hidden="true" />
                                 <div
@@ -178,6 +197,11 @@
         <field name="arch" type="xml">
             <field name="state" position="after">
                 <field name="work_center_id" optional="show" />
+                <field
+                    name="work_center_assignee_id"
+                    widget="many2one_avatar_user"
+                    optional="show"
+                />
             </field>
         </field>
     </record>
@@ -193,12 +217,27 @@
                     name="at_my_stations"
                     domain="[('work_center_id.is_my_station', '=', True)]"
                 />
+                <filter
+                    string="Assigned to Me"
+                    name="assigned_to_me"
+                    domain="[('work_center_assignee_id', '=', uid)]"
+                />
+                <filter
+                    string="Not Assigned"
+                    name="not_assigned"
+                    domain="[('work_center_id', '!=', False), ('work_center_assignee_id', '=', False)]"
+                />
             </filter>
             <filter name="group_settlement_stage" position="after">
                 <filter
                     string="Station"
                     name="group_work_center"
                     context="{'group_by': 'work_center_id'}"
+                />
+                <filter
+                    string="Assignee"
+                    name="group_work_center_assignee"
+                    context="{'group_by': 'work_center_assignee_id'}"
                 />
             </filter>
         </field>
