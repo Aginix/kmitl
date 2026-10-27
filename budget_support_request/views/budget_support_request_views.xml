@@ -16,7 +16,6 @@
                     <button name="action_fulfil_reserve" type="object" string="จัดสรร → จอง" class="btn-primary" attrs="{'invisible': [('show_fulfil_reserve_button', '=', False)]}"/>
                     <button name="action_done" type="object" string="เสร็จสิ้น" class="btn-success" attrs="{'invisible': [('show_done_button', '=', False)]}"/>
                     <button name="action_reset_to_draft" type="object" string="Reset to Draft" attrs="{'invisible': [('show_reset_button', '=', False)]}"/>
-                    <button name="action_cancel" type="object" string="Cancel" attrs="{'invisible': [('show_cancel_button', '=', False)]}"/>
 
                     <field name="state" widget="statusbar" statusbar_visible="draft,to_verify,submitted,approved,in_progress,done"/>
                 </header>
@@ -37,34 +36,36 @@
                         <h1>
                             <field name="name" class="o_text_overflow" readonly="1"/>
                         </h1>
+                        <label for="title"/>
+                        <h2>
+                            <field name="title" required="1" placeholder="ชื่อเรื่อง" attrs="{'readonly': [('can_edit', '=', False)]}"/>
+                        </h2>
                     </div>
 
                     <group>
                         <group name="request_info" string="Request Information">
                             <field name="department_analytic_id" required="1" attrs="{'readonly': [('can_edit', '=', False)]}" options="{'no_create': True, 'no_open': True}"/>
                             <field name="source_analytic_id" options="{'no_create': True, 'no_open': True}"/>
-                            <field name="date" attrs="{'readonly': [('can_edit', '=', False)]}"/>
                             <field name="fiscal_year_locked" invisible="1"/>
                             <field name="account_fiscal_year_id" options="{'no_open': True}" attrs="{'readonly': ['|', ('can_edit', '=', False), ('fiscal_year_locked', '=', True)]}"/>
                             <field name="user_id"/>
                             <field name="can_edit_officer" invisible="1"/>
                             <field name="officer_id" required="1" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': [('can_edit_officer', '=', False)]}"/>
+                            <field name="date"/>
+                            <field name="verify_date" attrs="{'invisible': [('verify_date', '=', False)]}"/>
                         </group>
                         <group name="amount_info" string="จำนวนเงิน">
-                            <field name="amount_requested" widget="monetary" attrs="{'readonly': [('can_edit', '=', False)]}"/>
-                            <field name="currency_id" invisible="1"/>
-                            <field name="company_id" groups="base.group_multi_company"/>
-                        </group>
-                    </group>
-                    <group name="verify_meta" attrs="{'invisible': [('verify_date', '=', False)]}">
-                        <group>
-                            <field name="verify_date"/>
-                        </group>
-                    </group>
-                    <group name="approval_meta" attrs="{'invisible': [('approver_id', '=', False)]}">
-                        <group>
-                            <field name="approver_id"/>
-                            <field name="approval_date"/>
+                            <group name="amount_fields" colspan="2">
+                                <field name="amount_requested" widget="monetary" attrs="{'readonly': [('can_edit', '=', False)]}"/>
+                                <field name="currency_id" invisible="1"/>
+                                <field name="company_id" groups="base.group_multi_company"/>
+                            </group>
+                            <!-- The outcome of approval, beside what was asked —
+                                 nothing to show until the Buddy has released it. -->
+                            <group name="approval_info" string="การอนุมัติ" colspan="2" attrs="{'invisible': [('state', 'in', ('draft', 'to_verify'))]}">
+                                <field name="approver_id"/>
+                                <field name="approval_date"/>
+                            </group>
                         </group>
                     </group>
 
@@ -90,7 +91,6 @@
                 <field name="show_fulfil_transfer_button" invisible="1"/>
                 <field name="show_fulfil_reserve_button" invisible="1"/>
                 <field name="show_done_button" invisible="1"/>
-                <field name="show_cancel_button" invisible="1"/>
                 <field name="show_reset_button" invisible="1"/>
                 <field name="can_edit" invisible="1"/>
             </form>
@@ -104,6 +104,7 @@
         <field name="arch" type="xml">
             <tree string="Budget Support Requests" decoration-info="state == 'draft'" decoration-warning="state in ('to_verify', 'submitted')" decoration-success="state in ('approved', 'in_progress', 'done')" decoration-muted="state == 'cancelled'">
                 <field name="name"/>
+                <field name="title"/>
                 <field name="date"/>
                 <field name="department_analytic_id"/>
                 <field name="source_analytic_id" optional="hide"/>
@@ -124,6 +125,7 @@
         <field name="arch" type="xml">
             <search string="Search Budget Support Requests">
                 <field name="name" string="Request Number"/>
+                <field name="title"/>
                 <field name="user_id" string="ผู้ขอ"/>
                 <field name="officer_id" string="เจ้าหน้าที่ Buddy"/>
                 <field name="account_fiscal_year_id" string="Fiscal Year"/>

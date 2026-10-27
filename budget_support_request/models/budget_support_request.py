@@ -39,6 +39,9 @@ class BudgetSupportRequest(models.Model):
         index="trigram",
         default=lambda self: _("New"),
     )
+    # ชื่อเรื่อง — what the request is about, in the unit's own words; it is
+    # also the เรื่อง of the หนังสือ the e-Saraban bridge issues.
+    title = fields.Char(string="ชื่อเรื่อง", tracking=True)
     state = fields.Selection(
         selection=[
             ("draft", "Draft"),
@@ -133,7 +136,9 @@ class BudgetSupportRequest(models.Model):
         if source:
             for vals in vals_list:
                 vals.setdefault("source_analytic_id", source.id)
-        return super().create(vals_list)
+        requests = super().create(vals_list)
+        requests._subscribe_officer()
+        return requests
 
     company_id = fields.Many2one(
         comodel_name="res.company",
@@ -153,9 +158,12 @@ class BudgetSupportRequest(models.Model):
         tracking=True,
         readonly=False,
     )
+    # วันที่ส่งคำขอ — stamped by :meth:`action_submit` (the latest one, when a
+    # request comes back and is re-sent); today's date until then.
     date = fields.Date(
-        string="Date",
+        string="วันที่ส่งคำขอ",
         default=fields.Date.context_today,
+        readonly=True,
         tracking=True,
     )
     amount_requested = fields.Monetary(
@@ -247,7 +255,6 @@ class BudgetSupportRequest(models.Model):
     show_fulfil_transfer_button = fields.Boolean(compute="_compute_button_visibility")
     show_fulfil_reserve_button = fields.Boolean(compute="_compute_button_visibility")
     show_done_button = fields.Boolean(compute="_compute_button_visibility")
-    show_cancel_button = fields.Boolean(compute="_compute_button_visibility")
     show_reset_button = fields.Boolean(compute="_compute_button_visibility")
 
     # Single flag driving every "editable while …" attrs in the form. The
@@ -339,10 +346,18 @@ class BudgetSupportRequest(models.Model):
             else:
                 request.officer_id = request.officer_id
 
-    @api.depends("state")
+    @api.depends("state", "officer_id")
+    @api.depends_context("uid")
     def _compute_can_edit(self):
+        """Editable in draft, and by the named Buddy (or an admin) while it
+        waits for their check — they may correct it instead of sending it
+        back."""
+        is_admin = self.env.is_admin()
         for request in self:
-            request.can_edit = request.state == "draft"
+            request.can_edit = request.state == "draft" or (
+                request.state == "to_verify"
+                and (is_admin or request.officer_id == self.env.user)
+            )
 
     @api.depends("state")
     def _compute_can_edit_officer(self):
@@ -381,16 +396,11 @@ class BudgetSupportRequest(models.Model):
             request.show_done_button = request.state == "in_progress" and (
                 is_manager or is_admin
             )
-            request.show_cancel_button = request.state in (
-                "draft",
-                "to_verify",
-                "submitted",
-            )
-            # Reopening past `submitted` is the Budget Manager's alone
+            # Reopening a decided request is the Budget Manager's alone
             # (CONTEXT.md ▸ Reopening).
             request.show_reset_button = (
-                request.state in ("to_verify", "submitted")
-                and (request.user_id == user or is_admin)
+                request.state in self._requester_reopen_states()
+                and (request.user_id == user or is_manager or is_admin)
             ) or (
                 request.state in ("cancelled", "approved", "in_progress", "done")
                 and (is_manager or is_admin)
@@ -443,7 +453,13 @@ class BudgetSupportRequest(models.Model):
                     % request.officer_id.name
                 )
         self._validate_request_data()
-        self.write({"state": "to_verify", "verify_date": False})
+        self.write(
+            {
+                "state": "to_verify",
+                "date": fields.Date.context_today(self),
+                "verify_date": False,
+            }
+        )
         self.activity_feedback([CORRECT_ACTIVITY])
         self._after_submitted()
         return True
@@ -564,29 +580,27 @@ class BudgetSupportRequest(models.Model):
         self._after_done()
         return True
 
-    def action_cancel(self):
-        """Block only once central has acted on the request — a bridge that
-        adds its own pre-approval states (e.g. ``sent``/``returned``) stays
-        cancellable through here without needing to loosen this check."""
-        if self.filtered(lambda r: r.state in ("approved", "in_progress", "done")):
-            raise UserError(_("An approved or fulfilled request cannot be cancelled."))
-        self.write({"state": "cancelled"})
-        self.sudo().activity_unlink([VERIFY_ACTIVITY, CORRECT_ACTIVITY])
-        return True
+    @api.model
+    def _requester_reopen_states(self):
+        """States the requester may take their own request back from — it has
+        not been decided yet. A bridge adding its own undecided states
+        (e.g. e-Saraban's ``returned``) extends this."""
+        return ("to_verify", "submitted")
 
     def action_reset_to_draft(self):
-        """The requester may take back their own `submitted` request; every
-        other state is the Budget Manager's to reopen. A bridge introducing
-        extra states (``sent``/``returned``/``rejected``) adds its own guards
-        on top — ``sent`` is refused outright by the e-Saraban bridge."""
+        """The requester may take back their own request while it is still
+        undecided (:meth:`_requester_reopen_states`); every other state is the
+        Budget Manager's to reopen. A bridge introducing extra states adds its
+        own guards on top — ``sent`` is refused outright by the e-Saraban
+        bridge."""
         user = self.env.user
         is_manager = user.has_group("budget.group_budget_manager")
         is_admin = self.env.is_admin()
         for request in self:
-            if request.state == "submitted":
-                if not (request.user_id == user or is_admin):
+            if request.state in self._requester_reopen_states():
+                if not (request.user_id == user or is_manager or is_admin):
                     raise UserError(
-                        _("Only the requester can reset a submitted request to draft.")
+                        _("Only the requester can reset this request to draft.")
                     )
             elif request.state != "draft" and not (is_manager or is_admin):
                 # Everything past `submitted` — including a decided or already
@@ -597,6 +611,29 @@ class BudgetSupportRequest(models.Model):
         self.write({"state": "draft", "approver_id": False, "approval_date": False})
         return True
 
+    @api.ondelete(at_uninstall=False)
+    def _unlink_except_requester_draft(self):
+        """Deleting replaces cancelling: the requester (or a Budget Manager)
+        deletes a request they no longer want — once back in draft, and never
+        one central has already fulfilled against."""
+        user = self.env.user
+        is_manager = user.has_group("budget.group_budget_manager")
+        is_admin = self.env.is_admin()
+        for request in self:
+            if request.state not in ("draft", "cancelled"):
+                raise UserError(
+                    _("ลบได้เฉพาะคำขอในสถานะร่าง กรุณากด Reset to Draft ก่อน (%s)")
+                    % request.name
+                )
+            if request.transfer_ids or request.commitment_ids:
+                raise UserError(
+                    _("คำขอ %s มีการจัดสรรงบประมาณแล้ว ไม่สามารถลบได้") % request.name
+                )
+            if not (request.user_id == user or is_manager or is_admin):
+                raise UserError(
+                    _("Only the requester can delete their own support request.")
+                )
+
     # ------------------------------------------------------------------
     # Validation
     # ------------------------------------------------------------------
@@ -604,6 +641,8 @@ class BudgetSupportRequest(models.Model):
         """Validate every record in ``self`` — ``action_submit`` /
         ``action_approve`` are multi-record capable."""
         for request in self:
+            if not request.title:
+                raise ValidationError(_("Please enter the title (ชื่อเรื่อง)."))
             if not request.department_analytic_id:
                 raise ValidationError(
                     _("Please select the requesting unit's department dimension.")
@@ -679,12 +718,23 @@ class BudgetSupportRequest(models.Model):
                 )
             )
         res = super().write(vals)
+        if "officer_id" in vals:
+            self._subscribe_officer()
         if leaving:
             leaving.sudo().activity_feedback([VERIFY_ACTIVITY])
         for request in reassigned - leaving:
             request.sudo().activity_feedback([VERIFY_ACTIVITY])
             request._after_submitted()
         return res
+
+    def _subscribe_officer(self):
+        """Make the named Buddy a follower — they are kept informed of the
+        request they look after. ``sudo``: whoever names the Buddy need not be
+        allowed to subscribe someone else."""
+        for request in self.filtered("officer_id"):
+            request.sudo().message_subscribe(
+                partner_ids=request.officer_id.partner_id.ids
+            )
 
     def _after_approved(self):
         """Tell the one named Buddy that this request is ready to fulfil —

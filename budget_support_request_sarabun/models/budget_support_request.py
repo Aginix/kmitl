@@ -1,4 +1,4 @@
-from odoo import _, fields, models
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
 
@@ -38,6 +38,13 @@ class BudgetSupportRequest(models.Model):
         help="Filled automatically when the e-Saraban หนังสือ is numbered; typed in "
         "by hand when the request was approved on paper outside the system.",
     )
+    # วันที่หนังสือ — pairs with เลขที่หนังสือ: stamped together when the หนังสือ
+    # is numbered, or typed in by hand alongside it.
+    sarabun_document_date = fields.Date(
+        string="วันที่หนังสือ",
+        copy=False,
+        tracking=True,
+    )
 
     # --- hooks ---------------------------------------------------------
     def _get_sarabun_document_type(self):
@@ -54,7 +61,11 @@ class BudgetSupportRequest(models.Model):
         return self.state == "submitted"
 
     def _get_sarabun_subject(self):
+        """The request's ชื่อเรื่อง; the stock wording for a request filed
+        before the field existed."""
         self.ensure_one()
+        if self.title:
+            return self.title
         return _("ขอรับการสนับสนุน%(source)sสถาบัน ประจำปีงบประมาณ พ.ศ. %(fy)s เพิ่มเติม") % {
             "source": self.source_analytic_id.name or "",
             "fy": self.account_fiscal_year_id.name or "",
@@ -75,20 +86,11 @@ class BudgetSupportRequest(models.Model):
         return "budget_support_request_sarabun.report_budget_support_request_body"
 
     def _get_sarabun_content(self):
-        """The editable บันทึกนำ seeding เนื้อหา — narrative only. Every
-        authoritative figure (amount, request number, fiscal year) renders live
-        from :meth:`_get_sarabun_body_template` instead."""
+        """The editable เนื้อหา is the request's เหตุผล/ความจำเป็น as written —
+        no stock บันทึกนำ. Every authoritative figure (amount, request number,
+        fiscal year) renders live from :meth:`_get_sarabun_body_template`."""
         self.ensure_one()
-        body = _(
-            "ด้วย%(dept)s มีความประสงค์ขอรับการสนับสนุนงบประมาณ "
-            "ตามรายละเอียดที่แนบท้ายนี้ โดยมีเหตุผลความจำเป็นดังนี้"
-        ) % {"dept": self._sarabun_dim_name(self.department_analytic_id)}
-        return "<p>%s</p>%s" % (body, self.reason or "")
-
-    @staticmethod
-    def _sarabun_dim_name(analytic):
-        name = (analytic.complete_name or analytic.name or "") if analytic else ""
-        return name.replace(" / ", " ")
+        return self.reason or False
 
     def _prepare_transfer_vals(self):
         """The transfer posts on the strength of this request's หนังสือ (no
@@ -116,7 +118,21 @@ class BudgetSupportRequest(models.Model):
                     ],
                 }
             )
+            # The Buddy follows the หนังสือ — following is what lets them
+            # open it (agx_sarabun follower read rule).
+            document.sudo().message_subscribe(
+                partner_ids=self.officer_id.partner_id.ids
+            )
         return action
+
+    def _subscribe_officer(self):
+        """A Buddy named later (e.g. after Reset to Draft) follows the
+        request's existing หนังสือ too."""
+        super()._subscribe_officer()
+        for request in self.filtered("officer_id"):
+            request.sarabun_document_ids.sudo().message_subscribe(
+                partner_ids=request.officer_id.partner_id.ids
+            )
 
     def _copy_attachments_to_sarabun(self, document):
         """Enclose *copies* of the request's เอกสารแนบ, owned by the หนังสือ.
@@ -183,38 +199,39 @@ class BudgetSupportRequest(models.Model):
             if request.state == "returned":
                 request.can_edit = True
 
+    def _requester_reopen_states(self):
+        """A ตีกลับ (`returned`) request is still undecided — the requester
+        takes it back to revise it."""
+        return super()._requester_reopen_states() + ("returned",)
+
     def _compute_button_visibility(self):
-        """Extend the base compute for `returned`/`rejected` — states the
-        base itself never reaches, so its own compute leaves every button
-        hidden for them. `sent` intentionally stays all-hidden here too:
-        deal with the live letter (ดึงกลับ/ยกเลิกการส่ง), not this form's
-        own buttons."""
+        """Extend the base compute for `rejected` — a state the base itself
+        never reaches (`returned` is covered by
+        :meth:`_requester_reopen_states`). `sent` intentionally stays
+        all-hidden here too: deal with the live letter (ดึงกลับ/ยกเลิกการส่ง),
+        not this form's own buttons."""
         super()._compute_button_visibility()
         is_manager = self.env.user.has_group("budget.group_budget_manager")
         is_admin = self.env.is_admin()
         for request in self:
-            if request.state == "returned":
-                request.show_cancel_button = True
-                request.show_reset_button = request.user_id == self.env.user or is_admin
-            elif request.state == "rejected":
+            if request.state == "rejected":
                 request.show_reset_button = is_manager or is_admin
 
     # --- extra guards for the states this bridge introduces -------------
-    def action_cancel(self):
-        """Block from `sent` — a live letter must be pulled back or voided
-        first, or the request and the letter states would diverge."""
-        if self.filtered(lambda r: r.state == "sent"):
+    @api.ondelete(at_uninstall=False)
+    def _unlink_except_live_sarabun_document(self):
+        """A หนังสือ still around (e.g. a draft left after Reset to Draft)
+        would be orphaned — delete or void it first."""
+        if self.filtered("sarabun_has_live_document"):
             raise UserError(
-                _(
-                    "This request has a letter out for signature. Recall "
-                    "or void it before cancelling."
-                )
+                _("มีหนังสือสารบรรณค้างอยู่ ไม่สามารถลบคำขอได้ กรุณาลบหรือยกเลิกหนังสือก่อน")
             )
-        return super().action_cancel()
 
     def action_reset_to_draft(self):
-        """Block from `sent` (as above); a `rejected` request is revived by
-        a manager/admin only, mirroring the base's `cancelled` gate."""
+        """Block from `sent` — a live letter must be pulled back or voided
+        first, or the request and the letter states would diverge; a
+        `rejected` request is revived by a manager/admin only, mirroring the
+        base's `cancelled` gate."""
         if self.filtered(lambda r: r.state == "sent"):
             raise UserError(
                 _(
@@ -261,11 +278,14 @@ class SarabunDocument(models.Model):
     _inherit = "sarabun.document"
 
     def _assign_register_number(self):
-        """Mirror the issued number onto the originating support request
+        """Mirror the issued number and date onto the originating support request
         (sudo: the signer usually has no rights on the request)."""
         res = super()._assign_register_number()
         if self.origin_model == "budget.support.request" and self.origin_res_id:
-            self.env["budget.support.request"].sudo().browse(
-                self.origin_res_id
-            ).sarabun_document_number = self.name
+            self.env["budget.support.request"].sudo().browse(self.origin_res_id).write(
+                {
+                    "sarabun_document_number": self.name,
+                    "sarabun_document_date": self.date,
+                }
+            )
         return res
