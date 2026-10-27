@@ -8,8 +8,7 @@
     Reference data, not demo data. A payee's account and the institute's own
     must point at the *same* record for their bank: auto-matching compares the
     records themselves, not their codes, so a second copy of a bank silently
-    sends every payee at it to the fallback paying account. ``kmitl_demo``
-    therefore refers to these instead of carrying its own.
+    sends every payee at it to the fallback paying account.
 
     ``hooks._seed_bank_accounts`` matches its table against these by BIC to
     attach each paying account to its bank, and that bank is what auto-matching
