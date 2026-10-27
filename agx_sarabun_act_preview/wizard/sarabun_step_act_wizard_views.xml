@@ -9,9 +9,15 @@
         />
         <field name="arch" type="xml">
             <xpath expr="//footer" position="before">
-                <group string="ตรวจสอบก่อนยืนยัน (Preview)">
-                    <field name="preview_html" nolabel="1" readonly="1" />
-                </group>
+                <separator string="ตรวจสอบก่อนยืนยัน (Preview)" />
+                <div>
+                    <field
+                        name="preview_html"
+                        nolabel="1"
+                        readonly="1"
+                        class="w-100"
+                    />
+                </div>
             </xpath>
         </field>
     </record>
