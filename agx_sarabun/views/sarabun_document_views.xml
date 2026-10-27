@@ -643,6 +643,37 @@
         </field>
     </record>
 
+    <!-- Outgoing tree — mirrors the main tree but adds my_action_verb_id so
+         senders see the verb their outgoing หนังสือ is asking the recipient to do
+         (matches the incoming/inbox tree). -->
+    <record id="view_sarabun_document_outgoing_tree" model="ir.ui.view">
+        <field name="name">sarabun.document.outgoing.tree</field>
+        <field name="model">sarabun.document</field>
+        <field name="arch" type="xml">
+            <tree
+                decoration-muted="state in ('cancelled','rejected')"
+                decoration-success="state == 'completed'"
+            >
+                <field name="name" string="เลขที่เอกสาร" />
+                <field name="subject" string="เรื่อง" />
+                <field name="addressee" string="เรียน/ส่งถึง" />
+                <field name="create_date" string="วันที่สร้างเอกสาร" />
+                <field name="date" string="วันที่เอกสาร" />
+                <field name="type_id" optional="hide" />
+                <field name="sender_department_id" optional="hide" />
+                <field name="my_action_verb_id" string="เพื่อดำเนินการ" />
+                <field
+                    name="state"
+                    string="สถานะ"
+                    widget="badge"
+                    decoration-info="state == 'circulating'"
+                    decoration-success="state == 'completed'"
+                    decoration-danger="state in ('rejected','cancelled')"
+                />
+            </tree>
+        </field>
+    </record>
+
     <record id="action_sarabun_document_outgoing" model="ir.actions.act_window">
         <field name="name">Outgoing Documents</field>
         <field name="res_model">sarabun.document</field>
@@ -651,7 +682,7 @@
         <field
             name="view_ids"
             eval="[(5, 0, 0),
-                      (0, 0, {'view_mode': 'tree', 'view_id': ref('view_sarabun_document_tree')}),
+                      (0, 0, {'view_mode': 'tree', 'view_id': ref('view_sarabun_document_outgoing_tree')}),
                       (0, 0, {'view_mode': 'form', 'view_id': ref('view_sarabun_document_form')})]"
         />
         <field name="context">{'search_default_my_documents': 1}</field>
