@@ -20,9 +20,10 @@ What entering the circuit means
   out of the circuit. Inside it only the people responsible at the station holding the
   request may do so; there is no manager override. A ``done`` request cannot be reset.
 * With no active route the request stays ``signed`` and a warning is logged. The route
-  is seeded **archived**, so nothing changes at install: configure the stations (below),
-  activate the route, then select the requests that stayed ``signed`` and run
-  *Action > Send to Stations* (officers) to put them at the first station.
+  is seeded **active**, so a request signed after install enters the first station at
+  once: configure the stations (below) right after installing. Requests signed before
+  the install stay ``signed``; select them and run *Action > Send to Stations*
+  (officers) to put them at the first station.
 
 Configuration
 =============

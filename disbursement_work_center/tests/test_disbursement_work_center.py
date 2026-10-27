@@ -19,8 +19,6 @@ class TestDisbursementWorkCenter(TwoApproverCommon):
         super().setUpClass()
         env = cls.env
         env["work.center.act"]._reflect_acts()
-        # The route is seeded archived, until the stations are configured.
-        env.ref("disbursement_work_center.route_disbursement").active = True
         cls.stations = {
             key: env.ref("disbursement_work_center.station_" + key) for key in STATIONS
         }
