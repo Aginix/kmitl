@@ -661,7 +661,12 @@ class BudgetSupportRequest(models.Model):
                     _("ลบได้เฉพาะคำขอในสถานะร่าง กรุณากด Reset to Draft ก่อน (%s)")
                     % request.name
                 )
-            if request.transfer_ids or request.commitment_ids:
+            # sudo search: the OU rule may hide central's transfer/commitment
+            # from the requester.
+            domain = [("support_request_id", "=", request.id)]
+            if self.env["budget.transfer"].sudo().search_count(domain) or self.env[
+                "budget.commitment"
+            ].sudo().search_count(domain):
                 raise UserError(
                     _("คำขอ %s มีการจัดสรรงบประมาณแล้ว ไม่สามารถลบได้") % request.name
                 )

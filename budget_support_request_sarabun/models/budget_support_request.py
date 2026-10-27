@@ -130,9 +130,24 @@ class BudgetSupportRequest(models.Model):
         request's existing หนังสือ too."""
         super()._subscribe_officer()
         for request in self.filtered("officer_id"):
-            request.sarabun_document_ids.sudo().message_subscribe(
+            request._sarabun_documents_sudo().message_subscribe(
                 partner_ids=request.officer_id.partner_id.ids
             )
+
+    def _sarabun_documents_sudo(self):
+        """Every หนังสือ of these requests, whoever may read them —
+        ``sarabun_document_ids`` is searched under the user's sender/follower
+        rules (and its cache is shared with sudo)."""
+        return (
+            self.env["sarabun.document"]
+            .sudo()
+            .search(
+                [
+                    ("origin_model", "=", self._name),
+                    ("origin_res_id", "in", self.ids),
+                ]
+            )
+        )
 
     def _copy_attachments_to_sarabun(self, document):
         """Enclose *copies* of the request's เอกสารแนบ, owned by the หนังสือ.
@@ -222,7 +237,9 @@ class BudgetSupportRequest(models.Model):
     def _unlink_except_live_sarabun_document(self):
         """A หนังสือ still around (e.g. a draft left after Reset to Draft)
         would be orphaned — delete or void it first."""
-        if self.filtered("sarabun_has_live_document"):
+        if self._sarabun_documents_sudo().filtered(
+            lambda d: d.state not in ("rejected", "cancelled")
+        ):
             raise UserError(
                 _("มีหนังสือสารบรรณค้างอยู่ ไม่สามารถลบคำขอได้ กรุณาลบหรือยกเลิกหนังสือก่อน")
             )
