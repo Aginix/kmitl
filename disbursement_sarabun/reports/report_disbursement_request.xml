@@ -42,7 +42,7 @@
 
         <!-- Budget Details -->
         <div class="my-4"/>
-        <p>เลขที่ใบขอเบิก <span t-out="o.name"/></p>
+        <p><strong>เลขที่ใบขอเบิก</strong> <span t-out="o.name"/></p>
         <p>รายละเอียดงบประมาณ</p>
         <table border="0" class="budget">
             <tbody>
