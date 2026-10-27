@@ -54,7 +54,7 @@
                                     />
                                 </strong>
                                 <div
-                                    class="d-inline-block badge rounded-pill bg-success ms-2"
+                                    class="d-inline-block rounded-pill px-2 ms-2 fw-bold bg-success text-white"
                                     attrs="{'invisible': ['|', '|', ('state', '!=', 'in_progress'), ('work_center_can_move', '=', False), ('returned_to_source', '=', True)]}"
                                 >Your turn</div>
                             </div>

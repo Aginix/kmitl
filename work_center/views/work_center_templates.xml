@@ -15,7 +15,7 @@
                 />
                 <span
                     t-if="step['status'] == 'current'"
-                    class="badge rounded-pill bg-primary text-white"
+                    class="d-inline-flex align-items-center rounded-pill px-2 py-1 fw-bold bg-primary text-white"
                     aria-current="step"
                 >
                     <i class="fa fa-map-marker me-1" aria-hidden="true" />
@@ -23,7 +23,7 @@
                 </span>
                 <span
                     t-elif="step['status'] == 'off_route'"
-                    class="badge rounded-pill bg-warning text-dark"
+                    class="d-inline-flex align-items-center rounded-pill px-2 py-1 fw-bold bg-warning text-dark"
                     aria-current="step"
                 >
                     <i class="fa fa-map-marker me-1" aria-hidden="true" />
