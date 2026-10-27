@@ -15,7 +15,7 @@
                 />
                 <span
                     t-if="step['status'] == 'current'"
-                    class="badge rounded-pill bg-primary"
+                    class="badge rounded-pill bg-primary text-white"
                     aria-current="step"
                 >
                     <i class="fa fa-map-marker me-1" aria-hidden="true" />
@@ -30,25 +30,20 @@
                     <t t-esc="step['name']" />
                     (off the route)
                 </span>
-                <span t-elif="step['status'] == 'done'" class="text-muted">
-                    <i
-                        class="fa fa-check text-success me-1"
-                        role="img"
-                        aria-label="Done"
-                        title="Done"
-                    />
+                <span
+                    t-elif="step['status'] == 'done'"
+                    class="text-muted"
+                    title="Done"
+                >
+                    <i class="fa fa-check text-success me-1" aria-hidden="true" />
                     <t t-esc="step['name']" />
                 </span>
                 <span
                     t-elif="step['status'] == 'skipped'"
                     class="text-muted text-decoration-line-through"
+                    title="Skipped"
                 >
-                    <i
-                        class="fa fa-share me-1"
-                        role="img"
-                        aria-label="Skipped"
-                        title="Skipped"
-                    />
+                    <i class="fa fa-share me-1" aria-hidden="true" />
                     <t t-esc="step['name']" />
                 </span>
                 <span t-else="" class="text-muted">

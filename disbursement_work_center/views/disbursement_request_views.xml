@@ -38,6 +38,8 @@
                     <div
                         class="d-flex flex-column flex-md-row justify-content-between align-items-md-start gap-2"
                     >
+                        <!-- Labels are plain text or a <div>: Odoo 16 extracts a
+                             text-only <span> as a term with its tag. -->
                         <div>
                             <div>
                                 <i
@@ -51,34 +53,35 @@
                                         options="{'no_open': True}"
                                     />
                                 </strong>
-                                <span
-                                    class="badge rounded-pill bg-success ms-2"
+                                <div
+                                    class="d-inline-block badge rounded-pill bg-success ms-2"
                                     attrs="{'invisible': ['|', '|', ('state', '!=', 'in_progress'), ('work_center_can_move', '=', False), ('returned_to_source', '=', True)]}"
-                                >Your turn</span>
+                                >Your turn</div>
                             </div>
                             <div class="text-muted small">
-                                <span>Arrived</span>
+                                Arrived
                                 <field
                                     name="work_center_arrival_date"
-                                    class="oe_inline"
+                                    class="oe_inline ms-1"
                                 />
-                                <span
+                                <div
+                                    class="d-inline-block ms-3"
                                     attrs="{'invisible': [('work_center_next_id', '=', False)]}"
                                 >
-                                    · <span>Next</span>
+                                    Next
                                     <field
                                         name="work_center_next_id"
-                                        class="oe_inline"
+                                        class="oe_inline ms-1"
                                         options="{'no_open': True}"
                                     />
-                                </span>
+                                </div>
                             </div>
                             <div class="small">
-                                <span class="text-muted">Responsible</span>
+                                <div class="d-inline-block text-muted">Responsible</div>
                                 <field
                                     name="work_center_responsible_ids"
                                     widget="many2many_avatar_user"
-                                    class="oe_inline"
+                                    class="oe_inline ms-1"
                                 />
                             </div>
                             <div
@@ -89,15 +92,17 @@
                                     class="fa fa-exclamation-triangle text-warning me-1"
                                     aria-hidden="true"
                                 />
-                                <span>Still to do before forwarding</span>
+                                <div
+                                    class="d-inline-block"
+                                >Still to do before forwarding</div>
                                 <field
                                     name="work_center_missing_act_ids"
                                     widget="many2many_tags"
-                                    class="oe_inline"
+                                    class="oe_inline ms-1"
                                 />
                             </div>
                         </div>
-                        <div class="d-flex flex-wrap gap-2">
+                        <div class="d-flex flex-wrap align-items-center gap-2">
                             <button
                                 name="action_work_center_forward"
                                 string="Forward"
@@ -129,15 +134,16 @@
                                 class="btn-secondary"
                                 attrs="{'invisible': ['|', '|', ('state', '!=', 'in_progress'), ('work_center_can_move', '=', False), ('returned_to_source', '=', True)]}"
                             />
-                            <span
+                            <div
                                 class="text-muted small"
                                 attrs="{'invisible': ['|', ('work_center_can_move', '=', True), ('returned_to_source', '=', True)]}"
                             >
                                 <i class="fa fa-eye me-1" aria-hidden="true" />
-                                <span
-                                >View only: only the people responsible at this station can move it.</span>
-                            </span>
-                            <span
+                                <div
+                                    class="d-inline"
+                                >View only: only the people responsible at this station can move it.</div>
+                            </div>
+                            <div
                                 class="text-muted small"
                                 attrs="{'invisible': [('returned_to_source', '=', False)]}"
                             >
@@ -145,9 +151,10 @@
                                     class="fa fa-hourglass-half me-1"
                                     aria-hidden="true"
                                 />
-                                <span
-                                >Waiting for the source document to be corrected.</span>
-                            </span>
+                                <div
+                                    class="d-inline"
+                                >Waiting for the source document to be corrected.</div>
+                            </div>
                         </div>
                     </div>
                 </div>
