@@ -97,7 +97,7 @@ approval requests).
 _Avoid_: State (the first axis), paid / cleared (the retired states).
 
 **Act** (การกระทำ):
-Something a person does to the DR at a station — ตรวจสอบ, อนุมัติ (ผอ.กองคลัง),
+Something a person does to the DR at a station — ตรวจสอบ, เห็นชอบ (ผอ.กองคลัง),
 อนุมัติ (ผู้รับมอบอำนาจ), ตัดงบประมาณ, ตั้งหนี้, ตรวจจ่าย, อนุมัติจ่าย. Each is
 contributed by the module that implements it, stamps who did it and, where the
 DR prints it, one **signature block** row. No act changes the DR's state and none

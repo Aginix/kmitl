@@ -37,7 +37,7 @@ and its members (Settings > Stations). Until a station has members, every holder
 roles of its acts is responsible there.
 
 The acts come from the modules that implement them (``disbursement_validation``,
-``disbursement_approver_director``, ``disbursement_approver_rector``,
+``disbursement_endorser_director``, ``disbursement_approver_rector``,
 ``disbursement_budget``, ``disbursement_accounting_kmitl``,
 ``disbursement_finance_kmitl``) and are reflected into the station configuration after
 every install or upgrade. The five editable parts (header, lines, attachments,

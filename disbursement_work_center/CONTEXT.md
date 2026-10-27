@@ -7,7 +7,7 @@ captured during design; this file is a glossary, not a specification.
 > **Status: built.** Stations are `work.center` records: the station engine lives in
 > `work_center` (its ADR-0002, which supersedes the "owning unit" ADR-0001), and this
 > module only plugs the DR into it. The act modules (`disbursement_validation`,
-> `disbursement_approver_director`, `disbursement_approver_rector`,
+> `disbursement_endorser_director`, `disbursement_approver_rector`,
 > `disbursement_budget`, `disbursement_accounting_kmitl`,
 > `disbursement_finance_kmitl`) contribute the acts; the terms for every one of them
 > are defined here.
@@ -71,8 +71,8 @@ and stamps who did it.
 - **ตรวจสอบ (Validate)** — the officer checks the signed request
   (`disbursement_validation`, `verifier_id`). Not `assigned_to`, who was merely
   assigned the check.
-- **อนุมัติ (ผอ.กองคลัง)** — the Finance Division Director's approval
-  (`disbursement_approver_director`).
+- **เห็นชอบ (ผอ.กองคลัง)** — the Finance Division Director's endorsement; the
+  Director holds no authority to approve (`disbursement_endorser_director`).
 - **อนุมัติ (ผู้รับมอบอำนาจอธิการบดี)** — the Rector-delegated approver's approval
   (`disbursement_approver_rector`). It touches no budget.
 - **ตัดงบประมาณ (Consume budget)** — consumes the linked commitment or, for a direct
