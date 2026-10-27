@@ -17,8 +17,8 @@ const STEP_INDEX = {review: 0, done: 1};
  * ส่งคืนเงินเหลือจ่าย — the body of budget.commitment.return.wizard, styled
  * after kmitl_project_budget_transfer's โอนคืนงบลอย: ``review`` shows the money
  * leaving the reservation (FROM card) back to the budget at the same
- * coordinate (TO card), ``done`` is the slip. The amount is never typed: a
- * return always releases the whole leftover.
+ * coordinate (TO card), ``done`` is the slip. The amount is typed in the
+ * wizard's ``amount`` field (default: the whole leftover, ``return_amount``).
  */
 export class BudgetCommitmentReturnWidget extends Component {
     setup() {
@@ -39,17 +39,25 @@ export class BudgetCommitmentReturnWidget extends Component {
         }
     }
     get amount() {
-        return this.data.step === "done"
-            ? this.data.returned_amount
-            : this.data.return_amount;
+        return this.data.step === "done" ? this.data.returned_amount : this.data.amount;
+    }
+    // Leftover still reserved after this return.
+    get remaining() {
+        return (this.data.return_amount || 0) - (this.data.amount || 0);
+    }
+    get isPartial() {
+        return this.remaining > 0.005;
+    }
+    get isInvalid() {
+        return this.remaining < -0.005 || (this.data.amount || 0) <= 0;
     }
     get budgetCode() {
         const row = this.dims.find((d) => d.key === "account_id");
         return row ? `[${row.code}] ${row.leaf}` : "";
     }
-    // An open obligation keeps the commitment "In Progress" after the return.
+    // A partial return, or an open obligation, keeps the commitment open.
     get closesCommitment() {
-        return (this.data.available_to_consume || 0) <= 0.005;
+        return !this.isPartial && (this.data.available_to_consume || 0) <= 0.005;
     }
     get returnDate() {
         return this.data.return_date ? formatDateTime(this.data.return_date) : "";

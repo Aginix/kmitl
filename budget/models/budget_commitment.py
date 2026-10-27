@@ -1081,17 +1081,32 @@ class BudgetCommitment(models.Model):
             "context": context,
         }
 
-    def _return_leftover(self, source=None, name=None, date=None):
-        """Return the whole leftover reservation (คืนจอง, ADR-0009): one negative
-        ``reserve`` line flagged ``is_return`` for ``available_to_obligate``,
-        re-read now so a concurrent consume cannot let it over-return. Returns
-        the posted line, or ``False`` when nothing is left.
+    def _return_leftover(self, source=None, name=None, date=None, amount=None):
+        """Return leftover reservation (คืนจอง, ADR-0009): one negative
+        ``reserve`` line flagged ``is_return`` for ``amount`` (default: the whole
+        ``available_to_obligate``), capped by ``available_to_obligate`` re-read
+        now so a concurrent consume cannot let it over-return. Returns the
+        posted line, or ``False`` when nothing is left.
 
         Returning drives the commitment to ``done`` but must NOT auto-close the
         owning procurement plan (ADR-0009); the flag is read by
         procurement_plan's _sync_state override."""
         self.ensure_one()
-        amount = self.available_to_obligate
+        available = self.available_to_obligate
+        if amount is None:
+            amount = available
+        if (
+            float_compare(
+                amount,
+                available,
+                precision_rounding=self.currency_id.rounding or 0.01,
+            )
+            > 0
+        ):
+            raise UserError(
+                _("The return amount exceeds the leftover reserved budget (%s).")
+                % formatLang(self.env, available, currency_obj=self.currency_id)
+            )
         if amount <= 0:
             return False
         return self.with_context(skip_plan_autoclose=True)._post_budget_event(
