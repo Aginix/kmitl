@@ -7,7 +7,7 @@ captured during design; this file is a glossary, not a specification.
 > **Status: built.** Stations are `work.center` records: the station engine lives in
 > `work_center` (its ADR-0002, which supersedes the "owning unit" ADR-0001), and this
 > module only plugs the DR into it. The act modules (`disbursement_validation`,
-> `disbursement_approver_director`, `disbursement_approver_rector`,
+> `disbursement_endorser_director`, `disbursement_approver_rector`,
 > `disbursement_budget`, `disbursement_accounting_kmitl`,
 > `disbursement_finance_kmitl`) contribute the acts; the terms for every one of them
 > are defined here.
@@ -58,13 +58,21 @@ permission, not an act: it is never required before forwarding and never recorde
 done. It closes for good once the money has started (the ขั้นการชำระ is past none).
 _Avoid_: Act (nothing is "done" by editing), field-level security.
 
+**แถบสถานี (Station bar)**: The strip under the DR's header that shows where the DR is
+on its route (the stations passed, the one holding it, those still to come), who is
+responsible there, the acts still to do, and the moves out of the station: ส่งต่อ,
+เบี่ยงเส้นทาง, ส่งคืนผู้จัดทำ. Only the area's station people see it (and the visit log):
+the members of its stations, the holders of the roles of the acts they allow, and the
+station administrators. The maker follows the DR by its state. _Avoid_: กล่องสถานี,
+station box.
+
 **The acts** (การกระทำของใบขอเบิก): each is declared by the module that implements it
 and stamps who did it.
 - **ตรวจสอบ (Validate)** — the officer checks the signed request
   (`disbursement_validation`, `verifier_id`). Not `assigned_to`, who was merely
   assigned the check.
-- **อนุมัติ (ผอ.กองคลัง)** — the Finance Division Director's approval
-  (`disbursement_approver_director`).
+- **เห็นชอบ (ผอ.กองคลัง)** — the Finance Division Director's endorsement; the
+  Director holds no authority to approve (`disbursement_endorser_director`).
 - **อนุมัติ (ผู้รับมอบอำนาจอธิการบดี)** — the Rector-delegated approver's approval
   (`disbursement_approver_rector`). It touches no budget.
 - **ตัดงบประมาณ (Consume budget)** — consumes the linked commitment or, for a direct

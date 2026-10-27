@@ -14,6 +14,22 @@ from odoo.exceptions import UserError
 class SarabunRoutingStep(models.Model):
     _inherit = "sarabun.routing.step"
 
+    def write(self, vals):
+        """Extend the base originator write guard to also allow ``position_id``
+        — the capacity the ผู้จัดทำ signs in. The base guard only permits
+        ``verb``; we pop ``position_id`` before it runs, then write it back
+        via sudo so the guard never sees it."""
+        if (
+            not self.env.su
+            and "position_id" in vals
+            and self.filtered("is_originator")
+        ):
+            pos_val = vals.pop("position_id")
+            res = super().write(vals)
+            self.sudo().write({"position_id": pos_val})
+            return res
+        return super().write(vals)
+
     @api.onchange("target_mode")
     def _onchange_target_mode_reset_targets(self):
         """Wipe every target field when the mode flips — a leftover employee from a

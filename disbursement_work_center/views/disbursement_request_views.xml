@@ -5,15 +5,15 @@
         <field name="model">disbursement.request</field>
         <field name="inherit_id" ref="disbursement.view_disbursement_request_form" />
         <field name="arch" type="xml">
-            <!-- Inside the circuit only the people holding the request at their
-                 station may send it back or cancel it. -->
+            <!-- Before the circuit the request is returned from the header;
+                 inside it, from the station bar. -->
             <xpath
                 expr="//header/button[@name='action_return_open_wizard']"
                 position="attributes"
             >
                 <attribute
                     name="attrs"
-                >{'invisible': ['|', '|', ('state', 'not in', ('signed', 'in_progress')), ('returned_to_source', '=', True), '&amp;', ('state', '=', 'in_progress'), ('work_center_can_move', '=', False)]}</attribute>
+                >{'invisible': ['|', ('state', '!=', 'signed'), ('returned_to_source', '=', True)]}</attribute>
             </xpath>
             <xpath
                 expr="//header/button[@name='action_cancel'][1]"
@@ -23,66 +23,148 @@
                     name="attrs"
                 >{'invisible': ['|', ('state', 'in', ('done', 'cancel')), '&amp;', ('state', '=', 'in_progress'), ('work_center_can_move', '=', False)]}</attribute>
             </xpath>
+            <!-- The station bar: where the request is on its route, and the
+                 moves out of the station. Only the area's station people see it. -->
             <header position="after">
                 <div
-                    class="alert alert-info d-flex justify-content-between align-items-center"
-                    role="status"
-                    style="margin-bottom:0px;"
-                    attrs="{'invisible': [('work_center_id', '=', False)]}"
+                    class="border-bottom bg-white px-3 py-2"
+                    role="region"
+                    aria-label="Station bar"
+                    attrs="{'invisible': ['|', ('work_center_id', '=', False), ('work_center_user_in_area', '=', False)]}"
                 >
-                    <div>
+                    <field name="work_center_user_in_area" invisible="1" />
+                    <field name="work_center_can_move" invisible="1" />
+                    <field name="work_center_route_steps" class="d-block mb-2" />
+                    <div
+                        class="d-flex flex-column flex-md-row justify-content-between align-items-md-start gap-2"
+                    >
+                        <!-- Labels are plain text or a <div>: Odoo 16 extracts a
+                             text-only <span> as a term with its tag. -->
                         <div>
-                            <strong>Current Station:</strong>
-                            <field
-                                name="work_center_id"
-                                class="oe_inline"
-                                options="{'no_open': True}"
-                            />
+                            <div>
+                                <i
+                                    class="fa fa-map-marker text-primary me-1"
+                                    aria-hidden="true"
+                                />
+                                <strong>
+                                    <field
+                                        name="work_center_id"
+                                        class="oe_inline"
+                                        options="{'no_open': True}"
+                                    />
+                                </strong>
+                                <div
+                                    class="d-inline-block rounded-pill px-2 ms-2 fw-bold bg-success text-white"
+                                    attrs="{'invisible': ['|', '|', ('state', '!=', 'in_progress'), ('work_center_can_move', '=', False), ('returned_to_source', '=', True)]}"
+                                >Your turn</div>
+                            </div>
+                            <div class="text-muted small">
+                                Arrived
+                                <field
+                                    name="work_center_arrival_date"
+                                    class="oe_inline ms-1"
+                                />
+                                <div
+                                    class="d-inline-block ms-3"
+                                    attrs="{'invisible': [('work_center_next_id', '=', False)]}"
+                                >
+                                    Next
+                                    <field
+                                        name="work_center_next_id"
+                                        class="oe_inline ms-1"
+                                        options="{'no_open': True}"
+                                    />
+                                </div>
+                            </div>
+                            <div class="small">
+                                <div class="d-inline-block text-muted">Responsible</div>
+                                <field
+                                    name="work_center_responsible_ids"
+                                    widget="many2many_avatar_user"
+                                    class="oe_inline ms-1"
+                                />
+                            </div>
+                            <div
+                                class="small"
+                                attrs="{'invisible': [('work_center_missing_act_ids', '=', [])]}"
+                            >
+                                <i
+                                    class="fa fa-exclamation-triangle text-warning me-1"
+                                    aria-hidden="true"
+                                />
+                                <div
+                                    class="d-inline-block"
+                                >Still to do before forwarding</div>
+                                <field
+                                    name="work_center_missing_act_ids"
+                                    widget="many2many_tags"
+                                    class="oe_inline ms-1"
+                                />
+                            </div>
                         </div>
-                        <div
-                            attrs="{'invisible': [('work_center_next_id', '=', False)]}"
-                        >
-                            <strong>Next Station on the Route:</strong>
-                            <field
-                                name="work_center_next_id"
-                                class="oe_inline"
-                                options="{'no_open': True}"
+                        <div class="d-flex flex-wrap align-items-center gap-2">
+                            <button
+                                name="action_work_center_forward"
+                                string="Forward"
+                                type="object"
+                                class="btn-primary"
+                                context="{'expected_station': work_center_id}"
+                                attrs="{'invisible': ['|', '|', '|', ('state', '!=', 'in_progress'), ('work_center_can_move', '=', False), ('returned_to_source', '=', True), ('work_center_missing_act_ids', '!=', [])]}"
                             />
-                        </div>
-                        <div
-                            attrs="{'invisible': [('work_center_missing_act_ids', '=', [])]}"
-                        >
-                            <strong>Acts Still to Do:</strong>
-                            <field
-                                name="work_center_missing_act_ids"
-                                widget="many2many_tags"
-                                class="oe_inline"
+                            <button
+                                name="action_work_center_forward"
+                                string="Forward with Reason"
+                                type="object"
+                                class="btn-secondary"
+                                context="{'expected_station': work_center_id}"
+                                attrs="{'invisible': ['|', '|', '|', ('state', '!=', 'in_progress'), ('work_center_can_move', '=', False), ('returned_to_source', '=', True), ('work_center_missing_act_ids', '=', [])]}"
                             />
+                            <button
+                                name="action_work_center_divert"
+                                string="Divert"
+                                type="object"
+                                class="btn-secondary"
+                                context="{'expected_station': work_center_id}"
+                                attrs="{'invisible': ['|', '|', ('state', '!=', 'in_progress'), ('work_center_can_move', '=', False), ('returned_to_source', '=', True)]}"
+                            />
+                            <button
+                                name="action_work_center_send_back"
+                                string="Return"
+                                type="object"
+                                class="btn-secondary"
+                                attrs="{'invisible': ['|', '|', ('state', '!=', 'in_progress'), ('work_center_can_move', '=', False), ('returned_to_source', '=', True)]}"
+                            />
+                            <div
+                                class="text-muted small"
+                                attrs="{'invisible': ['|', ('work_center_can_move', '=', True), ('returned_to_source', '=', True)]}"
+                            >
+                                <i class="fa fa-eye me-1" aria-hidden="true" />
+                                <div
+                                    class="d-inline"
+                                >View only: only the people responsible at this station can move it.</div>
+                            </div>
+                            <div
+                                class="text-muted small"
+                                attrs="{'invisible': [('returned_to_source', '=', False)]}"
+                            >
+                                <i
+                                    class="fa fa-hourglass-half me-1"
+                                    aria-hidden="true"
+                                />
+                                <div
+                                    class="d-inline"
+                                >Waiting for the source document to be corrected.</div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="text-nowrap">
-                        <button
-                            name="action_work_center_forward"
-                            string="Forward"
-                            type="object"
-                            class="oe_highlight"
-                            context="{'expected_station': work_center_id}"
-                            attrs="{'invisible': ['|', '|', ('state', '!=', 'in_progress'), ('work_center_can_move', '=', False), ('returned_to_source', '=', True)]}"
-                        />
-                        <button
-                            name="action_work_center_divert"
-                            string="Divert"
-                            type="object"
-                            class="btn btn-secondary"
-                            context="{'expected_station': work_center_id}"
-                            attrs="{'invisible': ['|', '|', ('state', '!=', 'in_progress'), ('work_center_can_move', '=', False), ('returned_to_source', '=', True)]}"
-                        />
-                        <field name="work_center_can_move" invisible="1" />
                     </div>
                 </div>
             </header>
             <xpath expr="//notebook" position="inside">
-                <page string="Visit Log" name="visit_log">
+                <page
+                    string="Visit Log"
+                    name="visit_log"
+                    attrs="{'invisible': [('work_center_user_in_area', '=', False)]}"
+                >
                     <field name="work_center_visit_ids" readonly="1" />
                 </page>
             </xpath>

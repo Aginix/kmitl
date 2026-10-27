@@ -20,9 +20,10 @@ What entering the circuit means
   out of the circuit. Inside it only the people responsible at the station holding the
   request may do so; there is no manager override. A ``done`` request cannot be reset.
 * With no active route the request stays ``signed`` and a warning is logged. The route
-  is seeded **archived**, so nothing changes at install: configure the stations (below),
-  activate the route, then select the requests that stayed ``signed`` and run
-  *Action > Send to Stations* (officers) to put them at the first station.
+  is seeded **active**, so a request signed after install enters the first station at
+  once: configure the stations (below) right after installing. Requests signed before
+  the install stay ``signed``; select them and run *Action > Send to Stations*
+  (officers) to put them at the first station.
 
 Configuration
 =============
@@ -36,7 +37,7 @@ and its members (Settings > Stations). Until a station has members, every holder
 roles of its acts is responsible there.
 
 The acts come from the modules that implement them (``disbursement_validation``,
-``disbursement_approver_director``, ``disbursement_approver_rector``,
+``disbursement_endorser_director``, ``disbursement_approver_rector``,
 ``disbursement_budget``, ``disbursement_accounting_kmitl``,
 ``disbursement_finance_kmitl``) and are reflected into the station configuration after
 every install or upgrade. The five editable parts (header, lines, attachments,

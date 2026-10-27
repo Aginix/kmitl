@@ -57,7 +57,7 @@
         <field name="name">ธนาคารกรุงศรีอยุธยา (Bank of Ayudhya)</field>
         <field name="bic">AYUDTHBK</field>
         <field name="country" ref="base.th" />
-        <field name="bank_code">002</field>
+        <field name="bank_code">025</field>
         <field name="short_name">BAY</field>
     </record>
 

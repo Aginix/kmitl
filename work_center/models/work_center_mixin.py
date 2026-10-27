@@ -68,6 +68,30 @@ class WorkCenterMixin(models.AbstractModel):
         compute="_compute_work_center_state",
         help="Technical: the current user may forward, divert or send back.",
     )
+    work_center_arrival_date = fields.Datetime(
+        string="Arrived",
+        related="work_center_open_visit_id.arrival_date",
+    )
+    work_center_responsible_ids = fields.Many2many(
+        comodel_name="res.users",
+        string="Responsible",
+        compute="_compute_work_center_state",
+        help="Who may forward, divert or send back the document now.",
+    )
+    work_center_route_steps = fields.Html(
+        string="Route Steps",
+        compute="_compute_work_center_route_steps",
+        sanitize=False,
+        help="Where the document is on its route: the stations done, the one "
+        "holding it and those still to come.",
+    )
+    work_center_user_in_area = fields.Boolean(
+        string="Station Person",
+        compute="_compute_work_center_user_in_area",
+        help="Technical: the current user is one of the area's station people: "
+        "a member of one of its stations, a holder of the role of an act one "
+        "of them allows, or a station administrator.",
+    )
 
     @api.model
     def _valid_field_parameter(self, field, name):
@@ -377,6 +401,9 @@ class WorkCenterMixin(models.AbstractModel):
             rec.work_center_can_move = bool(station) and rec._work_center_user_may_move(
                 self.env.user
             )
+            rec.work_center_responsible_ids = (
+                station._responsible_users()[0] if station else self.env["res.users"]
+            )
             missing = self.env["work.center.act"]
             following = self.env["work.center"]
             if visit and station and not station.is_unassigned:
@@ -385,6 +412,71 @@ class WorkCenterMixin(models.AbstractModel):
                 following = rec._work_center_resolve(line) if line else following
             rec.work_center_missing_act_ids = missing
             rec.work_center_next_id = following
+
+    @api.depends("work_center_id", "work_center_visit_ids.departure_date")
+    def _compute_work_center_route_steps(self):
+        for rec in self:
+            station = rec._work_center_holding_station()
+            route = station and rec._work_center_route()
+            if not route:
+                rec.work_center_route_steps = False
+                continue
+            # The visits of this round, back to where it entered the circuit.
+            Visit = self.env["work.center.visit"].sudo()
+            round_visits = Visit
+            for visit in Visit.search(
+                [("res_model", "=", rec._name), ("res_id", "=", rec.id)],
+                order="id desc",
+            ):
+                round_visits |= visit
+                if visit.arrival_act in ("enter", "resubmit"):
+                    break
+            visited = round_visits.filtered("departure_date").work_center_id
+            lines = route.line_ids
+            following = rec._work_center_next_line()
+            passed = list(lines).index(following) if following else len(lines)
+            current = lines.filtered(lambda line: station in line.work_center_ids)[:1]
+            off_route = {"name": station.name, "status": "off_route"}
+            steps = []
+            for index, line in enumerate(lines):
+                if not current and line == following:
+                    steps.append(off_route)
+                if line == current:
+                    steps.append({"name": station.name, "status": "current"})
+                elif line.work_center_ids & visited:
+                    steps.append({"name": line.name, "status": "done"})
+                elif index < passed:
+                    steps.append({"name": line.name, "status": "skipped"})
+                else:
+                    steps.append({"name": line.name, "status": "todo"})
+            if not current and not following:
+                steps.append(off_route)
+            rec.work_center_route_steps = self.env["ir.qweb"]._render(
+                "work_center.route_steps", {"steps": steps}
+            )
+
+    @api.depends_context("uid")
+    def _compute_work_center_user_in_area(self):
+        user = self.env.user
+        in_area = self.env.su or user.has_group("work_center.group_work_center_manager")
+        if not in_area:
+            stations = (
+                self.env["work.center"]
+                .sudo()
+                .search(
+                    [
+                        ("area_id.model_ids.model", "=", self._name),
+                        ("is_unassigned", "=", False),
+                    ]
+                )
+            )
+            roles = stations.allowed_act_ids.filtered(
+                lambda act: act.active and act.group_id
+            ).group_id
+            in_area = bool(roles & user.sudo().groups_id) or any(
+                user in station._active_members() for station in stations
+            )
+        self.work_center_user_in_area = in_area
 
     # ------------------------------------------------------------------
     # The one writer
