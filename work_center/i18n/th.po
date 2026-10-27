@@ -199,6 +199,7 @@ msgid "Arrival"
 msgstr "การมาถึงสถานี"
 
 #. module: work_center
+#: model:ir.model.fields,field_description:work_center.field_work_center_mixin__work_center_arrival_date
 #: model:ir.model.fields,field_description:work_center.field_work_center_visit__arrival_date
 msgid "Arrived"
 msgstr "มาถึงเมื่อ"
@@ -640,6 +641,7 @@ msgstr "ผู้ถือบทบาท"
 
 #. module: work_center
 #: model:ir.model.fields,field_description:work_center.field_work_center_route_line__route_id
+#: model_terms:ir.ui.view,arch_db:work_center.route_steps
 msgid "Route"
 msgstr "เส้นทางมาตรฐาน"
 
@@ -1052,3 +1054,48 @@ msgstr "คุณไม่มีบทบาทที่การกระทำ
 #: model_terms:ir.ui.view,arch_db:work_center.work_center_view_form
 msgid "e.g. Verification Station"
 msgstr "เช่น สถานีหมวดตรวจ"
+
+#. module: work_center
+#: model_terms:ir.ui.view,arch_db:work_center.route_steps
+msgid "(off the route)"
+msgstr "(นอกเส้นทาง)"
+
+#. module: work_center
+#: model_terms:ir.ui.view,arch_db:work_center.route_steps
+msgid "Done"
+msgstr "ผ่านแล้ว"
+
+#. module: work_center
+#: model_terms:ir.ui.view,arch_db:work_center.route_steps
+msgid "Skipped"
+msgstr "ข้าม"
+
+#. module: work_center
+#: model:ir.model.fields,field_description:work_center.field_work_center_mixin__work_center_responsible_ids
+msgid "Responsible"
+msgstr "ผู้รับผิดชอบ"
+
+#. module: work_center
+#: model:ir.model.fields,field_description:work_center.field_work_center_mixin__work_center_route_steps
+msgid "Route Steps"
+msgstr "ลำดับขั้นของเส้นทาง"
+
+#. module: work_center
+#: model:ir.model.fields,field_description:work_center.field_work_center_mixin__work_center_user_in_area
+msgid "Station Person"
+msgstr "คนของสถานี"
+
+#. module: work_center
+#: model:ir.model.fields,help:work_center.field_work_center_mixin__work_center_user_in_area
+msgid "Technical: the current user is one of the area's station people: a member of one of its stations, a holder of the role of an act one of them allows, or a station administrator."
+msgstr "ค่าทางเทคนิค: ผู้ใช้ปัจจุบันเป็นคนของสถานีในงานนี้ คือเป็นสมาชิกของสถานีใดสถานีหนึ่ง ถือบทบาทของการกระทำที่สถานีใดสถานีหนึ่งเปิดให้ทำ หรือเป็นผู้ดูแลสถานี"
+
+#. module: work_center
+#: model:ir.model.fields,help:work_center.field_work_center_mixin__work_center_route_steps
+msgid "Where the document is on its route: the stations done, the one holding it and those still to come."
+msgstr "ตำแหน่งของเอกสารบนเส้นทาง: สถานีที่ผ่านแล้ว สถานีที่ถือเอกสารอยู่ และสถานีที่ยังมาไม่ถึง"
+
+#. module: work_center
+#: model:ir.model.fields,help:work_center.field_work_center_mixin__work_center_responsible_ids
+msgid "Who may forward, divert or send back the document now."
+msgstr "ผู้ที่ส่งต่อ เบี่ยงเส้นทาง หรือส่งคืนเอกสารได้ในตอนนี้"

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Where a document is on its route (work_center_route_steps): one step
+         per route line; a station off the route gets its own step. -->
+    <template id="route_steps">
+        <ol
+            class="list-unstyled d-flex flex-wrap align-items-center mb-0"
+            aria-label="Route"
+        >
+            <li t-foreach="steps" t-as="step" class="d-flex align-items-center">
+                <i
+                    t-if="not step_first"
+                    class="fa fa-angle-right text-muted mx-2"
+                    aria-hidden="true"
+                />
+                <span
+                    t-if="step['status'] == 'current'"
+                    class="badge rounded-pill bg-primary"
+                    aria-current="step"
+                >
+                    <i class="fa fa-map-marker me-1" aria-hidden="true" />
+                    <t t-esc="step['name']" />
+                </span>
+                <span
+                    t-elif="step['status'] == 'off_route'"
+                    class="badge rounded-pill bg-warning text-dark"
+                    aria-current="step"
+                >
+                    <i class="fa fa-map-marker me-1" aria-hidden="true" />
+                    <t t-esc="step['name']" />
+                    (off the route)
+                </span>
+                <span t-elif="step['status'] == 'done'" class="text-muted">
+                    <i
+                        class="fa fa-check text-success me-1"
+                        role="img"
+                        aria-label="Done"
+                        title="Done"
+                    />
+                    <t t-esc="step['name']" />
+                </span>
+                <span
+                    t-elif="step['status'] == 'skipped'"
+                    class="text-muted text-decoration-line-through"
+                >
+                    <i
+                        class="fa fa-share me-1"
+                        role="img"
+                        aria-label="Skipped"
+                        title="Skipped"
+                    />
+                    <t t-esc="step['name']" />
+                </span>
+                <span t-else="" class="text-muted">
+                    <t t-esc="step['name']" />
+                </span>
+            </li>
+        </ol>
+    </template>
+</odoo>
