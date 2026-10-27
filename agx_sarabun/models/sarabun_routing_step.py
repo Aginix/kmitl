@@ -145,9 +145,10 @@ class SarabunRoutingStep(models.Model):
         readonly=True,
         help="Capacity signed in — validated against the step's target Position (ADR-0003).",
     )
-    note = fields.Text(
+    note = fields.Html(
         string="Comment / Reason",
         readonly=True,
+        sanitize=True,
         help="The comment or reason entered when acting on this step.",
     )
     delegated_to_id = fields.Many2one(
@@ -612,7 +613,7 @@ class SarabunRoutingStep(models.Model):
             {
                 "disposition": "delegate",
                 "delegated_to_id": vals.get("employee_id") or False,
-                "note": (self.note or "") + (("\n" + note) if note else ""),
+                "note": (self.note or "") + (note or ""),
                 "target_mode": vals.get("target_mode", self.target_mode),
                 "position_id": vals.get("position_id", self.position_id.id),
                 "employee_id": vals.get("employee_id", self.employee_id.id),

@@ -16,15 +16,11 @@
                     <field name="step_verb" options="{'no_open': True}" />
                     <field name="sign_date_display" />
                     <field name="disposition" />
-                    <label for="note" />
-                    <div name="comment">
-                        <field
-                            name="note"
-                            attrs="{'required': [('disposition', '=', 'reject')]}"
-                            placeholder="Comment..."
-                            nolabel="1"
-                        />
-                    </div>
+                    <field
+                        name="note"
+                        attrs="{'required': [('disposition', '=', 'reject')]}"
+                        placeholder="Comment..."
+                    />
                 </group>
                 <group attrs="{'invisible': [('is_sign', '=', False)]}">
                     <field
