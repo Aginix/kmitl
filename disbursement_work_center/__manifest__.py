@@ -4,7 +4,7 @@
     "name": "Disbursement Stations",
     "summary": "Route the disbursement request through stations: who holds it, "
     "which acts they may do, and where it goes next",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.0.1",
     "category": "Disbursement",
     "license": "LGPL-3",
     "author": "KMITL",
