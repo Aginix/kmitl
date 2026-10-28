@@ -63,9 +63,9 @@ class SarabunStepActWizard(models.TransientModel):
     # ------------------------------------------------------------- simulation
     def _render_simulated_html(self):
         """Simulate the chosen disposition on the step, render the document's
-        preview HTML, then roll back every change. The savepoint guarantees no
-        DB side-effect leaks out (``mail.thread`` tracking rows, state
-        transitions, snapshot writes — all vanish on rollback)."""
+        preview HTML, then roll back every change. The savepoint undoes the SQL
+        (state transitions, snapshot writes); the ORM cache still holds the
+        simulated values afterwards, so it is invalidated for the touched models."""
         self.ensure_one()
         cr = self.env.cr
         cr.execute("SAVEPOINT sarabun_act_preview")
@@ -76,6 +76,9 @@ class SarabunStepActWizard(models.TransientModel):
         finally:
             cr.execute("ROLLBACK TO SAVEPOINT sarabun_act_preview")
             cr.execute("RELEASE SAVEPOINT sarabun_act_preview")
+            # Not invalidate_all(): it would also wipe the onchange record's values.
+            self.env["sarabun.routing.step"].invalidate_model(flush=False)
+            self.env["sarabun.document"].invalidate_model(flush=False)
 
     def _apply_simulated_vals(self):
         """Stamp the step as if the user had just acted. Only the fields the
@@ -86,25 +89,19 @@ class SarabunStepActWizard(models.TransientModel):
         preview shows the acting user's name / position / ลายเซ็น just like the
         real sign would (ADR-0009)."""
         self.ensure_one()
-        step = self.step_id.sudo()
+        # tracking_disable: a tracked write queues a precommit chatter message that
+        # the SAVEPOINT rollback would not undo.
+        step = self.step_id.sudo().with_context(tracking_disable=True)
         user = self.env.user
-        now = fields.Datetime.now()
         vals = {
             "state": "done",
             "disposition": self.disposition,
             "acted_by_id": user.id,
-            "acted_date": now,
+            "acted_date": fields.Datetime.now(),
             "note": self.note or step.note,
         }
         if self.disposition in POSITIVE_DISPOSITIONS and step.verb.show_signature:
             capacity = self.signed_as_position_id or step.position_id
-            employee = user.sudo().employee_id
-            vals.update(
-                {
-                    "signed_as_position_id": capacity.id if capacity else False,
-                    "signed_name": employee.name or user.name,
-                    "signed_position_name": (capacity and capacity.name) or "",
-                    "signed_signature": employee.signature or False,
-                }
-            )
+            vals["signed_as_position_id"] = capacity.id
+            vals.update(step._signature_snapshot_vals(user, capacity))
         step.write(vals)
