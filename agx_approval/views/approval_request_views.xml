@@ -367,8 +367,7 @@
                 <field name="account_fiscal_year_id" options="{'no_open': True}" optional="hide" />
                 <field name="total_amount" sum="Total" optional="show" />
                 <field name="main_exception_id" invisible="1" />
-                <field name="exception_ids" widget="many2many_tags" string="Exceptions"
-                    optional="show" />
+                <field name="exception_ids" widget="many2many_tags" string="Errors" />
                 <field name="state" widget="badge" decoration-success="state == 'billed'"
                     decoration-muted="state == 'draft'"
                     decoration-warning="state in ('to_verify', 'to_commit', 'to_send', 'sent')"

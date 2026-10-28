@@ -502,6 +502,11 @@ msgid "Draft"
 msgstr "แบบร่าง"
 
 #. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_tree
+msgid "Errors"
+msgstr "ข้อผิดพลาด"
+
+#. module: agx_approval
 #: model:ir.model,name:agx_approval.model_exception_rule
 msgid "Exception Rule"
 msgstr "กฎข้อยกเว้น"
@@ -510,7 +515,6 @@ msgstr "กฎข้อยกเว้น"
 #: model:ir.actions.act_window,name:agx_approval.action_approval_exception_rule
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__exception_ids
 #: model:ir.ui.menu,name:agx_approval.approval_setting_exception_menu
-#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_tree
 msgid "Exceptions"
 msgstr "ข้อยกเว้น"
 
