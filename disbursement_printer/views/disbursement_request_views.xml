@@ -6,14 +6,14 @@
         <field name="model">disbursement.request</field>
         <field name="inherit_id" ref="disbursement.view_disbursement_request_form"/>
         <field name="arch" type="xml">
-            <!-- The หนังสือ's official PDF, once Submit to Sarabun has created it. -->
+            <!-- The หนังสือ's official PDF, once Submit to Sarabun has created it
+                 (sarabun_has_live_document comes from disbursement_sarabun). -->
             <xpath expr="//button[@name='action_cancel']" position="before">
-                <field name="can_print_sarabun_document" invisible="1"/>
                 <button name="action_print_sarabun_document"
                         string="Print Disbursement Request"
                         type="object"
                         class="btn btn-secondary"
-                        attrs="{'invisible': [('can_print_sarabun_document', '=', False)]}"
+                        attrs="{'invisible': [('sarabun_has_live_document', '=', False)]}"
                         groups="disbursement_printer.group_disbursement_printer"/>
             </xpath>
         </field>

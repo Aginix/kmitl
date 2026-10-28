@@ -14,6 +14,7 @@
     ],
     "data": [
         "security/security.xml",
+        "security/ir.model.access.csv",
         "views/disbursement_request_views.xml",
     ],
     "installable": True,
