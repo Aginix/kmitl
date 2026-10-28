@@ -61,7 +61,7 @@ The header `account_id` of a reservation: the code the requesting document names
 _Avoid_: main account, default account
 
 **Reservation Split (รายการจองงบประมาณ, `budget.commitment.split`, add-on `budget_commitment_cross_charge`)**:
-The declared per-code amounts of a reservation — row ★ is the Primary Code, the others its ถัว codes. It is the **plan**, the reserve events are the **command**: จองงบ derives one reserve event per row, and re-cutting a reserved split (ปรับถัวจ่าย) cancels those events and posts new ones. Rows are editable only while the reservation's owner allows it (a draft standalone slip; for a พ.1, its two windows in ADR-0020). Once reserved each row also shows its code's จองเงิน / ผูกพัน / เบิกจ่าย / คงเหลือ.
+The declared per-code amounts of a reservation — row ★ is the Primary Code, the others its ถัว codes. It is the **plan**, the reserve events are the **command**: จองงบ derives one reserve event per row, and re-cutting a reserved split (ปรับถัวจ่าย) cancels those events and posts new ones. Rows are editable only while the reservation's owner allows it (a draft standalone slip; for a พ.1, its two windows in ADR-0020). The per-code จองเงิน / ผูกพัน / เบิกจ่าย / คงเหลือ are computed on each row but not shown in the grid (the slip's Budget Summary carries the totals).
 _Avoid_: reserve line (that is the immutable event), allocation
 
 **Control Node (โหนดคุมงบ)**:

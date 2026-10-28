@@ -72,22 +72,22 @@
                             <field
                                 name="total_reserved"
                                 sum="รวม"
-                                attrs="{'column_invisible': [('parent.state', '=', 'draft')]}"
+                                invisible="1"
                             />
                             <field
                                 name="available_to_consume"
                                 sum="รวม"
-                                attrs="{'column_invisible': [('parent.state', '=', 'draft')]}"
+                                invisible="1"
                             />
                             <field
                                 name="total_consumed"
                                 sum="รวม"
-                                attrs="{'column_invisible': [('parent.state', '=', 'draft')]}"
+                                invisible="1"
                             />
                             <field
                                 name="available_to_obligate"
                                 sum="รวม"
-                                attrs="{'column_invisible': [('parent.state', '=', 'draft')]}"
+                                invisible="1"
                             />
                             <field name="currency_id" invisible="1" />
                         </tree>

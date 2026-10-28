@@ -32,8 +32,9 @@ an event is immutable from the moment it is created, even on a draft slip (ADR-0
   amount is **computed** as วงเงิน − Σ ถัว rows and read-only (D-remainder), so the
   total always equals the วงเงิน. The remainder may be **0** (the whole วงเงิน on ถัว
   codes; it then posts no reserve event) but never negative. Each row shows งบที่จองได้ and a sufficiency mark,
-  and a banner names every row that is short. Once reserved the row also shows its
-  code's จองเงิน / ผูกพัน / เบิกจ่าย / คงเหลือ, read from the ledger.
+  and a banner names every row that is short. Each row also computes its code's จองเงิน / ผูกพัน / เบิกจ่าย / คงเหลือ from the
+  ledger; the grid hides those columns (2026-10-28) and the slip's Budget Summary
+  shows the totals.
   - จองงบ derives one reserve event per row, primary first, so ADR-0018's liquidation
     order is the split's order. A slip with no split rows reserves from its header
     exactly as before.
