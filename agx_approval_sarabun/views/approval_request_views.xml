@@ -47,4 +47,16 @@
             </xpath>
         </field>
     </record>
+
+    <record id="approval_request_view_search_sarabun" model="ir.ui.view">
+        <field name="name">approval.request.search.sarabun</field>
+        <field name="model">approval.request</field>
+        <field name="inherit_id" ref="agx_approval.approval_request_view_search" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='owner_id']" position="after">
+                <field name="active_sarabun_document_id" string="เลขที่หนังสือ"
+                       filter_domain="[('active_sarabun_document_id.name', 'ilike', self)]"/>
+            </xpath>
+        </field>
+    </record>
 </odoo>
