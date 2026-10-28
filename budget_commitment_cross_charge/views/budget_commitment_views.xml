@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="budget_commitment_form_view" model="ir.ui.view">
+        <field name="name">budget.commitment.form (cross-charge)</field>
+        <field name="model">budget.commitment</field>
+        <field name="inherit_id" ref="budget.budget_commitment_form_view" />
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='budget_summary']" position="before">
+                <!-- รายการจองงบประมาณ (ถัวจ่าย, ADR-0020): row ★ is the
+                     header code at the remainder; ถัว rows are typed. -->
+                <field name="split_editable" invisible="1" />
+                <field name="split_account_ids" invisible="1" />
+                <div
+                    name="split_section"
+                    attrs="{'invisible': [('split_editable', '=', False), ('split_ids', '=', [])]}"
+                >
+                    <separator string="รายการจองงบประมาณ" />
+                    <div
+                        class="alert alert-warning mb-2"
+                        role="alert"
+                        attrs="{'invisible': [('split_warning', '=', False)]}"
+                    >
+                        <field name="split_warning" nolabel="1" />
+                    </div>
+                    <div
+                        class="text-muted small mb-1"
+                        attrs="{'invisible': [('split_editable', '=', False)]}"
+                    >
+                        ★ รหัสหลัก จองยอดที่เหลือจากวงเงินหลังหักรหัสถัวจ่ายอัตโนมัติ —
+                        เพิ่มแถวเพื่อถัวจ่ายจากรหัสอื่น (เฉพาะรหัสที่ติ๊ก "ถัวจ่ายได้" และมีงบที่มิติเดียวกัน)
+                    </div>
+                    <field
+                        name="split_ids"
+                        nolabel="1"
+                        attrs="{'readonly': [('split_editable', '=', False)]}"
+                    >
+                        <tree
+                            editable="bottom"
+                            decoration-danger="not is_sufficient"
+                            decoration-bf="is_primary"
+                        >
+                            <field name="sequence" invisible="1" />
+                            <field
+                                name="is_primary"
+                                widget="boolean_favorite"
+                                nolabel="1"
+                                readonly="1"
+                                force_save="1"
+                            />
+                            <field
+                                name="account_id"
+                                domain="[('id', 'in', parent.split_account_ids)]"
+                                options="{'no_create': True, 'no_open': True}"
+                                attrs="{'readonly': [('is_primary', '=', True)]}"
+                                force_save="1"
+                            />
+                            <field
+                                name="available"
+                                attrs="{'column_invisible': [('parent.split_editable', '=', False)]}"
+                            />
+                            <field
+                                name="amount"
+                                sum="รวม"
+                                attrs="{'readonly': [('is_primary', '=', True)]}"
+                                force_save="1"
+                            />
+                            <field
+                                name="is_sufficient"
+                                attrs="{'column_invisible': [('parent.split_editable', '=', False)]}"
+                            />
+                            <field
+                                name="total_reserved"
+                                sum="รวม"
+                                attrs="{'column_invisible': [('parent.state', '=', 'draft')]}"
+                            />
+                            <field
+                                name="available_to_consume"
+                                sum="รวม"
+                                attrs="{'column_invisible': [('parent.state', '=', 'draft')]}"
+                            />
+                            <field
+                                name="total_consumed"
+                                sum="รวม"
+                                attrs="{'column_invisible': [('parent.state', '=', 'draft')]}"
+                            />
+                            <field
+                                name="available_to_obligate"
+                                sum="รวม"
+                                attrs="{'column_invisible': [('parent.state', '=', 'draft')]}"
+                            />
+                            <field name="currency_id" invisible="1" />
+                        </tree>
+                    </field>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>

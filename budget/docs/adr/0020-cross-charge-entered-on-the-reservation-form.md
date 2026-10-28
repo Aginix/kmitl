@@ -48,6 +48,13 @@ an event is immutable from the moment it is created, even on a draft slip (ADR-0
   ADR-0010's planned ตรวจสอบงบประมาณ preview for free. Reserve called from code (demo
   data, tests) still reserves the single code directly.
 - **P3. ปรับถัวจ่าย after reserve.** The same dialog opens on the reserved slip.
+- **ยกเลิกการจองงบ.** In the same window as ปรับถัวจ่าย (reserved, unused, not yet sent),
+  the budget committer may cancel the reservation from the พ.1: the slip is cancelled
+  (its money released) and the พ.1 steps back to รอยืนยันงบประมาณ, where the Primary
+  Code and dimensions are editable again. The next Reserve revives the same slip, number
+  and ถัว rows included. Without it, changing the Primary Code after reserving needs a ดึงกลับ to draft by
+  the PR manager, because the slip form has no Cancel and an open พ.1 blocks
+  กลับแบบร่าง on its slip.
 - **D-window. A slip linked to a พ.1 has exactly two editable windows:**
   - draft, while the พ.1 is at รอจองงบประมาณ (`to_verify_budget`);
   - reserved and unused, while the พ.1 is at `to_approve` — reserved but not yet sent to
@@ -64,6 +71,15 @@ an event is immutable from the moment it is created, even on a draft slip (ADR-0
   write guard lets a user who is not a Budget User write **only the split**, and only
   on a slip whose พ.1 is in one of its windows. The reserve and re-cut themselves still
   run as sudo after the group and พ.1-state checks.
+
+- **Packaging: ถัวจ่าย is an add-on, not core.** `budget_commitment_cross_charge` (depends
+  `budget`) owns the Reservation Split, its grid, the re-cut and the account-form flag;
+  `purchase_request_budget_cross_charge` (auto-installs with `purchase_request_budget`)
+  owns the พ.1 dialog, ปรับถัวจ่าย, the edit windows and the committer's write access.
+  Core keeps only two seams: `_check_reserve_availability(amounts=…)` and
+  `_create_reserve_line_from_header` (overridden to post one event per row); the พ.1
+  keeps `_reserve_new_budget` and ยกเลิกการจองงบ, which is useful without ถัวจ่าย.
+  Without the add-ons, Reserve works exactly as before.
 
 ## Considered options
 

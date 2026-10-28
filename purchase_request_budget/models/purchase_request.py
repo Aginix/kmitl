@@ -472,12 +472,13 @@ class PurchaseRequest(models.Model):
                 _("กรุณาระบุข้อมูลงบประมาณให้ครบก่อนจองงบประมาณ: %s") % ", ".join(missing)
             )
 
-        # From the form, Reserve opens the ใบจองงบประมาณ itself as a dialog,
-        # where ถัวจ่าย codes are added before confirming (budget ADR-0020).
-        # Called from code (demo data, tests) it still reserves the one code.
-        if self.env.context.get("budget_reserve_dialog"):
-            return self._prepare_reservation_slip()._action_open_request_dialog()
+        return self._reserve_new_budget()
 
+    def _reserve_new_budget(self):
+        """Reserve this พ.1's own code anew; the budget fields are complete by
+        now. Hook: purchase_request_budget_cross_charge opens the
+        ใบจองงบประมาณ as a dialog instead (budget ADR-0020)."""
+        self.ensure_one()
         amount = sum(self.line_ids.mapped("estimated_cost"))
 
         # ปีงบยึดตามเอกสาร: check/reserve against this request's own fiscal year
@@ -530,52 +531,50 @@ class PurchaseRequest(models.Model):
         except UserError as e:
             raise UserError(_("Cannot reserve budget: %s") % str(e))
 
-    def _prepare_reservation_slip(self):
-        """The draft ใบจองงบประมาณ behind the Reserve dialog (ADR-0020), built
-        from — or refreshed to — this พ.1: ปีงบ, dimensions, Primary Code and
-        วงเงิน = the พ.1 total. A slip left in draft by a closed dialog (or
-        cancelled earlier) is reused, keeping its ถัว rows."""
+    def action_cancel_budget_reservation(self):
+        """ยกเลิกการจองงบ: the budget committer releases this พ.1's own
+        reservation and takes it back to รอยืนยันงบประมาณ, to change the
+        primary code or dimensions and reserve again — only its own slip
+        (not a drawn project/plan one), reserved, unused and not yet sent
+        (budget ADR-0020). The slip is cancelled, not deleted: the next
+        Reserve revives it with its number."""
         self.ensure_one()
-        vals = self.sudo()._prepare_commitment_vals(
-            sum(self.line_ids.mapped("estimated_cost")),
-            self.activity_analytic_id.id,
-            self.fund_analytic_id.id,
-            self.department_analytic_id.id,
-            self.source_analytic_id.id,
-            self.name,
-            f"Purchase Request: {self.name}",
-            self.budget_account_id,
-            account_fiscal_year_id=self.account_fiscal_year_id.id,
-            **self._get_budget_commitment_extra_kwargs(),
-        )
-        vals.pop("line_ids")
-        slip = self.sudo().budget_commitment_id
-        if slip.state == "cancel":
-            slip.action_reset_to_draft()
-        if slip.state == "draft":
-            vals.pop("company_id", None)
-            slip.write(vals)
-        else:
-            slip = self.env["budget.commitment"].sudo().create(vals)
-            self.sudo().budget_commitment_id = slip
-        slip._sync_split_primary()
-        return slip.with_env(self.env)
-
-    def _action_open_request_dialog(self):
-        return self.budget_commitment_id._action_open_request_dialog()
-
-    def action_adjust_cross_charge(self):
-        """ปรับถัวจ่าย: reopen the reserved slip's dialog while the พ.1 is
-        reserved but not yet sent to e-Saraban (ADR-0020)."""
-        self.ensure_one()
-        commitment = self.budget_commitment_id
-        if not commitment.split_editable:
+        if not self.env.user.has_group(
+            "purchase_request_budget.group_purchase_request_budget_commit"
+        ):
             raise UserError(
-                _("ปรับถัวจ่ายได้เฉพาะคำขอที่จองงบแล้ว ยังไม่ส่งหนังสือ และยังไม่มีการใช้เงิน")
+                _("เฉพาะผู้ที่มีสิทธิ์จองงบประมาณแบบขอให้จัดหา (พ.1) เท่านั้นที่ดำเนินการขั้นนี้ได้")
             )
-        if not commitment.split_ids:
-            commitment.sudo()._sync_split_primary()
-        return commitment._action_open_request_dialog()
+        commitment = self.budget_commitment_id
+        used = commitment.line_ids.filtered(
+            lambda line: (
+                line.state == "posted"
+                and (line.move_type != "reserve" or line.is_return)
+            )
+        )
+        if (
+            self.state != "to_approve"
+            or commitment.state != "reserved"
+            or used
+            or self.reservation_commitment_id
+            or self.budget_selection_mode != "normal"
+        ):
+            raise UserError(
+                _("ยกเลิกการจองงบได้เฉพาะคำขอที่จองงบแล้ว ยังไม่ส่งหนังสือ และยังไม่มีการใช้เงิน")
+            )
+        commitment.sudo().action_cancel()
+        self.message_post(
+            body=_("ยกเลิกการจองงบประมาณ %s — กลับไปรอยืนยันงบประมาณ")
+            % commitment.display_name,
+            subtype_xmlid="mail.mt_note",
+        )
+        self.write(
+            {
+                "state": "to_verify_budget",
+                "budget_committed_by": False,
+                "date_budget_committed": False,
+            }
+        )
 
     def _action_draw_from_reservation(self):
         """Draw down an existing reservation (ใบจองงบประมาณ) instead of reserving.

@@ -28,8 +28,9 @@ upfront.
     context): give a ใบขอซื้อ (พ.1) its **แหล่งงบประมาณ** — reserve anew from the
     ผังงบประมาณ, or draw the reservation of a โครงการ or a แผนจัดซื้อจัดจ้าง. Each
     bridge owns its own answer; a source-less ใบจองงบประมาณ is not an option here
-    (budget ADR-0015). Reserving anew opens the ใบจองงบประมาณ itself as a dialog,
-    where ถัวจ่าย codes are added to its Reservation Split (budget ADR-0020).
+    (budget ADR-0015). With the add-on `purchase_request_budget_cross_charge`,
+    reserving anew opens the ใบจองงบประมาณ itself as a dialog, where ถัวจ่าย codes are
+    added to its Reservation Split (`budget_commitment_cross_charge`, budget ADR-0020).
 - [Budget Support Request](./budget_support_request/CONTEXT.md) — a requesting unit's
   application for central to allocate budget onto its own `department` dimension
   (ขอรับการสนับสนุนงบประมาณ); routed for approval through e-Saraban, then **fulfilled**

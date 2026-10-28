@@ -2,7 +2,7 @@ from odoo import Command
 from odoo.exceptions import UserError
 from odoo.tests.common import tagged
 
-from .test_budget_ledger import BudgetLedgerCommon
+from odoo.addons.budget.tests.test_budget_ledger import BudgetLedgerCommon
 
 
 @tagged("post_install", "-at_install")

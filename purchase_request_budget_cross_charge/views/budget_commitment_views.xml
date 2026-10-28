@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- The พ.1's Reserve / ปรับถัวจ่าย dialog (budget ADR-0020): the same
+         ใบจองงบประมาณ form, header locked to what the พ.1 says, only the
+         รายการจองงบประมาณ editable. -->
+    <record id="budget_commitment_request_dialog_form" model="ir.ui.view">
+        <field name="name">budget.commitment.form (พ.1 reserve dialog)</field>
+        <field name="model">budget.commitment</field>
+        <field name="inherit_id" ref="budget.budget_commitment_form_view" />
+        <field name="mode">primary</field>
+        <field name="priority">99</field>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="replace">
+                <header>
+                    <field
+                        name="state"
+                        widget="statusbar"
+                        statusbar_visible="draft,reserved,partial,done"
+                    />
+                </header>
+            </xpath>
+            <xpath expr="//div[@name='button_box']" position="replace" />
+            <xpath expr="//field[@name='title']" position="attributes">
+                <attribute name="readonly">1</attribute>
+            </xpath>
+            <xpath expr="//group[@name='basic_information']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='source_analytic_id']" position="attributes">
+                <attribute name="readonly">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='department_analytic_id']" position="attributes">
+                <attribute name="readonly">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='fund_analytic_id']" position="attributes">
+                <attribute name="readonly">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='activity_analytic_id']" position="attributes">
+                <attribute name="readonly">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='account_id']" position="attributes">
+                <attribute name="readonly">1</attribute>
+                <attribute name="string">รหัสหลัก</attribute>
+            </xpath>
+            <xpath expr="//field[@name='amount']" position="attributes">
+                <attribute name="readonly">1</attribute>
+                <attribute name="string">วงเงิน (ยอดรวม พ.1)</attribute>
+            </xpath>
+            <xpath expr="//group[@name='budget_summary']" position="attributes">
+                <attribute name="attrs">{'invisible': [('state', '=', 'draft')]}</attribute>
+            </xpath>
+            <xpath expr="//notebook" position="replace" />
+            <xpath expr="//div[hasclass('oe_chatter')]" position="replace" />
+            <xpath expr="//sheet" position="after">
+                <footer>
+                    <button
+                        name="action_confirm_request_reserve"
+                        string="ยืนยันจองงบประมาณ"
+                        type="object"
+                        class="btn-primary"
+                        attrs="{'invisible': [('state', '!=', 'draft')]}"
+                    />
+                    <button
+                        name="action_save_request_split"
+                        string="บันทึกการถัวจ่าย"
+                        type="object"
+                        class="btn-primary"
+                        attrs="{'invisible': ['|', ('state', '!=', 'reserved'), ('split_editable', '=', False)]}"
+                    />
+                    <button string="ปิด" special="cancel" class="btn-secondary" />
+                </footer>
+            </xpath>
+        </field>
+    </record>
+</odoo>

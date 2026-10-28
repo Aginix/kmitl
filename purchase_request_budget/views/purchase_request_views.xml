@@ -47,16 +47,16 @@
                     attrs="{'invisible':[('hide_reserve_budget_button', '=', True)]}"
                     string="Reserve Budget"
                     class="oe_highlight btn-success"
-                    context="{'budget_reserve_dialog': True}"
                     groups="purchase_request_budget.group_purchase_request_budget_commit"
                 />
-                <!-- ปรับถัวจ่าย: reserved, not yet sent to e-Saraban, unused
-                     (budget ADR-0020; the server re-checks the window). -->
+                <!-- ยกเลิกการจองงบ: release the slip and step back to
+                     to_verify_budget to change the primary code (budget ADR-0020). -->
                 <button
-                    name="action_adjust_cross_charge"
+                    name="action_cancel_budget_reservation"
                     type="object"
-                    string="ปรับถัวจ่าย"
-                    attrs="{'invisible': ['|', ('state', '!=', 'to_approve'), ('budget_commitment_state', '!=', 'reserved')]}"
+                    string="ยกเลิกการจองงบ"
+                    confirm="ยกเลิกการจองงบประมาณ — เงินที่จองไว้จะถูกปลดคืน และคำขอจะกลับไปรอยืนยันงบประมาณ ยืนยันหรือไม่?"
+                    attrs="{'invisible': ['|', '|', ('state', '!=', 'to_approve'), ('budget_commitment_state', '!=', 'reserved'), ('budget_selection_mode', '!=', 'normal')]}"
                     groups="purchase_request_budget.group_purchase_request_budget_commit"
                 />
             </xpath>

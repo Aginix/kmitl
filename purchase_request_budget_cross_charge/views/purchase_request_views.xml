@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_purchase_request_form" model="ir.ui.view">
+        <field name="name">view.purchase.request.form (cross-charge)</field>
+        <field name="model">purchase.request</field>
+        <field name="inherit_id" ref="purchase_request_budget.view_purchase_request_form" />
+        <field name="arch" type="xml">
+            <!-- Reserve opens the ใบจองงบประมาณ as a dialog (budget ADR-0020). -->
+            <xpath expr="//button[@name='action_reserve_budget']" position="attributes">
+                <attribute name="context">{'budget_reserve_dialog': True}</attribute>
+            </xpath>
+            <!-- ปรับถัวจ่าย: reserved, not yet sent to e-Saraban, unused
+                 (the server re-checks the window). -->
+            <xpath expr="//button[@name='action_reserve_budget']" position="after">
+                <button
+                    name="action_adjust_cross_charge"
+                    type="object"
+                    string="ปรับถัวจ่าย"
+                    attrs="{'invisible': ['|', '|', ('state', '!=', 'to_approve'), ('budget_commitment_state', '!=', 'reserved'), ('budget_selection_mode', '!=', 'normal')]}"
+                    groups="purchase_request_budget.group_purchase_request_budget_commit"
+                />
+            </xpath>
+        </field>
+    </record>
+</odoo>

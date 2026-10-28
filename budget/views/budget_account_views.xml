@@ -20,7 +20,6 @@
                 <field name="hierarchy_level" string="Level" optional="hide" />
                 <field name="fund_analytic_ids" widget="many2many_tags" string="Funds" optional="show" />
                 <field name="budgetable" string="Budgetable" widget="boolean_toggle" />
-                <field name="cross_chargeable" widget="boolean_toggle" optional="show" />
                 <field name="children_count" string="Sub-Accounts" optional="show" />
                 <field name="deprecated" string="Deprecated" optional="hide" />
                 <field name="active" string="Active" optional="hide" />
@@ -97,7 +96,6 @@
                                 attrs="{'readonly': [('id', '!=', False)]}"
                             />
                             <field name="budgetable" />
-                            <field name="cross_chargeable" />
                         </group>
                         <group>
                             <field name="parent_id" />
