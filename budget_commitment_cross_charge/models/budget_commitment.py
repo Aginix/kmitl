@@ -20,8 +20,8 @@ class BudgetCommitment(models.Model):
     split_account_ids = fields.Many2many(
         comodel_name="budget.account",
         compute="_compute_split_account_ids",
-        help="Codes a ถัว row may name: flagged ถัวจ่ายได้ and funded at this "
-        "reservation's dimensions.",
+        help="Codes a new ถัว row may name: flagged ถัวจ่ายได้, funded at this "
+        "reservation's dimensions and not on a row yet.",
     )
     split_warning = fields.Text(compute="_compute_split_warning")
 
@@ -73,10 +73,9 @@ class BudgetCommitment(models.Model):
                     )["available"]
                     if available > 0:
                         eligible |= account
-            record.split_account_ids = (
-                eligible
-                | record.split_ids.filtered(lambda s: not s.is_primary).account_id
-            )
+            # Not the codes already on a row: one row per code (unique), and
+            # the dropdown of a new row must not offer a duplicate.
+            record.split_account_ids = eligible - record.split_ids.account_id
 
     @api.depends(
         "amount",

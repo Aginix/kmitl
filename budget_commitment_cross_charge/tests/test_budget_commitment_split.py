@@ -37,7 +37,9 @@ class TestBudgetCommitmentSplit(BudgetLedgerCommon):
             self._rows(commitment),
             {(self.account, True): 30_000, (self.other, False): 20_000},
         )
-        self.assertIn(self.other, commitment.split_account_ids)
+        # A code already on a row is not offered again.
+        self.assertNotIn(self.other, commitment.split_account_ids)
+        self.assertIn(self.other, self._draft(10_000).split_account_ids)
 
     def test_reserve_posts_one_event_per_row_primary_first(self):
         commitment = self._split_draft(50_000, 20_000)
