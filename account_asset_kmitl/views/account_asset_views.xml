@@ -70,9 +70,13 @@
                 <field name="source_analytic_id" required="1" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
             </xpath>
             <xpath expr="//field[@name='group_ids']" position="attributes">
-                <attribute name="attrs">
-                    {'readonly': [('state', '!=', 'draft')]}
-                </attribute>
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//group[field[@name='method_time']]" position="attributes">
+                <attribute name="groups">base.group_erp_manager</attribute>
+            </xpath>
+            <xpath expr="//group[field[@name='method_progress_factor']]" position="attributes">
+                <attribute name="groups">base.group_erp_manager</attribute>
             </xpath>
             <xpath expr="//field[@name='days_calc']" position="attributes">
                 <attribute name="attrs">
@@ -93,7 +97,7 @@
                 <attribute name="attrs">
                     {'readonly': [('state', '!=', 'draft')]}
                 </attribute>
-                <attribute name="groups">account.group_account_manager</attribute>
+                <attribute name="groups">base.group_erp_manager</attribute>
             </xpath>
         </field>
     </record>
@@ -127,9 +131,7 @@
             </xpath>
 
             <xpath expr="//field[@name='parent_id']" position="attributes">
-                <attribute name="attrs">
-                    {'readonly': [('state', '!=', 'draft')]}
-                </attribute>
+                <attribute name="invisible">1</attribute>
             </xpath>
 
             <xpath expr="//field[@name='asset_sub_state_id']" position="attributes">
