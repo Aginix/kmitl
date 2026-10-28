@@ -430,6 +430,12 @@ class KmitlProject(models.Model):
         states=EDITABLE_STATES,
     )
 
+    evaluation_other = fields.Boolean(
+        "อื่น ๆ",
+        compute="_compute_evaluation_other",
+        help="วิธีการ/เครื่องมือติดตามและประเมินผลมีตัวเลือก อื่น ๆ ซึ่งเปิดช่องรายละเอียด",
+    )
+
     evaluation_detail = fields.Text(
         "วิธีการ/เครื่องมือติดตามและประเมินผล (รายละเอียด)",
         copy=True,
@@ -437,6 +443,21 @@ class KmitlProject(models.Model):
         readonly=True,
         states=EDITABLE_STATES,
     )
+
+    @api.depends("evaluation_ids")
+    def _compute_evaluation_other(self):
+        other = self.env.ref(
+            "kmitl_project.evaluation_other", raise_if_not_found=False
+        )
+        for rec in self:
+            # In an onchange the lines are NewId records: compare their origin.
+            rec.evaluation_other = bool(other) and other in rec.evaluation_ids._origin
+
+    @api.onchange("evaluation_ids")
+    def _onchange_evaluation_other(self):
+        """Drop the detail once อื่น ๆ is unticked, so hidden text never prints."""
+        if not self.evaluation_other:
+            self.evaluation_detail = False
 
     attachment_ids = fields.One2many(
         "ir.attachment",
