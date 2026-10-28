@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+
+    <record id="infrastructure" model="project.global.index">
+        <field name="name">Infrastructure</field>
+    </record>
+
+    <record id="management" model="project.global.index">
+        <field name="name">Management</field>
+    </record>
+
+    <record id="citizen" model="project.global.index">
+        <field name="name">Citizen</field>
+    </record>
+
+    <record id="innovation" model="project.global.index">
+        <field name="name">Innovation</field>
+    </record>
+
+    <record id="learning" model="project.global.index">
+        <field name="name">Learning</field>
+    </record>
+</odoo>

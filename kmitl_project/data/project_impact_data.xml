@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+
+    <record id="education" model="project.impact">
+        <field name="name">Education</field>
+    </record>
+
+    <record id="academic" model="project.impact">
+        <field name="name">Academic</field>
+    </record>
+
+    <record id="industrial" model="project.impact">
+        <field name="name">Industrial</field>
+    </record>
+
+    <record id="social" model="project.impact">
+        <field name="name">Social</field>
+    </record>
+</odoo>

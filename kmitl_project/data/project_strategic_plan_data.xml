@@ -1,0 +1,2415 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+
+    <!-- Y00 ยุทธศาสตร์ชาติ 20 ปี -->
+
+    <record id="Y00" model="project.strategic.plan">
+        <field name="code">Y00</field>
+        <field name="name">แผนยุทธศาสตร์ชาติ 20 ปี</field>
+        <field name="level">1</field>
+    </record>
+
+    <record id="Y101" model="project.strategic.plan">
+        <field name="code">Y101</field>
+        <field name="name">1. ด้านความมั่นคง</field>
+        <field name="parent_id" ref="Y00" />
+        <field name="level">1</field>
+    </record>
+
+    <record id="Y1010101" model="project.strategic.plan">
+        <field name="code">Y1010101</field>
+        <field name="name">เป้าหมายที่ 1.1 ประชาชนอยู่ดี กินดี และมีความสุข</field>
+        <field name="parent_id" ref="Y101" />
+        <field name="level">1</field>
+    </record>
+
+    <record id="Y1010102" model="project.strategic.plan">
+        <field name="code">Y1010102</field>
+        <field
+            name="name"
+        >เป้าหมายที่ 1.2 บ้านเมืองมีความมั่นคงในทุกมิติและทุกระดับ</field>
+        <field name="parent_id" ref="Y101" />
+        <field name="level">1</field>
+    </record>
+
+    <record id="Y1010103" model="project.strategic.plan">
+        <field name="code">Y1010103</field>
+        <field
+            name="name"
+        >เป้าหมายที่ 1.3 กองทัพ หน่วยงานด้านความมั่นคง ภาครัฐ ภาคเอกชน และภาคประชาชน มีความพร้อมในการป้องกันและแก้ไขปัญหาความมั่นคง</field>
+        <field name="parent_id" ref="Y101" />
+        <field name="level">1</field>
+    </record>
+
+    <record id="Y1010104" model="project.strategic.plan">
+        <field name="code">Y1010104</field>
+        <field
+            name="name"
+        >เป้าหมายที่ 1.4 ประเทศไทยมีบทบาทด้านความมั่นคงเป็นที่ชื่นชมและได้รับการยอมรับโดยประชาคมระหว่างประเทศ</field>
+        <field name="parent_id" ref="Y101" />
+        <field name="level">1</field>
+    </record>
+
+    <record id="Y1010105" model="project.strategic.plan">
+        <field name="code">Y1010105</field>
+        <field
+            name="name"
+        >เป้าหมายที่ 1.5 การบริหารจัดการความมั่นคงมีผลสำเร็จที่เป็นรูปธรรมอย่างมีประสิทธิภาพ</field>
+        <field name="parent_id" ref="Y101" />
+        <field name="level">1</field>
+    </record>
+
+    <record id="Y201" model="project.strategic.plan">
+        <field name="code">Y201</field>
+        <field name="name">2. ด้านการสร้างความสามารถในการแข่งขัน</field>
+        <field name="parent_id" ref="Y00" />
+        <field name="level">1</field>
+    </record>
+
+    <record id="Y2010101" model="project.strategic.plan">
+        <field name="code">Y2010101</field>
+        <field
+            name="name"
+        >เป้าหมายที่ 2.1 ประเทศไทยเป็นประเทศที่พัฒนาแล้ว เศรษฐกิจเติบโตอย่างมีเสถียรภาพและยั่งยืน</field>
+        <field name="parent_id" ref="Y201" />
+        <field name="level">1</field>
+    </record>
+
+    <record id="Y2010102" model="project.strategic.plan">
+        <field name="code">Y2010102</field>
+        <field
+            name="name"
+        >เป้าหมายที่ 2.2 ประเทศไทยมีขีดความสามารถในการแข่งขันสูงขึ้น</field>
+        <field name="parent_id" ref="Y201" />
+        <field name="level">1</field>
+    </record>
+
+    <record id="Y301" model="project.strategic.plan">
+        <field name="code">Y301</field>
+        <field name="name">3. ด้านการพัฒนาและเสริมสร้างศักยภาพทรัพยากรมนุษย์</field>
+        <field name="parent_id" ref="Y00" />
+        <field name="level">1</field>
+    </record>
+
+    <record id="Y3010101" model="project.strategic.plan">
+        <field name="code">Y3010101</field>
+        <field
+            name="name"
+        >เป้าหมายที่ 3.1 คนไทยเป็นคนดี คนเก่ง มีคุณภาพ พร้อมสำหรับวิถีชีวิตในศตวรรษที่ 21</field>
+        <field name="parent_id" ref="Y301" />
+        <field name="level">1</field>
+    </record>
+
+    <record id="Y3010102" model="project.strategic.plan">
+        <field name="code">Y3010102</field>
+        <field
+            name="name"
+        >เป้าหมายที่ 3.2 สังคมไทยมีสภาพแวดล้อมที่เอื้อและสนับสนุนต่อการพัฒนาคนตลอดช่วงชีวิต</field>
+        <field name="parent_id" ref="Y301" />
+        <field name="level">1</field>
+    </record>
+
+    <record id="Y401" model="project.strategic.plan">
+        <field name="code">Y401</field>
+        <field name="name">4. ด้านการสร้างโอกาสและความเสมอภาคทางสังคม</field>
+        <field name="parent_id" ref="Y00" />
+        <field name="level">1</field>
+    </record>
+
+    <record id="Y4010101" model="project.strategic.plan">
+        <field name="code">Y4010101</field>
+        <field
+            name="name"
+        >เป้าหมายที่ 4.1 สร้างความเป็นธรรม และลดความเหลื่อมล้ำในทุกมิติ</field>
+        <field name="parent_id" ref="Y401" />
+        <field name="level">1</field>
+    </record>
+
+    <record id="Y4010102" model="project.strategic.plan">
+        <field name="code">Y4010102</field>
+        <field
+            name="name"
+        >เป้าหมายที่ 4.2 กระจายศูนย์กลางความเจริญทางเศรษฐกิจและสังคม เพิ่มโอกาสให้ทุกภาคส่วนเข้ามาเป็นกำลังของการพัฒนาประเทศในทุกระดับ</field>
+        <field name="parent_id" ref="Y401" />
+        <field name="level">1</field>
+    </record>
+
+    <record id="Y4010103" model="project.strategic.plan">
+        <field name="code">Y4010103</field>
+        <field
+            name="name"
+        >เป้าหมายที่ 4.3 เพิ่มขีดความสามารถของชุมชนท้องถิ่นในการพัฒนา การพึ่งตนเองและการจัดการตนเองเพื่อสร้างสังคมคุณภาพ</field>
+        <field name="parent_id" ref="Y401" />
+        <field name="level">1</field>
+    </record>
+
+    <record id="Y501" model="project.strategic.plan">
+        <field name="code">Y501</field>
+        <field
+            name="name"
+        >5. ด้านการสร้างการเติบโตบนคุณภาพชีวิตที่เป็นมิตรต่อสิ่งแวดล้อม</field>
+        <field name="parent_id" ref="Y00" />
+        <field name="level">1</field>
+    </record>
+
+    <record id="Y5010101" model="project.strategic.plan">
+        <field name="code">Y5010101</field>
+        <field
+            name="name"
+        >เป้าหมายที่ 5.1 อนุรักษ์และรักษาทรัพยากรธรรมชาติ สิ่งแวดล้อม และวัฒนธรรม ให้คนรุ่นต่อไปได้ใช้อย่างยั่งยืน มีสมดุล</field>
+        <field name="parent_id" ref="Y501" />
+        <field name="level">1</field>
+    </record>
+
+    <record id="Y5010102" model="project.strategic.plan">
+        <field name="code">Y5010102</field>
+        <field
+            name="name"
+        >เป้าหมายที่ 5.2 ฟื้นฟูและสร้างใหม่ฐานทรัพยากรธรรมชาติและสิ่งแวดล้อม เพื่อลดผลกระทบทางลบจากการพัฒนาสังคมเศรษฐกิจของประเทศ</field>
+        <field name="parent_id" ref="Y501" />
+        <field name="level">1</field>
+    </record>
+
+    <record id="Y5010103" model="project.strategic.plan">
+        <field name="code">Y5010103</field>
+        <field
+            name="name"
+        >เป้าหมายที่ 5.3 ใช้ประโยชน์และสร้างการเติบโต บนฐานทรัพยากรธรรมชาติและสิ่งแวดล้อมให้สมดุลภายในขีดความสามารถของระบบนิเวศ</field>
+        <field name="parent_id" ref="Y501" />
+        <field name="level">1</field>
+    </record>
+
+    <record id="Y5010104" model="project.strategic.plan">
+        <field name="code">Y5010104</field>
+        <field
+            name="name"
+        >เป้าหมายที่ 5.4 ยกระดับกระบวนทัศน์เพื่อกำหนดอนาคตประเทศด้านทรัพยากรธรรมชาติสิ่งแวดล้อมและวัฒนธรรม บนหลักของการมีส่วนร่วม และธรรมาภิบาล</field>
+        <field name="parent_id" ref="Y501" />
+        <field name="level">1</field>
+    </record>
+
+    <record id="Y601" model="project.strategic.plan">
+        <field name="code">Y601</field>
+        <field name="name">6. ด้านการปรับสมดุลและพัฒนาระบบการบริหารจัดการภาครัฐ</field>
+        <field name="parent_id" ref="Y00" />
+        <field name="level">1</field>
+    </record>
+
+    <record id="Y6010101" model="project.strategic.plan">
+        <field name="code">Y6010101</field>
+        <field
+            name="name"
+        >เป้าหมายที่ 6.1 ภาครัฐมีวัฒนธรรมการทำงานที่มุ่งผลสัมฤทธิ์และผลประโยชน์ส่วนรวม ตอบสนองความต้องการของประชาชนได้อย่างสะดวก รวดเร็ว โปร่งใส</field>
+        <field name="parent_id" ref="Y601" />
+        <field name="level">1</field>
+    </record>
+
+    <record id="Y6010102" model="project.strategic.plan">
+        <field name="code">Y6010102</field>
+        <field
+            name="name"
+        >เป้าหมายที่ 6.2 ภาครัฐมีขนาดที่เล็กลง พร้อมปรับตัวให้ทันต่อการเปลี่ยนแปลง</field>
+        <field name="parent_id" ref="Y601" />
+        <field name="level">1</field>
+    </record>
+
+    <record id="Y6010103" model="project.strategic.plan">
+        <field name="code">Y6010103</field>
+        <field
+            name="name"
+        >เป้าหมายที่ 6.3 ภาครัฐมีความโปร่งใส ปลอดการทุจริตและประพฤติมิชอบ</field>
+        <field name="parent_id" ref="Y601" />
+        <field name="level">1</field>
+    </record>
+
+    <record id="Y6010104" model="project.strategic.plan">
+        <field name="code">Y6010104</field>
+        <field
+            name="name"
+        >เป้าหมายที่ 6.4 กระบวนการยุติธรรม เป็นไปเพื่อประโยชน์ต่อส่วนรวมของประเทศ</field>
+        <field name="parent_id" ref="Y601" />
+        <field name="level">1</field>
+    </record>
+
+    <!-- MP แผนแม่บทภายใต้ยุทธศาสตร์ชาติ -->
+
+    <record id="MP" model="project.strategic.plan">
+        <field name="code">MP</field>
+        <field name="name">แผนแม่บทภายใต้ยุทธศาสตร์ชาติ</field>
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP01" model="project.strategic.plan">
+        <field name="code">MP01</field>
+        <field name="name">1. ประเด็นความมั่นคง</field>
+        <field name="parent_id" ref="MP" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP0101" model="project.strategic.plan">
+        <field name="code">MP0101</field>
+        <field name="name">แผนย่อยที่ 1.1 แผนย่อยการรักษาความสงบภายในประเทศ</field>
+        <field name="parent_id" ref="MP01" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP0102" model="project.strategic.plan">
+        <field name="code">MP0102</field>
+        <field
+            name="name"
+        >แผนย่อยที่ 1.2 แผนย่อยการป้องกันและแก้ไขปัญหาที่มีผลกระทบต่อความมั่นคง</field>
+        <field name="parent_id" ref="MP01" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP0103" model="project.strategic.plan">
+        <field name="code">MP0103</field>
+        <field
+            name="name"
+        >แผนย่อยที่ 1.3 แผนย่อยการพัฒนาศักยภาพของประเทศให้พร้อมเผชิญภัยคุกคามที่กระทบต่อความมั่นคงของชาติ</field>
+        <field name="parent_id" ref="MP01" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP0104" model="project.strategic.plan">
+        <field name="code">MP0104</field>
+        <field
+            name="name"
+        >แผนย่อยที่ 1.4 แผนย่อยการบูรณาการความร่วมมือด้านความมั่นคงกับอาเซียน และนานาชาติ รวมทั้งองค์กรภาครัฐ และมิใช่ภาครัฐ</field>
+        <field name="parent_id" ref="MP01" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP0105" model="project.strategic.plan">
+        <field name="code">MP0105</field>
+        <field
+            name="name"
+        >แผนย่อยที่ 1.5 แผนย่อยการพัฒนากลไกการบริหารจัดการความมั่นคงแบบองค์รวม</field>
+        <field name="parent_id" ref="MP01" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP02" model="project.strategic.plan">
+        <field name="code">MP02</field>
+        <field name="name">2. ประเด็นการต่างประเทศ</field>
+        <field name="parent_id" ref="MP" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP0201" model="project.strategic.plan">
+        <field name="code">MP0201</field>
+        <field
+            name="name"
+        >แผนย่อยที่ 2.1 แผนย่อยความร่วมมือด้านความมั่นคงระหว่างประเทศ</field>
+        <field name="parent_id" ref="MP02" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP0202" model="project.strategic.plan">
+        <field name="code">MP0202</field>
+        <field
+            name="name"
+        >แผนย่อยที่ 2.2 แผนย่อยความร่วมมือด้านเศรษฐกิจและความร่วมมือเพื่อการพัฒนาระหว่างประเทศ</field>
+        <field name="parent_id" ref="MP02" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP0203" model="project.strategic.plan">
+        <field name="code">MP0203</field>
+        <field
+            name="name"
+        >แผนย่อยที่ 2.3 แผนย่อยการพัฒนาที่สอดคล้องกับมาตรฐานสากลและพันธกรณีระหว่างประเทศ</field>
+        <field name="parent_id" ref="MP02" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP0204" model="project.strategic.plan">
+        <field name="code">MP0204</field>
+        <field
+            name="name"
+        >แผนย่อยที่ 2.4 แผนย่อยการส่งเสริมสถานะและบทบาทของประเทศไทยในประชาคมโลก</field>
+        <field name="parent_id" ref="MP02" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP0205" model="project.strategic.plan">
+        <field name="code">MP0205</field>
+        <field
+            name="name"
+        >แผนย่อยที่ 2.5 แผนย่อยการต่างประเทศมีเอกภาพและบูรณาการ</field>
+        <field name="parent_id" ref="MP02" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP03" model="project.strategic.plan">
+        <field name="code">MP03</field>
+        <field name="name">3. ประเด็นการเกษตร</field>
+        <field name="parent_id" ref="MP" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP0301" model="project.strategic.plan">
+        <field name="code">MP0301</field>
+        <field name="name">แผนย่อยที่ 3.1 แผนย่อยเกษตรอัตลักษณ์พื้นถิ่น</field>
+        <field name="parent_id" ref="MP03" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP0302" model="project.strategic.plan">
+        <field name="code">MP0302</field>
+        <field name="name">แผนย่อยที่ 3.2 แผนย่อยเกษตรปลอดภัย</field>
+        <field name="parent_id" ref="MP03" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP0303" model="project.strategic.plan">
+        <field name="code">MP0303</field>
+        <field name="name">แผนย่อยที่ 3.3 แผนย่อยเกษตรชีวภาพ</field>
+        <field name="parent_id" ref="MP03" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP0304" model="project.strategic.plan">
+        <field name="code">MP0304</field>
+        <field name="name">แผนย่อยที่ 3.4 แผนย่อยเกษตรแปรรูป</field>
+        <field name="parent_id" ref="MP03" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP0305" model="project.strategic.plan">
+        <field name="code">MP0305</field>
+        <field name="name">แผนย่อยที่ 3.5 แผนย่อยเกษตรอัจฉริยะ</field>
+        <field name="parent_id" ref="MP03" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP0306" model="project.strategic.plan">
+        <field name="code">MP0306</field>
+        <field name="name">แผนย่อยที่ 3.6 แผนย่อยการพัฒนาระบบนิเวศการเกษตร</field>
+        <field name="parent_id" ref="MP03" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP04" model="project.strategic.plan">
+        <field name="code">MP04</field>
+        <field name="name">4. ประเด็นอุตสาหกรรมและบริการแห่งอนาคต</field>
+        <field name="parent_id" ref="MP" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP0401" model="project.strategic.plan">
+        <field name="code">MP0401</field>
+        <field name="name">แผนย่อยที่ 4.1 แผนย่อยอุตสาหกรรมชีวภาพ</field>
+        <field name="parent_id" ref="MP04" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP0402" model="project.strategic.plan">
+        <field name="code">MP0402</field>
+        <field
+            name="name"
+        >แผนย่อยที่ 4.2 แผนย่อยอุตสาหกรรมและบริการการแพทย์ครบวงจร</field>
+        <field name="parent_id" ref="MP04" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP0403" model="project.strategic.plan">
+        <field name="code">MP0403</field>
+        <field
+            name="name"
+        >แผนย่อยที่ 4.3 แผนย่อยอุตสาหกรรมและบริการดิจิทัล ข้อมูล และปัญญาประดิษฐ์</field>
+        <field name="parent_id" ref="MP04" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP0404" model="project.strategic.plan">
+        <field name="code">MP0404</field>
+        <field
+            name="name"
+        >แผนย่อยที่ 4.4 แผนย่อยอุตสาหกรรมต่อเนื่องจากการพัฒนาระบบคมนาคม</field>
+        <field name="parent_id" ref="MP04" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP0405" model="project.strategic.plan">
+        <field name="code">MP0405</field>
+        <field name="name">แผนย่อยที่ 4.5 แผนย่อยอุตสาหกรรมความมั่นคงของประเทศ</field>
+        <field name="parent_id" ref="MP04" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP0406" model="project.strategic.plan">
+        <field name="code">MP0406</field>
+        <field
+            name="name"
+        >แผนย่อยที่ 4.6 แผนย่อยการพัฒนาระบบนิเวศอุตสาหกรรมและบริการแห่งอนาคต</field>
+        <field name="parent_id" ref="MP04" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP05" model="project.strategic.plan">
+        <field name="code">MP05</field>
+        <field name="name">5. ประเด็นการท่องเที่ยว</field>
+        <field name="parent_id" ref="MP" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP0501" model="project.strategic.plan">
+        <field name="code">MP0501</field>
+        <field
+            name="name"
+        >แผนย่อยที่ 5.1 แผนย่อยการท่องเที่ยวเชิงสร้างสรรค์และวัฒนธรรม</field>
+        <field name="parent_id" ref="MP05" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP0502" model="project.strategic.plan">
+        <field name="code">MP0502</field>
+        <field name="name">แผนย่อยที่ 5.2 แผนย่อยการท่องเที่ยวเชิงธุรกิจ</field>
+        <field name="parent_id" ref="MP05" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP0503" model="project.strategic.plan">
+        <field name="code">MP0503</field>
+        <field
+            name="name"
+        >แผนย่อยที่ 5.3 แผนย่อยการท่องเที่ยวเชิงสุขภาพ ความงาม และแพทย์แผนไทย</field>
+        <field name="parent_id" ref="MP05" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP0504" model="project.strategic.plan">
+        <field name="code">MP0504</field>
+        <field name="name">แผนย่อยที่ 5.4 แผนย่อยการท่องเที่ยวสำราญทางน้ำ</field>
+        <field name="parent_id" ref="MP05" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP0505" model="project.strategic.plan">
+        <field name="code">MP0505</field>
+        <field name="name">แผนย่อยที่ 5.5 แผนย่อยการท่องเที่ยวเชื่อมโยงภูมิภาค</field>
+        <field name="parent_id" ref="MP05" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP0506" model="project.strategic.plan">
+        <field name="code">MP0506</field>
+        <field name="name">แผนย่อยที่ 5.6 แผนย่อยการพัฒนาระบบนิเวศการท่องเที่ยว</field>
+        <field name="parent_id" ref="MP05" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP06" model="project.strategic.plan">
+        <field name="code">MP06</field>
+        <field name="name">6. ประเด็นพื้นที่และเมืองน่าอยู่อัจฉริยะ</field>
+        <field name="parent_id" ref="MP" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP0601" model="project.strategic.plan">
+        <field name="code">MP0601</field>
+        <field name="name">แผนย่อยที่ 6.1 แผนย่อยการพัฒนาเมืองน่าอยู่อัจฉริยะ</field>
+        <field name="parent_id" ref="MP06" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP0602" model="project.strategic.plan">
+        <field name="code">MP0602</field>
+        <field
+            name="name"
+        >แผนย่อยที่ 6.2 แผนย่อยการพัฒนาพื้นที่เมือง ชนบท เกษตรกรรม และอุตสาหกรรมเชิงนิเวศที่มีการบริหารจัดการตามแผนผังภูมินิเวศอย่างยั่งยืน</field>
+        <field name="parent_id" ref="MP06" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP07" model="project.strategic.plan">
+        <field name="code">MP07</field>
+        <field name="name">7. ประเด็นโครงสร้างพื้นฐาน ระบบโลจิสติกส์ และดิจิทัล</field>
+        <field name="parent_id" ref="MP" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP0701" model="project.strategic.plan">
+        <field name="code">MP0701</field>
+        <field
+            name="name"
+        >แผนย่อยที่ 7.1 แผนย่อยโครงสร้างพื้นฐานด้านคมนาคมและระบบโลจิสติกส์</field>
+        <field name="parent_id" ref="MP07" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP0702" model="project.strategic.plan">
+        <field name="code">MP0702</field>
+        <field name="name">แผนย่อยที่ 7.2 แผนย่อยโครงสร้างพื้นฐานด้านพลังงาน</field>
+        <field name="parent_id" ref="MP07" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP0703" model="project.strategic.plan">
+        <field name="code">MP0703</field>
+        <field name="name">แผนย่อยที่ 7.3 แผนย่อยโครงสร้างพื้นฐานด้านดิจิทัล</field>
+        <field name="parent_id" ref="MP07" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP08" model="project.strategic.plan">
+        <field name="code">MP08</field>
+        <field
+            name="name"
+        >8. ประเด็นผู้ประกอบการและวิสาหกิจขนาดกลางและขนาดย่อมยุคใหม่</field>
+        <field name="parent_id" ref="MP" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP0801" model="project.strategic.plan">
+        <field name="code">MP0801</field>
+        <field
+            name="name"
+        >แผนย่อยที่ 8.1 แผนย่อยการสร้างความเข้มแข็งผู้ประกอบการอัจฉริยะ</field>
+        <field name="parent_id" ref="MP08" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP0802" model="project.strategic.plan">
+        <field name="code">MP0802</field>
+        <field
+            name="name"
+        >แผนย่อยที่ 8.2 แผนย่อยการสร้างโอกาสเข้าถึงบริการทางการเงิน</field>
+        <field name="parent_id" ref="MP08" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP0803" model="project.strategic.plan">
+        <field name="code">MP0803</field>
+        <field name="name">แผนย่อยที่ 8.3 แผนย่อยการสร้างโอกาสเข้าถึงตลาด</field>
+        <field name="parent_id" ref="MP08" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP0804" model="project.strategic.plan">
+        <field name="code">MP0804</field>
+        <field
+            name="name"
+        >แผนย่อยที่ 8.4 แผนย่อยการสร้างระบบนิเวศน์ที่เอื้อต่อการดำเนินธุรกิจของผู้ประกอบการและวิสาหกิจขนาดกลางและขนาดย่อมยุคใหม่</field>
+        <field name="parent_id" ref="MP08" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP09" model="project.strategic.plan">
+        <field name="code">MP09</field>
+        <field name="name">9. ประเด็นเขตเศรษฐกิจพิเศษ</field>
+        <field name="parent_id" ref="MP" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP0901" model="project.strategic.plan">
+        <field name="code">MP0901</field>
+        <field
+            name="name"
+        >แผนย่อยที่ 9.1 แผนย่อยการพัฒนาเขตพัฒนาพิเศษภาคตะวันออก</field>
+        <field name="parent_id" ref="MP09" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP0902" model="project.strategic.plan">
+        <field name="code">MP0902</field>
+        <field name="name">แผนย่อยที่ 9.2 แผนย่อยการพัฒนาระเบียงเศรษฐกิจพิเศษ</field>
+        <field name="parent_id" ref="MP09" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP0903" model="project.strategic.plan">
+        <field name="code">MP0903</field>
+        <field
+            name="name"
+        >แผนย่อยที่ 9.3 แผนย่อยการพัฒนาเขตพัฒนาเศรษฐกิจพิเศษชายแดน</field>
+        <field name="parent_id" ref="MP09" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP10" model="project.strategic.plan">
+        <field name="code">MP10</field>
+        <field name="name">10. ประเด็นการปรับเปลี่ยนค่านิยมและวัฒนธรรม</field>
+        <field name="parent_id" ref="MP" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP1001" model="project.strategic.plan">
+        <field name="code">MP1001</field>
+        <field
+            name="name"
+        >แผนย่อยที่ 10.1 แผนย่อยการปลูกฝังคุณธรรม จริยธรรม ค่านิยม และเสริมสร้างจิตสาธารณะและการเป็นพลเมืองที่ดี</field>
+        <field name="parent_id" ref="MP10" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP1002" model="project.strategic.plan">
+        <field name="code">MP1002</field>
+        <field
+            name="name"
+        >แผนย่อยที่ 10.2 แผนย่อยการสร้างค่านิยมและวัฒนธรรมที่พึงประสงค์จากภาคธุรกิจ</field>
+        <field name="parent_id" ref="MP10" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP1003" model="project.strategic.plan">
+        <field name="code">MP1003</field>
+        <field
+            name="name"
+        >แผนย่อยที่ 10.3 แผนย่อยการใช้สื่อและสื่อสารมวลชนในการปลูกฝังค่านิยมและวัฒนธรรมของคนในสังคม</field>
+        <field name="parent_id" ref="MP10" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP11" model="project.strategic.plan">
+        <field name="code">MP11</field>
+        <field name="name">11. ประเด็นการพัฒนาศักยภาพคนตลอดช่วงชีวิต</field>
+        <field name="parent_id" ref="MP" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP1101" model="project.strategic.plan">
+        <field name="code">MP1101</field>
+        <field
+            name="name"
+        >แผนย่อยที่ 11.1 แผนย่อยการสร้างสภาพแวดล้อมที่เอื้อต่อการพัฒนาและเสริมสร้างศักยภาพมนุษย์</field>
+        <field name="parent_id" ref="MP11" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP1102" model="project.strategic.plan">
+        <field name="code">MP1102</field>
+        <field
+            name="name"
+        >แผนย่อยที่ 11.2 แผนย่อยการพัฒนาเด็กตั้งแต่ช่วงการตั้งครรภ์จนถึงปฐมวัย</field>
+        <field name="parent_id" ref="MP11" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP1103" model="project.strategic.plan">
+        <field name="code">MP1103</field>
+        <field name="name">แผนย่อยที่ 11.3 แผนย่อยการพัฒนาช่วงวัยเรียนและวัยรุ่น</field>
+        <field name="parent_id" ref="MP11" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP1104" model="project.strategic.plan">
+        <field name="code">MP1104</field>
+        <field
+            name="name"
+        >แผนย่อยที่ 11.4 แผนย่อยการพัฒนาและยกระดับศักยภาพวัยแรงงาน</field>
+        <field name="parent_id" ref="MP11" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP1105" model="project.strategic.plan">
+        <field name="code">MP1105</field>
+        <field
+            name="name"
+        >แผนย่อยที่ 11.5 แผนย่อยการส่งเสริมศักยภาพวัยผู้สูงอายุ</field>
+        <field name="parent_id" ref="MP11" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP12" model="project.strategic.plan">
+        <field name="code">MP12</field>
+        <field name="name">12. ประเด็นการพัฒนาการเรียนรู้</field>
+        <field name="parent_id" ref="MP" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP1201" model="project.strategic.plan">
+        <field name="code">MP1201</field>
+        <field
+            name="name"
+        >แผนย่อยที่ 12.1 แผนย่อยการปฏิรูปกระบวนการเรียนรู้ที่ตอบสนองต่อการเปลี่ยนแปลงในศตวรรษที่ 21</field>
+        <field name="parent_id" ref="MP12" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP1202" model="project.strategic.plan">
+        <field name="code">MP1202</field>
+        <field
+            name="name"
+        >แผนย่อยที่ 12.2 แผนย่อยการตระหนักถึงพหุปัญญาของมนุษย์ที่หลากหลาย</field>
+        <field name="parent_id" ref="MP12" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP13" model="project.strategic.plan">
+        <field name="code">MP13</field>
+        <field name="name">13. ประเด็นการเสริมสร้างให้คนไทยมีสุขภาวะที่ดี</field>
+        <field name="parent_id" ref="MP" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP1301" model="project.strategic.plan">
+        <field name="code">MP1301</field>
+        <field
+            name="name"
+        >แผนย่อยที่ 13.1 แผนย่อยการสร้างความรอบรู้ด้านสุขภาวะและการป้องกันและควบคุมปัจจัยเสี่ยงที่คุกคามสุขภาวะ</field>
+        <field name="parent_id" ref="MP13" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP1302" model="project.strategic.plan">
+        <field name="code">MP1302</field>
+        <field
+            name="name"
+        >แผนย่อยที่ 13.2 แผนย่อยการใช้ชุมชนเป็นฐานในการสร้างสภาพแวดล้อมที่เอื้อต่อการมีสุขภาวะที่ดี</field>
+        <field name="parent_id" ref="MP13" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP1303" model="project.strategic.plan">
+        <field name="code">MP1303</field>
+        <field
+            name="name"
+        >แผนย่อยที่ 13.3 แผนย่อยการพัฒนาระบบบริการสุขภาพที่ทันสมัยสนับสนุนการสร้างสุขภาวะที่ดี</field>
+        <field name="parent_id" ref="MP13" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP1304" model="project.strategic.plan">
+        <field name="code">MP1304</field>
+        <field
+            name="name"
+        >แผนย่อยที่ 13.4 แผนย่อยการกระจายบริการสาธารณสุขอย่างทั่วถึงและมีคุณภาพ</field>
+        <field name="parent_id" ref="MP13" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP1305" model="project.strategic.plan">
+        <field name="code">MP1305</field>
+        <field
+            name="name"
+        >แผนย่อยที่ 13.5 แผนย่อยการพัฒนาและสร้างระบบรับมือและปรับตัวต่อโรคอุบัติใหม่และโรคอุบัติซ้ำที่เกิดจากเปลี่ยนแปลงสภาพภูมิอากาศ</field>
+        <field name="parent_id" ref="MP13" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP14" model="project.strategic.plan">
+        <field name="code">MP14</field>
+        <field name="name">14. ประเด็นศักยภาพการกีฬา</field>
+        <field name="parent_id" ref="MP" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP1401" model="project.strategic.plan">
+        <field name="code">MP1401</field>
+        <field
+            name="name"
+        >แผนย่อยที่ 14.1 แผนย่อยการส่งเสริมการออกกำลังกาย และกีฬาขั้นพื้นฐานให้กลายเป็นวิถีชีวิตและการส่งเสริม ให้ประชาชนมีส่วนร่วมในกิจกรรมออกกำลังกาย กีฬาและนันทนาการ</field>
+        <field name="parent_id" ref="MP14" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP1402" model="project.strategic.plan">
+        <field name="code">MP1402</field>
+        <field
+            name="name"
+        >แผนย่อยที่ 14.2 แผนย่อยการส่งเสริมการกีฬาเพื่อพัฒนาสู่ระดับอาชีพ</field>
+        <field name="parent_id" ref="MP14" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP1403" model="project.strategic.plan">
+        <field name="code">MP1403</field>
+        <field
+            name="name"
+        >แผนย่อยที่ 14.3 แผนย่อยการพัฒนาบุคลากรด้านการกีฬาและนันทนาการ</field>
+        <field name="parent_id" ref="MP14" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP15" model="project.strategic.plan">
+        <field name="code">MP15</field>
+        <field name="name">15. ประเด็นพลังทางสังคม</field>
+        <field name="parent_id" ref="MP" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP1501" model="project.strategic.plan">
+        <field name="code">MP1501</field>
+        <field name="name">แผนย่อยที่ 15.1 แผนย่อยการเสริมสร้างทุนทางสังคม</field>
+        <field name="parent_id" ref="MP15" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP1502" model="project.strategic.plan">
+        <field name="code">MP1502</field>
+        <field name="name">แผนย่อยที่ 15.2 แผนย่อยการรองรับสังคมสูงวัยเชิงรุก</field>
+        <field name="parent_id" ref="MP15" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP16" model="project.strategic.plan">
+        <field name="code">MP16</field>
+        <field name="name">16. ประเด็นเศรษฐกิจฐานราก</field>
+        <field name="parent_id" ref="MP" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP1601" model="project.strategic.plan">
+        <field name="code">MP1601</field>
+        <field
+            name="name"
+        >แผนย่อยที่ 16.1 แผนย่อยการยกระดับศักยภาพการเป็นผู้ประกอบการธุรกิจ</field>
+        <field name="parent_id" ref="MP16" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP1602" model="project.strategic.plan">
+        <field name="code">MP1602</field>
+        <field
+            name="name"
+        >แผนย่อยที่ 16.2 แผนย่อยการสร้างสภาพแวดล้อมและกลไกที่ส่งเสริมการพัฒนาเศรษฐกิจฐานราก</field>
+        <field name="parent_id" ref="MP16" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP17" model="project.strategic.plan">
+        <field name="code">MP17</field>
+        <field name="name">17. ประเด็นความเสมอภาคและหลักประกันทางสังคม</field>
+        <field name="parent_id" ref="MP" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP1701" model="project.strategic.plan">
+        <field name="code">MP1701</field>
+        <field
+            name="name"
+        >แผนย่อยที่ 17.1 แผนย่อยการคุ้มครองทางสังคมขั้นพื้นฐานและหลักประกันทางเศรษฐกิจสังคม และสุขภาพ</field>
+        <field name="parent_id" ref="MP17" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP1702" model="project.strategic.plan">
+        <field name="code">MP1702</field>
+        <field
+            name="name"
+        >แผนย่อยที่ 17.2 แผนย่อยมาตรการแบบเจาะจงกลุ่มเป้าหมายเพื่อแก้ปัญหาเฉพาะกลุ่ม</field>
+        <field name="parent_id" ref="MP17" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP18" model="project.strategic.plan">
+        <field name="code">MP18</field>
+        <field name="name">18. ประเด็นการเติบโตอย่างยั่งยืน</field>
+        <field name="parent_id" ref="MP" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP1801" model="project.strategic.plan">
+        <field name="code">MP1801</field>
+        <field
+            name="name"
+        >แผนย่อยที่ 18.1 แผนย่อยการสร้างการเติบโตอย่างยั่งยืนบนสังคมเศรษฐกิจสีเขียว</field>
+        <field name="parent_id" ref="MP18" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP1802" model="project.strategic.plan">
+        <field name="code">MP1802</field>
+        <field
+            name="name"
+        >แผนย่อยที่ 18.2 แผนย่อยการสร้างการเติบโตอย่างยั่งยืนบนสังคมเศรษฐกิจภาคทะเล</field>
+        <field name="parent_id" ref="MP18" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP1803" model="project.strategic.plan">
+        <field name="code">MP1803</field>
+        <field
+            name="name"
+        >แผนย่อยที่ 18.3 แผนย่อยการสร้างการเติบโตอย่างยั่งยืนบนสังคมที่เป็นมิตรต่อสภาพภูมิอากาศ</field>
+        <field name="parent_id" ref="MP18" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP1804" model="project.strategic.plan">
+        <field name="code">MP1804</field>
+        <field
+            name="name"
+        >แผนย่อยที่ 18.4 แผนย่อยการจัดการมลพิษที่มีผลกระทบต่อสิ่งแวดล้อมและสารเคมีในภาคเกษตรทั้งระบบให้เป็นไปตามมาตรฐานสากล</field>
+        <field name="parent_id" ref="MP18" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP1805" model="project.strategic.plan">
+        <field name="code">MP1805</field>
+        <field
+            name="name"
+        >แผนย่อยที่ 18.5 แผนย่อยการยกระดับกระบวนทัศน์เพื่อกำหนดอนาคตประเทศ</field>
+        <field name="parent_id" ref="MP18" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP19" model="project.strategic.plan">
+        <field name="code">MP19</field>
+        <field name="name">19. ประเด็นการบริหารจัดการน้ำทั้งระบบ</field>
+        <field name="parent_id" ref="MP" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP1901" model="project.strategic.plan">
+        <field name="code">MP1901</field>
+        <field
+            name="name"
+        >แผนย่อยที่ 19.1 แผนย่อยการพัฒนาการจัดการน้ำเชิงลุ่มน้ำทั้งระบบเพื่อเพิ่มความมั่นคงด้านน้ำของประเทศ</field>
+        <field name="parent_id" ref="MP19" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP1902" model="project.strategic.plan">
+        <field name="code">MP1902</field>
+        <field
+            name="name"
+        >แผนย่อยที่ 19.2 แผนย่อยการเพิ่มผลิตภาพของน้ำทั้งระบบในการใช้น้ำอย่างประหยัดรู้คุณค่าและสร้างมูลค่าเพิ่มจากการใช้น้ำให้ทัดเทียมกับระดับสากล</field>
+        <field name="parent_id" ref="MP19" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP1903" model="project.strategic.plan">
+        <field name="code">MP1903</field>
+        <field
+            name="name"
+        >แผนย่อยที่ 19.3 แผนย่อยการอนุรักษ์และฟื้นฟูแม่น้ำลำคลองและแหล่งน้ำธรรมชาติทั่วประเทศ</field>
+        <field name="parent_id" ref="MP19" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP20" model="project.strategic.plan">
+        <field name="code">MP20</field>
+        <field name="name">20. ประเด็นการบริการประชาชนและประสิทธิภาพภาครัฐ</field>
+        <field name="parent_id" ref="MP" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP2001" model="project.strategic.plan">
+        <field name="code">MP2001</field>
+        <field name="name">แผนย่อยที่ 20.1 แผนย่อยการพัฒนาบริการประชาชน</field>
+        <field name="parent_id" ref="MP20" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP2002" model="project.strategic.plan">
+        <field name="code">MP2002</field>
+        <field name="name">แผนย่อยที่ 20.2 แผนย่อยการบริหารจัดการการเงินการคลัง</field>
+        <field name="parent_id" ref="MP20" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP2003" model="project.strategic.plan">
+        <field name="code">MP2003</field>
+        <field name="name">แผนย่อยที่ 20.3 แผนย่อยการปรับสมดุลภาครัฐ</field>
+        <field name="parent_id" ref="MP20" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP2004" model="project.strategic.plan">
+        <field name="code">MP2004</field>
+        <field name="name">แผนย่อยที่ 20.4 แผนย่อยการพัฒนาระบบบริหารงานภาครัฐ</field>
+        <field name="parent_id" ref="MP20" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP2005" model="project.strategic.plan">
+        <field name="code">MP2005</field>
+        <field name="name">แผนย่อยที่ 20.5 แผนย่อยการสร้างและพัฒนาบุคลากรภาครัฐ</field>
+        <field name="parent_id" ref="MP20" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP21" model="project.strategic.plan">
+        <field name="code">MP21</field>
+        <field name="name">21. ประเด็นการต่อต้านการทุจริตและประพฤติมิชอบ</field>
+        <field name="parent_id" ref="MP" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP2101" model="project.strategic.plan">
+        <field name="code">MP2101</field>
+        <field
+            name="name"
+        >แผนย่อยที่ 21.1 แผนย่อยการป้องกันการทุจริตและประพฤติมิชอบ</field>
+        <field name="parent_id" ref="MP21" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP2102" model="project.strategic.plan">
+        <field name="code">MP2102</field>
+        <field name="name">แผนย่อยที่ 21.2 แผนย่อยการปราบปรามการทุจริต</field>
+        <field name="parent_id" ref="MP21" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP22" model="project.strategic.plan">
+        <field name="code">MP22</field>
+        <field name="name">22. ประเด็นกฎหมายและกระบวนการยุติธรรม</field>
+        <field name="parent_id" ref="MP" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP2201" model="project.strategic.plan">
+        <field name="code">MP2201</field>
+        <field name="name">แผนย่อยที่ 22.1 แผนย่อยการพัฒนากฎหมาย</field>
+        <field name="parent_id" ref="MP22" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP2202" model="project.strategic.plan">
+        <field name="code">MP2202</field>
+        <field name="name">แผนย่อยที่ 22.2 แผนย่อยการพัฒนากระบวนการยุติธรรม</field>
+        <field name="parent_id" ref="MP22" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP23" model="project.strategic.plan">
+        <field name="code">MP23</field>
+        <field name="name">23. ประเด็นการวิจัยและพัฒนานวัตกรรม</field>
+        <field name="parent_id" ref="MP" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP2301" model="project.strategic.plan">
+        <field name="code">MP2301</field>
+        <field
+            name="name"
+        >แผนย่อยที่ 23.1 แผนย่อยการวิจัยและพัฒนานวัตกรรม ด้านเศรษฐกิจ</field>
+        <field name="parent_id" ref="MP23" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP2302" model="project.strategic.plan">
+        <field name="code">MP2302</field>
+        <field
+            name="name"
+        >แผนย่อยที่ 23.2 แผนย่อยการวิจัยและพัฒนานวัตกรรม ด้านสังคม</field>
+        <field name="parent_id" ref="MP23" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP2303" model="project.strategic.plan">
+        <field name="code">MP2303</field>
+        <field
+            name="name"
+        >แผนย่อยที่ 23.3 แผนย่อยการวิจัยและพัฒนานวัตกรรม ด้านสิ่งแวดล้อม</field>
+        <field name="parent_id" ref="MP23" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP2304" model="project.strategic.plan">
+        <field name="code">MP2304</field>
+        <field
+            name="name"
+        >แผนย่อยที่ 23.4 แผนย่อยการวิจัยและพัฒนานวัตกรรม ด้านองค์ความรู้พื้นฐาน</field>
+        <field name="parent_id" ref="MP23" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="MP2305" model="project.strategic.plan">
+        <field name="code">MP2305</field>
+        <field
+            name="name"
+        >แผนย่อยที่ 23.5 แผนย่อยด้านปัจจัยสนับสนุนในการวิจัยและพัฒนานวัตกรรม</field>
+        <field name="parent_id" ref="MP23" />
+        <field name="level">2</field>
+    </record>
+
+    <!-- P13 แผนพัฒนาเศรษฐกิจและสังคมแห่งชาติ ฉบับที่ 13 -->
+
+    <record id="P13" model="project.strategic.plan">
+        <field name="code">P13</field>
+        <field name="name">แผนพัฒนาเศรษฐกิจและสังคมแห่งชาติ ฉบับที่ 13</field>
+        <field name="level">2</field>
+    </record>
+
+    <record id="P1301" model="project.strategic.plan">
+        <field name="code">P1301</field>
+        <field
+            name="name"
+        >หมุดหมายที่ 1 ไทยเป็นประเทศชั้นนำด้านสินค้าเกษตรและเกษตรแปรรูปมูลค่าสูง</field>
+        <field name="parent_id" ref="P13" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="P130101" model="project.strategic.plan">
+        <field name="code">P130101</field>
+        <field
+            name="name"
+        >เป้าหมายที่ 1.1 มูลค่าเพิ่มของสินค้าเกษตรและเกษตรแปรรูปสูงขึ้น</field>
+        <field name="parent_id" ref="P1301" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="P130102" model="project.strategic.plan">
+        <field name="code">P130102</field>
+        <field
+            name="name"
+        >เป้าหมายที่ 1.2 การพัฒนาโครงสร้างพื้นฐานและระบบบริหารจัดการ เพื่อคุณภาพ ความมั่นคงทางอาหาร และความยั่งยืนของภาคเกษตร</field>
+        <field name="parent_id" ref="P1301" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="P130103" model="project.strategic.plan">
+        <field name="code">P130103</field>
+        <field
+            name="name"
+        >เป้าหมายที่ 1.3 การเพิ่มศักยภาพและบทบาทของผู้ประกอบการเกษตรในฐานะหุ้นส่วนเศรษฐกิจของห่วงโซ่อุปทานที่ได้รับส่วนแบ่งประโยชน์อย่างเหมาะสมและเป็นธรรม</field>
+        <field name="parent_id" ref="P1301" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="P1302" model="project.strategic.plan">
+        <field name="code">P1302</field>
+        <field
+            name="name"
+        >หมุดหมายที่ 2 ไทยเป็นจุดหมายของการท่องเที่ยวที่เน้นคุณภาพและความยั่งยืน</field>
+        <field name="parent_id" ref="P13" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="P130201" model="project.strategic.plan">
+        <field name="code">P130201</field>
+        <field
+            name="name"
+        >เป้าหมายที่ 2.1 การเปลี่ยนการท่องเที่ยวไทยเป็นการท่องเที่ยวคุณภาพสูงที่เชื่อมโยงกับอุตสาหกรรมและบริการที่มีศักยภาพอื่น</field>
+        <field name="parent_id" ref="P1302" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="P130202" model="project.strategic.plan">
+        <field name="code">P130202</field>
+        <field
+            name="name"
+        >เป้าหมายที่ 2.2 การปรับโครงสร้างการท่องเที่ยวให้พึ่งพานักท่องเที่ยวในประเทศและมีการกระจายโอกาสทางเศรษฐกิจมากขึ้น</field>
+        <field name="parent_id" ref="P1302" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="P130203" model="project.strategic.plan">
+        <field name="code">P130203</field>
+        <field
+            name="name"
+        >เป้าหมายที่ 2.3 การท่องเที่ยวไทยต้องมีการบริหารจัดการอย่างยั่งยืนในทุกมิติ</field>
+        <field name="parent_id" ref="P1302" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="P1303" model="project.strategic.plan">
+        <field name="code">P1303</field>
+        <field
+            name="name"
+        >หมุดหมายที่ 3 ไทยเป็นฐานการผลิตยานยนต์ไฟฟ้าที่สำคัญของโลก</field>
+        <field name="parent_id" ref="P13" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="P130301" model="project.strategic.plan">
+        <field name="code">P130301</field>
+        <field
+            name="name"
+        >เป้าหมายที่ 3.1 การสร้างอุปสงค์ของรถยนต์ไฟฟ้าประเภทต่าง ๆ เพื่อการใช้ในประเทศและส่งออก</field>
+        <field name="parent_id" ref="P1303" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="P130302" model="project.strategic.plan">
+        <field name="code">P130302</field>
+        <field
+            name="name"
+        >เป้าหมายที่ 3.2 ผู้ประกอบการเดิมสามารถปรับตัวไปสู่การผลิตยานยนต์ไฟฟ้าและมีการลงทุนเทคโนโลยียานยนต์ไฟฟ้าที่สำคัญภายในประเทศ</field>
+        <field name="parent_id" ref="P1303" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="P130303" model="project.strategic.plan">
+        <field name="code">P130303</field>
+        <field
+            name="name"
+        >เป้าหมายที่ 3.3 การสร้างความพร้อมของปัจจัยสนับสนุนอย่างเป็นระบบ</field>
+        <field name="parent_id" ref="P1303" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="P1304" model="project.strategic.plan">
+        <field name="code">P1304</field>
+        <field
+            name="name"
+        >หมุดหมายที่ 4 ไทยเป็นศูนย์กลางทางการแพทย์และสุขภาพมูลค่าสูง</field>
+        <field name="parent_id" ref="P13" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="P130401" model="project.strategic.plan">
+        <field name="code">P130401</field>
+        <field
+            name="name"
+        >เป้าหมายที่ 4.1 ไทยมีศักยภาพในการสร้างมูลค่าทางเศรษฐกิจจากสินค้าและบริการสุขภาพ</field>
+        <field name="parent_id" ref="P1304" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="P130402" model="project.strategic.plan">
+        <field name="code">P130402</field>
+        <field
+            name="name"
+        >เป้าหมายที่ 4.2 องค์ความรู้ด้านการแพทย์และสาธารณสุขมีศักยภาพ เอื้อต่อการสร้างมูลค่าเพิ่มในสินค้า และบริการทางสุขภาพ</field>
+        <field name="parent_id" ref="P1304" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="P130403" model="project.strategic.plan">
+        <field name="code">P130403</field>
+        <field
+            name="name"
+        >เป้าหมายที่ 4.3 ประชาชนไทยได้รับความเป็นธรรมในการเข้าถึงบริการสุขภาพ</field>
+        <field name="parent_id" ref="P1304" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="P130404" model="project.strategic.plan">
+        <field name="code">P130404</field>
+        <field
+            name="name"
+        >เป้าหมายที่ 4.4 ระบบบริหารจัดการภาวะฉุกเฉินด้านสุขภาพมีความพร้อมรองรับภัยคุกคามสุขภาพ</field>
+        <field name="parent_id" ref="P1304" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="P1305" model="project.strategic.plan">
+        <field name="code">P1305</field>
+        <field
+            name="name"
+        >หมุดหมายที่ 5 ไทยเป็นประตูการค้าการลงทุนและยุทธศาสตร์ทางโลจิสติกส์ที่สำคัญของภูมิภาค</field>
+        <field name="parent_id" ref="P13" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="P130501" model="project.strategic.plan">
+        <field name="code">P130501</field>
+        <field name="name">เป้าหมายที่ 5.1 ไทยเป็นประตูการค้าการลงทุนในภูมิภาค</field>
+        <field name="parent_id" ref="P1305" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="P130502" model="project.strategic.plan">
+        <field name="code">P130502</field>
+        <field name="name">เป้าหมายที่ 5.2 ไทยเป็นห่วงโซ่อุปทานของภูมิภาค</field>
+        <field name="parent_id" ref="P1305" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="P130503" model="project.strategic.plan">
+        <field name="code">P130503</field>
+        <field
+            name="name"
+        >เป้าหมายที่ 5.3 ไทยเป็นประตูและทางเชื่อมโครงข่ายคมนาคมและโลจิสติกส์ของภูมิภาค</field>
+        <field name="parent_id" ref="P1305" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="P1306" model="project.strategic.plan">
+        <field name="code">P1306</field>
+        <field
+            name="name"
+        >หมุดหมายที่ 6 ไทยเป็นศูนย์กลางอุตสาหกรรมอิเล็กทรอนิกส์อัจฉริยะและอุตสาหกรรมดิจิทัลของอาเซียน</field>
+        <field name="parent_id" ref="P13" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="P130601" model="project.strategic.plan">
+        <field name="code">P130601</field>
+        <field
+            name="name"
+        >เป้าหมายที่ 6.1 เศรษฐกิจดิจิทัลภายในประเทศมีการขยายตัวเพิ่มขึ้น</field>
+        <field name="parent_id" ref="P1306" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="P130602" model="project.strategic.plan">
+        <field name="code">P130602</field>
+        <field
+            name="name"
+        >เป้าหมายที่ 6.2 การส่งออกของอุตสาหกรรมอิเล็กทรอนิกส์อัจฉริยะของประเทศเพิ่มขึ้น</field>
+        <field name="parent_id" ref="P1306" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="P130603" model="project.strategic.plan">
+        <field name="code">P130603</field>
+        <field
+            name="name"
+        >เป้าหมายที่ 6.3 อุตสาหกรรมดิจิทัลและอุตสาหกรรมอิเล็กทรอนิกส์อัจฉริยะของประเทศมีความเข้มแข็งขึ้น</field>
+        <field name="parent_id" ref="P1306" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="P1307" model="project.strategic.plan">
+        <field name="code">P1307</field>
+        <field
+            name="name"
+        >หมุดหมายที่ 7 ไทยมีวิสาหกิจขนาดกลางและขนาดย่อมที่เข้มแข็ง มีศักยภาพสูง และสามารถแข่งขันได้</field>
+        <field name="parent_id" ref="P13" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="P130701" model="project.strategic.plan">
+        <field name="code">P130701</field>
+        <field
+            name="name"
+        >เป้าหมายที่ 7.1 วิสาหกิจขนาดกลางและขนาดย่อมมีสภาพแวดล้อมที่เอื้ออำนวยต่อการเติบโตและแข่งขันได้</field>
+        <field name="parent_id" ref="P1307" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="P130702" model="project.strategic.plan">
+        <field name="code">P130702</field>
+        <field
+            name="name"
+        >เป้าหมายที่ 7.2 วิสาหกิจขนาดกลางและขนาดย่อม มีศักยภาพสูงในการดำเนินธุรกิจ สามารถยกระดับและปรับตัวเข้าสู่การแข่งขันใหม่</field>
+        <field name="parent_id" ref="P1307" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="P130703" model="project.strategic.plan">
+        <field name="code">P130703</field>
+        <field
+            name="name"
+        >เป้าหมายที่ 7.3 วิสาหกิจขนาดกลางและขนาดย่อมสามารถเข้าถึงและได้รับการส่งเสริมอย่างมีประสิทธิผลจากภาครัฐ</field>
+        <field name="parent_id" ref="P1307" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="P1308" model="project.strategic.plan">
+        <field name="code">P1308</field>
+        <field
+            name="name"
+        >หมุดหมายที่ 8 ไทยมีพื้นที่และเมืองอัจฉริยะที่น่าอยู่ ปลอดภัย เติบโตได้อย่างยั่งยืน</field>
+        <field name="parent_id" ref="P13" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="P130801" model="project.strategic.plan">
+        <field name="code">P130801</field>
+        <field
+            name="name"
+        >เป้าหมายที่ 8.1 การเจริญเติบโตทางเศรษฐกิจของภาคและการลงทุนในเขตเศรษฐกิจพิเศษขยายตัวเพิ่มขึ้น</field>
+        <field name="parent_id" ref="P1308" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="P130802" model="project.strategic.plan">
+        <field name="code">P130802</field>
+        <field
+            name="name"
+        >เป้าหมายที่ 8.2 ความไม่เสมอภาคในการกระจายรายได้ของภาคลดลง</field>
+        <field name="parent_id" ref="P1308" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="P130803" model="project.strategic.plan">
+        <field name="code">P130803</field>
+        <field
+            name="name"
+        >เป้าหมายที่ 8.3 การพัฒนาเมืองให้มีความน่าอยู่ อย่างยั่งยืน มีความพร้อมในการรับมือและปรับตัวต่อการเปลี่ยนแปลงทุกรูปแบบ เพื่อให้ประชาชนทุกกลุ่มมีคุณภาพชีวิตที่ดีอย่างทั่วถึง</field>
+        <field name="parent_id" ref="P1308" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="P1309" model="project.strategic.plan">
+        <field name="code">P1309</field>
+        <field
+            name="name"
+        >หมุดหมายที่ 9 ไทยมีความยากจนข้ามรุ่นลดลง และมีความคุ้มครองทางสังคมที่เพียงพอ เหมาะสม</field>
+        <field name="parent_id" ref="P13" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="P130901" model="project.strategic.plan">
+        <field name="code">P130901</field>
+        <field
+            name="name"
+        >เป้าหมายที่ 9.1 ครัวเรือนที่มีแนวโน้มกลายเป็นครัวเรือนยากจนข้ามรุ่น มีโอกาสในการเลื่อนสถานะทางเศรษฐกิจและสังคม จนสามารถหลุดพ้นจากความยากจนได้อย่างยั่งยืน</field>
+        <field name="parent_id" ref="P1309" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="P130902" model="project.strategic.plan">
+        <field name="code">P130902</field>
+        <field
+            name="name"
+        >เป้าหมายที่ 9.2 คนทุกช่วงวัยได้รับความคุ้มครองทางสังคมที่เพียงพอต่อการดำรงชีวิต</field>
+        <field name="parent_id" ref="P1309" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="P1310" model="project.strategic.plan">
+        <field name="code">P1310</field>
+        <field
+            name="name"
+        >หมุดหมายที่ 10 ไทยมีเศรษฐกิจหมุนเวียนและสังคมคาร์บอนต่ำ</field>
+        <field name="parent_id" ref="P13" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="P131001" model="project.strategic.plan">
+        <field name="code">P131001</field>
+        <field
+            name="name"
+        >เป้าหมายที่ 10.1 การเพิ่มมูลค่าจากเศรษฐกิจหมุนเวียน และการใช้ทรัพยากรอย่างมีประสิทธิภาพ</field>
+        <field name="parent_id" ref="P1310" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="P131002" model="project.strategic.plan">
+        <field name="code">P131002</field>
+        <field
+            name="name"
+        >เป้าหมายที่ 10.2 การอนุรักษ์ ฟื้นฟูและใช้ประโยชน์จากทรัพยากรธรรมชาติอย่างยั่งยืน</field>
+        <field name="parent_id" ref="P1310" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="P131003" model="project.strategic.plan">
+        <field name="code">P131003</field>
+        <field name="name">เป้าหมายที่ 10.3 การสร้างสังคมคาร์บอนต่ำและยั่งยืน</field>
+        <field name="parent_id" ref="P1310" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="P1311" model="project.strategic.plan">
+        <field name="code">P1311</field>
+        <field
+            name="name"
+        >หมุดหมายที่ 11 ไทยสามารถลดความเสี่ยงและผลกระทบจากภัยธรรมชาติ และการเปลี่ยนแปลงสภาพภูมิอากาศ</field>
+        <field name="parent_id" ref="P13" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="P131101" model="project.strategic.plan">
+        <field name="code">P131101</field>
+        <field
+            name="name"
+        >เป้าหมายที่ 11.1 ความเสียหายและผลกระทบจากภัยธรรมชาติและการเปลี่ยนแปลงสภาพภูมิอากาศลดลง</field>
+        <field name="parent_id" ref="P1311" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="P131102" model="project.strategic.plan">
+        <field name="code">P131102</field>
+        <field
+            name="name"
+        >เป้าหมายที่ 11.2 ความเสี่ยงจากภัยธรรมชาติและการเปลี่ยนแปลงสภาพภูมิอากาศลดลง</field>
+        <field name="parent_id" ref="P1311" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="P131103" model="project.strategic.plan">
+        <field name="code">P131103</field>
+        <field
+            name="name"
+        >เป้าหมายที่ 11.3 สังคมไทยมีภูมิคุ้มกันจากภัยธรรมชาติและการเปลี่ยนแปลงสภาพภูมิอากาศ</field>
+        <field name="parent_id" ref="P1311" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="P1312" model="project.strategic.plan">
+        <field name="code">P1312</field>
+        <field
+            name="name"
+        >หมุดหมายที่ 12 ไทยมีกำลังคนสมรรถนะสูง มุ่งเรียนรู้อย่างต่อเนื่อง ตอบโจทย์การพัฒนาแห่งอนาคต</field>
+        <field name="parent_id" ref="P13" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="P131201" model="project.strategic.plan">
+        <field name="code">P131201</field>
+        <field
+            name="name"
+        >เป้าหมายที่ 12.1 คนไทยได้รับการพัฒนาอย่างเต็มศักยภาพในทุกช่วงวัย มีสมรรถนะที่จำเป็นสำหรับโลกยุคใหม่มีคุณลักษณะตามบรรทัดฐานที่ดีของสังคม มีคุณธรรม จริยธรรม และมีภูมิคุ้มกันต่อการเปลี่ยนแปลงอย่างพลิกโฉมฉับพลันของโลก สามารถดำรงชีวิตร่วมกันในสังคมได้อย่างสงบสุข</field>
+        <field name="parent_id" ref="P1312" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="P131202" model="project.strategic.plan">
+        <field name="code">P131202</field>
+        <field
+            name="name"
+        >เป้าหมายที่ 12.2 กำลังคนมีสมรรถนะสูง สอดคล้องกับความต้องการของภาคการผลิตเป้าหมาย และสามารถสร้างงานอนาคต</field>
+        <field name="parent_id" ref="P1312" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="P131203" model="project.strategic.plan">
+        <field name="code">P131203</field>
+        <field
+            name="name"
+        >เป้าหมายที่ 12.3 ประชาชนทุกกลุ่มเข้าถึงการเรียนรู้ตลอดชีวิต</field>
+        <field name="parent_id" ref="P1312" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="P1313" model="project.strategic.plan">
+        <field name="code">P1313</field>
+        <field
+            name="name"
+        >หมุดหมายที่ 13 ไทยมีภาครัฐที่ทันสมัย มีประสิทธิภาพ และตอบโจทย์ประชาชน</field>
+        <field name="parent_id" ref="P13" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="P131301" model="project.strategic.plan">
+        <field name="code">P131301</field>
+        <field name="name">เป้าหมายที่ 13.1 การบริการภาครัฐ มีคุณภาพ เข้าถึงได้</field>
+        <field name="parent_id" ref="P1313" />
+        <field name="level">2</field>
+    </record>
+
+    <record id="P131302" model="project.strategic.plan">
+        <field name="code">P131302</field>
+        <field name="name">เป้าหมายที่ 13.2 ภาครัฐที่มีขีดสมรรถนะสูง คล่องตัว</field>
+        <field name="parent_id" ref="P1313" />
+        <field name="level">2</field>
+    </record>
+
+    <!-- K แผนกลยุทธ์สถาบัน -->
+
+    <record id="K" model="project.strategic.plan">
+        <field name="code">K</field>
+        <field name="name">แผนกลยุทธ์สถาบัน</field>
+        <field name="level">3</field>
+    </record>
+
+    <record id="K01" model="project.strategic.plan">
+        <field name="code">K01</field>
+        <field
+            name="name"
+        >ประเด็นยุทธศาสตร์ ที่ 1 สร้างสรรค์งานวิจัยและนวัตกรรมอย่างยั่งยืน</field>
+        <field name="parent_id" ref="K" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K0101" model="project.strategic.plan">
+        <field name="code">K0101</field>
+        <field
+            name="name"
+        >เป้าประสงค์ ที่ 1.ก งานวิจัยที่ตรงกับความต้องการหรือเป็นที่ยอมรับของสังคม (Research output)</field>
+        <field name="parent_id" ref="K01" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K010101" model="project.strategic.plan">
+        <field name="code">K010101</field>
+        <field
+            name="name"
+        >กลยุทธ์ ที่ 1.1.1 ส่งเสริมการทำวิจัยที่ตอบสนองความต้องการ/แก้ไขปัญหาของประเทศ</field>
+        <field name="parent_id" ref="K0101" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K01010101" model="project.strategic.plan">
+        <field name="code">K01010101</field>
+        <field
+            name="name"
+        >ตัวชี้วัด ที่ 1.1 จำนวนผลงานวิจัยตีพิมพ์เผยแพร่ระดับนานาชาติต่อจำนวนอาจารย์ประจำและนักวิจัยประจำ</field>
+        <field name="parent_id" ref="K010101" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K010102" model="project.strategic.plan">
+        <field name="code">K010102</field>
+        <field name="name">กลยุทธ์ ที่ 1.1.2 ส่งเสริมการทำวิจัยเพื่อการตีพิมพ์</field>
+        <field name="parent_id" ref="K0101" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K01010201" model="project.strategic.plan">
+        <field name="code">K01010201</field>
+        <field
+            name="name"
+        >ตัวชี้วัด ที่ 1.1 จำนวนผลงานวิจัยตีพิมพ์เผยแพร่ระดับนานาชาติต่อจำนวนอาจารย์ประจำและนักวิจัยประจำ</field>
+        <field name="parent_id" ref="K010102" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K0102" model="project.strategic.plan">
+        <field name="code">K0102</field>
+        <field
+            name="name"
+        >เป้าประสงค์ ที่ 1.ข งานวิจัยถ่ายทอดสู่สังคม (Knowledge &amp; Technology Transfer)</field>
+        <field name="parent_id" ref="K01" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K010201" model="project.strategic.plan">
+        <field name="code">K010201</field>
+        <field
+            name="name"
+        >กลยุทธ์ ที่ 1.2.1 นำองค์ความรู้/นวัตกรรมถ่ายทอดสู่สังคมอย่างยั่งยืนและต่อยอดเชิงพาณิชย์</field>
+        <field name="parent_id" ref="K0102" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K01020101" model="project.strategic.plan">
+        <field name="code">K01020101</field>
+        <field
+            name="name"
+        >ตัวชี้วัด ที่ 1.2 จำนวนผลงานวิจัยและนวัตกรรมที่เผยแพร่ในวารสารหรือนำไปใช้อ้างอิงในระดับชาติหรือนานาชาติหรือนำไปใช้ประโยชน์  หรือต่อยอดในเชิงพาณิชย์</field>
+        <field name="parent_id" ref="K010201" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K01020102" model="project.strategic.plan">
+        <field name="code">K01020102</field>
+        <field
+            name="name"
+        >ตัวชี้วัด ที่ 1.3  จำนวนที่ขอยื่นจดสิทธิบัตร/อนุสิทธิบัตร</field>
+        <field name="parent_id" ref="K010201" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K01020103" model="project.strategic.plan">
+        <field name="code">K01020103</field>
+        <field
+            name="name"
+        >ตัวชี้วัด ที่ 1.4 จำนวนผลงานวิจัยที่ทำความร่วมมือกับภาคอุตสาหกรรมเชิงพาณิชย์</field>
+        <field name="parent_id" ref="K010201" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K0103" model="project.strategic.plan">
+        <field name="code">K0103</field>
+        <field
+            name="name"
+        >เป้าประสงค์ ที่ 1.ค เงินสนับสนุนงานวิจัย  หรืองานสร้างสรรค์จากแหล่งทุนภายนอก</field>
+        <field name="parent_id" ref="K01" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K010301" model="project.strategic.plan">
+        <field name="code">K010301</field>
+        <field
+            name="name"
+        >กลยุทธ์ ที่ 1.5.1 จัดตลาดนัดแสดงผลงานวิจัยจากหิ้งสู่ห้าง</field>
+        <field name="parent_id" ref="K0103" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K01030101" model="project.strategic.plan">
+        <field name="code">K01030101</field>
+        <field
+            name="name"
+        >ตัวชี้วัด ที่ 1.5 ร้อยละของเงินทุนวิจัยจากแหล่งทุนภายนอกที่เพิ่มขึ้น</field>
+        <field name="parent_id" ref="K010301" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K010302" model="project.strategic.plan">
+        <field name="code">K010302</field>
+        <field
+            name="name"
+        >กลยุทธ์ ที่ 1.6.1 สร้างเครือข่ายความร่วมมือการทำวิจัยกับหน่วยงานภายนอก/ภาคอุตสาหกรรม</field>
+        <field name="parent_id" ref="K0103" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K01030201" model="project.strategic.plan">
+        <field name="code">K01030201</field>
+        <field
+            name="name"
+        >ตัวชี้วัด ที่ 1.6 เงินสนับสนุนงานวิจัยหรืองานสร้างสรรค์จากหน่วยงานภายนอกต่อจำนวนอาจารย์ประจำ</field>
+        <field name="parent_id" ref="K010302" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K010303" model="project.strategic.plan">
+        <field name="code">K010303</field>
+        <field
+            name="name"
+        >กลยุทธ์ ที่ 1.6.2 ระดมทุนจากภาคอุตสาหกรรม/หน่วยงาน/ศิษย์เก่า</field>
+        <field name="parent_id" ref="K0103" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K01030301" model="project.strategic.plan">
+        <field name="code">K01030301</field>
+        <field
+            name="name"
+        >ตัวชี้วัด ที่ 1.6 เงินสนับสนุนงานวิจัยหรืองานสร้างสรรค์จากหน่วยงานภายนอกต่อจำนวนอาจารย์ประจำ</field>
+        <field name="parent_id" ref="K010303" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K02" model="project.strategic.plan">
+        <field name="code">K02</field>
+        <field
+            name="name"
+        >ประเด็นยุทธศาสตร์ ที่ 2 เสริมสร้างศักยภาพและผลิตกำลังคนตามความต้องการของประเทศและบริบทโลก</field>
+        <field name="parent_id" ref="K" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K0201" model="project.strategic.plan">
+        <field name="code">K0201</field>
+        <field
+            name="name"
+        >เป้าประสงค์ ที่ 2.ก บัณฑิตมีศักยภาพและตรงตามความต้องการของประเทศและบริบทโลก</field>
+        <field name="parent_id" ref="K02" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K020101" model="project.strategic.plan">
+        <field name="code">K020101</field>
+        <field
+            name="name"
+        >กลยุทธ์ ที่ 2.1.1 ผลิตบัณฑิตให้มีคุณลักษณะตามอัตลักษณ์ของสถาบันและตรงตามความต้องการของประเทศและบริบทโลก</field>
+        <field name="parent_id" ref="K0201" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K02010101" model="project.strategic.plan">
+        <field name="code">K02010101</field>
+        <field
+            name="name"
+        >ตัวชี้วัด ที่ 2.1 ร้อยละของบัณฑิตระดับปริญญาตรีที่ได้งานทำหรือประกอบอาชีพอิสระภายใน 1 ปี</field>
+        <field name="parent_id" ref="K020101" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K02010102" model="project.strategic.plan">
+        <field name="code">K02010102</field>
+        <field
+            name="name"
+        >ตัวชี้วัด ที่ 2.2 ร้อยละความพึงพอใจของผู้ใช้บัณฑิตตามมาตรฐาน</field>
+        <field name="parent_id" ref="K020101" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K02010103" model="project.strategic.plan">
+        <field name="code">K02010103</field>
+        <field
+            name="name"
+        >ตัวชี้วัด ที่ 2.3 อัตราผลตอบแทนเฉลี่ยของบัณฑิตเมื่อเทียบกับค่ามาตรฐานกระทรวงแรงงาน</field>
+        <field name="parent_id" ref="K020101" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K02010104" model="project.strategic.plan">
+        <field name="code">K02010104</field>
+        <field
+            name="name"
+        >ตัวชี้วัด ที่ 2.4 จำนวนผู้เข้าร่วมโครงการผ่านการทดสอบ TOEFL หรือ TOEIC</field>
+        <field name="parent_id" ref="K020101" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K020102" model="project.strategic.plan">
+        <field name="code">K020102</field>
+        <field
+            name="name"
+        >กลยุทธ์ ที่ 2.5.1 ปรับปรุงระบบ/วิธีการคัดเลือกนักศึกษา</field>
+        <field name="parent_id" ref="K0201" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K02010201" model="project.strategic.plan">
+        <field name="code">K02010201</field>
+        <field
+            name="name"
+        >ตัวชี้วัด ที่ 2.5 ร้อยละของนักศึกษาที่มีผลการเรียนเฉลี่ยสะสมไม่ได้ตามเกณฑ์ (Probation)</field>
+        <field name="parent_id" ref="K020102" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K020103" model="project.strategic.plan">
+        <field name="code">K020103</field>
+        <field
+            name="name"
+        >กลยุทธ์ ที่ 2.6.1 พัฒนาหลักสูตรให้มีความหลากหลายหรือร่วมมือกับหน่วยงานระดับชาติหรือระดับนานาชาติ</field>
+        <field name="parent_id" ref="K0201" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K02010301" model="project.strategic.plan">
+        <field name="code">K02010301</field>
+        <field
+            name="name"
+        >ตัวชี้วัด ที่ 2.6 ร้อยละของหลักสูตรที่ได้รับการร่วมมือ/แลกเปลี่ยนจากหน่วยงานระดับชาติและ/หรือระดับนานาชาติ</field>
+        <field name="parent_id" ref="K020103" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K02010302" model="project.strategic.plan">
+        <field name="code">K02010302</field>
+        <field
+            name="name"
+        >ตัวชี้วัด ที่ 2.7 จำนวนหลักสูตรภาษาอังกฤษและหลักสูตรนานาชาติ</field>
+        <field name="parent_id" ref="K020103" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K020104" model="project.strategic.plan">
+        <field name="code">K020104</field>
+        <field
+            name="name"
+        >กลยุทธ์ ที่ 2.8.1 พัฒนากระบวนการจัดการเรียนการสอน โดยเน้นการปฏิบัติจริง</field>
+        <field name="parent_id" ref="K0201" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K02010401" model="project.strategic.plan">
+        <field name="code">K02010401</field>
+        <field
+            name="name"
+        >ตัวชี้วัด ที่ 2.8 ร้อยละของหลักสูตรที่มีรูปแบบ work Integrated Learning /Active Learning/Out Reach Program ต่อหลักสูตรทั้งหมด</field>
+        <field name="parent_id" ref="K020104" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K02010402" model="project.strategic.plan">
+        <field name="code">K02010402</field>
+        <field
+            name="name"
+        >ตัวชี้วัด ที่ 2.9 จำนวนงานวิจัยหรืองานออกแบบหรืองานสร้างสรรค์หรือสิ่งประดิษฐ์ของนักศึกษาที่ได้รับตีพิมพ์หรือได้รับรางวัลระดับชาติและหรือระดับนานาชาติ</field>
+        <field name="parent_id" ref="K020104" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K020105" model="project.strategic.plan">
+        <field name="code">K020105</field>
+        <field
+            name="name"
+        >กลยุทธ์ ที่ 2.10.1 ทำความร่วมมือทางวิชาการกับมหาวิทยาลัยชั้นนำในต่างประเทศ (TOP 200)</field>
+        <field name="parent_id" ref="K0201" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K02010501" model="project.strategic.plan">
+        <field name="code">K02010501</field>
+        <field
+            name="name"
+        >ตัวชี้วัด ที่ 2.10 จำนวนอาจารย์/นักวิจัยชาวต่างประเทศที่ปฏิบัติงานเต็มเวลา 3 เดือนขึ้นไป</field>
+        <field name="parent_id" ref="K020105" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K02010502" model="project.strategic.plan">
+        <field name="code">K02010502</field>
+        <field
+            name="name"
+        >ตัวชี้วัด ที่ 2.11 จำนวนอาจารย์/นักวิจัยแลกเปลี่ยน (Inbound-Outbound)</field>
+        <field name="parent_id" ref="K020105" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K02010503" model="project.strategic.plan">
+        <field name="code">K02010503</field>
+        <field name="name">ตัวชี้วัด ที่ 2.12 จำนวนนักศึกษาต่างชาติเต็มเวลา</field>
+        <field name="parent_id" ref="K020105" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K02010504" model="project.strategic.plan">
+        <field name="code">K02010504</field>
+        <field
+            name="name"
+        >ตัวชี้วัด ที่ 2.13 จำนวนนักศึกษาแลกเปลี่ยนอย่างน้อย 1 ภาคการศึกษา (Inbound-Outbound)</field>
+        <field name="parent_id" ref="K020105" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K02010505" model="project.strategic.plan">
+        <field name="code">K02010505</field>
+        <field
+            name="name"
+        >ตัวชี้วัด ที่ 2.14 จำนวนมหาวิทยาลัยในต่างประเทศที่มีการแลกเปลี่ยนบุคลากรและนักศึกษา</field>
+        <field name="parent_id" ref="K020105" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K02010506" model="project.strategic.plan">
+        <field name="code">K02010506</field>
+        <field name="name">ตัวชี้วัด ที่ 2.15 จำนวนผู้เชี่ยวชาญต่างชาติเพิ่มขึ้น</field>
+        <field name="parent_id" ref="K020105" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K02010507" model="project.strategic.plan">
+        <field name="code">K02010507</field>
+        <field
+            name="name"
+        >ตัวชี้วัด ที่ 2.16 จำนวนศูนย์ประสานงานพระจอมเกล้าลาดกระบังในต่างประเทศ</field>
+        <field name="parent_id" ref="K020105" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K020106" model="project.strategic.plan">
+        <field name="code">K020106</field>
+        <field
+            name="name"
+        >กลยุทธ์ ที่ 2.17.1 ทำความร่วมมือกับภาคอุตสาหกรรม (Set Index 100)</field>
+        <field name="parent_id" ref="K0201" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K02010601" model="project.strategic.plan">
+        <field name="code">K02010601</field>
+        <field name="name">ตัวชี้วัด ที่ 2.17 จำนวนความร่วมมือกับภาคอุตสาหกรรม</field>
+        <field name="parent_id" ref="K020106" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K03" model="project.strategic.plan">
+        <field name="code">K03</field>
+        <field
+            name="name"
+        >ประเด็นยุทธศาสตร์ ที่ 3 ส่งเสริมบริการวิชาการพัฒนารากฐานองค์ความรู้สู่สังคม</field>
+        <field name="parent_id" ref="K" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K0301" model="project.strategic.plan">
+        <field name="code">K0301</field>
+        <field
+            name="name"
+        >เป้าประสงค์ ที่ 3.ก มุ่งบริการวิชาการเพื่อแก้ไขปัญหาภาคอุตสาหกรรม สังคมและประเทศ</field>
+        <field name="parent_id" ref="K03" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K030101" model="project.strategic.plan">
+        <field name="code">K030101</field>
+        <field
+            name="name"
+        >กลยุทธ์ ที่ 3.1.1 ส่งเสริมบริการวิชาการเพื่อแก้ปัญหาภาคอุตสาหกรรม (Stakeholder Engagement)</field>
+        <field name="parent_id" ref="K0301" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K03010101" model="project.strategic.plan">
+        <field name="code">K03010101</field>
+        <field
+            name="name"
+        >ตัวชี้วัด ที่ 3.1 ร้อยละโครงการบริการวิชาการที่ร่วมมือกับภาคอุตสาหกรรม</field>
+        <field name="parent_id" ref="K030101" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K030102" model="project.strategic.plan">
+        <field name="code">K030102</field>
+        <field
+            name="name"
+        >กลยุทธ์ ที่ 3.2.1 สนับสนุนการบริการวิชาการเพื่อแก้ไขปัญหาสังคมและประเทศ</field>
+        <field name="parent_id" ref="K0301" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K03010201" model="project.strategic.plan">
+        <field name="code">K03010201</field>
+        <field
+            name="name"
+        >ตัวชี้วัด ที่ 3.2 ร้อยละของจำนวนโครงการบริการวิชาการที่แก้ไขปัญหาสังคมหรือสร้างความเข้มแข็งให้ สังคม</field>
+        <field name="parent_id" ref="K030102" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K030103" model="project.strategic.plan">
+        <field name="code">K030103</field>
+        <field
+            name="name"
+        >กลยุทธ์ ที่ 3.3.1 สร้างและพัฒนาวิสาหกิจเริ่มต้นและผู้ประกอบการรายใหม่</field>
+        <field name="parent_id" ref="K0301" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K03010301" model="project.strategic.plan">
+        <field name="code">K03010301</field>
+        <field name="name">ตัวชี้วัด ที่ 3.3 จำนวนผู้ประกอบการ (Start up)</field>
+        <field name="parent_id" ref="K030103" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K0302" model="project.strategic.plan">
+        <field name="code">K0302</field>
+        <field name="name">เป้าประสงค์ ที่ 3.ข รายได้เพิ่มจากการบริการวิชาการ</field>
+        <field name="parent_id" ref="K03" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K030201" model="project.strategic.plan">
+        <field name="code">K030201</field>
+        <field
+            name="name"
+        >กลยุทธ์ ที่ 3.4.1 จัดหารายได้เพิ่มจากองค์ความรู้และหรือทรัพย์สินทางปัญญา</field>
+        <field name="parent_id" ref="K0302" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K03020101" model="project.strategic.plan">
+        <field name="code">K03020101</field>
+        <field
+            name="name"
+        >ตัวชี้วัด ที่ 3.4 ร้อยละของรายได้จากงานบริการวิชาการที่เพิ่มขึ้น</field>
+        <field name="parent_id" ref="K030201" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K03020102" model="project.strategic.plan">
+        <field name="code">K03020102</field>
+        <field
+            name="name"
+        >ตัวชี้วัด ที่ 3.5 จำนวนการยื่นขอจดทะเบียนทรัพย์สินทางปัญญา</field>
+        <field name="parent_id" ref="K030201" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K04" model="project.strategic.plan">
+        <field name="code">K04</field>
+        <field
+            name="name"
+        >ประเด็นยุทธศาสตร์ ที่ 4 สนับสนุนการพัฒนาองค์กรคุณภาพอย่างยั่งยืน (KMITL Excellence)</field>
+        <field name="parent_id" ref="K" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K0401" model="project.strategic.plan">
+        <field name="code">K0401</field>
+        <field
+            name="name"
+        >เป้าประสงค์ ที่ 4.ก ระบบบริหารจัดการและบุคลากรมีคุณภาพที่ดี ทันสมัย ยั่งยืน</field>
+        <field name="parent_id" ref="K04" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K040101" model="project.strategic.plan">
+        <field name="code">K040101</field>
+        <field
+            name="name"
+        >กลยุทธ์ ที่ 4.1.1 เพิ่มประสิทธิภาพระบบบริหารจัดการให้มีคุณภาพ โปร่งใส เป็นธรรม</field>
+        <field name="parent_id" ref="K0401" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K04010101" model="project.strategic.plan">
+        <field name="code">K04010101</field>
+        <field
+            name="name"
+        >ตัวชี้วัด ที่ 4.1 ร้อยละความพึงพอใจของผู้รับบริการที่มีต่อการให้บริการ</field>
+        <field name="parent_id" ref="K040101" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K04010102" model="project.strategic.plan">
+        <field name="code">K04010102</field>
+        <field
+            name="name"
+        >ตัวชี้วัด ที่ 4.2 ร้อยละของระบบงานที่สามารถลดรอบระยะเวลาในการให้บริการที่รวดเร็ว</field>
+        <field name="parent_id" ref="K040101" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K040102" model="project.strategic.plan">
+        <field name="code">K040102</field>
+        <field
+            name="name"
+        >กลยุทธ์ ที่ 4.3.1 เพิ่มประสิทธิภาพระบบตรวจสอบและควบคุม</field>
+        <field name="parent_id" ref="K0401" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K04010201" model="project.strategic.plan">
+        <field name="code">K04010201</field>
+        <field
+            name="name"
+        >ตัวชี้วัด ที่ 4.3 ร้อยละของความสำเร็จในการจัดทำระบบบริหารความเสี่ยงและควบคุมภายใน</field>
+        <field name="parent_id" ref="K040102" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K04010202" model="project.strategic.plan">
+        <field name="code">K04010202</field>
+        <field
+            name="name"
+        >ตัวชี้วัด ที่ 4.4 ร้อยละการเบิกจ่ายเมื่อเทียบกับงบประมาณที่ได้รับจัดสรร</field>
+        <field name="parent_id" ref="K040102" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K04010203" model="project.strategic.plan">
+        <field name="code">K04010203</field>
+        <field
+            name="name"
+        >ตัวชี้วัด ที่ 4.5 ร้อยละของผู้ตรวจสอบภายในผ่านเกณฑ์มาตรฐานมืออาชีพ</field>
+        <field name="parent_id" ref="K040102" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K040103" model="project.strategic.plan">
+        <field name="code">K040103</field>
+        <field
+            name="name"
+        >กลยุทธ์ ที่ 4.6.1 พัฒนาระบบบริหารทรัพยากรบุคคลให้มีคุณภาพ</field>
+        <field name="parent_id" ref="K0401" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K04010301" model="project.strategic.plan">
+        <field name="code">K04010301</field>
+        <field
+            name="name"
+        >กลยุทธ์ ที่ 4.1.1 เพิ่มประสิทธิภาพระบบบริหารจัดการให้มีคุณภาพ โปร่งใส เป็นธรรม</field>
+        <field name="parent_id" ref="K040103" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K0401030101" model="project.strategic.plan">
+        <field name="code">K0401030101</field>
+        <field
+            name="name"
+        >ตัวชี้วัด ที่ 4.1 ร้อยละความพึงพอใจของผู้รับบริการที่มีต่อการให้บริการ</field>
+        <field name="parent_id" ref="K04010301" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K0401030102" model="project.strategic.plan">
+        <field name="code">K0401030102</field>
+        <field
+            name="name"
+        >ตัวชี้วัด ที่ 4.2 ร้อยละของระบบงานที่สามารถลดรอบระยะเวลาในการให้บริการที่รวดเร็ว</field>
+        <field name="parent_id" ref="K04010301" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K040104" model="project.strategic.plan">
+        <field name="code">K040104</field>
+        <field
+            name="name"
+        >กลยุทธ์ ที่ 4.3.1 เพิ่มประสิทธิภาพระบบตรวจสอบและควบคุม</field>
+        <field name="parent_id" ref="K0401" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K04010401" model="project.strategic.plan">
+        <field name="code">K04010401</field>
+        <field
+            name="name"
+        >ตัวชี้วัด ที่ 4.3 ร้อยละของความสำเร็จในการจัดทำระบบบริหารความเสี่ยงและควบคุมภายใน</field>
+        <field name="parent_id" ref="K040104" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K04010402" model="project.strategic.plan">
+        <field name="code">K04010402</field>
+        <field
+            name="name"
+        >ตัวชี้วัด ที่ 4.4 ร้อยละการเบิกจ่ายเมื่อเทียบกับงบประมาณที่ได้รับจัดสรร</field>
+        <field name="parent_id" ref="K040104" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K04010403" model="project.strategic.plan">
+        <field name="code">K04010403</field>
+        <field
+            name="name"
+        >ตัวชี้วัด ที่ 4.5 ร้อยละของผู้ตรวจสอบภายในผ่านเกณฑ์มาตรฐานมืออาชีพ</field>
+        <field name="parent_id" ref="K040104" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K040105" model="project.strategic.plan">
+        <field name="code">K040105</field>
+        <field
+            name="name"
+        >กลยุทธ์ ที่ 4.6.1 พัฒนาระบบบริหารทรัพยากรบุคคลให้มีคุณภาพ</field>
+        <field name="parent_id" ref="K0401" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K04010501" model="project.strategic.plan">
+        <field name="code">K04010501</field>
+        <field
+            name="name"
+        >ตัวชี้วัด ที่ 4.6 จำนวนผู้ผ่านการอบรมตามโครงสร้างผู้บริหารยุคใหม่</field>
+        <field name="parent_id" ref="K040105" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K04010502" model="project.strategic.plan">
+        <field name="code">K04010502</field>
+        <field
+            name="name"
+        >ตัวชี้วัด ที่ 4.7 ร้อยละของบุคลากรสายสนับสนุนที่ดำรงตำแหน่งทางวิชาการเพิ่มขึ้น</field>
+        <field name="parent_id" ref="K040105" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K04010503" model="project.strategic.plan">
+        <field name="code">K04010503</field>
+        <field
+            name="name"
+        >ตัวชี้วัด ที่ 4.8 ร้อยละของตำแหน่งทางวิชาการ (ศ./รศ.) ต่อจำนวนอาจารย์ประจำ</field>
+        <field name="parent_id" ref="K040105" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K04010504" model="project.strategic.plan">
+        <field name="code">K04010504</field>
+        <field
+            name="name"
+        >ตัวชี้วัด ที่ 4.9 ร้อยละของอาจารย์ที่มีวุฒิปริญญาเอกหรือเทียบเท่าต่ออาจารย์ประจำ</field>
+        <field name="parent_id" ref="K040105" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K0402" model="project.strategic.plan">
+        <field name="code">K0402</field>
+        <field
+            name="name"
+        >เป้าประสงค์ ที่ 4.ข เป็นสถาบันที่ใช้ระบบเทคโนโลยีที่ทันสมัย (e-university)</field>
+        <field name="parent_id" ref="K04" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K040201" model="project.strategic.plan">
+        <field name="code">K040201</field>
+        <field
+            name="name"
+        >กลยุทธ์ ที่ 4.10.1 พัฒนาระบบเทคโนโลยีที่ทันสมัยมาใช้ให้ครอบคลุมทุกพันธกิจ</field>
+        <field name="parent_id" ref="K0402" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K04020101" model="project.strategic.plan">
+        <field name="code">K04020101</field>
+        <field
+            name="name"
+        >ตัวชี้วัด ที่ 4.10 ระดับความสำเร็จในการนำระบบสารสนเทศมาใช้ในการดำเนินงานตามพันธกิจ</field>
+        <field name="parent_id" ref="K040201" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K04020102" model="project.strategic.plan">
+        <field name="code">K04020102</field>
+        <field
+            name="name"
+        >ตัวชี้วัด ที่ 4.11 ร้อยละของจำนวนส่วนงานที่นำข้อมูลเข้าระบบเพื่อการบริหารจัดการตามพันธกิจ</field>
+        <field name="parent_id" ref="K040201" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K04020103" model="project.strategic.plan">
+        <field name="code">K04020103</field>
+        <field
+            name="name"
+        >ตัวชี้วัด ที่ 4.12 ร้อยละของพื้นที่ให้บริการมี wireless internet</field>
+        <field name="parent_id" ref="K040201" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K0403" model="project.strategic.plan">
+        <field name="code">K0403</field>
+        <field
+            name="name"
+        >เป้าประสงค์ ที่ 4.ค สภาพแวดล้อมที่ดีมีสุข (Environment Well-Being)</field>
+        <field name="parent_id" ref="K04" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K040301" model="project.strategic.plan">
+        <field name="code">K040301</field>
+        <field
+            name="name"
+        >กลยุทธ์ ที่ 4.13.1 ปรับปรุงสภาพแวดล้อมให้เป็นสถาบันสีเขียว (Green-University)</field>
+        <field name="parent_id" ref="K0403" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K04030101" model="project.strategic.plan">
+        <field name="code">K04030101</field>
+        <field
+            name="name"
+        >ตัวชี้วัด ที่ 4.13 ร้อยละความสำเร็จในการสรุปแผนแม่บททางกายภาพ</field>
+        <field name="parent_id" ref="K040301" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K040302" model="project.strategic.plan">
+        <field name="code">K040302</field>
+        <field
+            name="name"
+        >กลยุทธ์ ที่ 4.15.1 ปรับปรุงความปลอดภัยภายในองค์กร (Safety Organization)</field>
+        <field name="parent_id" ref="K0403" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K04030201" model="project.strategic.plan">
+        <field name="code">K04030201</field>
+        <field
+            name="name"
+        >ตัวชี้วัด ที่ 4.15 ร้อยละความพึงพอใจของบุคลากรและนักศึกษาที่มีต่อสภาพแวดล้อมคุณภาพชีวิต</field>
+        <field name="parent_id" ref="K040302" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K040303" model="project.strategic.plan">
+        <field name="code">K040303</field>
+        <field
+            name="name"
+        >กลยุทธ์ ที่ 4.16.1 ยกระดับคุณภาพชีวิตที่ดี (Improves Quality Of Life)</field>
+        <field name="parent_id" ref="K0403" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K04030301" model="project.strategic.plan">
+        <field name="code">K04030301</field>
+        <field
+            name="name"
+        >ตัวชี้วัด ที่ 4.16 ระดับความผูกพันของบุคลากรที่มีต่อสถาบัน</field>
+        <field name="parent_id" ref="K040303" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K0404" model="project.strategic.plan">
+        <field name="code">K0404</field>
+        <field name="name">เป้าประสงค์ ที่ 4.ง รายได้เพิ่มอย่างยั่งยืน</field>
+        <field name="parent_id" ref="K04" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K040401" model="project.strategic.plan">
+        <field name="code">K040401</field>
+        <field name="name">กลยุทธ์ ที่ 4.17.1 ระบบบริหารจัดการทางการเงิน</field>
+        <field name="parent_id" ref="K0404" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K04040101" model="project.strategic.plan">
+        <field name="code">K04040101</field>
+        <field
+            name="name"
+        >ตัวชี้วัด ที่ 4.17 ร้อยละความสำเร็จในการจัดทำแผนกลยุทธ์ทางการเงิน</field>
+        <field name="parent_id" ref="K040401" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K04040102" model="project.strategic.plan">
+        <field name="code">K04040102</field>
+        <field
+            name="name"
+        >ตัวชี้วัด ที่ 4.18 ร้อยละของรายได้ที่เพิ่มขึ้น (จากรายได้ทั้งหมด)</field>
+        <field name="parent_id" ref="K040401" />
+        <field name="level">3</field>
+    </record>
+
+    <record id="K04040103" model="project.strategic.plan">
+        <field name="code">K04040103</field>
+        <field
+            name="name"
+        >ตัวชี้วัด ที่ 4.19 ร้อยละของรายได้อื่นๆ ต่อรายได้ทั้งหมด (นอกเหนือค่าธรรมเนียมการศึกษา)</field>
+        <field name="parent_id" ref="K040401" />
+        <field name="level">3</field>
+    </record>
+</odoo>

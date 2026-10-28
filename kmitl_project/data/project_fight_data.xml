@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+
+    <record id="futurist" model="project.fight">
+        <field name="name">Futurist</field>
+        <field name="description">วิสัยทัศน์กว้างไกล, กล้าแตกต่าง</field>
+    </record>
+
+    <record id="ignite" model="project.fight">
+        <field name="name">Ignite</field>
+        <field name="description">พัฒนาอย่างต่อเนื่อง, พร้อมนำการเปลี่ยนแปลง</field>
+    </record>
+
+    <record id="greatness" model="project.fight">
+        <field name="name">Greatness</field>
+        <field name="description">มุ่งเน้นความเป็นเลิศ, สหวิชาชีพ</field>
+    </record>
+
+    <record id="honor" model="project.fight">
+        <field name="name">Honor</field>
+        <field name="description">ยึดหลักธรรมาภิบาล, สร้างความยั่งยืน</field>
+    </record>
+
+    <record id="teamspirit" model="project.fight">
+        <field name="name">Team Spirit</field>
+        <field name="description">ทำงานเป็นทีม, ผสานประโยชน์จากความหลากหลาย</field>
+    </record>
+</odoo>
