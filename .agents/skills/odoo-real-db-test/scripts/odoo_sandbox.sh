@@ -120,6 +120,10 @@ case "$cmd" in
             fi
             echo "cloned $1 -> $2 (dump, $n modules installed)"
         fi
+        # The filestore is not copied, so the cached asset bundles point to
+        # missing files and every page 500s; drop them so odoo rebuilds them.
+        docker exec "$DB_CONTAINER" psql -U "$DB_USER" -d "$2" -qc \
+            "delete from ir_attachment where res_model = 'ir.ui.view' and url like '/web/assets/%'"
         # A copy of prod would otherwise mail real staff and run real crons.
         "$0" neutralize "$2"
         ;;
@@ -177,7 +181,16 @@ case "$cmd" in
             -p "127.0.0.1:$port:8069" -v "$wt:$MOUNT_POINT:ro" odoo odoo \
             -d "$1" --db-filter="^$1\$" --addons-path="$ADDONS_PATH" \
             --workers=0 --max-cron-threads=0 --http-port=8069) >/dev/null 2>&1
+        # Docker publishes no ports for a container on internal networks only,
+        # and doodba's `default` is internal unless DOODBA_NETWORK_INTERNAL=false.
+        # Join a bridge of our own: doodba's `public` only exists while a proxy
+        # service is up, and its name depends on the compose project.
+        docker network inspect odoo_sandbox_public >/dev/null 2>&1 ||
+            docker network create odoo_sandbox_public >/dev/null
+        docker network connect odoo_sandbox_public "$name" ||
+            die "could not attach $name to network odoo_sandbox_public"
         for _ in $(seq 1 60); do
+            [ "$(docker inspect -f '{{.State.Running}}' "$name" 2>/dev/null)" = true ] || break
             code="$(curl -s -o /dev/null -w '%{http_code}' "http://127.0.0.1:$port/web/login" || true)"
             [ "$code" = 200 ] && { echo "up: http://127.0.0.1:$port (container $name)"; exit 0; }
             sleep 3
