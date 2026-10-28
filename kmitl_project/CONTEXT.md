@@ -81,7 +81,7 @@ Whether the project's analytic account has ever been recorded on any other docum
 _Avoid_: balance (a footprint can exist even when every figure nets to 0)
 
 **Held Money (เงินค้างในมิติโครงการ)**:
-Money still tied to the project's dimension: a non-zero net allocation on any coordinate in any fiscal year, an active reservation, or a transfer into or out of the dimension that is still in progress. While a project holds any, its รหัสงบ and budget dimensions cannot change and it cannot be deleted; a **Floating Return** clears it. Closing a project returns its unspent reservation (คืนจอง) but leaves the money held until a Floating Return.
+Money still tied to the project's dimension: a non-zero net allocation on any coordinate in any fiscal year, an active reservation, or a submitted transfer into or out of the dimension that has not posted yet (a draft does not count). While a project holds any, its รหัสงบ and budget dimensions cannot change and it cannot be deleted; a **Floating Return** clears it. Closing a project returns its unspent reservation (คืนจอง) but leaves the money held until a Floating Return.
 _Avoid_: Project Budget Remaining (that is reserved minus spent, only one part of it)
 
 **Project Budget Remaining (งบประมาณคงเหลือ)**:
