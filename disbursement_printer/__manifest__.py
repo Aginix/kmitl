@@ -2,7 +2,7 @@
 
 {
     "name": "Disbursement Printer",
-    "summary": "Print button for the disbursement request (ใบขอเบิกเงิน) PDF, "
+    "summary": "Print the disbursement request's หนังสือ (Sarabun layout), "
     "granted to selected users",
     "version": "16.0.1.0.0",
     "category": "Disbursement",
@@ -10,7 +10,7 @@
     "author": "KMITL",
     "website": "https://www.kmitl.ac.th",
     "depends": [
-        "disbursement_pdf",
+        "disbursement_sarabun",
     ],
     "data": [
         "security/security.xml",

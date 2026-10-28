@@ -25,3 +25,9 @@ msgstr "ผู้พิมพ์ใบขอเบิกเงิน"
 #: model_terms:ir.ui.view,arch_db:disbursement_printer.disbursement_request_form_printer
 msgid "Print Disbursement Request"
 msgstr "พิมพ์ใบขอเบิกเงิน"
+
+#. module: disbursement_printer
+#: code:addons/disbursement_printer/controllers/main.py:0
+#, python-format
+msgid "You are not allowed to print this."
+msgstr "คุณไม่มีสิทธิ์พิมพ์เอกสารนี้"

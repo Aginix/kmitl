@@ -6,13 +6,14 @@
         <field name="model">disbursement.request</field>
         <field name="inherit_id" ref="disbursement.view_disbursement_request_form"/>
         <field name="arch" type="xml">
-            <!-- The ใบขอเบิกเงิน print, also when disbursement_sarabun has
-                 unbound it from the Print menu. -->
+            <!-- The หนังสือ's official PDF, once Submit to Sarabun has created it. -->
             <xpath expr="//button[@name='action_cancel']" position="before">
-                <button name="%(disbursement_pdf.action_report_disbursement_request)d"
+                <field name="can_print_sarabun_document" invisible="1"/>
+                <button name="action_print_sarabun_document"
                         string="Print Disbursement Request"
-                        type="action"
+                        type="object"
                         class="btn btn-secondary"
+                        attrs="{'invisible': [('can_print_sarabun_document', '=', False)]}"
                         groups="disbursement_printer.group_disbursement_printer"/>
             </xpath>
         </field>
