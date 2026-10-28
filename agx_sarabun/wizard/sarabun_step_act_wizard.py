@@ -4,6 +4,7 @@ mirroring the engine's single ``act_on_step`` entry point.
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
+from odoo.tools import is_html_empty
 
 from odoo.addons.thai_date_utils.models.thai_date_mixin import MONTHS_TH, to_bangkok
 
@@ -33,9 +34,9 @@ class SarabunStepActWizard(models.TransientModel):
         required=True,
         default="complete",
     )
-    note = fields.Text(
+    note = fields.Html(
         string="Comment / Reason",
-        placeholder="Comment...",
+        sanitize=True,
         help="Optional comment or reason for this action.",
     )
 
@@ -134,7 +135,7 @@ class SarabunStepActWizard(models.TransientModel):
             if self.disposition == "direct":
                 vals.update({"verb": self.new_verb.id, "for_info": self.new_for_info})
         elif self.disposition == "return":
-            if not self.note:
+            if is_html_empty(self.note):
                 raise UserError(_("Please provide a reason for returning (ตีกลับ)."))
             if self.destination == "resume_step" and not self.resume_step_id:
                 raise UserError(_("Pick the step to resume from."))
@@ -145,7 +146,7 @@ class SarabunStepActWizard(models.TransientModel):
                 }
             )
         elif self.disposition == "reject":
-            if not self.note:
+            if is_html_empty(self.note):
                 raise UserError(_("Please provide a rejection reason."))
 
         self.step_id.act_on_step(self.disposition, vals)

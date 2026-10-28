@@ -26,7 +26,7 @@
                 >
                     <div
                         t-if="sig.note"
-                        style="min-width: 300px; max-width: 750px; width: -webkit-fit-content; width: fit-content; margin-left:auto; white-space: pre-line;"
+                        style="min-width: 300px; max-width: 750px; width: -webkit-fit-content; width: fit-content; margin-left:auto;"
                     >
                         <div t-out="sig.note" />
                     </div>

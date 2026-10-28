@@ -10,11 +10,8 @@
                     name="standard_comment_id"
                     placeholder="----- เลือกความเห็นมาตรฐาน -----"
                     widget="selection"
-                    nolabel="1"
                 />
-                <p name="text" class="lead">
-                    และ/หรือพิมพ์ความเห็นเอง (ระบุ)
-                </p>
+                <separator string="และ/หรือพิมพ์ความเห็นเอง (ระบุ)" />
             </xpath>
         </field>
     </record>

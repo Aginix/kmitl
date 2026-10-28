@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <record id="standard_comment_consider" model="sarabun.standard.comment">
+        <field name="name">เพื่อโปรดพิจารณา</field>
+        <field name="body">เพื่อโปรดพิจารณา</field>
+        <field name="sequence">10</field>
+    </record>
+
+    <record id="standard_comment_consider_proceed" model="sarabun.standard.comment">
+        <field name="name">เพื่อโปรดพิจารณาดำเนินการ</field>
+        <field name="body">เพื่อโปรดพิจารณาดำเนินการต่อไป</field>
+        <field name="sequence">20</field>
+    </record>
+
+    <record id="standard_comment_consider_approve" model="sarabun.standard.comment">
+        <field name="name">เพื่อโปรดพิจารณาอนุมัติ</field>
+        <field name="body">เพื่อโปรดพิจารณาอนุมัติ</field>
+        <field name="sequence">30</field>
+    </record>
+
+    <record id="standard_comment_noted" model="sarabun.standard.comment">
+        <field name="name">เพื่อโปรดทราบ</field>
+        <field name="body">เพื่อโปรดทราบ</field>
+        <field name="sequence">40</field>
+    </record>
+
+    <record id="standard_comment_proceed" model="sarabun.standard.comment">
+        <field name="name">เพื่อโปรดดำเนินการ</field>
+        <field name="body">เพื่อโปรดดำเนินการต่อไป</field>
+        <field name="sequence">50</field>
+    </record>
+
+    <record id="standard_comment_approve" model="sarabun.standard.comment">
+        <field name="name">อนุมัติ</field>
+        <field name="body">อนุมัติ</field>
+        <field name="sequence">60</field>
+    </record>
+
+    <record id="standard_comment_agree" model="sarabun.standard.comment">
+        <field name="name">เห็นชอบ</field>
+        <field name="body">เห็นชอบ</field>
+        <field name="sequence">70</field>
+    </record>
+
+    <record id="standard_comment_acknowledged" model="sarabun.standard.comment">
+        <field name="name">ทราบ</field>
+        <field name="body">ทราบ</field>
+        <field name="sequence">80</field>
+    </record>
+</odoo>

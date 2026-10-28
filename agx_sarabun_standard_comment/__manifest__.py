@@ -10,6 +10,7 @@
     ],
     "data": [
         "security/ir.model.access.csv",
+        "data/sarabun_standard_comment_data.xml",
         "views/sarabun_standard_comment_views.xml",
         "views/sarabun_verb_views.xml",
         "wizard/sarabun_step_act_wizard_views.xml",
