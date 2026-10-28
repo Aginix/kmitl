@@ -27,9 +27,10 @@ Three rules make this safe to do without asking every time:
   databases.
 - **A clone of prod must not reach real people.** `clone` runs Odoo's `neutralize` on
   the copy (mail servers off, crons off, fetchmail/oauth off), and `serve` starts
-  without cron threads. The doodba network is not internal, so without this a served
-  copy of prod can email real staff. If you create a sandbox any other way, run
-  `$S/odoo_sandbox.sh neutralize <db>` before serving it.
+  without cron threads. To publish its port, `serve` also joins a non-internal bridge
+  (`odoo_sandbox_public`), so without this a served copy of prod can email real staff.
+  If you create a sandbox any other way, run `$S/odoo_sandbox.sh neutralize <db>`
+  before serving it.
 - **Clean up what you create**, or leave it running only when you tell the user it's
   there and how to remove it.
 
@@ -51,14 +52,19 @@ In the examples, `S` is this skill's `scripts` folder: set
 `S=<base directory of this skill>/scripts` (the skill loader prints the base directory;
 in the kmitl repo it is `.agents/skills/odoo-real-db-test`).
 
-One-time setup for the UI check (Node 18+). `node_modules` is git-ignored:
+Setup for the UI check (Node 20+). `node_modules` is git-ignored, so a fresh worktree
+needs `npm ci` (about a second, served from the npm cache):
 
 ```bash
 [ -d $S/node_modules/playwright-core ] || npm ci --prefix $S >/dev/null
 node $S/node_modules/playwright-core/cli.js install chromium-headless-shell
 ```
 
-The browser install is skipped if Playwright's Chromium is already cached.
+The browser lives in the shared Playwright cache, so it downloads once per machine
+(~15 s); later runs return in under a second. If the install runs for more than a
+minute, it's hung, not slow: playwright-core older than 1.64 never finishes unzipping on
+Node 26 and leaves a half-extracted folder, so every later run starts over. Kill it and
+check that `node_modules` matches `package.json` (`npm ci --prefix $S`).
 
 ## Workflow
 
@@ -226,8 +232,12 @@ URL, the login, and these two cleanup commands.
   such as `.o_main_navbar` or the view's root class.
 - **`page.goto('/web#action=…')` right after login aborts** (`ERR_ABORTED`).
   `ui_check.mjs` catches it and reloads.
-- **Rendering a PDF commits mid-call.** On a dumped clone the report asset files are
-  missing, so the first PDF render regenerates them and commits the transaction.
+- **The filestore is not cloned.** `clone` deletes the cached asset bundles so Odoo
+  rebuilds them; without that every page 500s on CSS/JS and `ui_check` times out on
+  `.o_main_navbar`. Other attachments (uploaded files, images) stay missing and 500 as
+  `FileNotFoundError` in the server log. That's expected unless your test reads files.
+- **Rendering a PDF commits mid-call.** On a clone the report asset bundles don't exist
+  yet, so the first PDF render generates them and commits the transaction.
   Savepoints vanish and "rolled back" test data stays. Render one PDF first as a
   warm-up, or treat the clone as dirty and re-read starting values on every run.
   Anything that prints during a flow (e.g. posting a budget transfer) triggers it.
