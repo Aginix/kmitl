@@ -107,4 +107,6 @@ class BudgetCommitment(models.Model):
                 )
             ],
             "target": "new",
+            # Wide enough for the long budget-code names in the grid.
+            "context": {"dialog_size": "extra-large"},
         }

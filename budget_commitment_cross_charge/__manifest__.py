@@ -12,6 +12,11 @@
         "views/budget_account_views.xml",
         "views/budget_commitment_views.xml",
     ],
+    "assets": {
+        "web.assets_backend": [
+            "budget_commitment_cross_charge/static/src/budget_commitment_split.scss",
+        ],
+    },
     "installable": True,
     "auto_install": False,
     "license": "AGPL-3",

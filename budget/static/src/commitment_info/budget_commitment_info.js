@@ -46,6 +46,23 @@ export class BudgetCommitmentInfoField extends Many2OneField {
         );
         this.info.data = data || null;
     }
+
+    /**
+     * "[code] a / b / leaf" → {code, leaf, path: "a / b"}. A value without a
+     * "[code]" prefix or " / " separators comes back as the leaf alone.
+     */
+    splitName(value) {
+        let rest = value || "";
+        let code = "";
+        const match = rest.match(/^\[([^\]]+)\]\s*(.*)$/s);
+        if (match) {
+            code = match[1];
+            rest = match[2];
+        }
+        const segments = rest.split(" / ");
+        const leaf = segments.pop();
+        return { code, leaf, path: segments.join(" / ") };
+    }
 }
 
 BudgetCommitmentInfoField.template = "budget.BudgetCommitmentInfoField";

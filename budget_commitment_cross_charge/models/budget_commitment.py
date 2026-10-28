@@ -279,23 +279,21 @@ class BudgetCommitment(models.Model):
         self._check_split()
         return self._create_reserve_lines_from_split()
 
-    def _reservation_info_rows(self):
-        rows = super()._reservation_info_rows()
-        if len(self.split_ids) > 1:
-            rows.append(
-                {
-                    "label": _("ถัวจ่าย"),
-                    "value": ", ".join(
-                        "%s%s %s"
-                        % (
-                            "★ " if split.is_primary else "",
-                            split.account_id.display_name,
-                            formatLang(
-                                self.env, split.amount, currency_obj=self.currency_id
-                            ),
-                        )
-                        for split in self.split_ids
-                    ),
-                }
-            )
-        return rows
+    def get_reservation_info(self):
+        """The info card lists a ถัวจ่าย reservation's codes as a table."""
+        infos = super().get_reservation_info()
+        for record, info in zip(self, infos):
+            if len(record.split_ids) > 1:
+                info["lines_label"] = _("รายการจองงบประมาณ (ถัวจ่าย)")
+                info["lines"] = [
+                    {
+                        "primary": split.is_primary,
+                        "code": split.account_id.code or "",
+                        "name": split.account_id.name,
+                        "amount": formatLang(
+                            self.env, split.amount, currency_obj=record.currency_id
+                        ),
+                    }
+                    for split in record.split_ids
+                ]
+        return infos
