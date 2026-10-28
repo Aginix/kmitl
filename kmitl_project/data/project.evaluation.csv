@@ -1,3 +1,4 @@
-id,name
-survey,"แบบสำรวจ/สอบถามความคิดเห็น"
-test,แบบทดสอบ
+id,name,sequence
+survey,"แบบสำรวจ/สอบถามความคิดเห็น",10
+test,แบบทดสอบ,20
+evaluation_other,อื่น ๆ,1000

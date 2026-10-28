@@ -100,6 +100,8 @@
                         .cat-total { color: #444; font-size: 13pt; }
                         .month-cell { text-align: center; width: 22pt; padding: 2pt 1pt; }
                         .month-on { background-color: #000; }
+                        /* Ticked box before each chosen วิธีดำเนินการ/วิธีการประเมินผล */
+                        .choice-box { font-size: 14pt; margin-right: 4pt; }
                     </style>
 
                     <div class="page">
@@ -240,11 +242,10 @@
                           <div class="section">
                             <div class="item-title">9. วิธีดำเนินการ</div>
                             <div class="item-content">
-                              <div
-                                        t-foreach="o.methodology_ids"
-                                        t-as="method"
-                                        t-out="method.name"
-                                    />
+                              <div t-foreach="o.methodology_ids" t-as="method">
+                                <i class="fa fa-check-square-o choice-box" title="เลือก" />
+                                <t t-out="method.name" />
+                              </div>
                               <!-- อื่น ๆ is listed above; its detail follows -->
                               <p
                                         t-if="o.methodology_other"
@@ -491,14 +492,16 @@
                                     class="item-title"
                                 >15. วิธีการ/เครื่องมือติดตามและประเมินผล</div>
                             <div class="item-content">
-                              <div
-                                        t-foreach="o.evaluation_ids"
-                                        t-as="line"
-                                        t-out="line.name"
-                                    />
-                              <div t-if="o.evaluation_detail">
-                                อื่น ๆ  <span t-out="o.evaluation_detail" />
+                              <div t-foreach="o.evaluation_ids" t-as="line">
+                                <i class="fa fa-check-square-o choice-box" title="เลือก" />
+                                <t t-out="line.name" />
                               </div>
+                              <!-- อื่น ๆ is listed above; its detail follows -->
+                              <p
+                                        t-if="o.evaluation_other"
+                                        class="paragraph distribute"
+                                        t-out="o._report_thai_distribute(o.evaluation_detail)"
+                                    />
                             </div>
                           </div>
                           <div class="section">
