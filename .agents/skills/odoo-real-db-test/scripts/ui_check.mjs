@@ -40,7 +40,7 @@ function findCachedShell() {
   ].filter((r) => r && existsSync(r));
   for (const root of roots) {
     const dirs = readdirSync(root)
-      .filter((d) => d.startsWith("chromium_headless_shell-"))
+      .filter((d) => /^chromium_headless_shell-\d+$/.test(d))
       .sort((a, b) => Number(b.split("-")[1]) - Number(a.split("-")[1]));
     for (const d of dirs) {
       for (const sub of readdirSync(join(root, d))) {
@@ -59,7 +59,9 @@ async function launchBrowser() {
   if (args.chrome) return chromium.launch({executablePath: args.chrome});
   try {
     return await chromium.launch();
-  } catch {
+  } catch (e) {
+    // Only a missing browser warrants the fallback; surface real launch errors.
+    if (!/Executable doesn't exist/.test(e.message)) throw e;
     const executablePath = findCachedShell();
     if (executablePath) return chromium.launch({executablePath});
     console.error(

@@ -174,6 +174,12 @@ case "$cmd" in
         name="odoo_sandbox_$port"
         docker rm -f "$name" >/dev/null 2>&1 || true
         port_in_use "$port" && die "port $port is already in use (another sandbox or service); pick another"
+        # The server joins a non-internal network below, so refuse a db that
+        # could still mail real people.
+        [ "$(docker exec "$DB_CONTAINER" psql -U "$DB_USER" -d "$1" -tAc \
+            "select count(*) from ir_config_parameter
+             where key = 'database.is_neutralized' and value ilike 'true'")" = 1 ] ||
+            die "'$1' is not neutralized; run: $0 neutralize $1"
         # No cron threads: modules installed after neutralize may re-enable
         # their own crons.
         (cd "$COMPOSE_DIR" && docker compose -f devel.yaml run -d --name "$name" --no-deps \
@@ -187,8 +193,10 @@ case "$cmd" in
         # service is up, and its name depends on the compose project.
         docker network inspect odoo_sandbox_public >/dev/null 2>&1 ||
             docker network create odoo_sandbox_public >/dev/null
-        docker network connect odoo_sandbox_public "$name" ||
+        docker network connect odoo_sandbox_public "$name" || {
+            docker rm -f "$name" >/dev/null 2>&1
             die "could not attach $name to network odoo_sandbox_public"
+        }
         for _ in $(seq 1 60); do
             [ "$(docker inspect -f '{{.State.Running}}' "$name" 2>/dev/null)" = true ] || break
             code="$(curl -s -o /dev/null -w '%{http_code}' "http://127.0.0.1:$port/web/login" || true)"
