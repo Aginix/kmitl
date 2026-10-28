@@ -33,11 +33,11 @@
                         <div class="o_bcr_bal">
                             <span class="o_bcr_bal_label">คืนได้</span>
                             <span class="o_bcr_bal_value">฿<t
-                                    t-esc="money(amount)"
+                                    t-esc="money(data.return_amount)"
                                 /></span>
                         </div>
                         <div class="o_bcr_after">หลังคืน <b>฿<t
-                                    t-esc="money(0)"
+                                    t-esc="money(remaining)"
                                 /></b></div>
                     </div>
                     <div class="o_bcr_arrow"><i class="fa fa-long-arrow-right" /></div>
@@ -54,7 +54,17 @@
                     <div class="o_bcr_big_label">จำนวนเงินที่ส่งคืน</div>
                     <div class="o_bcr_big_value">฿<t t-esc="money(amount)" /></div>
                 </div>
-                <div t-if="closesCommitment" class="o_bcr_msg">
+                <div t-if="isInvalid" class="o_bcr_msg o_bcr_msg_warn">
+                    จำนวนเงินที่ส่งคืนต้องมากกว่า 0 และไม่เกิน ฿<t
+                        t-esc="money(data.return_amount)"
+                    />
+                </div>
+                <div t-elif="isPartial" class="o_bcr_msg">
+                    ส่งคืนบางส่วน — ใบจองยังเปิดอยู่ คงเหลือยอดจอง ฿<t
+                        t-esc="money(remaining)"
+                    />
+                </div>
+                <div t-elif="closesCommitment" class="o_bcr_msg">
                     ส่งคืนเงินเหลือจ่ายทั้งหมด — ใบจองจะปิดเป็น "เสร็จสิ้น" หลังส่งคืน
                 </div>
                 <div t-else="" class="o_bcr_msg o_bcr_msg_warn">

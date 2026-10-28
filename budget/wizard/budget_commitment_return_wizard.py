@@ -22,12 +22,12 @@ _CODE_PREFIX = re.compile(r"^\[[^\]]*\]\s*")
 class BudgetCommitmentReturnWizard(models.TransientModel):
     """Confirmation wizard to return leftover reserved budget (ส่งคืนเงินเหลือจ่าย).
 
-    Read-only confirmation: it shows the computed return amount (the unobligated
-    remainder of the reservation, จอง − ผูกพัน), the budget code and analytic
-    dimensions, then
-    posts a single negative ``reserve`` line (``is_return=True``) to release the
-    earmark back to the pool. The commitment is not cancelled; it auto-closes to
-    ``done`` once the leftover is returned. See ``budget/CONTEXT.md``
+    Shows the returnable amount (the unobligated remainder of the reservation,
+    จอง − ผูกพัน), the budget code and analytic dimensions, lets the user type
+    the amount to return (default: all of it), then posts a single negative
+    ``reserve`` line (``is_return=True``) to release it back to the pool. The
+    commitment is not cancelled; it auto-closes to ``done`` once the whole
+    leftover is returned. See ``budget/CONTEXT.md``
     (Return Unused Reservation / คืนจอง) and ADR-0009.
     """
 
@@ -57,7 +57,15 @@ class BudgetCommitmentReturnWizard(models.TransientModel):
         related="commitment_id.available_to_obligate",
         string="ยอดส่งคืน",
         currency_field="currency_id",
-        help="ยอดเงินจองที่ยังไม่ได้ผูกพัน ซึ่งจะถูกส่งคืนเข้ากระเป๋างบประมาณ",
+        help="ยอดเงินจองที่ยังไม่ได้ผูกพัน ซึ่งส่งคืนเข้ากระเป๋างบประมาณได้",
+    )
+    amount = fields.Monetary(
+        string="จำนวนเงินที่ส่งคืน",
+        currency_field="currency_id",
+        compute="_compute_amount",
+        store=True,
+        readonly=False,
+        help="ค่าเริ่มต้นคือยอดส่งคืนทั้งหมด ระบุน้อยกว่านี้เพื่อส่งคืนบางส่วน",
     )
     name = fields.Char(
         string="รายละเอียด",
@@ -92,6 +100,11 @@ class BudgetCommitmentReturnWizard(models.TransientModel):
     return_user_id = fields.Many2one(related="return_line_id.create_uid")
 
     @api.depends("commitment_id")
+    def _compute_amount(self):
+        for wiz in self:
+            wiz.amount = wiz.commitment_id.available_to_obligate
+
+    @api.depends("commitment_id")
     def _compute_widget_info(self):
         for wiz in self:
             commitment = wiz.commitment_id
@@ -116,16 +129,18 @@ class BudgetCommitmentReturnWizard(models.TransientModel):
             wiz.commitment_dims = json.dumps(rows, ensure_ascii=False)
 
     def action_confirm(self):
-        """Post the negative reserve line (คืนจอง) for the leftover remainder.
+        """Post the negative reserve line (คืนจอง) for the typed amount.
 
-        The amount is re-read from the commitment at confirm time (not the cached
-        display value) so a concurrent consume cannot let us over-return. The
+        The leftover is re-read from the commitment at confirm time (not the
+        cached display value) so a concurrent consume cannot let us over-return. The
         account and dimensions are taken from the first posted reserve line — the
         same convention the disbursement consume flow uses — so the reversal nets
         at the original control node. A single aggregate line is the only
         well-defined return because consume never splits per budget code (ADR-0009).
         """
         self.ensure_one()
+        if self.amount <= 0:
+            raise UserError(_("The return amount must be greater than zero."))
         # Carry the source document through from the opener (e.g. a DR), mirroring
         # the consume flow's res_model/res_id stamping for drill-down traceability.
         ctx = self.env.context
@@ -133,7 +148,7 @@ class BudgetCommitmentReturnWizard(models.TransientModel):
         if ctx.get("default_res_model") and ctx.get("default_res_id"):
             source = self.env[ctx["default_res_model"]].browse(ctx["default_res_id"])
         line = self.commitment_id._return_leftover(
-            source=source, name=self.name, date=self.date
+            source=source, name=self.name, date=self.date, amount=self.amount
         )
         if not line:
             raise UserError(_("No leftover reserved budget to return."))

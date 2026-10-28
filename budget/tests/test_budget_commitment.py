@@ -658,6 +658,32 @@ class TestBudgetCommitment(TransactionCase):
         self.assertEqual(ret.res_model, "budget.commitment")
         self.assertEqual(ret.res_id, c.id)
 
+    def test_62b_return_partial_amount_keeps_commitment_open(self):
+        """A typed amount below the leftover returns only that much."""
+        c = self._create_commitment(600)
+        c.action_reserve()
+        self._add_line(c, "consume", 500)
+        wizard = self._return_wizard(c)
+        self.assertEqual(wizard.amount, 100)
+        wizard.amount = 40
+        wizard.action_confirm()
+        self.assertEqual(wizard.returned_amount, 40)
+        self.assertEqual(c.total_reserved, 560)
+        self.assertEqual(c.available_to_obligate, 60)
+        self.assertEqual(c.state, "partial")
+
+    def test_62c_return_amount_over_leftover_or_zero_refused(self):
+        """Returning more than the leftover, or nothing, is refused."""
+        c = self._create_commitment(600)
+        c.action_reserve()
+        self._add_line(c, "consume", 500)
+        for amount in (150, 0):
+            wizard = self._return_wizard(c)
+            wizard.amount = amount
+            with self.assertRaises(UserError):
+                wizard.action_confirm()
+        self.assertFalse(c.line_ids.filtered(lambda line: line.is_return))
+
     def test_63_return_blocked_when_nothing_left(self):
         """No leftover -> the action refuses to open the wizard."""
         c = self._create_commitment(600)
