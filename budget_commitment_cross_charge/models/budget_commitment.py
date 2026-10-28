@@ -99,9 +99,10 @@ class BudgetCommitment(models.Model):
         currency = self.currency_id or self.env.company.currency_id
         primary = splits.filtered("is_primary")
         others = splits - primary
-        if primary and currency.compare_amounts(primary.amount, 0.0) <= 0:
+        # Row ★ may end at 0 (the whole วงเงิน on ถัว codes), never below.
+        if primary and currency.compare_amounts(primary.amount, 0.0) < 0:
             problems.append(
-                _("ยอดถัวจ่ายรวม %(others)s เกินวงเงิน %(cap)s — รหัสหลักต้องเหลือยอดมากกว่า 0")
+                _("ยอดถัวจ่ายรวม %(others)s เกินวงเงิน %(cap)s")
                 % {
                     "others": formatLang(
                         self.env, sum(others.mapped("amount")), currency_obj=currency

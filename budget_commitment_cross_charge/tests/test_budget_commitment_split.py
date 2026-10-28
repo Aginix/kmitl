@@ -51,6 +51,16 @@ class TestBudgetCommitmentSplit(BudgetLedgerCommon):
         other_row = commitment.split_ids.filtered(lambda s: not s.is_primary)
         self.assertEqual(other_row.total_reserved, 20_000)
 
+    def test_primary_row_may_end_at_zero(self):
+        commitment = self._split_draft(50_000, 50_000)
+        self.assertFalse(commitment.split_warning)
+        commitment.action_reserve()
+        events = commitment.line_ids.filtered(lambda line: line.state == "posted")
+        self.assertEqual(
+            [(e.account_id, e.amount) for e in events], [(self.other, 50_000)]
+        )
+        self.assertEqual(commitment.total_reserved, 50_000)
+
     def test_over_cap_blocks_reserve(self):
         commitment = self._split_draft(50_000, 60_000)
         self.assertTrue(commitment.split_warning)

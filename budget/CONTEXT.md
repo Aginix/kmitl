@@ -57,7 +57,7 @@ Pooling more than one budget code inside a *single* reservation, all at the **sa
 _Avoid_: transfer (that is `budget.transfer`, a balanced move *between* accounts; cross-charge moves nothing — it spends several pools in one reservation), virement
 
 **Primary Code (รหัสหลัก)**:
-The header `account_id` of a reservation: the code the requesting document names, liquidated first by every obligate/consume (ADR-0018). On a ถัวจ่าย reservation its share is never typed — it is the **remainder**, วงเงิน − Σ ถัว rows, so the split always totals the วงเงิน.
+The header `account_id` of a reservation: the code the requesting document names, liquidated first by every obligate/consume (ADR-0018). On a ถัวจ่าย reservation its share is never typed — it is the **remainder**, วงเงิน − Σ ถัว rows, so the split always totals the วงเงิน. The remainder may be 0 (the whole วงเงิน on ถัว codes), never negative; the code stays the header's and still leads the liquidation order.
 _Avoid_: main account, default account
 
 **Reservation Split (รายการจองงบประมาณ, `budget.commitment.split`, add-on `budget_commitment_cross_charge`)**:

@@ -30,7 +30,8 @@ an event is immutable from the moment it is created, even on a draft slip (ADR-0
 - **P1. The form gets a รายการจองงบประมาณ grid**, backed by a new
   `budget.commitment.split` (the **Reservation Split**). Row ★ is the Primary Code; its
   amount is **computed** as วงเงิน − Σ ถัว rows and read-only (D-remainder), so the
-  total always equals the วงเงิน. Each row shows งบที่จองได้ and a sufficiency mark,
+  total always equals the วงเงิน. The remainder may be **0** (the whole วงเงิน on ถัว
+  codes; it then posts no reserve event) but never negative. Each row shows งบที่จองได้ and a sufficiency mark,
   and a banner names every row that is short. Once reserved the row also shows its
   code's จองเงิน / ผูกพัน / เบิกจ่าย / คงเหลือ, read from the ledger.
   - จองงบ derives one reserve event per row, primary first, so ADR-0018's liquidation
