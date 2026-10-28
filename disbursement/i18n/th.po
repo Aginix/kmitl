@@ -20,27 +20,50 @@ msgstr ""
 #. odoo-python
 #: code:addons/disbursement/models/disbursement_return_source.py:0
 #, python-format
-msgid "<p><b>Returned for correction</b></p><p>Disbursement <b>%(dr)s</b> was returned.<br/>Reason: <b>%(reason)s</b><br/>Please correct the payee bank, description or evidence, then click <b>Confirm Correction</b>.</p>"
-msgstr "<p><b>ส่งคืนเพื่อแก้ไข</b></p><p>ใบขอเบิก <b>%(dr)s</b> ถูกส่งคืน<br/>เหตุผล: <b>%(reason)s</b><br/>กรุณาแก้ไขเลขบัญชีผู้รับเงิน คำอธิบาย หรือหลักฐาน แล้วกด <b>ยืนยันการแก้ไข</b></p>"
+msgid ""
+"<p><b>Returned for correction</b></p><p>Disbursement <b>%(dr)s</b> was "
+"returned.<br/>Reason: <b>%(reason)s</b><br/>Please correct the payee bank, "
+"description or evidence, then click <b>Confirm Correction</b>.</p>"
+msgstr ""
+"<p><b>ส่งคืนเพื่อแก้ไข</b></p><p>ใบขอเบิก <b>%(dr)s</b> "
+"ถูกส่งคืน<br/>เหตุผล: <b>%(reason)s</b><br/>กรุณาแก้ไขเลขบัญชีผู้รับเงิน "
+"คำอธิบาย หรือหลักฐาน แล้วกด <b>ยืนยันการแก้ไข</b></p>"
 
 #. module: disbursement
 #. odoo-python
 #: code:addons/disbursement/models/disbursement_return_source.py:0
 #, python-format
-msgid "<p><b>Returned to source for correction</b></p><p>This request was returned to its source document <b>%(source)s</b>. It stays at its station until the correction is confirmed.<br/>Reason: <b>%(reason)s</b></p>"
-msgstr "<p><b>ตีกลับไปแก้ไขที่ต้นเรื่อง</b></p><p>ใบขอเบิกนี้ถูกตีกลับไปยังต้นเรื่อง <b>%(source)s</b> และยังคงอยู่ที่สถานีเดิม จนกว่าจะมีการยืนยันการแก้ไข<br/>เหตุผล: <b>%(reason)s</b></p>"
+msgid ""
+"<p><b>Returned to source for correction</b></p><p>This request was returned "
+"to its source document <b>%(source)s</b>. It stays at its station until the "
+"correction is confirmed.<br/>Reason: <b>%(reason)s</b></p>"
+msgstr ""
+"<p><b>ตีกลับไปแก้ไขที่ต้นเรื่อง</b></p><p>ใบขอเบิกนี้ถูกตีกลับไปยังต้นเรื่อง"
+" <b>%(source)s</b> และยังคงอยู่ที่สถานีเดิม "
+"จนกว่าจะมีการยืนยันการแก้ไข<br/>เหตุผล: <b>%(reason)s</b></p>"
 
 #. module: disbursement
 #. odoo-python
 #: code:addons/disbursement/models/disbursement_return.py:0
 #, python-format
-msgid "<p><b>Sent back for correction</b></p><p>Returned to the requester and reset to draft so it can be corrected and resubmitted.<br/>Reason: <b>%s</b></p>"
-msgstr "<p><b>ส่งคืนผู้จัดทำเพื่อแก้ไข</b></p><p>ส่งคืนให้ผู้ขอเบิกและเปลี่ยนสถานะกลับเป็นร่าง เพื่อแก้ไขและส่งใหม่<br/>เหตุผล: <b>%s</b></p>"
+msgid ""
+"<p><b>Sent back for correction</b></p><p>Returned to the requester and reset"
+" to draft so it can be corrected and resubmitted.<br/>Reason: <b>%s</b></p>"
+msgstr ""
+"<p><b>ส่งคืนผู้จัดทำเพื่อแก้ไข</b></p><p>ส่งคืนให้ผู้ขอเบิกและเปลี่ยนสถานะกลับเป็นร่าง"
+" เพื่อแก้ไขและส่งใหม่<br/>เหตุผล: <b>%s</b></p>"
 
 #. module: disbursement
 #: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
 msgid "<strong>Returned to source for correction:</strong>"
 msgstr "<strong>ถูกตีกลับไปแก้ไขที่ต้นเรื่อง:</strong>"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+msgid ""
+"<strong>This Disbursement Request has errors to fix before it can go "
+"on:</strong>"
+msgstr "<strong>ใบขอเบิกนี้มีข้อผิดพลาดที่ต้องแก้ไขก่อนดำเนินการต่อ:</strong>"
 
 #. module: disbursement
 #. odoo-python
@@ -75,6 +98,12 @@ msgstr "กิจกรรม"
 #: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__payment_type__advance
 msgid "Advance"
 msgstr "เงินยืม"
+
+#. module: disbursement
+#: model:ir.actions.act_window,name:disbursement.action_disbursement_request
+#: model:ir.ui.menu,name:disbursement.menu_disbursement_request
+msgid "All Disbursement Requests"
+msgstr "ใบขอเบิกทั้งหมด"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request_line__amount
@@ -172,8 +201,11 @@ msgstr "ส่งกลับไม่ได้ เพราะใบขอเ�
 #. odoo-python
 #: code:addons/disbursement/models/disbursement_request.py:0
 #, python-format
-msgid "Cannot submit a disbursement request with no lines. Please add at least one line."
-msgstr "ไม่สามารถส่งใบขอเบิกที่ไม่มีรายการได้ กรุณาเพิ่มรายการอย่างน้อย 1 รายการ"
+msgid ""
+"Cannot submit a disbursement request with no lines. Please add at least one "
+"line."
+msgstr ""
+"ไม่สามารถส่งใบขอเบิกที่ไม่มีรายการได้ กรุณาเพิ่มรายการอย่างน้อย 1 รายการ"
 
 #. module: disbursement
 #: model:ir.ui.menu,name:disbursement.menu_disbursement_config
@@ -295,10 +327,8 @@ msgid "Disbursement Request Signature"
 msgstr "ลายเซ็นในใบขอเบิก"
 
 #. module: disbursement
-#: model:ir.actions.act_window,name:disbursement.action_disbursement_request
 #: model:ir.model.fields,field_description:disbursement.field_exception_rule__disbursement_request_ids
 #: model:ir.model.fields.selection,name:disbursement.selection__exception_rule__model__disbursement_request
-#: model:ir.ui.menu,name:disbursement.menu_disbursement_request
 #: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
 #: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_tree
 msgid "Disbursement Requests"
@@ -353,6 +383,11 @@ msgid "Draft Request #%s"
 msgstr "ใบขอเบิกฉบับร่าง #%s"
 
 #. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_tree
+msgid "Error"
+msgstr "ข้อผิดพลาด"
+
+#. module: disbursement
 #: model:ir.ui.menu,name:disbursement.menu_disbursement_exception_rules
 msgid "Exception Rules"
 msgstr "กฎข้อยกเว้น"
@@ -364,8 +399,14 @@ msgstr "ผอ.กองคลัง"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__account_fiscal_year_id
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
 msgid "Fiscal Year"
 msgstr "ปีงบประมาณ"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
+msgid "Following"
+msgstr "ที่ฉันติดตาม"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__fund_analytic_id
@@ -383,6 +424,11 @@ msgstr "กรุณาระบุเหตุผลที่ส่งใบข
 #: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
 msgid "Group By"
 msgstr "จัดกลุ่มตาม"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
+msgid "Has Errors"
+msgstr "มีข้อผิดพลาด"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__sign_date
@@ -406,14 +452,25 @@ msgid "Memo Number"
 msgstr "เลขที่หนังสือ"
 
 #. module: disbursement
+#: model:ir.actions.act_window,name:disbursement.action_disbursement_request_my
+#: model:ir.ui.menu,name:disbursement.menu_disbursement_request_my
+msgid "My Disbursement Requests"
+msgstr "ใบขอเบิกของฉัน"
+
+#. module: disbursement
 #: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
-msgid "Name"
-msgstr "ชื่อ"
+msgid "My Requests"
+msgstr "ใบขอเบิกของฉัน"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__amount_net
 msgid "Net Total"
 msgstr "มูลค่าสุทธิ"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+msgid "New Disbursement Request"
+msgstr "ใบขอเบิกใหม่"
 
 #. module: disbursement
 #: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__settlement_stage__none
@@ -431,10 +488,17 @@ msgid "Number"
 msgstr "เลขที่ใบขอเบิก"
 
 #. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
+msgid "Ongoing"
+msgstr "ยังไม่เสร็จสิ้น"
+
+#. module: disbursement
 #. odoo-python
 #: code:addons/disbursement/models/disbursement_request.py:0
 #, python-format
-msgid "Only a disbursement officer can cancel a request once it has gone through the circuit."
+msgid ""
+"Only a disbursement officer can cancel a request once it has gone through "
+"the circuit."
 msgstr "ใบขอเบิกที่ผ่านวงจรแล้วยกเลิกได้เฉพาะเจ้าหน้าที่การเงินเท่านั้น"
 
 #. module: disbursement
@@ -497,13 +561,12 @@ msgstr "สามารถลงนามได้เฉพาะคำขอเ
 #. odoo-python
 #: code:addons/disbursement/models/disbursement_request.py:0
 #, python-format
-msgid "Only submitted, signed, in progress or cancelled requests can be reset to draft."
-msgstr "กลับไปฉบับร่างได้เฉพาะใบขอเบิกที่ส่งแล้ว ลงนามแล้ว อยู่ระหว่างดำเนินการ หรือยกเลิกแล้วเท่านั้น"
-
-#. module: disbursement
-#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
-msgid "Open"
-msgstr "เปิด"
+msgid ""
+"Only submitted, signed, in progress or cancelled requests can be reset to "
+"draft."
+msgstr ""
+"กลับไปฉบับร่างได้เฉพาะใบขอเบิกที่ส่งแล้ว ลงนามแล้ว อยู่ระหว่างดำเนินการ "
+"หรือยกเลิกแล้วเท่านั้น"
 
 #. module: disbursement
 #: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
@@ -593,6 +656,7 @@ msgstr "กลับไปสถานะร่าง"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__user_id
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
 msgid "Responsible"
 msgstr "ผู้สร้างเอกสาร"
 
@@ -738,8 +802,12 @@ msgstr "ต้นเรื่องแก้ไขแล้ว - ดำเนิ
 #. odoo-python
 #: code:addons/disbursement/models/disbursement_return_source.py:0
 #, python-format
-msgid "Source correction applied: payee bank, description and evidence updated. Please continue."
-msgstr "นำการแก้ไขจากต้นเรื่องมาใช้แล้ว: อัปเดตบัญชีธนาคารผู้รับเงิน คำอธิบาย และเอกสารหลักฐาน กรุณาดำเนินการต่อ"
+msgid ""
+"Source correction applied: payee bank, description and evidence updated. "
+"Please continue."
+msgstr ""
+"นำการแก้ไขจากต้นเรื่องมาใช้แล้ว: อัปเดตบัญชีธนาคารผู้รับเงิน คำอธิบาย "
+"และเอกสารหลักฐาน กรุณาดำเนินการต่อ"
 
 #. module: disbursement
 #: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
@@ -797,15 +865,23 @@ msgstr "ภาษีมูลค่าเพิ่ม"
 #. odoo-python
 #: code:addons/disbursement/models/disbursement_request.py:0
 #, python-format
-msgid "The money of this request has started (a bill is posted): it can no longer be reset or sent back."
-msgstr "การเงินของใบขอเบิกนี้เริ่มแล้ว (มีบิลที่โพสต์แล้ว) จึงรีเซ็ตหรือส่งคืนไม่ได้อีก"
+msgid ""
+"The money of this request has started (a bill is posted): it can no longer "
+"be reset or sent back."
+msgstr ""
+"การเงินของใบขอเบิกนี้เริ่มแล้ว (มีบิลที่โพสต์แล้ว) "
+"จึงรีเซ็ตหรือส่งคืนไม่ได้อีก"
 
 #. module: disbursement
 #. odoo-python
 #: code:addons/disbursement/models/disbursement_request.py:0
 #, python-format
-msgid "These payees are not of type %(type)s and must be changed before submitting: %(names)s"
-msgstr "ผู้รับเงินต่อไปนี้ไม่ใช่ประเภท %(type)s ต้องเปลี่ยนก่อนส่งขออนุมัติ: %(names)s"
+msgid ""
+"These payees are not of type %(type)s and must be changed before submitting:"
+" %(names)s"
+msgstr ""
+"ผู้รับเงินต่อไปนี้ไม่ใช่ประเภท %(type)s ต้องเปลี่ยนก่อนส่งขออนุมัติ: "
+"%(names)s"
 
 #. module: disbursement
 #. odoo-python
@@ -822,8 +898,17 @@ msgid "This document cannot be returned in its current state."
 msgstr "ไม่สามารถตีกลับเอกสารนี้ในสถานะปัจจุบันได้"
 
 #. module: disbursement
+#: code:addons/disbursement/models/disbursement_return_source.py:0
+#, python-format
+msgid ""
+"This request was returned to its source document. Please wait for the "
+"correction to be confirmed."
+msgstr "ใบขอเบิกนี้ถูกตีกลับไปยังต้นเรื่องแล้ว กรุณารอการยืนยันการแก้ไข"
+
+#. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__amount_total
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request_line__price_total
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_tree
 msgid "Total"
 msgstr "จำนวนเงิน"
 
@@ -859,6 +944,14 @@ msgid "WHT Item"
 msgstr "รายการ WHT"
 
 #. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+msgid ""
+"What is this disbursement for? e.g. reception costs for the faculty meeting "
+"on ..."
+msgstr ""
+"เบิกค่าอะไร เพื่ออะไร เช่น ค่ารับรองการประชุมคณะกรรมการประจำคณะ วันที่ ..."
+
+#. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__amount_wht
 msgid "Withholding Tax"
 msgstr "หัก ณ ที่จ่าย"
@@ -869,11 +962,3 @@ msgstr "หัก ณ ที่จ่าย"
 #, python-format
 msgid "You do not hold the role this act requires."
 msgstr "คุณไม่มีบทบาทที่การกระทำนี้ต้องการ"
-
-#. module: disbursement
-#: code:addons/disbursement/models/disbursement_return_source.py:0
-#, python-format
-msgid ""
-"This request was returned to its source document. Please wait for the "
-"correction to be confirmed."
-msgstr "ใบขอเบิกนี้ถูกตีกลับไปยังต้นเรื่องแล้ว กรุณารอการยืนยันการแก้ไข"
