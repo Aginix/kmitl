@@ -215,10 +215,8 @@ class KmitlProject(models.Model):
 
     methodology_other = fields.Boolean(
         "อื่น ๆ",
-        copy=True,
-        tracking=True,
-        readonly=False,
-        states=EDITABLE_STATES,
+        compute="_compute_methodology_other",
+        help="วิธีดำเนินการมีตัวเลือก อื่น ๆ ซึ่งเปิดช่องรายละเอียด",
     )
 
     methodology_detail = fields.Text(
@@ -229,7 +227,15 @@ class KmitlProject(models.Model):
         states=EDITABLE_STATES,
     )
 
-    @api.onchange("methodology_other")
+    @api.depends("methodology_ids")
+    def _compute_methodology_other(self):
+        other = self.env.ref(
+            "kmitl_project.methodology_other", raise_if_not_found=False
+        )
+        for rec in self:
+            rec.methodology_other = bool(other) and other in rec.methodology_ids
+
+    @api.onchange("methodology_ids")
     def _onchange_methodology_other(self):
         """Drop the detail once อื่น ๆ is unticked, so hidden text never prints."""
         if not self.methodology_other:
