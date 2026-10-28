@@ -1,0 +1,7 @@
+.hr_employee_relative table [data-name="date_of_birth"] {
+    width: 100 !important;
+}
+
+.hr_employee_relative table [data-name="age"] {
+    width: 90px !important;
+}
