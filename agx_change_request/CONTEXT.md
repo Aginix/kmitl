@@ -44,7 +44,7 @@ record's chatter. Only an open or answered request is replied to. _Avoid_: respo
 (one text replacing the last), comment (a Comment is a mark on a file)
 
 **Assignee (ผู้รับมอบหมาย)**: A user a Change request is assigned to, chosen by its author;
-a request has none, one or several. Each Assignee has an activity on the record to answer
+a request has none, one or several. Assigning makes them a follower of the record. Each Assignee has an activity on the record to answer
 it while the request is open, cleared once it is answered or closed and given back when
 it is reopened. Answering is not reserved to Assignees. Its author gets no activity: they
 follow their requests from the record. _Avoid_: recipient,
