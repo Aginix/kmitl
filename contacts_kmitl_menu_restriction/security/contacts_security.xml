@@ -4,4 +4,22 @@
         <field name="name">Can Access Contacts App</field>
         <field name="category_id" ref="base.module_category_hidden" />
     </record>
+
+    <record id="group_can_edit_contacts" model="res.groups">
+        <field name="name">Can Edit Contacts</field>
+        <field name="category_id" ref="base.module_category_hidden" />
+        <field
+            name="implied_ids"
+            eval="[(4, ref('contacts_kmitl_menu_restriction.group_can_access_contacts_app'))]"
+        />
+    </record>
+
+    <record id="group_can_edit_contact_bank" model="res.groups">
+        <field name="name">Can Edit Contact Bank Accounts</field>
+        <field name="category_id" ref="base.module_category_hidden" />
+        <field
+            name="implied_ids"
+            eval="[(4, ref('contacts_kmitl_menu_restriction.group_can_access_contacts_app'))]"
+        />
+    </record>
 </odoo>
