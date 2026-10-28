@@ -233,7 +233,10 @@ class KmitlProject(models.Model):
             "kmitl_project.methodology_other", raise_if_not_found=False
         )
         for rec in self:
-            rec.methodology_other = bool(other) and other in rec.methodology_ids
+            # In an onchange the lines are NewId records: compare their origin.
+            rec.methodology_other = (
+                bool(other) and other in rec.methodology_ids._origin
+            )
 
     @api.onchange("methodology_ids")
     def _onchange_methodology_other(self):
