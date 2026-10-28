@@ -15,4 +15,20 @@ if self.state == "to_verify" and self._get_outstanding_change_requests():
         <field name="is_blocking" eval="True" />
         <field name="active" eval="True" />
     </record>
+
+    <!-- ตีกลับ marker: linked by _send_back and cleared on the next state
+         change, never evaluated (see agx_approval SENT_BACK_RULES) -->
+    <record id="excep_sent_back_change_requests" model="exception.rule">
+        <field name="name">มีข้อแก้ไขที่ต้องแก้</field>
+        <field
+            name="description"
+        >คำขอถูกตีกลับพร้อมข้อแก้ไขที่ยังค้างอยู่ ดูรายการได้ที่ข้อแก้ไขของคำขอ</field>
+        <field name="sequence">110</field>
+        <field name="model">approval.request</field>
+        <field name="exception_type">by_py_code</field>
+        <field name="code"># set by the ตีกลับ flow, never evaluated
+failed = False</field>
+        <field name="is_blocking" eval="False" />
+        <field name="active" eval="True" />
+    </record>
 </odoo>

@@ -11,6 +11,8 @@ Approval requests take Change requests (``agx_change_request``).
   which an administrator may switch off or make non-blocking. It only holds
   while the request waits for verification.
 * **ตีกลับ** needs no reason while requests are outstanding (open or
-  answered): the wizard lists them, and so does the chatter note.
+  answered): the wizard lists them, and so does the chatter note. The request
+  then shows *มีข้อแก้ไขที่ต้องแก้* in its Errors (ข้อผิดพลาด) until its next
+  state change; this marker never holds a step up.
 * A Request Verifier or Budget Confirmer may close a request on its author's
   behalf.

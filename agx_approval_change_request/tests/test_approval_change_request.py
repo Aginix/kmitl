@@ -4,6 +4,7 @@ from odoo.exceptions import AccessError, UserError
 from odoo.tests.common import TransactionCase, new_test_user, tagged
 
 RULE = "agx_approval_change_request.excep_outstanding_change_requests"
+SENT_BACK_RULE = "agx_approval_change_request.excep_sent_back_change_requests"
 
 
 @tagged("post_install", "-at_install")
@@ -51,9 +52,11 @@ class TestApprovalChangeRequest(TransactionCase):
             (cls.requestor | cls.verifier | cls.verifier2).write(
                 {"assigned_operating_unit_ids": [(4, cls.request.operating_unit_id.id)]}
             )
-        # The fixture has no lines nor participants: only the rule under test.
+        # The fixture has no lines nor participants: only the rule under test
+        # (and the ตีกลับ markers, which are never evaluated).
+        keep = cls.env.ref(RULE) | cls.request._sent_back_rules()
         cls.env["exception.rule"].search(
-            [("model", "=", "approval.request"), ("id", "!=", cls.env.ref(RULE).id)]
+            [("model", "=", "approval.request"), ("id", "not in", keep.ids)]
         ).active = False
 
     def _ask(self, text="ยอดเงินไม่ตรงกับเอกสาร", user=None):
@@ -91,6 +94,21 @@ class TestApprovalChangeRequest(TransactionCase):
         # No reason needed while requests are outstanding.
         wizard.action_confirm()
         self.assertEqual(self.request.state, "draft")
+
+    def test_send_back_marks_outstanding_requests(self):
+        marker = self.env.ref(SENT_BACK_RULE)
+        self._ask()
+        self._wizard().action_confirm()
+        self.assertIn(marker, self.request.exception_ids)
+        # Not evaluated: resubmitting is not held up, and clears the marker.
+        self.assertTrue(self.request.sudo().action_to_verify())
+        self.assertEqual(self.request.state, "to_verify")
+        self.assertNotIn(marker, self.request.exception_ids)
+
+    def test_send_back_without_requests_leaves_no_marker(self):
+        self._wizard(reason="แก้ไขเอกสารแนบ").action_confirm()
+        self.assertEqual(self.request.state, "draft")
+        self.assertNotIn(self.env.ref(SENT_BACK_RULE), self.request.exception_ids)
 
     def test_send_back_needs_a_reason_without_requests(self):
         with self.assertRaises(UserError):
