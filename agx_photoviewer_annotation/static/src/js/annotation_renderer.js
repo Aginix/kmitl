@@ -189,8 +189,17 @@ export class AnnotationEditor {
             await loadJS(PDFJS);
             const pdfjsLib = window.pdfjsLib;
             pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJS_WORKER;
-            const pdf = await pdfjsLib.getDocument({url: getUrl(this.attachment)})
-                .promise;
+            // Download the file ourselves: pdf.js' own loader fails on some
+            // server responses (e.g. 416) with an uncaught error, and
+            // `no-store` keeps a stale or truncated cache entry out of it.
+            const response = await fetch(getUrl(this.attachment), {cache: "no-store"});
+            if (!response.ok) {
+                throw new Error(
+                    `Cannot fetch attachment ${this.attachment.id}: ${response.status}`
+                );
+            }
+            const data = new Uint8Array(await response.arrayBuffer());
+            const pdf = await pdfjsLib.getDocument({data}).promise;
             for (let number = 1; number <= pdf.numPages; number++) {
                 const pdfPage = await pdf.getPage(number);
                 // The viewport applies /Rotate: geometry is relative to the
