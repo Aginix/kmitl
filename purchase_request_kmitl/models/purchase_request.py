@@ -269,9 +269,7 @@ class PurchaseRequest(models.Model):
             "purchase_request.group_purchase_request_manager"
         )
         for rec in self:
-            if rec.state == "to_approve":
-                rec.can_reset_to_draft = is_manager
-            elif rec.state == "to_verify":
+            if rec.state in ("to_verify", "to_approve"):
                 rec.can_reset_to_draft = is_manager or rec.requested_by == self.env.user
             else:
                 rec.can_reset_to_draft = False
