@@ -139,7 +139,7 @@
                                         <t t-foreach="partner_lines" t-as="line">
                                             <tr>
                                                 <td class="text-center" style="width: 8%" t-out="global_row_no"/>
-                                                <td t-out="line.name" style="white-space: pre-wrap"/>
+                                                <td style="white-space: pre-wrap"><t t-out="line.name"/><t t-if="line.note"><br/>หมายเหตุ: <t t-out="line.note"/></t></td>
                                                 <td class="text-end" t-out="'{0:,.2f} ฿'.format(line.price_subtotal)"/>
                                             </tr>
                                             <t t-set="global_row_no" t-value="global_row_no + 1"/>

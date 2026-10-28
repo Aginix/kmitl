@@ -26,6 +26,31 @@ class DisbursementRequest(models.Model):
     def _sarabun_submit_guard(self):
         return self.state == "submitted"
 
+    def action_submit_to_sarabun(self):
+        """Also carry the request's เอกสารแนบ onto the หนังสือ as สิ่งที่ส่งมาด้วย."""
+        action = super().action_submit_to_sarabun()
+        if action and action.get("res_id"):
+            document = self.env["sarabun.document"].browse(action["res_id"])
+            self._copy_attachments_to_sarabun(document)
+        return action
+
+    def _copy_attachments_to_sarabun(self, document):
+        """Copy the request's attachments onto the หนังสือ as enclosures. Copied
+        (not merely referenced) with ``res_model=sarabun.document`` so a Route
+        recipient without rights on the request can still open them — the หนังสือ's
+        ACL governs. Seeded once at submit; the drafter then manages enclosures on
+        the หนังสือ itself."""
+        self.ensure_one()
+        enclosures = self.env["ir.attachment"]
+        for attachment in self.attachment_ids:
+            enclosures |= attachment.sudo().copy(
+                {"res_model": "sarabun.document", "res_id": document.id}
+            )
+        if enclosures:
+            document.sudo().write(
+                {"enclosure_attachment_ids": [(4, a.id) for a in enclosures]}
+            )
+
     # A requester may now reset or cancel before approval: not while its
     # หนังสือ is still in e-Saraban, which would leave it routing for nothing.
     # Every e-Saraban callback moves the หนังสือ off ``circulating`` before it

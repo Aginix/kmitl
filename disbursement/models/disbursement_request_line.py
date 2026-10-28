@@ -210,6 +210,12 @@ class DisbursementRequestLine(models.Model):
             else:
                 line.partner_bank_id = False
 
+    def _requires_partner_bank(self):
+        """Whether this payee is paid into a bank account (hook: e.g. a
+        cheque payee needs none)."""
+        self.ensure_one()
+        return True
+
     @api.constrains("partner_id")
     def _check_line_partner_required(self):
         for line in self:

@@ -84,6 +84,7 @@
         "disbursement_approver_director",
         "disbursement_approver_rector",
         "disbursement_sarabun",
+        "disbursement_cheque",
         "purchase_order_disbursement_auto_submit",
         "purchase_request_approval_disbursement_budget",
         "purchase_work_acceptance_disbursement",
