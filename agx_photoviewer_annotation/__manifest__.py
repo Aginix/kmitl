@@ -2,7 +2,7 @@
     "name": "Photo Viewer - Annotation",
     "summary": "Tick, draw, highlight and comment on image and PDF attachments "
     "in the photo viewer",
-    "version": "16.0.1.0.1",
+    "version": "16.0.1.0.2",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "development_status": "Beta",
