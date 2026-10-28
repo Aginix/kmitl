@@ -82,6 +82,13 @@ an event is immutable from the moment it is created, even on a draft slip (ADR-0
   keeps `_reserve_new_budget` and ยกเลิกการจองงบ, which is useful without ถัวจ่าย.
   Without the add-ons, Reserve works exactly as before.
 
+- **No category scope (re-confirmed 2026-10-28).** Any two flagged codes may be pooled,
+  even across groups (e.g. ค่าไฟฟ้า with ค่าจ้างเหมาบริการ), because the regulation is
+  not settled yet. Ticking a parent code has no effect; it is only a convenience for
+  Mass Edit. If the regulation later limits ถัวจ่าย to groups, the planned shape is an
+  explicit "กลุ่มถัวจ่าย" mark on a parent code, with flagged codes pooling only under
+  the same group.
+
 ## Considered options
 
 - **A ถัวจ่าย grid on the พ.1** — rejected (D1): the พ.1 would duplicate the slip, and
