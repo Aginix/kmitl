@@ -1,5 +1,5 @@
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError, ValidationError
+from odoo.exceptions import ValidationError
 
 VERIFY_TODO = "purchase_request_verifier.mail_activity_pr_verify"
 RETURNED_TODO = "purchase_request_verifier.mail_activity_pr_returned"
@@ -12,6 +12,7 @@ class PurchaseRequest(models.Model):
     # its to_verify Todo. Any member of the Verifier group may still act.
     assigned_to = fields.Many2one(
         string="ผู้ยืนยันตรวจสอบ",
+        help="เว้นว่างเพื่อข้ามขั้นรอตรวจสอบ ไปรอยืนยันงบประมาณ",
         domain="[('id', 'in', verifier_candidate_ids)]",
     )
     verifier_candidate_ids = fields.Many2many(
@@ -78,12 +79,17 @@ class PurchaseRequest(models.Model):
         if not self.assigned_to and len(candidates) == 1:
             self.assigned_to = candidates
 
-    def button_to_verify(self):
-        # Superuser mode (demo data, hooks, sudo'ed programmatic flows) passes,
-        # like purchase_request_kmitl's _check_step_group.
-        if not self.env.su and not self.assigned_to:
-            raise UserError(_("กรุณาระบุผู้ยืนยันตรวจสอบก่อนส่งคำขอ"))
-        return super().button_to_verify()
+    def _get_submit_state(self):
+        # No ผู้ยืนยันตรวจสอบ named: skip the verify step to the budget step.
+        if not self.assigned_to:
+            return "to_verify_budget"
+        return super()._get_submit_state()
+
+    def _back_to_verify_vals(self):
+        # Skipped รอตรวจสอบ: step back to draft, not to a verify step it never had.
+        if self and not self.assigned_to:
+            return {**super()._back_to_verify_vals(), "state": "draft"}
+        return super()._back_to_verify_vals()
 
     def write(self, vals):
         if "state" not in vals and "assigned_to" not in vals:
@@ -117,12 +123,15 @@ class PurchaseRequest(models.Model):
             )
         elif self.state == "to_verify" and self.assigned_to != old_assignee:
             verify_todos.sudo().write({"user_id": self.assigned_to.id})
-        if self.state in ("to_verify", "cancelled") and old_state != self.state:
+        if (
+            self.state in ("to_verify", "to_verify_budget", "cancelled")
+            and old_state != self.state
+        ):
             # Resubmitted or cancelled: the presser's returned Todo is done,
             # anyone else's is simply withdrawn.
             returned = self._verifier_todos(RETURNED_TODO)
             mine = returned.filtered(
-                lambda a: self.state == "to_verify" and a.user_id == self.env.user
+                lambda a: self.state != "cancelled" and a.user_id == self.env.user
             )
             self._close_todos(mine, done=True)
             self._close_todos(returned - mine, done=False)
@@ -143,7 +152,8 @@ class PurchaseRequest(models.Model):
             activities.sudo().unlink()
 
     def _action_do_return_to_draft(self, reason):
-        was_to_verify = self.state == "to_verify"
+        # to_verify_budget lands in draft only when รอตรวจสอบ was skipped
+        was_to_verify = self.state in ("to_verify", "to_verify_budget")
         res = super()._action_do_return_to_draft(reason)
         if was_to_verify and self.state == "draft":
             self._schedule_returned_todos(reason)
