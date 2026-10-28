@@ -33,8 +33,9 @@
 
             <!-- เลขที่หนังสือ: system-managed while a หนังสือ is live; typed in by
                  hand otherwise (signed on paper, approved via the manual fallback). -->
-            <xpath expr="//group[@name='request_info']/field[@name='date']" position="before">
+            <xpath expr="//group[@name='approval_info']/field[@name='approver_id']" position="before">
                 <field name="sarabun_document_number" attrs="{'readonly': [('sarabun_has_live_document', '=', True)]}"/>
+                <field name="sarabun_document_date" attrs="{'readonly': [('sarabun_has_live_document', '=', True)]}"/>
             </xpath>
 
             <!-- Sarabun status notification — rendered between the statusbar
@@ -70,6 +71,7 @@
             </xpath>
             <xpath expr="//field[@name='name']" position="after">
                 <field name="sarabun_document_number" optional="show"/>
+                <field name="sarabun_document_date" optional="hide"/>
             </xpath>
             <xpath expr="//field[@name='state']" position="attributes">
                 <attribute name="decoration-info">state == 'sent'</attribute>

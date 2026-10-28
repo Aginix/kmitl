@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from odoo import _, fields, models
 
 
@@ -29,3 +28,12 @@ class BudgetCommitment(models.Model):
             "res_id": self.kmitl_project_id.id,
             "target": "current",
         }
+
+    def _get_open_downstream_documents(self):
+        """A live project owns its reservation and releases it itself
+        (_release_project_commitment): it blocks กลับแบบร่าง and ลบใบจอง."""
+        documents = super()._get_open_downstream_documents()
+        project = self.sudo().kmitl_project_id
+        if project and project.state not in ("complete", "rejected", "cancel"):
+            documents.append(_("โครงการ %s") % project.display_name)
+        return documents

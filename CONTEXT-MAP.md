@@ -175,9 +175,14 @@ upfront.
 - [Photo Viewer — Annotation History](./agx_photoviewer_annotation_history/CONTEXT.md) —
   a side panel listing who added, changed or removed marks on a file in each visit, and
   drawing the layer as any of those Changes left it.
+- [Disbursement — Stations](./disbursement_work_center/CONTEXT.md) — routes the DR
+  through the stations of a configured route: signing enters the circuit, forwarding
+  out of the last station makes it done, and the station holding it decides who may
+  act, edit, send it back or cancel it. The DR's state is progress around the วงจร;
+  the ขั้นการชำระ is the money.
 - [Disbursement — Acts](./disbursement/CONTEXT.md) — the ตรวจสอบ, ผอ.กองคลัง and
   ผู้รับมอบอำนาจอธิการบดี acts on the DR (`disbursement_validation`,
-  `disbursement_approver_director`, `disbursement_approver_rector`): each stamps who
+  `disbursement_endorser_director`, `disbursement_approver_rector`): each stamps who
   acted and one signature row, none changes the DR's state.
 
 ## Relationships

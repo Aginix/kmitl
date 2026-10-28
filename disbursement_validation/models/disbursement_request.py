@@ -9,7 +9,7 @@ class DisbursementRequest(models.Model):
     _inherit = "disbursement.request"
 
     # Who actually pressed Validate. Distinct from ``assigned_to``
-    # (disbursement_assignment_kmitl), which records who was *assigned* the
+    # (disbursement_validation_assignment), which records who was *assigned* the
     # verification and may be a different person once takeover is allowed.
     verifier_id = fields.Many2one(
         "res.users", string="Verified By", copy=False, readonly=True

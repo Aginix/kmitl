@@ -1,0 +1,347 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* disbursement_work_center
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-24 17:00+0000\n"
+"PO-Revision-Date: 2026-10-24 17:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: disbursement_work_center
+#: model_terms:ir.actions.act_window,help:disbursement_work_center.action_disbursement_stations
+msgid ""
+"A station is a desk a disbursement request passes through. Remove\n"
+"                the \"My Stations\" filter to see them all."
+msgstr "สถานีคือโต๊ะที่ใบขอเบิกเดินผ่าน ลบตัวกรอง \"สถานีของฉัน\" เพื่อดูทั้งหมด"
+
+#. module: disbursement_work_center
+#: model:ir.model.fields,field_description:disbursement_work_center.field_disbursement_request__work_center_missing_act_ids
+msgid "Acts Still to Do"
+msgstr "การกระทำที่ยังไม่ได้ทำ"
+
+#. module: disbursement_work_center
+#: model_terms:ir.ui.view,arch_db:disbursement_work_center.view_disbursement_request_search
+msgid "At My Stations"
+msgstr "อยู่ที่สถานีของฉัน"
+
+#. module: disbursement_work_center
+#: model:work.center,name:disbursement_work_center.station_bill
+#: model:work.center.route.line,name:disbursement_work_center.route_line_bill
+msgid "Billing"
+msgstr "ตั้งหนี้"
+
+#. module: disbursement_work_center
+#: model:ir.model.fields,field_description:disbursement_work_center.field_disbursement_request__work_center_can_move
+msgid "Can Move"
+msgstr "ย้ายได้"
+
+#. module: disbursement_work_center
+#: model:work.center,name:disbursement_work_center.station_check
+#: model:work.center.route.line,name:disbursement_work_center.route_line_check
+msgid "Check"
+msgstr "หมวดตรวจ"
+
+#. module: disbursement_work_center
+#: model:ir.model.fields,field_description:disbursement_work_center.field_disbursement_request__work_center_open_visit_id
+msgid "Current Visit"
+msgstr "การเยี่ยมปัจจุบัน"
+
+#. module: disbursement_work_center
+#: model:work.center.area,name:disbursement_work_center.area_disbursement
+msgid "Disbursement"
+msgstr "ใบขอเบิก"
+
+#. module: disbursement_work_center
+#: model:ir.model,name:disbursement_work_center.model_disbursement_request
+msgid "Disbursement Request"
+msgstr "ใบขอเบิก"
+
+#. module: disbursement_work_center
+#: model:work.center.route,name:disbursement_work_center.route_disbursement
+msgid "Disbursement Route"
+msgstr "เส้นทางมาตรฐานของใบขอเบิก"
+
+#. module: disbursement_work_center
+#: model_terms:ir.ui.view,arch_db:disbursement_work_center.view_disbursement_request_form
+msgid "Divert"
+msgstr "เบี่ยงเส้นทาง"
+
+#. module: disbursement_work_center
+#. odoo-python
+#: code:addons/disbursement_work_center/models/disbursement_request.py:0
+#, python-format
+msgid "Edit the Attachments"
+msgstr "แก้ไขไฟล์แนบ"
+
+#. module: disbursement_work_center
+#. odoo-python
+#: code:addons/disbursement_work_center/models/disbursement_request.py:0
+#, python-format
+msgid "Edit the Budget"
+msgstr "แก้ไขงบประมาณ"
+
+#. module: disbursement_work_center
+#. odoo-python
+#: code:addons/disbursement_work_center/models/disbursement_request.py:0
+#, python-format
+msgid "Edit the Dimensions"
+msgstr "แก้ไขมิติการเงิน"
+
+#. module: disbursement_work_center
+#. odoo-python
+#: code:addons/disbursement_work_center/models/disbursement_request.py:0
+#, python-format
+msgid "Edit the Header"
+msgstr "แก้ไขส่วนหัว"
+
+#. module: disbursement_work_center
+#. odoo-python
+#: code:addons/disbursement_work_center/models/disbursement_request.py:0
+#, python-format
+msgid "Edit the Lines"
+msgstr "แก้ไขรายการ"
+
+#. module: disbursement_work_center
+#: model:work.center,name:disbursement_work_center.station_director
+#: model:work.center.route.line,name:disbursement_work_center.route_line_director
+msgid "Finance Director"
+msgstr "ผอ.กองคลัง"
+
+#. module: disbursement_work_center
+#: model_terms:ir.ui.view,arch_db:disbursement_work_center.view_disbursement_request_form
+msgid "Forward"
+msgstr "ส่งต่อ"
+
+#. module: disbursement_work_center
+#: model:ir.model.fields,field_description:disbursement_work_center.field_disbursement_request__work_center_next_id
+msgid "Next Station"
+msgstr "สถานีถัดไป"
+
+#. module: disbursement_work_center
+#: model_terms:ir.actions.act_window,help:disbursement_work_center.action_disbursement_stations
+msgid "No station yet"
+msgstr "ยังไม่มีสถานี"
+
+#. module: disbursement_work_center
+#. odoo-python
+#: code:addons/disbursement_work_center/models/disbursement_request.py:0
+#, python-format
+msgid "Only a disbursement officer can send requests to the stations."
+msgstr "เฉพาะเจ้าหน้าที่การเงินเท่านั้นที่ส่งใบขอเบิกเข้าสถานีได้"
+
+#. module: disbursement_work_center
+#. odoo-python
+#: code:addons/disbursement_work_center/models/disbursement_request.py:0
+#, python-format
+msgid "Only signed requests can be sent to the stations."
+msgstr "ส่งเข้าสถานีได้เฉพาะใบขอเบิกที่ลงนามแล้ว"
+
+#. module: disbursement_work_center
+#: model:work.center,name:disbursement_work_center.station_audit
+#: model:work.center.route.line,name:disbursement_work_center.route_line_audit
+msgid "Payment Audit"
+msgstr "ตรวจจ่าย"
+
+#. module: disbursement_work_center
+#: model:work.center,name:disbursement_work_center.station_authorize
+#: model:work.center.route.line,name:disbursement_work_center.route_line_authorize
+msgid "Payment Authorization"
+msgstr "อนุมัติจ่าย"
+
+#. module: disbursement_work_center
+#: model:work.center,name:disbursement_work_center.station_rector
+#: model:work.center.route.line,name:disbursement_work_center.route_line_rector
+msgid "Rector Delegate"
+msgstr "ผู้รับมอบอำนาจอธิการบดี"
+
+#. module: disbursement_work_center
+#: model:ir.model.fields,help:disbursement_work_center.field_disbursement_request__work_center_missing_act_ids
+msgid "Required at this station and not yet done in this visit."
+msgstr "ต้องทำที่สถานีนี้และยังไม่ได้ทำในการเยี่ยมครั้งนี้"
+
+#. module: disbursement_work_center
+#: model:ir.actions.server,name:disbursement_work_center.action_server_enter_stations
+msgid "Send to Stations"
+msgstr "ส่งเข้าสถานี"
+
+#. module: disbursement_work_center
+#: model:ir.model.fields,field_description:disbursement_work_center.field_disbursement_request__work_center_id
+#: model_terms:ir.ui.view,arch_db:disbursement_work_center.view_disbursement_request_search
+msgid "Station"
+msgstr "สถานี"
+
+#. module: disbursement_work_center
+#: model:ir.actions.act_window,name:disbursement_work_center.action_disbursement_stations
+#: model:ir.ui.menu,name:disbursement_work_center.menu_disbursement_stations
+msgid "Stations"
+msgstr "สถานี"
+
+#. module: disbursement_work_center
+#: model:ir.model.fields,help:disbursement_work_center.field_disbursement_request__work_center_can_move
+msgid "Technical: the current user may forward, divert or send back."
+msgstr "ค่าทางเทคนิค: ผู้ใช้ปัจจุบันส่งต่อ เบี่ยงเส้นทาง หรือส่งคืนได้"
+
+#. module: disbursement_work_center
+#: model:ir.model.fields,help:disbursement_work_center.field_disbursement_request__work_center_id
+msgid "The station holding the document. It only changes through the forward, divert, send back and exit actions."
+msgstr "สถานีที่ถือเอกสารอยู่ เปลี่ยนได้ผ่านการส่งต่อ เบี่ยงเส้นทาง ส่งคืน และออกจากสถานีสุดท้ายเท่านั้น"
+
+#. module: disbursement_work_center
+#. odoo-python
+#: code:addons/disbursement_work_center/models/disbursement_request.py:0
+#, python-format
+msgid "There is no active route for disbursement requests."
+msgstr "ยังไม่มีเส้นทางมาตรฐานของใบขอเบิกที่เปิดใช้งาน"
+
+#. module: disbursement_work_center
+#. odoo-python
+#: code:addons/disbursement_work_center/models/disbursement_request.py:0
+#, python-format
+msgid ""
+"This request was returned to its source document. Please wait for the "
+"correction to be confirmed."
+msgstr "ใบขอเบิกนี้ถูกตีกลับไปยังต้นเรื่องแล้ว กรุณารอการยืนยันการแก้ไข"
+
+#. module: disbursement_work_center
+#: model:ir.model.fields,field_description:disbursement_work_center.field_disbursement_request__work_center_visit_ids
+#: model_terms:ir.ui.view,arch_db:disbursement_work_center.view_disbursement_request_form
+msgid "Visit Log"
+msgstr "สมุดเยี่ยม"
+
+#. module: disbursement_work_center
+#: model:work.center.counter,name:disbursement_work_center.counter_waiting
+msgid "Waiting here"
+msgstr "รอที่สถานีนี้"
+
+#. module: disbursement_work_center
+#: model:ir.model.fields,help:disbursement_work_center.field_disbursement_request__work_center_next_id
+msgid "Where forwarding would send the document now, on the live route."
+msgstr "สถานีที่การส่งต่อจะส่งเอกสารไปในตอนนี้ ตามเส้นทางมาตรฐานปัจจุบัน"
+
+#. module: disbursement_work_center
+#: model:ir.model.fields,field_description:disbursement_work_center.field_disbursement_request__work_center_arrival_date
+#: model_terms:ir.ui.view,arch_db:disbursement_work_center.view_disbursement_request_form
+msgid "Arrived"
+msgstr "มาถึงเมื่อ"
+
+#. module: disbursement_work_center
+#: model_terms:ir.ui.view,arch_db:disbursement_work_center.view_disbursement_request_form
+msgid "Forward with Reason"
+msgstr "ส่งต่อพร้อมเหตุผล"
+
+#. module: disbursement_work_center
+#: model_terms:ir.ui.view,arch_db:disbursement_work_center.view_disbursement_request_form
+msgid "Next"
+msgstr "ถัดไป"
+
+#. module: disbursement_work_center
+#: model:ir.model.fields,field_description:disbursement_work_center.field_disbursement_request__work_center_responsible_ids
+msgid "Responsible"
+msgstr "ผู้รับผิดชอบ"
+
+#. module: disbursement_work_center
+#: model_terms:ir.ui.view,arch_db:disbursement_work_center.view_disbursement_request_form
+msgid "Return"
+msgstr "ส่งคืนผู้จัดทำ"
+
+#. module: disbursement_work_center
+#: model:ir.model.fields,field_description:disbursement_work_center.field_disbursement_request__work_center_route_steps
+msgid "Route Steps"
+msgstr "ลำดับขั้นของเส้นทาง"
+
+#. module: disbursement_work_center
+#: model_terms:ir.ui.view,arch_db:disbursement_work_center.view_disbursement_request_form
+msgid "Station bar"
+msgstr "แถบสถานี"
+
+#. module: disbursement_work_center
+#: model:ir.model.fields,field_description:disbursement_work_center.field_disbursement_request__work_center_user_in_area
+msgid "Station Person"
+msgstr "คนของสถานี"
+
+#. module: disbursement_work_center
+#: model_terms:ir.ui.view,arch_db:disbursement_work_center.view_disbursement_request_form
+msgid "Still to do before forwarding"
+msgstr "ต้องทำก่อนส่งต่อ"
+
+#. module: disbursement_work_center
+#: model:ir.model.fields,help:disbursement_work_center.field_disbursement_request__work_center_user_in_area
+msgid "Technical: the current user is one of the area's station people: a member of one of its stations, a holder of the role of an act one of them allows, or a station administrator."
+msgstr "ค่าทางเทคนิค: ผู้ใช้ปัจจุบันเป็นคนของสถานีในงานนี้ คือเป็นสมาชิกของสถานีใดสถานีหนึ่ง ถือบทบาทของการกระทำที่สถานีใดสถานีหนึ่งเปิดให้ทำ หรือเป็นผู้ดูแลสถานี"
+
+#. module: disbursement_work_center
+#: model_terms:ir.ui.view,arch_db:disbursement_work_center.view_disbursement_request_form
+msgid "View only: only the people responsible at this station can move it."
+msgstr "ดูได้อย่างเดียว: เฉพาะผู้รับผิดชอบที่สถานีนี้เท่านั้นที่ย้ายใบขอเบิกได้"
+
+#. module: disbursement_work_center
+#: model_terms:ir.ui.view,arch_db:disbursement_work_center.view_disbursement_request_form
+msgid "Waiting for the source document to be corrected."
+msgstr "รอการแก้ไขที่เอกสารต้นเรื่อง"
+
+#. module: disbursement_work_center
+#: model:ir.model.fields,help:disbursement_work_center.field_disbursement_request__work_center_route_steps
+msgid "Where the document is on its route: the stations done, the one holding it and those still to come."
+msgstr "ตำแหน่งของเอกสารบนเส้นทาง: สถานีที่ผ่านแล้ว สถานีที่ถือเอกสารอยู่ และสถานีที่ยังมาไม่ถึง"
+
+#. module: disbursement_work_center
+#: model:ir.model.fields,help:disbursement_work_center.field_disbursement_request__work_center_responsible_ids
+msgid "Who may forward, divert or send back the document now."
+msgstr "ผู้ที่ส่งต่อ เบี่ยงเส้นทาง หรือส่งคืนเอกสารได้ในตอนนี้"
+
+#. module: disbursement_work_center
+#: model_terms:ir.ui.view,arch_db:disbursement_work_center.view_disbursement_request_form
+msgid "Your turn"
+msgstr "ถึงคิวคุณ"
+
+
+#. module: disbursement_work_center
+#: model:ir.model.fields,field_description:disbursement_work_center.field_disbursement_request__work_center_assignee_id
+#: model_terms:ir.ui.view,arch_db:disbursement_work_center.view_disbursement_request_form
+#: model_terms:ir.ui.view,arch_db:disbursement_work_center.view_disbursement_request_search
+msgid "Assignee"
+msgstr "ผู้รับผิดชอบงาน"
+
+#. module: disbursement_work_center
+#: model:ir.model.fields,help:disbursement_work_center.field_disbursement_request__work_center_assignee_id
+msgid "The person handling the document at its station. Picked by the station's assignment rules on arrival; another responsible person takes over by pressing Assign to Me. Without one, every responsible person may act."
+msgstr "ผู้ที่ดูแลเอกสารอยู่ที่สถานี กฎมอบหมายของสถานีเป็นผู้เลือกเมื่อเอกสารมาถึง คนอื่นที่รับผิดชอบรับช่วงได้ด้วยการกด \"มอบให้ฉัน\" ถ้าไม่มีผู้รับผิดชอบงาน ผู้รับผิดชอบทุกคนทำได้"
+
+#. module: disbursement_work_center
+#: model:ir.model.fields,field_description:disbursement_work_center.field_disbursement_request__work_center_can_claim
+msgid "Can Claim"
+msgstr "รับช่วงได้"
+
+#. module: disbursement_work_center
+#: model:ir.model.fields,help:disbursement_work_center.field_disbursement_request__work_center_can_claim
+msgid "Technical: the current user may take the document over, being responsible at its station without being its assignee."
+msgstr "ค่าทางเทคนิค: ผู้ใช้ปัจจุบันรับเอกสารช่วงต่อได้ เพราะรับผิดชอบที่สถานีของเอกสารแต่ไม่ใช่ผู้รับผิดชอบงาน"
+
+#. module: disbursement_work_center
+#: model_terms:ir.ui.view,arch_db:disbursement_work_center.view_disbursement_request_form
+msgid "Assign to Me"
+msgstr "มอบให้ฉัน"
+
+#. module: disbursement_work_center
+#: model_terms:ir.ui.view,arch_db:disbursement_work_center.view_disbursement_request_form
+msgid "Assign…"
+msgstr "มอบหมาย…"
+
+#. module: disbursement_work_center
+#: model_terms:ir.ui.view,arch_db:disbursement_work_center.view_disbursement_request_search
+msgid "Assigned to Me"
+msgstr "มอบให้ฉัน"
+
+#. module: disbursement_work_center
+#: model_terms:ir.ui.view,arch_db:disbursement_work_center.view_disbursement_request_search
+msgid "Not Assigned"
+msgstr "ยังไม่มีผู้รับผิดชอบ"

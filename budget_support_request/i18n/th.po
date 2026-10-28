@@ -244,11 +244,6 @@ msgid "Currency"
 msgstr "สกุลเงิน"
 
 #. module: budget_support_request
-#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__date
-msgid "Date"
-msgstr "วันที่"
-
-#. module: budget_support_request
 #: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__display_name
 #: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request_verify_return_wizard__display_name
 msgid "Display Name"
@@ -874,6 +869,11 @@ msgstr ""
 #. module: budget_support_request
 #: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__verify_date
 msgid "วันที่ตรวจสอบ"
+msgstr ""
+
+#. module: budget_support_request
+#: model:ir.model.fields,field_description:budget_support_request.field_budget_support_request__date
+msgid "วันที่ส่งคำขอ"
 msgstr ""
 
 #. module: budget_support_request

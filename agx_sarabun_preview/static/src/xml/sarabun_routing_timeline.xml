@@ -12,7 +12,7 @@
         <div class="o_sarabun_timeline">
             <div class="o_sarabun_timeline_header d-flex align-items-center mb-2">
                 <button t-if="props.showToggle" type="button"
-                        class="btn btn-link p-0 me-2 o_sarabun_timeline_toggle"
+                        class="btn btn-outline-primary btn-sm o_sarabun_timeline_toggle"
                         t-on-click="() => props.onToggle and props.onToggle()">
                     <i t-att-class="props.open ? 'fa fa-caret-down' : 'fa fa-caret-right'"/>
                     <span class="ms-1">เส้นทางการเดินเรื่อง (Preview)</span>

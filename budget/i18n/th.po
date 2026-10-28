@@ -1703,7 +1703,7 @@ msgstr ""
 #: code:addons/budget/models/budget_commitment_mixin.py:0
 #, python-format
 msgid "Insufficient budget - only %.2f available"
-msgstr ""
+msgstr "งบประมาณไม่เพียงพอ - คงเหลือเพียง %.2f"
 
 #. module: budget
 #. odoo-python

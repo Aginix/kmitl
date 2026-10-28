@@ -72,7 +72,7 @@ class TestBankPaymentExportBAY(CommonBankExportFormat):
         cls.bank_export_format = cls.env.ref(
             "l10n_th_bank_payment_export_bay.bay_cashlink"
         )
-        cls.bank_bay = cls._thai_bank("AYUDTHBK", "002", "Bank of Ayudhya")
+        cls.bank_bay = cls._thai_bank("AYUDTHBK", "025", "Bank of Ayudhya")
         cls.journal_bay = cls._paying_journal(cls.bank_bay, SENDING_ACCOUNT, "TBAY")
         cls.sample = cls._load_fixture(
             "l10n_th_bank_payment_export_bay", "bay_cashlink_sample.txt"

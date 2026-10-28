@@ -11,58 +11,39 @@
          หนังสือ (agx_sarabun action_send accepts draft|returned) would
          otherwise go out for signature carrying the superseded amount. -->
     <template id="report_budget_support_request_body">
-        <!-- Bootstrap's `.table > :not(:first-child)` paints a 2px solid
-             separator between the first row group and the rest, which reads
-             heavier than the surrounding 1px cell borders — and wkhtmltopdf
-             then drops some of those hairlines entirely, leaving a table with
-             gaps in its outline. Flatten the separator and carry the `border`
-             utility so every edge is drawn at the same 1px (same recipe as
-             purchase_request_sarabun, #1480). Scoped to `.table-bordered` so
-             the Sarabun header layout's unbordered tables aren't picked up. -->
-        <style>
-            .table-bordered > :not(:first-child) {
-                border-top-width: 1px !important;
-            }
-        </style>
-
-        <div class="my-4"/>
-        <table class="table table-bordered border table-sm mb-4">
-            <thead>
-                <tr>
-                    <th class="fw-normal text-start align-top" style="width:35%">เลขที่คำขอ</th>
-                    <th class="fw-normal text-start align-top">
-                        <span t-out="o.name or '-'"/>
-                    </th>
+        <!-- A borderless หัวข้อ : ค่า list, the way an official บันทึกข้อความ
+             sets out details — no ruled cells for wkhtmltopdf to drop
+             hairlines from. Dimensions print their full hierarchy
+             ("[code] complete name"). -->
+        <t t-set="rows" t-value="[
+            ('เลขที่คำขอ', o.name or '-'),
+            ('ส่วนงานผู้ขอรับการสนับสนุน', o.department_analytic_id.display_name or '-'),
+            ('แหล่งเงินงบประมาณ', o.source_analytic_id.display_name or '-'),
+            ('กองทุน', o.fund_analytic_id.display_name or '-'),
+            ('ด้าน/แผนงาน/กิจกรรม', o.activity_analytic_id.display_name or '-'),
+            ('รหัสงบประมาณ', o.budget_account_id.display_name or '-'),
+            ('ปีงบประมาณ', o.account_fiscal_year_id.name or '-'),
+        ]"/>
+        <!-- Inline styles, not Bootstrap utilities: the หนังสือ must print the
+             same even where the report asset bundle is not loaded. -->
+        <div style="margin:12px 0 18px 0">
+            <div style="font-weight:bold;margin-bottom:4px">รายละเอียดคำขอ</div>
+            <table style="width:100%;border-collapse:collapse">
+                <tr t-foreach="rows" t-as="row">
+                    <td style="width:38%;vertical-align:top;padding:3px 0"><span t-out="row[0]"/></td>
+                    <td style="width:12px;vertical-align:top;padding:3px 0">:</td>
+                    <td style="vertical-align:top;padding:3px 0"><span t-out="row[1]"/></td>
                 </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>ส่วนงานผู้ขอรับการสนับสนุน</td>
-                    <td>
-                        <span
-                            t-out="(o.department_analytic_id.complete_name or o.department_analytic_id.name or '-').replace(' / ', ' ')"
-                        />
-                    </td>
-                </tr>
-                <tr>
-                    <td>แหล่งเงินงบประมาณ</td>
-                    <td><span t-out="o.source_analytic_id.name or '-'"/></td>
-                </tr>
-                <tr>
-                    <td>ปีงบประมาณ</td>
-                    <td><span t-out="o.account_fiscal_year_id.name or '-'"/></td>
-                </tr>
-                <tr>
-                    <td>จำนวนเงินที่ขอรับการสนับสนุน</td>
+                <tr style="font-weight:bold">
+                    <td style="vertical-align:top;padding:3px 0">จำนวนเงินที่ขอรับการสนับสนุน</td>
                     <!-- Plain thousands format, not the monetary widget: the
                          widget prints the ฿ symbol, which reads as a duplicate
                          next to the Thai คำว่า บาท the official letter uses. -->
-                    <td class="text-end">
-                        <span t-out="'{:,.2f}'.format(o.amount_requested)"/> บาท
-                    </td>
+                    <td style="vertical-align:top;padding:3px 0">:</td>
+                    <td style="vertical-align:top;padding:3px 0"><span t-out="'{:,.2f}'.format(o.amount_requested)"/> บาท</td>
                 </tr>
-            </tbody>
-        </table>
+            </table>
+        </div>
     </template>
 
 </odoo>
