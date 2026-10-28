@@ -215,7 +215,6 @@ class KmitlProject(models.Model):
 
     methodology_other = fields.Boolean(
         "อื่น ๆ",
-        help="ติ๊กเพื่อระบุวิธีดำเนินการอื่นในช่องรายละเอียด",
         copy=True,
         tracking=True,
         readonly=False,
