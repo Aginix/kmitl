@@ -28,8 +28,9 @@ Three rules make this safe to do without asking every time:
 - **A clone of prod must not reach real people.** `clone` runs Odoo's `neutralize` on
   the copy (mail servers off, crons off, fetchmail/oauth off), and `serve` starts
   without cron threads. To publish its port, `serve` also joins a non-internal bridge
-  (`odoo_sandbox_public`), so without this a served copy of prod can email real staff. If you create a sandbox any other way, run
-  `$S/odoo_sandbox.sh neutralize <db>` before serving it.
+  (`odoo_sandbox_public`), so without this a served copy of prod can email real staff.
+  If you create a sandbox any other way, run `$S/odoo_sandbox.sh neutralize <db>`
+  before serving it.
 - **Clean up what you create**, or leave it running only when you tell the user it's
   there and how to remove it.
 
