@@ -25,7 +25,6 @@
                     confirm="Approving this request also consumes its budget. Are you sure you want to approve it?"
                     groups="disbursement.group_disbursement_rector_delegate"
                 />
-                <field name="consumes_budget" invisible="1" />
             </button>
         </field>
     </record>
