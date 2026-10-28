@@ -5,11 +5,6 @@
                 <t t-call="web.basic_layout">
                     <t t-set="o" t-value="o.with_context({'lang': 'th_TH'})" />
                     <t t-set="currency" t-value="o.company_id.currency_id" />
-                    <!-- "โครงการ (งบประจำ)" → "โครงการงบประจำ" -->
-                    <t
-                        t-set="project_type_label"
-                        t-value="dict(o._fields['project_type'].selection).get(o.project_type, '').replace(' (', '').replace(')', '')"
-                    />
                     <style>
                         * {
                             font-family: "THSarabunNew", Arial, sans-serif;
@@ -129,7 +124,7 @@
                                 class="text-center fw-bolder"
                                 style="line-height: 1.575"
                             >
-                                แบบเสนอ<t t-out="project_type_label" /> ประจำปีงบประมาณ พ.ศ. <span
+                                แบบเสนอ<span t-field="o.project_type" /> ประจำปีงบประมาณ พ.ศ. <span
                                     t-field="o.account_fiscal_year_id"
                                 /> <br />
                                 <span
@@ -398,7 +393,7 @@
                           <div class="section">
                             <div class="item-title">13. งบประมาณโครงการ</div>
                             <div class="item-content">
-                              <div>ประเภท : <span t-out="project_type_label or '-'" /></div>
+                              <div>ประเภท : <span t-field="o.project_type" /></div>
                               <div>รหัสงบประมาณ : <span
                                             t-out="o.budget_account_id.display_name or '-'"
                                         /></div>
