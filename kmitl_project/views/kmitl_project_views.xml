@@ -234,15 +234,8 @@
                         <page string="การดำเนินโครงการ">
                             <group>
                                 <group name="project_execution" string="การดำเนินโครงการ">
-                                    <!-- อื่น ๆ sits as the last choice of the checkbox list -->
-                                    <label for="methodology_ids" />
-                                    <div>
-                                        <field name="methodology_ids" widget="many2many_checkboxes" nolabel="1" />
-                                        <div class="d-flex">
-                                            <field name="methodology_other" nolabel="1" />
-                                            <label for="methodology_other" class="fw-normal" />
-                                        </div>
-                                    </div>
+                                    <field name="methodology_ids" widget="many2many_checkboxes" />
+                                    <field name="methodology_other" invisible="1" />
                                     <field name="methodology_detail" string="รายละเอียด" attrs="{'invisible': [('methodology_other', '=', False)]}" />
                                 </group>
                                 <group name="monitoring_evaluation_tools" string="วิธีการ/เครื่องมือติดตามและประเมินผล">

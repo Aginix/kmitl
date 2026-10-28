@@ -245,13 +245,12 @@
                                         t-as="method"
                                         t-out="method.name"
                                     />
-                              <t t-if="o.methodology_other">
-                                <div>อื่น ๆ</div>
-                                <p
-                                            class="paragraph distribute"
-                                            t-out="o._report_thai_distribute(o.methodology_detail)"
-                                        />
-                              </t>
+                              <!-- อื่น ๆ is listed above; its detail follows -->
+                              <p
+                                        t-if="o.methodology_other"
+                                        class="paragraph distribute"
+                                        t-out="o._report_thai_distribute(o.methodology_detail)"
+                                    />
                             </div>
                           </div>
                           <div class="section">
