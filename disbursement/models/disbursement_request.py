@@ -473,18 +473,12 @@ class DisbursementRequest(models.Model):
     # -------------------------------------------------------------------------
     @api.onchange("payment_type", "partner_type_id")
     def _onchange_has_tax_default(self):
-        """A company is always taxed; an advance or a prepayment starts out
+        """A company starts out taxed; an advance or a prepayment starts out
         untaxed (the user may tick it back)."""
         if self.partner_type_id.company_type == "company":
             self.has_tax = True
         elif self.payment_type in ("advance", "prepaid"):
             self.has_tax = False
-
-    @api.constrains("has_tax", "partner_type_id")
-    def _check_has_tax_company(self):
-        for rec in self:
-            if not rec.has_tax and rec.partner_type_id.company_type == "company":
-                raise ValidationError(_("A request paid to a company must be taxable."))
 
     @api.onchange("has_tax")
     def _onchange_has_tax(self):

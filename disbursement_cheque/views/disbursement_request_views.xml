@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_disbursement_request_form" model="ir.ui.view">
+        <field name="name">disbursement.request.form (disbursement_cheque)</field>
+        <field name="model">disbursement.request</field>
+        <field name="inherit_id" ref="disbursement.view_disbursement_request_form" />
+        <field name="arch" type="xml">
+            <xpath
+                expr="//field[@name='line_ids']/tree/field[@name='partner_id']"
+                position="after"
+            >
+                <field name="payment_method" />
+            </xpath>
+            <xpath
+                expr="//field[@name='line_ids']/tree/field[@name='partner_bank_id']"
+                position="attributes"
+            >
+                <attribute
+                    name="attrs"
+                >{'invisible': [('payment_method', '=', 'cheque')]}</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>

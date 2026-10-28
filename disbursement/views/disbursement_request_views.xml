@@ -160,10 +160,9 @@
                             <!-- Stamped by e-Saraban (disbursement_sarabun); a
                                  direct claim types it (disbursement_direct_claim). -->
                             <field name="memo_number" readonly="1" />
-                            <field name="partner_type_company_type" invisible="1" />
                             <field
                                 name="has_tax"
-                                attrs="{'readonly': ['|', ('partner_type_company_type', '=', 'company'), ('can_edit_header', '=', False)]}"
+                                attrs="{'readonly': [('can_edit_header', '=', False)]}"
                                 force_save="1"
                             />
                             <!-- ขั้นการชำระ: hidden, kept for the modifiers that read it. -->
