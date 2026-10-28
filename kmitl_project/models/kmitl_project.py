@@ -213,6 +213,15 @@ class KmitlProject(models.Model):
         states=EDITABLE_STATES,
     )
 
+    methodology_other = fields.Boolean(
+        "อื่น ๆ",
+        help="ติ๊กเพื่อระบุวิธีดำเนินการอื่นในช่องรายละเอียด",
+        copy=True,
+        tracking=True,
+        readonly=False,
+        states=EDITABLE_STATES,
+    )
+
     methodology_detail = fields.Text(
         "วิธีดำเนินการ (รายละเอียด)",
         copy=True,
@@ -220,6 +229,12 @@ class KmitlProject(models.Model):
         readonly=False,
         states=EDITABLE_STATES,
     )
+
+    @api.onchange("methodology_other")
+    def _onchange_methodology_other(self):
+        """Drop the detail once อื่น ๆ is unticked, so hidden text never prints."""
+        if not self.methodology_other:
+            self.methodology_detail = False
 
     target_ids = fields.One2many(
         "project.target",

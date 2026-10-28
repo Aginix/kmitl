@@ -235,7 +235,8 @@
                             <group>
                                 <group name="project_execution" string="การดำเนินโครงการ">
                                     <field name="methodology_ids" widget="many2many_checkboxes" />
-                                    <field name="methodology_detail" string="รายละเอียด" />
+                                    <field name="methodology_other" />
+                                    <field name="methodology_detail" string="รายละเอียด" attrs="{'invisible': [('methodology_other', '=', False)]}" />
                                 </group>
                                 <group name="monitoring_evaluation_tools" string="วิธีการ/เครื่องมือติดตามและประเมินผล">
                                     <field name="evaluation_ids" widget="many2many_checkboxes" string="วิธีการ" />
