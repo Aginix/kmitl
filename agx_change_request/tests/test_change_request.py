@@ -199,6 +199,16 @@ class TestChangeRequest(TransactionCase):
         )
         self.assertEqual(self._activities(made["id"], ANSWER).user_id, self.other)
 
+    def test_assignees_follow_the_record(self):
+        made = self._make()
+        self.assertIn(self.maker.partner_id, self.holder.message_partner_ids)
+        # Even when assigned while answered, which schedules no activity.
+        self.Request.with_user(self.maker).request_reply(made["id"], "Done")
+        self.Request.with_user(self.reviewer).request_update(
+            made["id"], {"assignee_ids": (self.maker | self.other).ids}
+        )
+        self.assertIn(self.other.partner_id, self.holder.message_partner_ids)
+
     def test_assignee_must_read_the_record(self):
         portal = new_test_user(self.env, login="cr_portal", groups="base.group_portal")
         with self.assertRaises(UserError):
