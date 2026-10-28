@@ -11,6 +11,17 @@
             ref="agx_approval.approval_request_send_back_confirm_view_form"
         />
         <field name="arch" type="xml">
+            <!-- the base alert insists on a reason -->
+            <xpath expr="//div[hasclass('alert')]" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//div[hasclass('alert')]" position="after">
+                <div class="alert alert-warning" role="alert">
+                    ตีกลับคำขอไปยังขั้นตอนก่อนหน้า
+                    — กรุณากรอกเหตุผล (ไม่บังคับเมื่อมีข้อแก้ไขที่ค้างอยู่)
+                    เหตุผลและข้อแก้ไขจะแสดงพร้อมกับการเปลี่ยนสถานะใน chatter
+                </div>
+            </xpath>
             <field name="reason" position="attributes">
                 <attribute
                     name="attrs"

@@ -1,6 +1,10 @@
 from odoo import _, models
 from odoo.exceptions import UserError
 
+# ตีกลับ with outstanding Change requests: one more ตีกลับ marker (see
+# agx_approval SENT_BACK_RULES), cleared on the next state change.
+SENT_BACK_RULE = "agx_approval_change_request.excep_sent_back_change_requests"
+
 
 class ApprovalRequest(models.Model):
     """Approval requests take Change requests: ผู้ตรวจสอบคำขอ and
@@ -41,4 +45,10 @@ class ApprovalRequest(models.Model):
             raise UserError(_("กรุณาระบุเหตุผลที่ตีกลับ หรือสร้างข้อแก้ไข"))
         if lines:
             reason = "\n".join(filter(None, [reason, _("ข้อแก้ไขที่ค้างอยู่:")] + lines))
-        return super()._send_back(reason)
+        res = super()._send_back(reason)
+        if lines:
+            self.exception_ids = [(4, self.env.ref(SENT_BACK_RULE).id)]
+        return res
+
+    def _sent_back_rules(self):
+        return super()._sent_back_rules() | self.env.ref(SENT_BACK_RULE)
