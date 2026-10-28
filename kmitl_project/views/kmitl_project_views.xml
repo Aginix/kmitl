@@ -343,8 +343,8 @@
                 <separator />
                 <filter name="my_projects" string="My Projects" domain="[('creating_user_id', '=', uid)]" />
                 <separator />
-                <filter name="project_type_project" string="โครงการ (งบประจำ)" domain="[('project_type', '=', 'project')]" />
-                <filter name="project_type_activity" string="กิจกรรม (งบประจำ)" domain="[('project_type', '=', 'activity')]" />
+                <filter name="project_type_project" string="โครงการงบประจำ" domain="[('project_type', '=', 'project')]" />
+                <filter name="project_type_activity" string="กิจกรรมงบประจำ" domain="[('project_type', '=', 'activity')]" />
                 <filter name="project_type_strategic" string="โครงการยุทธศาสตร์" domain="[('project_type', '=', 'strategic_project')]" />
                 <separator />
                 <filter name="state_draft" string="Draft" domain="[('state', '=', 'draft')]" />
