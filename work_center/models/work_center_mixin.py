@@ -91,11 +91,11 @@ class WorkCenterMixin(models.AbstractModel):
     )
     work_center_arrival_date = fields.Datetime(
         string="Arrived",
-        related="work_center_open_visit_id.arrival_date",
+        compute="_compute_work_center_state",
     )
     work_center_responsible_ids = fields.Many2many(
         comodel_name="res.users",
-        string="Responsible",
+        string="Station Responsible",
         compute="_compute_work_center_state",
         help="Who may forward, divert or send back the document now.",
     )
@@ -447,6 +447,7 @@ class WorkCenterMixin(models.AbstractModel):
                 else None
             )
             rec.work_center_open_visit_id = visit
+            rec.work_center_arrival_date = visit.arrival_date
             rec.work_center_can_move = bool(station) and rec._work_center_user_may_move(
                 self.env.user
             )
