@@ -282,7 +282,9 @@ class BudgetCommitment(models.Model):
     def get_reservation_info(self):
         """The info card lists a ถัวจ่าย reservation's codes as a table."""
         infos = super().get_reservation_info()
-        for record, info in zip(self, infos):
+        # sudo: the card shows on documents (คำขออนุมัติ, DR…) whose users can
+        # read the reservation but hold no access to its split rows.
+        for record, info in zip(self.sudo(), infos):
             if len(record.split_ids) > 1:
                 info["lines_label"] = _("รายการจองงบประมาณ (ถัวจ่าย)")
                 info["lines"] = [

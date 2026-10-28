@@ -45,7 +45,9 @@ class BudgetCommitment(models.Model):
             if set(vals) - {"split_ids"}:
                 raise AccessError(_("แก้ไขได้เฉพาะรายการจองงบประมาณ (ถัวจ่าย) ของใบจอง"))
             for record in self:
-                if not record.split_editable:
+                # Only a พ.1's own slip: the group must not reach the split of
+                # a standalone draft slip it happens to see.
+                if not (record.split_editable and record.sudo().purchase_request_ids):
                     raise UserError(
                         _("ใบจอง %s แก้ไขรายการจองงบประมาณ (ถัวจ่าย) ในขั้นนี้ไม่ได้")
                         % record.display_name
