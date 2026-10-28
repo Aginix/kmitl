@@ -1,0 +1,27 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* disbursement_printer
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-28 00:00+0000\n"
+"PO-Revision-Date: 2026-10-28 00:00+0700\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: disbursement_printer
+#: model:res.groups,name:disbursement_printer.group_disbursement_printer
+msgid "Disbursement Printer"
+msgstr "ผู้พิมพ์ใบขอเบิกเงิน"
+
+#. module: disbursement_printer
+#: model_terms:ir.ui.view,arch_db:disbursement_printer.disbursement_request_form_printer
+msgid "Print Disbursement Request"
+msgstr "พิมพ์ใบขอเบิกเงิน"
