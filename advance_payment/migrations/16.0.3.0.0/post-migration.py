@@ -38,3 +38,51 @@ def migrate(cr, version):
            AND f.name = 'state'
         """
     )
+    _retype_step_todos(cr)
+
+
+# Open step To-Dos raised under the generic "To Do" type before each step got
+# its own type: re-point them by their summary prefix, and drop the ones of
+# the steps removed with the expense report (ADR-0028).
+STEP_TODOS = {
+    "เห็นชอบคำขอยืมเงิน": "mail_activity_type_endorse",
+    "ตรวจสอบคำขอยืมเงิน": "mail_activity_type_verify",
+    "พิจารณาคำขอยืมเงิน": "mail_activity_type_director_review",
+    "อนุมัติคำขอยืมเงิน": "mail_activity_type_approve",
+    "สร้างใบสำคัญจ่ายเงินยืม": "mail_activity_type_payment_voucher",
+}
+REMOVED_STEP_TODOS = ("ส่งรายงานค่าใช้จ่ายเงินยืม", "ตรวจรับรายงานค่าใช้จ่ายเงินยืม", "คืนเงินยืม")
+
+
+def _retype_step_todos(cr):
+    cr.execute(
+        "SELECT res_id FROM ir_model_data"
+        " WHERE module = 'mail' AND name = 'mail_activity_data_todo'"
+    )
+    row = cr.fetchone()
+    if not row:
+        return
+    generic = row[0]
+    for prefix, xmlid in STEP_TODOS.items():
+        cr.execute(
+            """
+            UPDATE mail_activity a
+               SET activity_type_id = d.res_id
+              FROM ir_model_data d
+             WHERE d.module = 'advance_payment' AND d.name = %s
+               AND a.res_model = 'advance.payment'
+               AND a.activity_type_id = %s
+               AND a.summary LIKE %s
+            """,
+            (xmlid, generic, prefix + " %"),
+        )
+    for prefix in REMOVED_STEP_TODOS:
+        cr.execute(
+            """
+            DELETE FROM mail_activity
+             WHERE res_model = 'advance.payment'
+               AND activity_type_id = %s
+               AND summary LIKE %s
+            """,
+            (generic, prefix + " %"),
+        )

@@ -18,6 +18,7 @@
         "data/advance_payment_loan_type_data.xml",
         "data/kmitl_payment_type_data.xml",
         "data/advance_payment_config_parameter.xml",
+        "data/mail_activity_type_data.xml",
         "wizards/advance_payment_cancel_wizard_views.xml",
         "views/advance_payment_loan_type_views.xml",
         "views/advance_payment_views.xml",

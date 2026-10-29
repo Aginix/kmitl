@@ -9,10 +9,9 @@ _logger = logging.getLogger(__name__)
 # closed). Countdown, followup list and digest all key off this set.
 DEBTOR_STATES = ("in_progress",)
 
-# Generic "To Do" activity type — matched together with its summary so a
-# weekly re-run of the digest cron never piles up duplicate reminders on the
-# same loan (same idiom as advance.payment._workflow_activities, ADR-0013).
-FOLLOWUP_ACTIVITY_XMLID = "mail.mail_activity_data_todo"
+# The followup reminder's own activity type — one per loan, matched by type
+# alone so a weekly re-run of the digest cron never piles up duplicates.
+FOLLOWUP_ACTIVITY_XMLID = "advance_payment_followup.mail_activity_type_followup"
 
 
 class AdvancePayment(models.Model):
@@ -185,17 +184,17 @@ class AdvancePayment(models.Model):
         return _("ติดตามลูกหนี้เงินยืม %s", self.name)
 
     def _schedule_followup_activities(self):
-        """Raise one To-Do per loan on its loan officer, deduped by
-        (activity type, summary). A match is refreshed in place — assignee
-        and due date included — so reassigning the loan officer or editing
-        `return_due_date` doesn't leave a stale To-Do behind."""
+        """Raise one To-Do per loan on its loan officer, deduped by activity
+        type. A match is refreshed in place — assignee and due date included —
+        so reassigning the loan officer or editing `return_due_date` doesn't
+        leave a stale To-Do behind."""
         activity_type = self.env.ref(FOLLOWUP_ACTIVITY_XMLID)
         for rec in self:
             if not rec.loan_verifier_id:
                 continue
             summary = rec._followup_activity_summary()
             existing = rec.activity_ids.filtered(
-                lambda a: a.activity_type_id == activity_type and a.summary == summary
+                lambda a: a.activity_type_id == activity_type
             )
             if existing:
                 existing.sudo().write(
@@ -227,7 +226,6 @@ class AdvancePayment(models.Model):
                     ("activity_type_id", "=", activity_type.id),
                     ("res_model", "=", self._name),
                     ("res_id", "not in", eligible_loans.ids),
-                    ("summary", "like", "ติดตามลูกหนี้เงินยืม%"),
                 ]
             )
         )

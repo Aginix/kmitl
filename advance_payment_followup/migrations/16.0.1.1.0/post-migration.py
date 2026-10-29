@@ -14,3 +14,17 @@ def migrate(cr, version):
            AND d.module = 'advance_payment_followup'
         """
     )
+    # The followup reminder now has its own activity type.
+    cr.execute(
+        """
+        UPDATE mail_activity a
+           SET activity_type_id = d.res_id
+          FROM ir_model_data d, ir_model_data g
+         WHERE d.module = 'advance_payment_followup'
+           AND d.name = 'mail_activity_type_followup'
+           AND g.module = 'mail' AND g.name = 'mail_activity_data_todo'
+           AND a.res_model = 'advance.payment'
+           AND a.activity_type_id = g.res_id
+           AND a.summary LIKE 'ติดตามลูกหนี้เงินยืม %%'
+        """
+    )

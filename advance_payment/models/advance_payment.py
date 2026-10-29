@@ -3,11 +3,16 @@ from odoo.exceptions import AccessError, UserError, ValidationError
 from odoo.tools.misc import str2bool
 from odoo.tools.safe_eval import safe_eval
 
-# Activity type of the "To Do" raised on whoever a pending state waits for —
-# the loan officer at to_verify, the director at to_director, the approver at
-# to_approve. It is the generic
-# type, so every lookup must also match the summary (ADR-0013/0015).
-WORKFLOW_ACTIVITY_XMLID = "mail.mail_activity_data_todo"
+# Activity type of the To-Do raised on whoever a pending state waits for —
+# one type per step (data/mail_activity_type_data.xml), so a To-Do is found by
+# its type alone and can be filtered/grouped per step in the inbox.
+WORKFLOW_ACTIVITY_TYPES = {
+    "to_endorse": "advance_payment.mail_activity_type_endorse",
+    "to_verify": "advance_payment.mail_activity_type_verify",
+    "to_director": "advance_payment.mail_activity_type_director_review",
+    "to_approve": "advance_payment.mail_activity_type_approve",
+    "approved": "advance_payment.mail_activity_type_payment_voucher",
+}
 
 
 class AdvancePayment(models.Model):
@@ -1077,7 +1082,8 @@ class AdvancePayment(models.Model):
                 )
 
     def _workflow_activity_specs(self):
-        """(summary, assignee) of the To-Do owned by each pending state.
+        """(summary, assignee) of the To-Do owned by each pending state; its
+        activity type is WORKFLOW_ACTIVITY_TYPES[state].
 
         One entry per state that waits on a named person, keyed by that state
         so the transitions can name the stage they are leaving or entering
@@ -1112,21 +1118,13 @@ class AdvancePayment(models.Model):
     def _workflow_activities(self, stage=None):
         """The records' open workflow To-Dos — one stage, or all of them.
 
-        Matched on type *and* summary, not type alone: WORKFLOW_ACTIVITY_XMLID
-        is the generic "To Do" type, so a blanket `activity_feedback` /
-        `activity_unlink` would sweep up unrelated to-dos on the same record.
-        """
-        activity_type = self.env.ref(WORKFLOW_ACTIVITY_XMLID)
-        wanted = set()
-        for rec in self:
-            specs = rec._workflow_activity_specs()
-            for key in [stage] if stage else specs:
-                wanted.add((rec.id, specs[key][0]))
-        return self.activity_ids.filtered(
-            lambda a: (
-                a.activity_type_id == activity_type and (a.res_id, a.summary) in wanted
-            )
+        Matched on the step's own activity type, so unrelated to-dos on the
+        same record are never swept up by `action_feedback` / `unlink`."""
+        stages = [stage] if stage else list(WORKFLOW_ACTIVITY_TYPES)
+        types = self.env["mail.activity.type"].browse(
+            [self.env.ref(WORKFLOW_ACTIVITY_TYPES[s]).id for s in stages]
         )
+        return self.activity_ids.filtered(lambda a: a.activity_type_id in types)
 
     def _schedule_workflow_activity(self, stage):
         """Raise `stage`'s To-Do on its assignee.
@@ -1146,7 +1144,7 @@ class AdvancePayment(models.Model):
             if not assignee:
                 continue
             rec.activity_schedule(
-                WORKFLOW_ACTIVITY_XMLID,
+                WORKFLOW_ACTIVITY_TYPES[stage],
                 user_id=assignee.id,
                 summary=summary,
             )

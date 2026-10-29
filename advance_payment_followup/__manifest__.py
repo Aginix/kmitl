@@ -8,6 +8,7 @@
     "depends": ["advance_payment"],
     "data": [
         "data/ir_cron_data.xml",
+        "data/mail_activity_type_data.xml",
         "data/mail_template_data.xml",
         "views/advance_payment_followup_views.xml",
         "views/res_config_settings_views.xml",
