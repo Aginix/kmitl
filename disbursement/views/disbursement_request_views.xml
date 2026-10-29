@@ -171,6 +171,7 @@
                                 required="1"
                                 attrs="{'readonly': [('can_edit_header', '=', False)]}"
                             />
+                            <field name="pays_out" invisible="1" />
                             <!-- Payees live on the lines (pay-by-name); the header
                                  only fixes which type they must all be. -->
                             <field
@@ -316,6 +317,7 @@
                                         name="partner_bank_id"
                                         optional="show"
                                         options="{'no_open': True, 'no_create': True, 'no_edit': True}"
+                                        attrs="{'column_invisible': [('parent.pays_out', '=', False)]}"
                                     />
                                     <field name="account_id" />
                                     <field name="name" invisible="1" />
