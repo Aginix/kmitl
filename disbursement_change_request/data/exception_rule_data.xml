@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <!-- Checked by ตรวจสอบ (action_validate), not on Submit: the method only
+         fails a request in the circuit. -->
+    <record id="excep_disbursement_outstanding_change_requests" model="exception.rule">
+        <field name="name">ยังมีข้อแก้ไขที่ค้างอยู่</field>
+        <field
+            name="description"
+        >ตรวจสอบได้เมื่อข้อแก้ไขของใบขอเบิกปิดครบแล้ว (ข้อแก้ไขที่ยังเปิดอยู่หรือตอบแล้วถือว่ายังค้างอยู่)</field>
+        <field name="sequence">20</field>
+        <field name="model">disbursement.request</field>
+        <field name="exception_type">by_method</field>
+        <field
+            name="method"
+        >disbursement_request_check_outstanding_change_requests</field>
+        <field name="is_blocking" eval="True" />
+        <field name="active" eval="True" />
+    </record>
+</odoo>
