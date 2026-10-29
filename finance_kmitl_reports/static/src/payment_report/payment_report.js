@@ -81,7 +81,7 @@ export class PaymentReport extends Component {
             departments: _t("Departments"),
             sources: _t("Sources"),
             funds: _t("Funds"),
-            activities: _t("Activities"),
+            activities: _t("Analytic Activities"),
             payingAccount: _t("Paying Account"),
             method: _t("Payment Method"),
             payee: _t("Payee"),

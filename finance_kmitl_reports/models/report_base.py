@@ -122,7 +122,7 @@ class FinanceReportBase(models.AbstractModel):
             "departments": _("Departments"),
             "sources": _("Sources"),
             "funds": _("Funds"),
-            "activities": _("Activities"),
+            "activities": _("Analytic Activities"),
         }
 
     @api.model
