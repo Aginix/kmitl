@@ -1,0 +1,83 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* disbursement_payment_audit
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-29 12:00+0000\n"
+"PO-Revision-Date: 2026-10-29 12:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: disbursement_payment_audit
+#: model_terms:ir.ui.view,arch_db:disbursement_payment_audit.view_disbursement_request_queue_tree
+msgid "Audit"
+msgstr "ตรวจสอบ"
+
+#. module: disbursement_payment_audit
+#: model_terms:ir.ui.view,arch_db:disbursement_payment_audit.view_disbursement_request_form
+msgid "Audit Disbursements"
+msgstr "ยืนยันตรวจสอบการเบิกจ่าย"
+
+#. module: disbursement_payment_audit
+#. odoo-python
+#: code:addons/disbursement_payment_audit/models/disbursement_request.py:0
+#, python-format
+msgid "Audit Payment"
+msgstr "ตรวจจ่าย"
+
+#. module: disbursement_payment_audit
+#: model_terms:ir.ui.view,arch_db:disbursement_payment_audit.view_disbursement_request_queue_tree
+msgid "Audit Selected"
+msgstr "ตรวจสอบที่เลือก"
+
+#. module: disbursement_payment_audit
+#: model_terms:ir.ui.view,arch_db:disbursement_payment_audit.view_disbursement_request_search
+msgid "Audited by Me"
+msgstr "ที่ฉันตรวจสอบ"
+
+#. module: disbursement_payment_audit
+#: model:ir.model.fields,field_description:disbursement_payment_audit.field_disbursement_request__can_audit_payment
+msgid "Can Audit Payment"
+msgstr "ตรวจจ่ายได้"
+
+#. module: disbursement_payment_audit
+#: model_terms:ir.ui.view,arch_db:disbursement_payment_audit.view_disbursement_request_form
+#: model_terms:ir.ui.view,arch_db:disbursement_payment_audit.view_disbursement_request_queue_tree
+msgid "Confirm the audit of this disbursement"
+msgstr "ยืนยันการตรวจสอบการเบิกจ่าย"
+
+#. module: disbursement_payment_audit
+#: model:ir.model,name:disbursement_payment_audit.model_disbursement_request
+msgid "Disbursement Request"
+msgstr "ใบขอเบิก"
+
+#. module: disbursement_payment_audit
+#: model:ir.model,name:disbursement_payment_audit.model_disbursement_request_signature
+msgid "Disbursement Request Signature"
+msgstr "ลายเซ็นในใบขอเบิก"
+
+#. module: disbursement_payment_audit
+#: model:ir.model.fields,field_description:disbursement_payment_audit.field_disbursement_request__payment_audit_date
+msgid "Payment Audited On"
+msgstr "วันที่ตรวจสอบการเบิกจ่าย"
+
+#. module: disbursement_payment_audit
+#: model:ir.model.fields,field_description:disbursement_payment_audit.field_disbursement_request__payment_auditor_id
+#: model:ir.model.fields.selection,name:disbursement_payment_audit.selection__disbursement_request_signature__step__payment_audit
+msgid "Payment Auditor"
+msgstr "ผู้ตรวจสอบการเบิกจ่าย"
+
+#. module: disbursement_payment_audit
+#. odoo-python
+#: code:addons/disbursement_payment_audit/models/disbursement_request.py:0
+#, python-format
+msgid "Post the bills first."
+msgstr "กรุณาตั้งหนี้ให้เสร็จก่อน"

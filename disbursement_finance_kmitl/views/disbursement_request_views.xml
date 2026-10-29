@@ -63,8 +63,8 @@
         groups="disbursement_finance_kmitl.group_disbursement_payment_authorizer"
     />
 
-    <!-- Search: who audited and who authorized. The stage filters (billed,
-         settled, booked) are core's. -->
+    <!-- Search: who authorized (who audited is disbursement_payment_audit's).
+         The stage filters (billed, settled, booked) are core's. -->
     <record id="view_disbursement_request_search_inherit_finance" model="ir.ui.view">
         <field name="name">disbursement.request.search.inherit.finance_kmitl</field>
         <field name="model">disbursement.request</field>
@@ -72,11 +72,6 @@
         <field name="arch" type="xml">
             <xpath expr="//filter[@name='done']" position="after">
                 <separator />
-                <filter
-                    string="Audited by Me"
-                    name="my_payment_audits"
-                    domain="[('payment_auditor_id', '=', uid)]"
-                />
                 <filter
                     string="Authorized by Me"
                     name="my_payment_authorizations"
@@ -204,14 +199,6 @@
                  flags say whether the act is offered here to this user. -->
             <xpath expr="//button[@name='action_draft']" position="before">
                 <button
-                    name="action_audit"
-                    string="Audit Disbursements"
-                    type="object"
-                    class="oe_highlight"
-                    attrs="{'invisible': [('can_audit_payment', '=', False)]}"
-                    groups="disbursement_finance_kmitl.group_disbursement_payment_auditor"
-                />
-                <button
                     name="action_authorize"
                     string="Authorize Disbursements"
                     type="object"
@@ -251,7 +238,6 @@
                     attrs="{'invisible': ['|', ('settlement_stage', '!=', 'billed'), ('payment_count', '=', 0)]}"
                     groups="base.group_no_one"
                 />
-                <field name="can_audit_payment" invisible="1" />
                 <field name="can_authorize_payment" invisible="1" />
                 <field name="can_edit_payment_subject" invisible="1" />
             </xpath>
@@ -265,14 +251,15 @@
                     name="payment_execution"
                     attrs="{'invisible': [('payment_line_ids', '=', [])]}"
                 >
-                    <!-- The subject is editable only while the auditor may audit
-                         and no voucher exists. It is not marked required here: the
+                    <!-- The subject is editable only while _payment_subject_editable
+                         allows it (disbursement_payment_audit narrows it to its audit
+                         act) and no voucher exists. It is not marked required here: the
                          field is empty for every request that is billed, and
                          a view-level required blocks the smart buttons the auditor
                          needs to review the request's other documents first
                          (form save runs on every object button, dirty or not).
                          _check_payment_classification is the real gate — it
-                         refuses to audit without a subject — so the alert below
+                         refuses to pay without a subject — so the alert below
                          carries the reminder instead. -->
                     <div class="alert alert-warning mb-2" role="alert"
                          attrs="{'invisible': ['|', ('can_edit_payment_subject', '=', False),
@@ -293,14 +280,6 @@
                              taken, so the group stays out of the way while the
                              request is still being audited. -->
                         <group>
-                            <field
-                                name="payment_auditor_id"
-                                attrs="{'invisible': [('payment_auditor_id', '=', False)]}"
-                            />
-                            <field
-                                name="payment_audit_date"
-                                attrs="{'invisible': [('payment_auditor_id', '=', False)]}"
-                            />
                             <field
                                 name="payment_authorizer_id"
                                 attrs="{'invisible': [('payment_authorizer_id', '=', False)]}"
