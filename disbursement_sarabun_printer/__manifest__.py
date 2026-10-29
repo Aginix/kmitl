@@ -1,7 +1,7 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 
 {
-    "name": "Disbursement Printer",
+    "name": "Disbursement Sarabun Printer",
     "summary": "Print the disbursement request's หนังสือ (Sarabun layout), "
     "granted to selected users",
     "version": "16.0.1.0.0",
