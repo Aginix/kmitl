@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="disbursement_return_request_wizard_form" model="ir.ui.view">
+        <field
+            name="name"
+        >disbursement.return.request.wizard.form.change.request</field>
+        <field name="model">disbursement.return.request.wizard</field>
+        <field
+            name="inherit_id"
+            ref="disbursement.disbursement_return_request_wizard_form"
+        />
+        <field name="arch" type="xml">
+            <field name="reason" position="attributes">
+                <attribute
+                    name="attrs"
+                >{'required': [('outstanding_requests', '=', False)]}</attribute>
+                <attribute
+                    name="placeholder"
+                >ระบุสิ่งที่ต้องแก้ไข (ไม่บังคับเมื่อมีข้อแก้ไขที่ค้างอยู่)...</attribute>
+            </field>
+            <field name="reason" position="before">
+                <field
+                    name="outstanding_requests"
+                    attrs="{'invisible': [('outstanding_requests', '=', False)]}"
+                />
+            </field>
+        </field>
+    </record>
+</odoo>
