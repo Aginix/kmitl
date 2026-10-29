@@ -9,11 +9,6 @@ from odoo.exceptions import UserError
 # is sent back for correction (back to draft).
 RETURN_ACTIVITY_XMLID = "mail.mail_activity_data_todo"
 
-# ส่งคืนผู้จัดทำ markers. The send-back links them itself and any later state
-# change clears them. Detection never evaluates them: it would unlink them, and
-# pop them up on the very resubmission that should clear them.
-SENT_BACK_RULES = ("disbursement.excep_disbursement_sent_back",)
-
 
 class DisbursementRequest(models.Model):
     """Send-back workflow on the DR.
@@ -35,30 +30,6 @@ class DisbursementRequest(models.Model):
         string="Returned for Correction",
         copy=False,
     )
-
-    def _sent_back_rules(self):
-        """The marker rules a send-back may link; extend with ``super()``."""
-        rules = self.env["exception.rule"]
-        for xmlid in SENT_BACK_RULES:
-            # Not loaded yet while the module installs or upgrades.
-            rules |= self.env.ref(xmlid, raise_if_not_found=False) or rules
-        return rules
-
-    def _rule_domain(self):
-        # tuple: base_exception caches rules keyed on the (hashable) domain
-        return super()._rule_domain() + [
-            ("id", "not in", tuple(self._sent_back_rules().ids))
-        ]
-
-    def write(self, vals):
-        res = super().write(vals)
-        if "state" in vals:
-            rules = self._sent_back_rules()
-            marked = self.filtered(lambda r: r.exception_ids & rules)
-            if marked:
-                marked.write({"exception_ids": [(3, rule.id) for rule in rules]})
-        return res
-
     def _verification_officer(self):
         """The user responsible for verifying this request, used as the target
         of the return To-Dos. Defaults to the creator; the assignment addon
@@ -95,8 +66,6 @@ class DisbursementRequest(models.Model):
         self.with_context(
             work_center_departure="send_back", work_center_reason=reason
         ).action_draft()
-        # Shown in ข้อผิดพลาด until the request is resubmitted.
-        self.exception_ids = [(4, self.env.ref(SENT_BACK_RULES[0]).id)]
         self.message_post(
             body=Markup(
                 _(
