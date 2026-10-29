@@ -15,7 +15,7 @@ class DisbursementRequestLine(models.Model):
                     _(
                         "The payee of a request clearing loan %(loan)s must be "
                         "its borrower, %(borrower)s.",
-                        loan=loan.display_name,
+                        loan=loan.contract_number or loan.name,
                         borrower=loan.partner_id.display_name,
                     )
                 )
