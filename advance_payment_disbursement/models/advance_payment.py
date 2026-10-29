@@ -73,6 +73,11 @@ class AdvancePayment(models.Model):
         officer/admin gates of action_close/action_reopen."""
         for rec in self:
             cleared = sum(rec.disbursement_request_ids.mapped("budget_consumed_amount"))
+            # Only money given back reopens: cancelling a request that
+            # cleared nothing must not reopen a loan the officer closed.
+            given_back = (
+                rec.currency_id.compare_amounts(cleared, rec.actual_expense_amount) < 0
+            )
             if rec.actual_expense_amount != cleared:
                 rec.actual_expense_amount = cleared
             owed = rec.currency_id.compare_amounts(rec.amount_remaining, 0) > 0
@@ -85,7 +90,7 @@ class AdvancePayment(models.Model):
                     ),
                     subtype_xmlid="mail.mt_note",
                 )
-            elif owed and rec.state == "done":
+            elif owed and given_back and rec.state == "done":
                 rec.write({"state": "in_progress", "date_closed": False})
                 rec.message_post(
                     body=_(
