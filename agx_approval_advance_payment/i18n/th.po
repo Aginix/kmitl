@@ -1,0 +1,98 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* agx_approval_advance_payment
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-11 14:11+0000\n"
+"PO-Revision-Date: 2026-05-11 21:14+0700\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Poedit 3.6\n"
+
+#. module: agx_approval_advance_payment
+#: model:ir.model,name:agx_approval_advance_payment.model_advance_payment
+#: model:ir.model.fields,field_description:agx_approval_advance_payment.field_approval_request__advance_payment_id
+msgid "Advance Payment"
+msgstr "สัญญายืมเงิน"
+
+#. module: agx_approval_advance_payment
+#: model:ir.model.fields,field_description:agx_approval_advance_payment.field_approval_request__advance_payment_count
+msgid "Advance Payment Count"
+msgstr ""
+
+#. module: agx_approval_advance_payment
+#. odoo-python
+#: code:addons/agx_approval_advance_payment/models/approval_request.py:0
+#, python-format
+msgid "An advance payment already exists for this approval request."
+msgstr "มีการชำระเงินล่วงหน้าสำหรับการขออนุมัตินี้เรียบร้อยแล้ว"
+
+#. module: agx_approval_advance_payment
+#: model:ir.model,name:agx_approval_advance_payment.model_approval_request
+#: model:ir.model.fields,field_description:agx_approval_advance_payment.field_advance_payment__approval_request_id
+#: model:ir.model.fields.selection,name:agx_approval_advance_payment.selection__advance_payment__reference__approval_request
+#: model_terms:ir.ui.view,arch_db:agx_approval_advance_payment.view_advance_payment_form_approval_request
+msgid "Approval Request"
+msgstr "คำขออนุมัติค่าใช้จ่าย"
+
+#. module: agx_approval_advance_payment
+#: model:ir.model.fields,field_description:agx_approval_advance_payment.field_advance_payment__approval_request_count
+msgid "Approval Request Count"
+msgstr ""
+
+#. module: agx_approval_advance_payment
+#. odoo-python
+#: code:addons/agx_approval_advance_payment/models/approval_request.py:0
+#, python-format
+msgid "Only approved approval requests can create advance payments."
+msgstr "เฉพาะคำขออนุมัติที่ได้รับอนุมัติแล้วเท่านั้นที่จะสามารถสร้างการชำระเงินล่วงหน้าได้"
+
+#. module: agx_approval_advance_payment
+#. odoo-python
+#: code:addons/agx_approval_advance_payment/models/approval_request.py:0
+#, python-format
+msgid "Payment type must be 'Advance' to create an advance payment."
+msgstr "เพื่อสร้างการชำระเงินล่วงหน้า ประเภทการชำระเงินต้องเป็น 'เงินยืม'"
+
+#. module: agx_approval_advance_payment
+#: model:ir.model.fields,field_description:agx_approval_advance_payment.field_advance_payment__reference
+msgid "Reference"
+msgstr "อ้างอิง"
+
+#. module: agx_approval_advance_payment
+#: model:ir.model.fields,field_description:agx_approval_advance_payment.field_approval_request__show_create_advance_payment_button
+msgid "Show Create Advance Payment Button"
+msgstr ""
+
+#. module: agx_approval_advance_payment
+#: model:ir.model.fields,field_description:agx_approval_advance_payment.field_approval_request__show_create_disbursement_button
+msgid "Show Create Disbursement Button"
+msgstr ""
+
+#. module: agx_approval_advance_payment
+#: model_terms:ir.ui.view,arch_db:agx_approval_advance_payment.approval_request_view_form_advance_payment
+msgid "Create Advance Payment"
+msgstr "สร้างสัญญายืมเงิน"
+
+#. module: agx_approval_advance_payment
+#. odoo-python
+#: code:addons/agx_approval_advance_payment/models/approval_request.py:0
+#, python-format
+msgid ""
+"สร้างสัญญายืมเงิน <a href='/"
+"web#id=%(id)s&amp;model=advance.payment'><b>%(name)s</b></a> แล้ว จำนวน "
+"<b>%(amount)s %(currency)s</b>"
+msgstr ""
+
+#. module: agx_approval_advance_payment
+#: model_terms:ir.ui.view,arch_db:agx_approval_advance_payment.approval_request_view_form_advance_payment
+msgid "Advance Payment"
+msgstr "สัญญายืมเงิน"
