@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Borrowing rules (advance_payment ADR-0030). noupdate: they belong to the
+     administrators once installed — an upgrade must not undo their edits. -->
+<odoo noupdate="1">
+    <record id="excep_pr_not_approved" model="exception.rule">
+        <field name="name">ใบขอให้จัดหายังไม่ได้รับอนุมัติ</field>
+        <field
+            name="description"
+        >ใบขอให้จัดหาที่อ้างอิงต้องได้รับอนุมัติแล้วจึงจะยืมเงินได้</field>
+        <field name="sequence">34</field>
+        <field name="model">advance.payment</field>
+        <field name="exception_type">by_domain</field>
+        <field
+            name="domain"
+        >[('purchase_request_id', '!=', False), ('is_purchase_request_approved', '=', False)]</field>
+        <field name="is_blocking" eval="True" />
+        <field name="active" eval="True" />
+    </record>
+
+    <record id="excep_pr_not_advance" model="exception.rule">
+        <field name="name">ใบขอให้จัดหาไม่ได้เลือกวิธีจ่ายเป็นเงินยืม</field>
+        <field
+            name="description"
+        >ใบขอให้จัดหาที่อ้างอิงต้องเลือกวิธีจ่ายเป็นเงินยืม</field>
+        <field name="sequence">35</field>
+        <field name="model">advance.payment</field>
+        <field name="exception_type">by_domain</field>
+        <field
+            name="domain"
+        >[('purchase_request_id', '!=', False), ('is_purchase_request_advance', '=', False)]</field>
+        <field name="is_blocking" eval="True" />
+        <field name="active" eval="True" />
+    </record>
+
+    <!-- ADR-0026's one-loan-per-request rule, kept switched off: several
+         borrowers may draw on one request (ADR-0029). -->
+    <record id="excep_pr_single_loan" model="exception.rule">
+        <field name="name">ใบขอให้จัดหามีสัญญายืมเงินอยู่แล้ว</field>
+        <field
+            name="description"
+        >ใบขอให้จัดหา 1 ใบมีสัญญายืมเงินที่ยังไม่ยกเลิกได้ 1 สัญญา</field>
+        <field name="sequence">36</field>
+        <field name="model">advance.payment</field>
+        <field name="exception_type">by_domain</field>
+        <field name="domain">[('has_other_purchase_request_loan', '=', True)]</field>
+        <field name="is_blocking" eval="True" />
+        <field name="active" eval="False" />
+    </record>
+</odoo>

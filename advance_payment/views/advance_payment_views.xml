@@ -223,6 +223,10 @@
                                 attrs="{'readonly': [('can_edit_drafter', '=', False)]}"
                             />
                             <field name="date_submitted" />
+                            <field
+                                name="submitted_by_id"
+                                attrs="{'invisible': [('submitted_by_id', '=', False)]}"
+                            />
                             <!-- Unlisted bank account (ADR-0022): the three
                                  declared fields stand in for bank_id until the
                                  loan officer creates the account at verify. -->
@@ -271,18 +275,32 @@
                         <group name="loan_info" string="รายละเอียดการยืม">
                             <field name="is_reference_visible" invisible="1" />
                             <field name="loan_type_reference_model" invisible="1" />
-                            <field name="reference_picker_domain" invisible="1" />
                             <field
                                 name="loan_type_id"
                                 widget="selection"
                                 attrs="{'readonly': [('state', '!=', 'draft')]}"
                             />
-                            <!-- `reference` stays off the form: each bridge
-                                 inserts its typed picker after loan_type_id
-                                 and writes `reference` through the picker's
-                                 inverse (ADR-0023). Even invisible, the
-                                 Reference widget name_get()s the document,
-                                 which an endorser may not read (ADR-0020). -->
+                            <!-- `reference` stays off the form: even invisible,
+                                 the Reference widget name_get()s the document,
+                                 which the borrower or endorser may not read
+                                 (ADR-0020). The source is named by its number,
+                                 looked up under sudo (ADR-0029). -->
+                            <field
+                                name="reference_number"
+                                attrs="{
+                                    'invisible': [('is_reference_visible', '=', False)],
+                                    'required': [('is_reference_visible', '=', True)],
+                                    'readonly': [('state', '!=', 'draft')]
+                                }"
+                            />
+                            <field
+                                name="reference_subject"
+                                attrs="{'invisible': [('reference_subject', '=', False)]}"
+                            />
+                            <field
+                                name="reference_unit"
+                                attrs="{'invisible': [('reference_unit', '=', False)]}"
+                            />
                             <field name="currency_id" invisible="1" />
                             <field
                                 name="loan_amount"

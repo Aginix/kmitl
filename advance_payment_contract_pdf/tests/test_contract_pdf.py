@@ -75,7 +75,11 @@ class TestContractPdf(TransactionCase):
         self.assertEqual(sigs["borrower"]["date"], "")
 
         self.agreement.write(
-            {"state": "to_approve", "date_submitted": "2026-07-23 03:00:00"}
+            {
+                "state": "to_approve",
+                "date_submitted": "2026-07-23 03:00:00",
+                "submitted_by_id": self.env.ref("base.user_admin").id,
+            }
         )
         sigs = self.agreement._contract_signatures()
         self.assertEqual(sigs["borrower"]["signature"], SIGNATURE)
@@ -93,3 +97,21 @@ class TestContractPdf(TransactionCase):
         self.agreement.state = "cancel"
         sigs = self.agreement._contract_signatures()
         self.assertFalse(any(sig["signature"] for sig in sigs.values()))
+
+    def test_borrower_block_blank_when_submitted_on_behalf(self):
+        """ADR-0031: a loan officer's submission does not sign for the
+        borrower — the block is left to sign by hand."""
+        self.agreement.employee_id.signature = SIGNATURE
+        officer = self.env["res.users"].create(
+            {"name": "Officer", "login": "officer_contract_pdf"}
+        )
+        self.agreement.write(
+            {
+                "state": "to_approve",
+                "date_submitted": "2026-07-23 03:00:00",
+                "submitted_by_id": officer.id,
+            }
+        )
+        sigs = self.agreement._contract_signatures()
+        self.assertFalse(sigs["borrower"]["signature"])
+        self.assertEqual(sigs["borrower"]["date"], "")

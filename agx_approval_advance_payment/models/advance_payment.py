@@ -1,6 +1,4 @@
-from odoo import _, api, fields, models
-from odoo.exceptions import ValidationError
-from odoo.osv import expression
+from odoo import api, fields, models
 
 
 class AdvancePayment(models.Model):
@@ -8,11 +6,10 @@ class AdvancePayment(models.Model):
 
     _rec_names_search = ["name", "contract_number", "approval_request_id.name"]
 
-    # Typed mirror of `reference`, and the borrower's picker for it: compute for
-    # display, inverse for input, following the repo's analytic_distribution →
-    # *_analytic_id idiom. `reference` stays the source of truth (ADR-0007); a
-    # `domain` on a fields.Reference would apply to every model in its selection
-    # and so cannot carry a per-model filter (advance_payment ADR-0023).
+    # Typed mirror of `reference`, for searching, grouping and FK integrity:
+    # compute for display, inverse for programmatic input. `reference` stays
+    # the source of truth (ADR-0007); the borrower names the request by its
+    # number (`reference_number`, advance_payment ADR-0029).
     approval_request_id = fields.Many2one(
         comodel_name="approval.request",
         string="Approval Request",
@@ -30,9 +27,12 @@ class AdvancePayment(models.Model):
         compute="_compute_approval_request_count",
     )
 
-    exceeds_ar_headroom = fields.Boolean(
-        compute="_compute_exceeds_ar_headroom",
-        help="Technical flag read by the borrowing-headroom exception rule.",
+    # Read by excep_ar_not_approved (ADR-0030). sudo: the borrower, or the
+    # endorser the rule runs as, usually cannot read the request.
+    is_approval_request_approved = fields.Boolean(
+        compute="_compute_is_approval_request_approved",
+        compute_sudo=True,
+        help="Technical flag read by the approved-source exception rule.",
     )
 
     reference = fields.Reference(
@@ -59,45 +59,21 @@ class AdvancePayment(models.Model):
             elif rec.reference_model == "approval.request":
                 rec.reference = False
 
-    @api.onchange("approval_request_id")
-    def _onchange_approval_request_id(self):
-        """This picker stands in for the `reference` widget on AR-backed loans,
-        so it has to run the same prefill: `reference` itself is only written by
-        the inverse at save time, long after `_onchange_reference` could fire."""
-        if self.approval_request_id:
-            self._apply_vals_from_reference()
-
     @api.onchange("loan_type_id")
     def _onchange_loan_type_id(self):
-        """The picker is only written into `reference` at save, so super's
-        clear cannot see it — drop it here when the new type does not take
-        approval requests."""
+        """Drop the mirror too when the new type does not take approval
+        requests."""
         super()._onchange_loan_type_id()
         if self.loan_type_id.reference_model != "approval.request":
             self.approval_request_id = False
 
-    def _check_reference_status(self):
-        res = super()._check_reference_status()
-        ar = self.approval_request_id
-        if not ar:
-            return res
-        if ar.state != "approved":
-            raise ValidationError(
-                _(
-                    "Approval request %(name)s must be approved before it can"
-                    " back a loan (current status: %(state)s).",
-                    name=ar.name,
-                    state=dict(ar._fields["state"].selection).get(ar.state),
-                )
-            )
-        return res
-
     def _prepare_vals_from_reference(self):
         """Pull what the request can tell us. The amount is deliberately NOT
         prefilled from the request total: each borrower declares their own
-        (ADR-0003), bounded by the request's Borrowing Headroom."""
+        (ADR-0003)."""
         vals = super()._prepare_vals_from_reference()
-        ar = self.approval_request_id
+        # sudo: the borrower usually cannot read the request (ADR-0029).
+        ar = self.approval_request_id.sudo()
         if ar:
             vals.update(
                 {
@@ -106,44 +82,35 @@ class AdvancePayment(models.Model):
             )
         return vals
 
-    def _get_reference_picker_domain(self):
-        """Approved requests, ANDed with the loan type's own filter
-        (advance_payment ADR-0023). The participant roster is no longer a
-        condition (advance_payment ADR-0025): who may borrow is left to the
-        filter and to approval.request's own record rules."""
-        domain = super()._get_reference_picker_domain()
-        if self.loan_type_id.reference_model == "approval.request":
-            domain = expression.AND([domain, [("state", "=", "approved")]])
-        return domain
+    def _get_reference_summary(self):
+        summary = super()._get_reference_summary()
+        ar = self.approval_request_id.sudo()
+        if ar:
+            summary.update(
+                subject=(ar.description or "").strip().split("\n")[0] or ar.name,
+                unit=ar.requesting_department_id.display_name,
+            )
+        return summary
 
+    @api.depends("approval_request_id.state")
+    def _compute_is_approval_request_approved(self):
+        for rec in self:
+            rec.is_approval_request_approved = (
+                rec.approval_request_id.state == "approved"
+            )
+
+    # Counted as the reader: a borrower who may not open the request sees no
+    # button rather than one that opens an AccessError (ADR-0029).
     @api.depends("approval_request_id")
+    @api.depends_context("uid")
     def _compute_approval_request_count(self):
+        Request = self.env["approval.request"]
+        can_read = Request.check_access_rights("read", raise_exception=False)
         for rec in self:
-            rec.approval_request_count = 1 if rec.approval_request_id else 0
-
-    @api.depends(
-        "loan_amount",
-        "approval_request_id.borrowing_headroom",
-        "approval_request_id.advance_payment_ids.loan_amount",
-        "approval_request_id.advance_payment_ids.state",
-    )
-    def _compute_exceeds_ar_headroom(self):
-        for rec in self:
-            # sudo: a technical flag the exception rule reads — it must not
-            # AccessError for an endorser with no approval.request access
-            # (advance_payment_endorser_rule, advance_payment ADR-0020).
-            ar = rec.approval_request_id.sudo()
-            if not ar:
-                rec.exceeds_ar_headroom = False
-                continue
-            # Headroom excluding this loan, so an already-counted draft does not
-            # block itself.
-            available = ar.borrowing_headroom
-            if rec.state != "cancel":
-                available += rec.loan_amount
-            rec.exceeds_ar_headroom = bool(
-                ar.borrowing_cap
-                and rec.currency_id.compare_amounts(rec.loan_amount, available) > 0
+            rec.approval_request_count = (
+                Request.search_count([("id", "=", rec.approval_request_id.id)])
+                if can_read and rec.approval_request_id
+                else 0
             )
 
     def action_view_approval_request(self):

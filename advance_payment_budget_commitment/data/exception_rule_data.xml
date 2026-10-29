@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Borrowing rules (advance_payment ADR-0030). noupdate: they belong to the
+     administrators once installed — an upgrade must not undo their edits. -->
+<odoo noupdate="1">
+    <record id="excep_budget_commitment_not_live" model="exception.rule">
+        <field name="name">ต้นเรื่องยังไม่มีใบจองงบประมาณที่ใช้งานได้</field>
+        <field
+            name="description"
+        >ใบจองงบประมาณของเอกสารต้นทางต้องอยู่ในสถานะจองแล้วหรือใช้ไปบางส่วน จึงจะยืมเงินได้</field>
+        <field name="sequence">40</field>
+        <field name="model">advance.payment</field>
+        <field name="exception_type">by_domain</field>
+        <field
+            name="domain"
+        >[('reference_model', '!=', False), ('is_budget_commitment_live', '=', False)]</field>
+        <field name="is_blocking" eval="True" />
+        <field name="active" eval="True" />
+    </record>
+
+    <record id="excep_borrowing_headroom" model="exception.rule">
+        <field name="name">ยอดยืมเกินวงเงินยืมคงเหลือ</field>
+        <field
+            name="description"
+        >ยอดยืมรวมของใบจองงบประมาณนี้เกินยอดที่จองไว้ กรุณาลดยอดยืม</field>
+        <field name="sequence">41</field>
+        <field name="model">advance.payment</field>
+        <field name="exception_type">by_domain</field>
+        <field name="domain">[('exceeds_borrowing_headroom', '=', True)]</field>
+        <field name="is_blocking" eval="True" />
+        <field name="active" eval="True" />
+    </record>
+</odoo>

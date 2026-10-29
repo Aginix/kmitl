@@ -22,6 +22,21 @@
         <field name="active" eval="True" />
     </record>
 
+    <!-- ADR-0001's serial-borrowing regulation, moved out of core code so
+         it can be switched off from the menu (ADR-0030). -->
+    <record id="excep_one_active_agreement" model="exception.rule">
+        <field name="name">ผู้ยืมมีสัญญายืมเงินที่ยังไม่ปิดอยู่แล้ว</field>
+        <field
+            name="description"
+        >ผู้ยืม 1 คนมีสัญญายืมเงินได้ครั้งละ 1 สัญญา กรุณาปิดหรือยกเลิกสัญญาเดิมก่อน</field>
+        <field name="sequence">25</field>
+        <field name="model">advance.payment</field>
+        <field name="exception_type">by_domain</field>
+        <field name="domain">[('has_other_active_agreement', '=', True)]</field>
+        <field name="is_blocking" eval="True" />
+        <field name="active" eval="True" />
+    </record>
+
     <record id="excep_missing_bank_account" model="exception.rule">
         <field name="name">ไม่ได้ระบุบัญชีธนาคาร</field>
         <field name="description">กรุณาระบุบัญชีธนาคารก่อนส่งขออนุมัติ</field>

@@ -6,29 +6,6 @@
         <field name="inherit_id" ref="advance_payment.view_advance_payment_form" />
         <field name="arch" type="xml">
 
-            <!-- Allow loan_type_id to be edited when linked to an approval request -->
-            <xpath expr="//field[@name='loan_type_id']" position="attributes">
-                <attribute name="attrs">
-                    {'readonly': ['|', ('state', '!=', 'draft'), '&amp;', ('is_locked_by_reference', '=', True), ('approval_request_id', '=', False)]}
-                </attribute>
-            </xpath>
-
-            <!-- The borrower's own picker: approved requests, narrowed by the
-                 loan type's filter (advance_payment ADR-0023/0025). -->
-            <xpath expr="//field[@name='loan_type_id']" position="after">
-                <field
-                    name="approval_request_id"
-                    options="{'no_create': True, 'no_create_edit': True}"
-                    domain="reference_picker_domain"
-                    attrs="{
-                        'invisible': [('loan_type_reference_model', '!=', 'approval.request')],
-                        'readonly': [('state', '!=', 'draft')],
-                        'required': [('loan_type_reference_model', '=', 'approval.request')]
-                    }"
-                />
-            </xpath>
-
-
             <xpath expr="//div[@name='button_box']" position="inside">
                 <field name="approval_request_count" invisible="1" />
                 <button

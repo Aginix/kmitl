@@ -7,9 +7,10 @@ class TestPurchaseRequestAdvancePayment(TransactionCase):
     """
     Test suite for the purchase_request_advance_payment bridge module.
 
-    Covers the full flow: approved PR → loan picked in the loan app → link
-    back on the PR → cross-post on disbursement (advance_payment ADR-0026). Tests avoid full accounting setup by setting states
-    directly where needed.
+    Covers the full flow: approved PR → loan naming it in the loan app → link
+    back on the PR → cross-post on disbursement (advance_payment ADR-0029).
+    Tests avoid full accounting setup by setting states directly where
+    needed.
     """
 
     @classmethod
@@ -133,7 +134,7 @@ class TestPurchaseRequestAdvancePayment(TransactionCase):
         return pr
 
     def _make_ap(self, pr, **vals):
-        """Create a loan the way the borrower does: pick the PR on it."""
+        """Create a loan the way the borrower does: type the PR's number."""
         return self.env["advance.payment"].create(
             {
                 "employee_id": self.manager_employee.id,
@@ -142,28 +143,85 @@ class TestPurchaseRequestAdvancePayment(TransactionCase):
                     "advance_payment.loan_type_procurement"
                 ).id,
                 "loan_reason": "Picker",
-                "purchase_request_id": pr.id,
+                "reference_number": pr.name,
                 **vals,
             }
         )
 
     # ------------------------------------------------------------------ #
-    # Loan picked in the loan app (ADR-0026)                               #
+    # Loan made in the loan app, by the PR's number (ADR-0029)             #
     # ------------------------------------------------------------------ #
 
-    def test_picked_loan_links_back_to_pr(self):
+    def test_loan_links_back_to_pr(self):
         pr = self._make_pr()
         self.assertEqual(pr.advance_payment_count, 0)
         ap = self._make_ap(pr)
-        self.assertEqual(pr.advance_payment_id, ap)
+        self.assertEqual(ap.purchase_request_id, pr)
+        self.assertEqual(pr.advance_payment_ids, ap)
         self.assertEqual(pr.advance_payment_count, 1)
+
+    def test_several_borrowers_per_pr(self):
+        """One person holds one agreement, so a team splits a request
+        (ADR-0029): a second loan on the same PR is allowed."""
+        pr = self._make_pr()
+        first = self._make_ap(pr)
+        other_employee = self.env["hr.employee"].create({"name": "Second Borrower"})
+        second = self._make_ap(pr, employee_id=other_employee.id)
+        self.assertEqual(pr.advance_payment_ids, first | second)
+        self.assertTrue(second.has_other_purchase_request_loan)
+        # ADR-0026's single-loan rule ships switched off (ADR-0030).
+        self.assertFalse(
+            self.env.ref("purchase_request_advance_payment.excep_pr_single_loan").active
+        )
+
+    def test_borrower_without_pr_access_finds_it_by_number(self):
+        """The lookup runs under sudo: a borrower who cannot read the PR
+        still names it (ADR-0029)."""
+        pr = self._make_pr()
+        borrower = self.env["res.users"].create(
+            {
+                "name": "Own-only Borrower",
+                "login": "own_only_pr_ap",
+                "groups_id": [
+                    (
+                        6,
+                        0,
+                        self.env.ref(
+                            "advance_payment.group_advance_payment_own_only"
+                        ).ids,
+                    )
+                ],
+            }
+        )
+        self.assertFalse(
+            self.env["purchase.request"]
+            .with_user(borrower)
+            .check_access_rights("read", raise_exception=False)
+        )
+        probe = (
+            self.env["advance.payment"]
+            .with_user(borrower)
+            .new(
+                {
+                    "loan_type_id": self.env.ref(
+                        "advance_payment.loan_type_procurement"
+                    ).id,
+                }
+            )
+        )
+        self.assertEqual(probe._find_reference_by_number(pr.name), pr)
+        self.assertEqual(
+            probe._find_reference_by_number("  %s  " % pr.name.lower()), pr
+        )
+        self.assertFalse(probe._find_reference_by_number("NO-SUCH-NUMBER"))
+        self.assertFalse(probe._find_reference_by_number("%"))
 
     def test_smart_button_hidden_from_who_cannot_read_loan(self):
         """A PR reader with no right on the loan gets no button to an
         AccessError; the borrower still gets it."""
         pr = self._make_pr()
         self._make_ap(pr)
-        self.assertTrue(pr.advance_payment_id)
+        self.assertTrue(pr.advance_payment_ids)
         outsider = self.env["res.users"].create(
             {
                 "name": "PR Reader",
@@ -175,9 +233,9 @@ class TestPurchaseRequestAdvancePayment(TransactionCase):
         self.assertEqual(pr.with_user(outsider).advance_payment_count, 0)
         self.assertEqual(pr.with_user(self.manager).advance_payment_count, 1)
 
-    def test_picking_pr_prefills_loan_and_keeps_borrower(self):
+    def test_typing_pr_number_prefills_loan_and_keeps_borrower(self):
         """Anyone may borrow against a request, not only its requester: the
-        amount and reason come from the PR, the borrower stays (ADR-0026)."""
+        amount and reason come from the PR, the borrower stays (ADR-0029)."""
         pr = self._make_pr(estimated_cost=7500)
         pr.description = "Need it"
         pr.requested_by = self.officer
@@ -187,61 +245,20 @@ class TestPurchaseRequestAdvancePayment(TransactionCase):
                 "loan_type_id": self.env.ref(
                     "advance_payment.loan_type_procurement"
                 ).id,
-                "purchase_request_id": pr.id,
+                "reference_number": pr.name,
             }
         )
-        ap._onchange_purchase_request_id()
+        ap._onchange_reference_number()
+        self.assertEqual(ap.reference, pr)
         self.assertEqual(ap.employee_id, self.manager_employee)
         self.assertEqual(ap.loan_amount, 7500)
         self.assertIn("Need it", ap.loan_reason)
 
-    def test_cancelled_loan_frees_pr(self):
-        pr = self._make_pr()
-        ap = self._make_ap(pr)
-        ap.write({"state": "cancel"})
-        self.assertFalse(pr.advance_payment_id)
-        self.assertEqual(self._make_ap(pr), pr.advance_payment_id)
-
-    def test_one_live_loan_per_pr(self):
-        pr = self._make_pr()
-        self._make_ap(pr)
-        with self.assertRaises(ValidationError):
-            self._make_ap(pr)
-
-    def test_reset_cancelled_loan_refused_when_pr_taken(self):
-        pr = self._make_pr()
-        first = self._make_ap(pr)
-        first.write({"state": "cancel"})
-        self._make_ap(pr)
-        with self.assertRaises(ValidationError):
-            first.write({"state": "draft"})
-
-    def test_picker_offers_only_free_advance_prs(self):
-        free = self._make_pr()
-        taken = self._make_pr()
-        direct = self._make_pr(payment_type="direct")
-        ap = self._make_ap(taken)
-        probe = self.env["advance.payment"].new(
-            {
-                "employee_id": self.manager_employee.id,
-                "loan_type_id": self.env.ref(
-                    "advance_payment.loan_type_procurement"
-                ).id,
-            }
-        )
-        offered = self.env["purchase.request"].search(probe.reference_picker_domain)
-        self.assertIn(free, offered)
-        self.assertNotIn(taken, offered)
-        self.assertNotIn(direct, offered)
-        # The loan's own request stays offered on its own form.
-        own = self.env["purchase.request"].search(ap.reference_picker_domain)
-        self.assertIn(taken, own)
-
     # ------------------------------------------------------------------ #
-    # Validation guards                                                    #
+    # Borrowing rules (ADR-0030): flags, not constraints                   #
     # ------------------------------------------------------------------ #
 
-    def test_pick_requires_approved_pr(self):
+    def test_unapproved_pr_flagged(self):
         pr = self.env["purchase.request"].create(
             {
                 "title": "Draft PR",
@@ -252,13 +269,13 @@ class TestPurchaseRequestAdvancePayment(TransactionCase):
                 "payment_type": "advance",
             }
         )
-        with self.assertRaises(ValidationError):
-            self._make_ap(pr)
+        ap = self._make_ap(pr)
+        self.assertFalse(ap.is_purchase_request_approved)
 
-    def test_pick_requires_advance_payment_type(self):
-        pr = self._make_pr(payment_type="direct")
-        with self.assertRaises(ValidationError):
-            self._make_ap(pr)
+    def test_non_advance_pr_flagged(self):
+        ap = self._make_ap(self._make_pr(payment_type="direct"))
+        self.assertTrue(ap.is_purchase_request_approved)
+        self.assertFalse(ap.is_purchase_request_advance)
 
     # ------------------------------------------------------------------ #
     # Cross-post on disbursement (action_start)                            #
@@ -333,9 +350,9 @@ class TestPurchaseRequestAdvancePayment(TransactionCase):
     # Reference filter (advance_payment ADR-0023)                          #
     # ------------------------------------------------------------------ #
 
-    def test_picker_domain_ands_type_filter_with_baseline(self):
-        """The type's filter is evaluated for the borrower and ANDed with the
-        bridge's approved-only baseline."""
+    def test_lookup_respects_type_filter(self):
+        """The type's filter is evaluated for the borrower and bounds the
+        number lookup."""
         loan_type = self.env.ref("advance_payment.loan_type_procurement")
         loan_type.reference_domain = "[('requested_by', '=', user_id)]"
         pr = self._make_pr()
@@ -349,10 +366,10 @@ class TestPurchaseRequestAdvancePayment(TransactionCase):
                 "loan_reason": "Picker",
             }
         )
-        offered = self.env["purchase.request"].search(ap.reference_picker_domain)
-        self.assertIn(pr, offered)
-        self.assertNotIn(other, offered)
-        self.assertFalse(offered.filtered(lambda r: r.state != "approved"))
+        self.assertEqual(ap._find_reference_by_number(pr.name), pr)
+        self.assertFalse(ap._find_reference_by_number(other.name))
+        with self.assertRaises(ValidationError):
+            self._make_ap(other)
 
     def test_draft_check_rejects_reference_outside_filter(self):
         loan_type = self.env.ref("advance_payment.loan_type_procurement")
@@ -361,11 +378,11 @@ class TestPurchaseRequestAdvancePayment(TransactionCase):
         with self.assertRaises(ValidationError):
             self._make_ap(pr)
 
-    def test_picker_writes_reference(self):
+    def test_number_writes_reference(self):
         pr = self._make_pr()
         ap = self._make_ap(pr)
         self.assertEqual(ap.reference, pr)
-        # Not left stale by the picker's inverse (excep_missing_reference
+        # Not left stale by the number's inverse (excep_missing_reference
         # reads it).
         self.assertEqual(ap.reference_model, "purchase.request")
 
@@ -374,10 +391,9 @@ class TestPurchaseRequestAdvancePayment(TransactionCase):
     # ------------------------------------------------------------------ #
 
     def test_action_view_advance_payment(self):
-        """Smart button returns correct action to open AP form."""
+        """Smart button lists the loans drawn against the PR."""
         pr = self._make_pr()
-        self._make_ap(pr)
+        ap = self._make_ap(pr)
         result = pr.action_view_advance_payment()
         self.assertEqual(result["res_model"], "advance.payment")
-        self.assertEqual(result["res_id"], pr.advance_payment_id.id)
-        self.assertEqual(result["view_mode"], "form")
+        self.assertEqual(self.env["advance.payment"].search(result["domain"]), ap)

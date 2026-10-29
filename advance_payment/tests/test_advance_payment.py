@@ -332,6 +332,21 @@ class TestAdvancePayment(TransactionCase):
         ap.with_user(self.manager).action_submit()
         self.assertEqual(ap.state, "to_endorse")
 
+    def test_loan_officer_can_submit_on_behalf(self):
+        """ADR-0031: a loan officer submits for the borrower; the record keeps
+        who did, so the contract leaves the borrower's signature blank."""
+        ap = self._make(requested_by=self.user)
+        ap.with_user(self.officer).action_submit()
+        self.assertEqual(ap.state, "to_endorse")
+        self.assertEqual(ap.submitted_by_id, self.officer)
+        self.assertFalse(ap.is_submitted_by_borrower)
+
+    def test_borrower_submit_is_recorded(self):
+        ap = self._make(requested_by=self.user, as_user=self.user)
+        ap.with_user(self.user).action_submit()
+        self.assertEqual(ap.submitted_by_id, self.user)
+        self.assertTrue(ap.is_submitted_by_borrower)
+
     def test_create_on_behalf_blocked_for_non_admin(self):
         with self.assertRaises(ValidationError):
             self._make(requested_by=self.user2, as_user=self.user)
@@ -389,24 +404,8 @@ class TestAdvancePayment(TransactionCase):
         )
         self.assertEqual(visible, ap_own)
 
-    # ------------------------------------------------------------------ #
-    # One active agreement per borrower (ADR-0001)                         #
-    # ------------------------------------------------------------------ #
-
-    def test_one_active_blocks_second_submit(self):
-        a1 = self._make(requested_by=self.user)
-        a1.action_submit()
-        a2 = self._make(requested_by=self.user)
-        with self.assertRaises(UserError):
-            a2.action_submit()
-
-    def test_done_agreement_does_not_block(self):
-        a1 = self._make(requested_by=self.user)
-        a1.action_submit()
-        a1.write({"state": "done"})
-        a2 = self._make(requested_by=self.user)
-        a2.action_submit()
-        self.assertEqual(a2.state, "to_endorse")
+    # One active agreement per borrower (ADR-0001) is a borrowing rule now —
+    # see advance_payment_exception's tests (ADR-0030).
 
     def test_other_borrower_does_not_block(self):
         a1 = self._make(requested_by=self.user)
@@ -899,7 +898,7 @@ class TestAdvancePayment(TransactionCase):
     def test_no_reference_without_type_model(self):
         ap = self._make()
         self.assertFalse(ap.is_reference_visible)
-        self.assertEqual(ap.reference_picker_domain, [])
+        self.assertFalse(ap.reference_number)
 
     def test_manager_cancel_drops_officer_todo(self):
         """mail_activity_rule_user limits write/unlink to the to-do's user_id

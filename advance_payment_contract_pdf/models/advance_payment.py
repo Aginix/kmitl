@@ -78,7 +78,8 @@ class AdvancePayment(models.Model):
         acts in. The state decides, not the date: ดึงกลับ / ส่งกลับแก้ไข keep
         the old dates, and a cancelled contract prints unsigned. The image is
         the signer's hr.employee signature, read under sudo — the officer who
-        prints need not have HR read access."""
+        prints need not have HR read access. The borrower's block is signed
+        only when the borrower submitted personally (ADR-0031)."""
         self.ensure_one()
         rec = self.sudo()
         states = [state for state, _label in self._fields["state"].selection]
@@ -93,5 +94,9 @@ class AdvancePayment(models.Model):
                 "signature": signed and signer.signature,
                 "date": signed and self._contract_date_th(rec[date_field]) or "",
             }
+        # A loan officer may submit for the borrower (ADR-0031); the borrower's
+        # digitised signature then stays off a debt they never confirmed.
+        if "borrower" in res and not rec.is_submitted_by_borrower:
+            res["borrower"].update(signature=False, date="")
         res["receiver"] = {"employee": rec.employee_id, "signature": False, "date": ""}
         return res

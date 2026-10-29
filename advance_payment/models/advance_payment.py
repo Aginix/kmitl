@@ -1,6 +1,7 @@
 from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError, ValidationError
 from odoo.tools.misc import str2bool
+from odoo.tools.sql import escape_psql
 from odoo.tools.safe_eval import safe_eval
 
 # Activity type of the To-Do raised on whoever a pending state waits for —
@@ -64,6 +65,7 @@ class AdvancePayment(models.Model):
         "loan_type_id",
         "bank_id",
         "reference",
+        "reference_number",
         "employee_id",
         "use_unlisted_bank",
         "unlisted_bank_id",
@@ -175,19 +177,35 @@ class AdvancePayment(models.Model):
         compute="_compute_reference_state",
     )
 
-    # The loan type's Reference filter, evaluated for this borrower and ANDed
-    # with each bridge's baseline — the domain of the typed pickers (ADR-0023).
-    reference_picker_domain = fields.Binary(
-        compute="_compute_reference_picker_domain",
+    # The borrower names the source by typing its number; it is looked up
+    # under sudo, because the source is usually filed by someone whose
+    # documents the borrower may not read (ADR-0029). Compute/inverse over
+    # `reference`, which stays the source of truth (ADR-0007).
+    reference_number = fields.Char(
+        string="เลขที่เอกสารต้นทาง",
+        compute="_compute_reference_number",
+        inverse="_inverse_reference_number",
+        store=True,
+        readonly=False,
+        copy=False,
+        states=READONLY_STATES,
+        help="พิมพ์เลขที่เอกสารต้นทางให้ตรงทั้งหมด (ไม่สนตัวพิมพ์เล็ก/ใหญ่)",
+    )
+
+    # Just enough of the source for the borrower to confirm it is the right
+    # one — read under sudo like the lookup itself (ADR-0029).
+    reference_subject = fields.Char(string="เรื่อง", compute="_compute_reference_summary")
+    reference_unit = fields.Char(
+        string="หน่วยงานต้นเรื่อง", compute="_compute_reference_summary"
     )
 
     is_requester = fields.Boolean(compute="_compute_is_requester")
 
     is_loan_officer = fields.Boolean(compute="_compute_is_loan_officer")
 
-    # Mirrors _check_submit_permission: only the borrower or an admin may
-    # submit — used to hide the button for a `user`-tier drafter-on-behalf,
-    # who would otherwise hit a UserError on click.
+    # Mirrors _check_submit_permission: the borrower, a loan officer or an
+    # admin may submit — used to hide the button for a `user`-tier
+    # drafter-on-behalf, who would otherwise hit a UserError on click.
     can_submit = fields.Boolean(compute="_compute_can_submit")
 
     # Mirrors _check_creator_only: only a `user`-tier staffer or an admin may
@@ -224,11 +242,28 @@ class AdvancePayment(models.Model):
         for rec in self:
             rec.is_requester = rec.employee_id.sudo().user_id == self.env.user
 
+    @api.depends("submitted_by_id", "employee_id")
+    def _compute_is_submitted_by_borrower(self):
+        for rec in self:
+            rec.is_submitted_by_borrower = bool(
+                rec.submitted_by_id
+                and rec.submitted_by_id == rec.employee_id.sudo().user_id
+            )
+
     @api.depends("employee_id")
     def _compute_can_submit(self):
-        is_admin = self.env.user.has_group("base.group_system")
+        may_submit_any = self._may_submit_on_behalf()
         for rec in self:
-            rec.can_submit = is_admin or rec.employee_id.sudo().user_id == self.env.user
+            rec.can_submit = (
+                may_submit_any or rec.employee_id.sudo().user_id == self.env.user
+            )
+
+    def _may_submit_on_behalf(self):
+        """A loan officer (or an admin) may submit any borrower's request
+        (ADR-0031, amending ADR-0005)."""
+        return self.env.user.has_group(
+            "advance_payment.group_advance_payment_loan_officer"
+        ) or self.env.user.has_group("base.group_system")
 
     def _is_strict_own_only(self):
         """Strict mode: a request may only ever be created for oneself — the
@@ -356,20 +391,83 @@ class AdvancePayment(models.Model):
             safe_eval(loan_type.reference_domain, self._get_reference_eval_context())
         )
 
-    def _get_reference_picker_domain(self):
-        """Hook: the documents the typed picker offers. Bridges AND their
-        mandatory baseline (e.g. approved only) into this (ADR-0023)."""
-        return self._get_reference_type_domain()
+    def _find_reference_by_number(self, number):
+        """The source document of the loan type's model whose number is exactly
+        `number` (case-insensitive, trimmed), within the type's Reference
+        filter — searched under sudo, so the borrower need not be able to read
+        it (ADR-0029). False when there is no single match."""
+        self.ensure_one()
+        model = self.loan_type_id.reference_model
+        number = (number or "").strip()
+        # "/" is the placeholder name of an unnumbered draft (AR, Sarabun).
+        if not model or not number or number == "/":
+            return False
+        Source = self.env[model].sudo()
+        domain = [
+            (Source._rec_name, "=ilike", escape_psql(number))
+        ] + self._get_reference_type_domain()
+        found = Source.search(domain, limit=2)
+        return found if len(found) == 1 else False
 
-    @api.depends(
-        "employee_id",
-        "partner_id",
-        "loan_type_id.reference_model",
-        "loan_type_id.reference_domain",
-    )
-    def _compute_reference_picker_domain(self):
+    @api.depends("reference")
+    def _compute_reference_number(self):
         for rec in self:
-            rec.reference_picker_domain = rec._get_reference_picker_domain()
+            source = rec.reference and rec.reference.sudo()
+            rec.reference_number = source[source._rec_name] if source else False
+
+    def _inverse_reference_number(self):
+        for rec in self:
+            if not rec.reference_number:
+                rec.reference = False
+                continue
+            source = rec._find_reference_by_number(rec.reference_number)
+            if not source:
+                raise ValidationError(
+                    _(
+                        "ไม่พบเอกสารต้นทางเลขที่ %(number)s",
+                        number=rec.reference_number,
+                    )
+                )
+            if rec.reference != source:
+                rec.reference = source
+
+    @api.onchange("reference_number")
+    def _onchange_reference_number(self):
+        """Resolve the typed number on the form, then prefill from the source.
+        `reference` is not on the form, so its own onchange does not cascade
+        from here — call the prefill directly."""
+        if not self.reference_number:
+            self.reference = False
+            return
+        number = self.reference_number
+        source = self._find_reference_by_number(number)
+        if not source:
+            self.reference = False
+            return {
+                "warning": {
+                    "title": _("ไม่พบเอกสารต้นทาง"),
+                    "message": _(
+                        "ไม่พบเอกสารเลขที่ %(number)s สำหรับประเภทเงินยืมนี้"
+                        " กรุณาตรวจสอบเลขที่อีกครั้ง",
+                        number=number,
+                    ),
+                }
+            }
+        self.reference = source
+        self._apply_vals_from_reference()
+
+    def _get_reference_summary(self):
+        """Hook: {"subject": ..., "unit": ...} of the source, read under sudo.
+        Bridges fill in their model's own fields."""
+        self.ensure_one()
+        return {"subject": self.reference.sudo().display_name, "unit": False}
+
+    @api.depends("reference")
+    def _compute_reference_summary(self):
+        for rec in self:
+            summary = rec._get_reference_summary() if rec.reference else {}
+            rec.reference_subject = summary.get("subject") or False
+            rec.reference_unit = summary.get("unit") or False
 
     def _check_reference_status(self):
         """Hook: verify the source document is in a state that may back a loan.
@@ -788,6 +886,15 @@ class AdvancePayment(models.Model):
     can_view_payments = fields.Boolean(compute="_compute_can_view_payments")
 
     date_submitted = fields.Datetime(string="วันที่ส่งคำขอ", readonly=True, copy=False)
+    # Who pressed ส่งคำขอ last — the borrower, or a loan officer on their
+    # behalf (ADR-0031). The printed contract signs for the borrower only
+    # when they submitted personally.
+    submitted_by_id = fields.Many2one(
+        comodel_name="res.users", string="ผู้ส่งคำขอ", readonly=True, copy=False
+    )
+    is_submitted_by_borrower = fields.Boolean(
+        compute="_compute_is_submitted_by_borrower"
+    )
     date_endorsed = fields.Datetime(
         string="วันที่บังคับบัญชาเห็นชอบ", readonly=True, copy=False
     )
@@ -1057,39 +1164,16 @@ class AdvancePayment(models.Model):
     # ------------------------------------------------------------------ #
 
     def _check_submit_permission(self):
-        """Creator-only: only the borrower (or an admin) may submit (ADR-0005)."""
-        is_admin = self.env.user.has_group("base.group_system")
+        """Only the borrower, a loan officer or an admin may submit (ADR-0005,
+        amended by ADR-0031)."""
+        may_submit_any = self._may_submit_on_behalf()
         for rec in self:
             # sudo: same hr.employee.public crash as can_submit.
-            if rec.employee_id.sudo().user_id == self.env.user or is_admin:
+            if may_submit_any or rec.employee_id.sudo().user_id == self.env.user:
                 continue
             raise UserError(
-                _(
-                    "Only the borrower can submit this agreement (no borrowing on"
-                    " behalf)."
-                )
+                _("Only the borrower or a loan officer can submit this agreement.")
             )
-
-    def _check_one_active_agreement(self):
-        """A borrower may hold only one active agreement at a time (ADR-0001)."""
-        for rec in self:
-            other = rec.sudo().search(
-                [
-                    ("employee_id", "=", rec.employee_id.id),
-                    ("state", "in", self.ACTIVE_STATES),
-                    ("id", "!=", rec.id),
-                ],
-                limit=1,
-            )
-            if other:
-                raise UserError(
-                    _(
-                        "%(user)s already has an active loan agreement"
-                        " (%(name)s). Clear it before starting a new one.",
-                        user=rec.employee_id.name,
-                        name=other.name,
-                    )
-                )
 
     def _workflow_activity_specs(self):
         """(summary, assignee) of the To-Do owned by each pending state; its
@@ -1221,13 +1305,13 @@ class AdvancePayment(models.Model):
         for rec in self:
             if rec.state != "draft":
                 raise UserError(_("Only draft agreements can be submitted."))
-            rec._check_one_active_agreement()
             # The placeholder is translated at create time, so a draft made in
             # another language (API, import, en_US user) still reads "New".
             if rec.name in ("New", _("New")):
                 rec.name = self.env["ir.sequence"].next_by_code("advance.payment")
             # endorser_id already tracks the borrower's manager in draft and
             # freezes itself on this write (_compute_endorser_id, ADR-0020).
+            rec.submitted_by_id = self.env.user
             rec._advance_route("date_submitted")
             rec.message_post(
                 body=_(
@@ -1239,6 +1323,14 @@ class AdvancePayment(models.Model):
                 ),
                 subtype_xmlid="mail.mt_note",
             )
+            if not rec.is_submitted_by_borrower:
+                rec.message_post(
+                    body=_(
+                        "ส่งคำขอแทนผู้ยืม โดย <b>%(user)s</b>",
+                        user=self.env.user.name,
+                    ),
+                    subtype_xmlid="mail.mt_note",
+                )
 
     def _check_endorse_permission(self):
         """Endorser-only: only the borrower's snapshotted manager (or an
