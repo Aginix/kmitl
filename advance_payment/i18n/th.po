@@ -82,8 +82,6 @@ msgstr "ไอคอนประเภทกิจกรรม"
 #. module: advance_payment
 #: model:ir.model,name:advance_payment.model_advance_payment
 #: model:ir.model.fields,field_description:advance_payment.field_account_payment__advance_payment_id
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_exception_confirm__related_model_id
-#: model:ir.model.fields.selection,name:advance_payment.selection__exception_rule__model__advance_payment
 #: model:ir.module.category,name:advance_payment.module_category_advance_payment
 msgid "Advance Payment"
 msgstr "สัญญายืมเงิน"
@@ -119,34 +117,16 @@ msgid "Advance Payment Return Wizard"
 msgstr "ตัวช่วยคืนเงินยืม"
 
 #. module: advance_payment
-#: model:ir.model,name:advance_payment.model_advance_payment_usage_line
-msgid "Advance Payment Usage Line"
-msgstr "รายการใช้เงินยืม"
-
-#. module: advance_payment
 #: model:ir.model,name:advance_payment.model_advance_payment_usage_wizard
 msgid "Advance Payment Usage Wizard"
 msgstr "ตัวช่วยบันทึกการใช้เงินยืม"
 
 #. module: advance_payment
-#: model:ir.model.fields,field_description:advance_payment.field_exception_rule__advance_payment_ids
-msgid "Advance Payments"
-msgstr "สัญญายืมเงิน"
-
-#. module: advance_payment
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment_cancel_wizard__agreement_id
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_close_confirm__agreement_id
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_line__agreement_id
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_wizard__agreement_id
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_usage_line__agreement_id
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_usage_wizard__agreement_id
 msgid "Agreement"
 msgstr "สัญญา"
-
-#. module: advance_payment
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__name
-msgid "Agreement Number"
-msgstr "เลขที่สัญญา"
 
 #. module: advance_payment
 #. odoo-python
@@ -214,14 +194,7 @@ msgstr ""
 "%(currency)s</b>%(reason)s"
 
 #. module: advance_payment
-#: model:ir.model.fields,field_description:advance_payment.field_res_config_settings__advance_payment_allow_manual_reference
-msgid "Allow Manual Reference"
-msgstr "อนุญาตให้ระบุเอกสารอ้างอิงเอง"
-
-#. module: advance_payment
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_line__amount
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_usage_line__amount
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_usage_wizard__amount
 msgid "Amount"
 msgstr "จำนวนเงิน"
 
@@ -233,25 +206,10 @@ msgid "Amount (%(amount)s) exceeds remaining balance (%(remaining)s)."
 msgstr "จำนวนเงิน (%(amount)s) เกินยอมคงเหลือ (%(remaining)s)"
 
 #. module: advance_payment
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__amount_remaining
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_close_confirm__amount_remaining
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_wizard__amount_remaining
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_usage_wizard__amount_remaining
-msgid "Amount Remaining"
-msgstr "จำนวนเงินคงเหลือ"
-
-#. module: advance_payment
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment__amount_returned
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_wizard__amount_returned
 msgid "Amount Returned"
 msgstr "จำนวนเงินที่คืนแล้ว"
-
-#. module: advance_payment
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__amount_used
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_wizard__amount_used
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_usage_wizard__amount_used
-msgid "Amount Used"
-msgstr "จำนวนเงินที่ใช้แล้ว"
 
 #. module: advance_payment
 #. odoo-python
@@ -261,27 +219,6 @@ msgid "Amount must be greater than zero."
 msgstr "จำนวนเงินต้องมากกว่าศูนย์"
 
 #. module: advance_payment
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__analytic_distribution
-msgid "Analytic"
-msgstr "การวิเคราะห์"
-
-#. module: advance_payment
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__analytic_distribution_search
-msgid "Analytic Distribution Search"
-msgstr "ค้นหาการกระจายการวิเคราะห์"
-
-#. module: advance_payment
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__analytic_precision
-msgid "Analytic Precision"
-msgstr "ความแม่นยำการวิเคราะห์"
-
-#. module: advance_payment
-#: model:ir.model.fields,field_description:advance_payment.field_exception_rule__model
-msgid "Apply on"
-msgstr "ใช้กับ"
-
-#. module: advance_payment
-#: model:ir.model.fields.selection,name:advance_payment.selection__advance_payment__state__approved
 #: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_search
 msgid "Approved"
 msgstr "อนุมัติแล้ว"
@@ -295,8 +232,6 @@ msgstr "จำนวนเอกสารแนบ"
 #. module: advance_payment
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment__attachment_ids
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_line__attachment_ids
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_usage_line__attachment_ids
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_usage_wizard__attachment_ids
 msgid "Attachments"
 msgstr "เอกสารแนบ"
 
@@ -306,7 +241,6 @@ msgid "Cancel"
 msgstr "ยกเลิก"
 
 #. module: advance_payment
-#: model:ir.model.fields.selection,name:advance_payment.selection__advance_payment__state__cancel
 #: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_search
 msgid "Cancelled"
 msgstr "ยกเลิกแล้ว"
@@ -331,102 +265,49 @@ msgstr "ยืนยันการปิดสัญญา"
 #. module: advance_payment
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment__create_uid
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment_cancel_wizard__create_uid
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_close_confirm__create_uid
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_exception_confirm__create_uid
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment_loan_type__create_uid
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_line__create_uid
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_wizard__create_uid
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_usage_line__create_uid
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_usage_wizard__create_uid
 msgid "Created by"
 msgstr "สร้างโดย"
 
 #. module: advance_payment
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment__create_date
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment_cancel_wizard__create_date
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_close_confirm__create_date
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_exception_confirm__create_date
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment_loan_type__create_date
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_line__create_date
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_wizard__create_date
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_usage_line__create_date
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_usage_wizard__create_date
 msgid "Created on"
 msgstr "สร้างเมื่อ"
 
 #. module: advance_payment
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment__currency_id
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_close_confirm__currency_id
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_line__currency_id
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_wizard__currency_id
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_usage_line__currency_id
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_usage_wizard__currency_id
 msgid "Currency"
 msgstr "สกุลเงิน"
 
 #. module: advance_payment
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_line__date
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_usage_line__date
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_usage_wizard__date
 msgid "Date"
 msgstr "วันที่"
 
 #. module: advance_payment
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__date_approved
-msgid "Date Approved"
-msgstr "วันที่อนุมัติ"
-
-#. module: advance_payment
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__date_closed
-msgid "Date Closed"
-msgstr "วันที่ปิดสัญญา"
-
-#. module: advance_payment
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__date_endorsed
-msgid "Date Endorsed"
-msgstr "วันที่ผู้บังคับบัญชาลงนาม"
-
-#. module: advance_payment
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__date_submitted
-msgid "Date Submitted"
-msgstr "วันที่ส่งคำขอ"
-
-#. module: advance_payment
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__date_verified
-msgid "Date Verified"
-msgstr "วันที่เจ้าหน้าที่งานเงินยืมตรวจสอบ"
-
-#. module: advance_payment
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__department_id
-msgid "Department"
-msgstr "หน่วยงาน"
-
-#. module: advance_payment
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment__display_name
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment_cancel_wizard__display_name
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_close_confirm__display_name
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_exception_confirm__display_name
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment_loan_type__display_name
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_line__display_name
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_wizard__display_name
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_usage_line__display_name
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_usage_wizard__display_name
 msgid "Display Name"
 msgstr "ชื่อที่แสดง"
 
 #. module: advance_payment
 #: model:ir.model.fields.selection,name:advance_payment.selection__advance_payment_return_line__state__done
-msgid "Done"
-msgstr "เสร็จสิ้น"
-
-#. module: advance_payment
-#: model:ir.model.fields.selection,name:advance_payment.selection__advance_payment__state__done
 #: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_search
 msgid "Done"
 msgstr "เสร็จสิ้น"
 
 #. module: advance_payment
-#: model:ir.model.fields.selection,name:advance_payment.selection__advance_payment__state__draft
 #: model:ir.model.fields.selection,name:advance_payment.selection__advance_payment_return_line__state__draft
 #: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_search
 msgid "Draft"
@@ -444,20 +325,9 @@ msgid "Exception Rules"
 msgstr "กฎข้อยกเว้น"
 
 #. module: advance_payment
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__exception_ids
 #: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_search
 msgid "Exceptions"
 msgstr "ข้อยกเว้น"
-
-#. module: advance_payment
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__exceptions_summary
-msgid "Exceptions Summary"
-msgstr "สรุปข้อยกเว้น"
-
-#. module: advance_payment
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_exception_confirm__exception_ids
-msgid "Exceptions to resolve"
-msgstr "ข้อยกเว้นที่ต้องแก้ไข"
 
 #. module: advance_payment
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment__message_follower_ids
@@ -490,13 +360,9 @@ msgstr "มีข้อความ"
 #. module: advance_payment
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment__id
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment_cancel_wizard__id
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_close_confirm__id
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_exception_confirm__id
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment_loan_type__id
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_line__id
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_wizard__id
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_usage_line__id
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_usage_wizard__id
 msgid "ID"
 msgstr ""
 
@@ -525,13 +391,6 @@ msgid "If checked, some messages have a delivery error."
 msgstr "หากเลือก ข้อความบางรายการมีข้อผิดพลาดในการส่ง"
 
 #. module: advance_payment
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__ignore_exception
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_exception_confirm__ignore
-msgid "Ignore Exceptions"
-msgstr "ละเว้นข้อยกเว้น"
-
-#. module: advance_payment
-#: model:ir.model.fields.selection,name:advance_payment.selection__advance_payment__state__in_progress
 #: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_search
 msgid "In Progress"
 msgstr "กำลังดำเนินการ"
@@ -543,53 +402,35 @@ msgid "Is Follower"
 msgstr "เป็นผู้ติดตาม"
 
 #. module: advance_payment
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__is_reference_readonly
-msgid "Is Reference Readonly"
-msgstr "เอกสารอ้างอิงอ่านอย่างเดียว"
-
-#. module: advance_payment
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment____last_update
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment_cancel_wizard____last_update
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_close_confirm____last_update
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_exception_confirm____last_update
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment_loan_type____last_update
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_line____last_update
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_wizard____last_update
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_usage_line____last_update
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_usage_wizard____last_update
 msgid "Last Modified on"
 msgstr "แก้ไขล่าสุดเมื่อ"
 
 #. module: advance_payment
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment__write_uid
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment_cancel_wizard__write_uid
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_close_confirm__write_uid
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_exception_confirm__write_uid
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment_loan_type__write_uid
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_line__write_uid
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_wizard__write_uid
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_usage_line__write_uid
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_usage_wizard__write_uid
 msgid "Last Updated by"
 msgstr "อัปเดตล่าสุดโดย"
 
 #. module: advance_payment
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment__write_date
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment_cancel_wizard__write_date
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_close_confirm__write_date
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_exception_confirm__write_date
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment_loan_type__write_date
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_line__write_date
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_wizard__write_date
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_usage_line__write_date
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_usage_wizard__write_date
 msgid "Last Updated on"
 msgstr "อัปเดตล่าสุดเมื่อ"
 
 #. module: advance_payment
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment__loan_amount
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_wizard__loan_amount
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_usage_wizard__loan_amount
 msgid "Loan Amount"
 msgstr "จำนวนเงินยืม"
 
@@ -617,11 +458,6 @@ msgstr "จำนวนเงินยืมต้องไม่ติดลบ
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_line__message_main_attachment_id
 msgid "Main Attachment"
 msgstr "เอกสารแนบหลัก"
-
-#. module: advance_payment
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__main_exception_id
-msgid "Main Exception"
-msgstr "ข้อยกเว้นหลัก"
 
 #. module: advance_payment
 #: model:res.groups,name:advance_payment.group_advance_payment_manager
@@ -677,8 +513,6 @@ msgstr "ประเภทกิจกรรมถัดไป"
 #. module: advance_payment
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_line__note
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_wizard__note
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_usage_line__note
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_usage_wizard__note
 msgid "Note"
 msgstr "หมายเหตุ"
 
@@ -785,11 +619,6 @@ msgid "Own Only"
 msgstr "เฉพาะของตนเอง"
 
 #. module: advance_payment
-#: model:ir.model.fields.selection,name:advance_payment.selection__advance_payment_return_line__state__paid
-msgid "Paid"
-msgstr "จ่ายแล้ว"
-
-#. module: advance_payment
 #: model:ir.model.fields,help:advance_payment.field_advance_payment__partner_id
 msgid "Partner-related data of the employee"
 msgstr "ข้อมูลพาร์ทเนอร์ที่เกี่ยวข้องกับพนักงาน"
@@ -851,11 +680,6 @@ msgstr "กรุณาแนบหลักฐานการโอนเงิ
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_wizard__attachment_ids
 msgid "Proof of Transfer"
 msgstr "หลักฐานการโอนเงิน"
-
-#. module: advance_payment
-#: model:ir.model.fields.selection,name:advance_payment.selection__advance_payment__reference__purchase_request
-msgid "Purchase Request"
-msgstr "คำขอจัดซื้อ"
 
 #. module: advance_payment
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment__cancel_reason
@@ -985,12 +809,6 @@ msgstr ""
 "วางแผน: กิจกรรมในอนาคต"
 
 #. module: advance_payment
-#: model:ir.model.fields,field_description:advance_payment.field_res_config_settings__advance_payment_strict_submit
-msgid "Strict Submit Mode"
-msgstr "โหมดส่งขออนุมัติแบบเข้มงวด"
-
-#. module: advance_payment
-#: model:ir.model.fields.selection,name:advance_payment.selection__advance_payment__state__submitted
 #: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_search
 msgid "Submitted"
 msgstr "ส่งแล้ว"
@@ -999,11 +817,6 @@ msgstr "ส่งแล้ว"
 #: model:ir.model.fields,help:advance_payment.field_advance_payment__activity_exception_decoration
 msgid "Type of the exception activity on record."
 msgstr "ประเภทกิจกรรมข้อยกเว้นในระเบียน"
-
-#. module: advance_payment
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__usage_line_ids
-msgid "Usage Records"
-msgstr "รายการใช้เงิน"
 
 #. module: advance_payment
 #. odoo-python
@@ -1047,11 +860,6 @@ msgstr ""
 #. module: advance_payment
 #: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_cancel_wizard_form
 msgid "กรุณาระบุเหตุผล..."
-msgstr ""
-
-#. module: advance_payment
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__fund_analytic_id
-msgid "กองทุน"
 msgstr ""
 
 #. module: advance_payment
@@ -1119,16 +927,6 @@ msgstr ""
 #. module: advance_payment
 #: model:kmitl.payment.type,name:advance_payment.payment_type_advance_payment_outbound
 msgid "จ่ายเงินยืม"
-msgstr ""
-
-#. module: advance_payment
-#: model:ir.model.fields.selection,name:advance_payment.selection__advance_payment__disbursement_state__paid
-msgid "จ่ายเงินแล้ว"
-msgstr ""
-
-#. module: advance_payment
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__activity_analytic_id
-msgid "ด้าน/แผนงาน/กิจกรรม"
 msgstr ""
 
 #. module: advance_payment
@@ -1242,11 +1040,6 @@ msgid "ยืนยันปิดสัญญา"
 msgstr ""
 
 #. module: advance_payment
-#: model:ir.model.fields.selection,name:advance_payment.selection__advance_payment__disbursement_state__pending
-msgid "รอดำเนินการ"
-msgstr ""
-
-#. module: advance_payment
 #: model:kmitl.payment.type,name:advance_payment.payment_type_advance_payment_inbound
 msgid "รับคืนเงินยืม"
 msgstr ""
@@ -1263,14 +1056,6 @@ msgid "รายการคืนเงิน"
 msgstr ""
 
 #. module: advance_payment
-#: model:ir.actions.act_window,name:advance_payment.action_advance_payment_usage_line
-#: model:ir.ui.menu,name:advance_payment.menu_advance_payment_usage_line
-#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_usage_line_form
-#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_usage_line_list
-msgid "รายการบันทึกการใช้เงินยืม"
-msgstr ""
-
-#. module: advance_payment
 #: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_form
 #: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_usage_wizard_form
 msgid "รายการใช้เงิน"
@@ -1284,11 +1069,6 @@ msgstr ""
 #. module: advance_payment
 #: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_return_wizard_form
 msgid "รายละเอียดการคืนเงิน"
-msgstr ""
-
-#. module: advance_payment
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__disbursement_state
-msgid "สถานะการจ่ายเงิน"
 msgstr ""
 
 #. module: advance_payment
@@ -1324,11 +1104,6 @@ msgstr ""
 #. module: advance_payment
 #: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_form
 msgid "ส่งเพื่อขออนุมัติ"
-msgstr ""
-
-#. module: advance_payment
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__department_analytic_id
-msgid "ส่วนงาน"
 msgstr ""
 
 #. module: advance_payment
@@ -1395,7 +1170,6 @@ msgstr ""
 #. module: advance_payment
 #: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_form
 #: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_return_line_form
-#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_usage_line_form
 #: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_usage_wizard_form
 msgid "เอกสารแนบ"
 msgstr ""
@@ -1409,11 +1183,6 @@ msgstr ""
 #. module: advance_payment
 #: model_terms:ir.ui.view,arch_db:advance_payment.res_config_settings_view_form_advance_payment
 msgid "แบบฟอร์ม"
-msgstr ""
-
-#. module: advance_payment
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__source_analytic_id
-msgid "แหล่งเงิน"
 msgstr ""
 
 #. module: advance_payment

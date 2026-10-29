@@ -77,6 +77,16 @@
         "advance_payment_contract_pdf",
         "advance_payment_exception",
         "advance_payment_partner_bank",
+        "advance_payment_office_route",
+        "advance_payment_todo",
+        # No longer pulled in through advance_payment_disbursement
+        # (advance_payment ADR-0029): the source bridges are listed directly.
+        "purchase_request_advance_payment",
+        "agx_approval_advance_payment",
+        "advance_payment_budget_commitment",
+        "advance_payment_loan_type_group",
+        "advance_payment_related_document",
+        "advance_payment_related_document_sarabun",
         "agx_approval_disbursement",
         "disbursement_accounting_kmitl",
         "disbursement_finance_kmitl",

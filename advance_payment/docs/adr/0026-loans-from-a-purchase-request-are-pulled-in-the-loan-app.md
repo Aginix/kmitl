@@ -1,6 +1,6 @@
 # Loans against a purchase request are created only in the loan app
 
-Status: accepted (2026-10 UAT feedback; pre-production, no migration/version bump). Amends ADR-0007; brings the purchase request in line with `agx_approval` ADR-0003.
+Status: superseded by ADR-0029 (one live loan per PR → many borrowers per source; the PR's purchase step no longer waits on its loan). Originally accepted 2026-10 UAT feedback. Amends ADR-0007; brings the purchase request in line with `agx_approval` ADR-0003.
 
 ## Context & Decision
 

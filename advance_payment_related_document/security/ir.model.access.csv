@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_advance_payment_related_document_own,advance.payment.related.document own,model_advance_payment_related_document,advance_payment.group_advance_payment_own_only,1,1,1,1
+access_advance_payment_related_document_endorser,advance.payment.related.document endorser,model_advance_payment_related_document,base.group_user,1,0,0,0
+access_advance_payment_related_document_kind_user,advance.payment.related.document.kind user,model_advance_payment_related_document_kind,base.group_user,1,0,0,0
+access_advance_payment_related_document_kind_admin,advance.payment.related.document.kind admin,model_advance_payment_related_document_kind,base.group_system,1,1,1,1

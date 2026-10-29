@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_advance_payment_form_loan_type_group" model="ir.ui.view">
+        <field name="name">advance.payment.form.loan.type.group</field>
+        <field name="model">advance.payment</field>
+        <field name="inherit_id" ref="advance_payment.view_advance_payment_form" />
+        <field name="arch" type="xml">
+            <!-- The current type stays listed, so a borrower opening a draft
+                 an officer made in a restricted type still sees it. -->
+            <field name="loan_type_id" position="attributes">
+                <attribute
+                    name="domain"
+                >['|', ('is_selectable', '=', True), ('id', '=', loan_type_id)]</attribute>
+            </field>
+        </field>
+    </record>
+</odoo>

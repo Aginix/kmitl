@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- 'execution': each step's To-Do clears only when the step is taken
+         (or the request leaves it), never by "Mark as Read" — the request
+         would otherwise wait on somebody who no longer sees it. -->
+    <record id="advance_payment.mail_activity_type_endorse" model="mail.activity.type">
+        <field name="todo_category">execution</field>
+    </record>
+    <record id="advance_payment.mail_activity_type_verify" model="mail.activity.type">
+        <field name="todo_category">execution</field>
+    </record>
+    <record
+        id="advance_payment.mail_activity_type_director_review"
+        model="mail.activity.type"
+    >
+        <field name="todo_category">execution</field>
+    </record>
+    <record id="advance_payment.mail_activity_type_approve" model="mail.activity.type">
+        <field name="todo_category">execution</field>
+    </record>
+    <record
+        id="advance_payment.mail_activity_type_payment_voucher"
+        model="mail.activity.type"
+    >
+        <field name="todo_category">execution</field>
+    </record>
+</odoo>
