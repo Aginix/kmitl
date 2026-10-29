@@ -10,7 +10,9 @@ details what to fix as Change requests, on the request or pinned on its files.
   ``excep_disbursement_outstanding_change_requests`` (an exception rule an
   administrator may switch off).
 * **ส่งกลับแก้ไข** needs no reason while requests are outstanding: the wizard
-  lists them, and so do the note and the requester's correction To-Do.
+  lists them, and so do the note and the requester's correction To-Do. The
+  request then also shows *มีข้อแก้ไขที่ต้องแก้* beside core's *ส่งคืนผู้จัดทำ*
+  in ข้อผิดพลาด, until it is resubmitted.
 * Whoever may send the request back (the people at the station holding it, or a
   disbursement officer before it reaches a station) may close a request on its
   author's behalf.

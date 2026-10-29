@@ -64,6 +64,13 @@ class TestDisbursementChangeRequest(TwoApproverCommon):
             lambda a: a.activity_type_id == self.env.ref("mail.mail_activity_data_todo")
         )
         self.assertIn("ยอดเงินไม่ตรงกับใบเสร็จ", todo.note)
+        self.assertIn(
+            self.env.ref(
+                "disbursement_change_request."
+                "excep_disbursement_sent_back_change_requests"
+            ),
+            dr.exception_ids,
+        )
 
     def test_return_needs_a_reason_without_requests(self):
         dr = self._make_signed_dr()
@@ -74,3 +81,12 @@ class TestDisbursementChangeRequest(TwoApproverCommon):
         )
         with self.assertRaises(UserError):
             wizard.action_return()
+
+    def test_return_with_a_reason_only_is_not_marked_for_requests(self):
+        dr = self._make_signed_dr()
+        self.env["disbursement.return.request.wizard"].with_user(self.officer).create(
+            {"request_id": dr.id, "reason": "แก้วันที่"}
+        ).action_return()
+        self.assertEqual(
+            dr.exception_ids, self.env.ref("disbursement.excep_disbursement_sent_back")
+        )

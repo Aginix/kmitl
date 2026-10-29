@@ -16,4 +16,21 @@
         <field name="is_blocking" eval="True" />
         <field name="active" eval="True" />
     </record>
+
+    <!-- ส่งคืนผู้จัดทำ marker: linked by the send-back while Change requests are
+         outstanding and cleared on the next state change, never evaluated (see
+         disbursement SENT_BACK_RULES). -->
+    <record id="excep_disbursement_sent_back_change_requests" model="exception.rule">
+        <field name="name">มีข้อแก้ไขที่ต้องแก้</field>
+        <field
+            name="description"
+        >ใบขอเบิกถูกส่งคืนพร้อมข้อแก้ไขที่ยังค้างอยู่ ดูรายการได้ที่ข้อแก้ไขของใบขอเบิก</field>
+        <field name="sequence">81</field>
+        <field name="model">disbursement.request</field>
+        <field name="exception_type">by_py_code</field>
+        <field name="code"># set by the send-back, never evaluated
+failed = False</field>
+        <field name="is_blocking" eval="False" />
+        <field name="active" eval="True" />
+    </record>
 </odoo>

@@ -9,6 +9,11 @@ from odoo.tools import plaintext2html
 OUTSTANDING_RULE = (
     "disbursement_change_request.excep_disbursement_outstanding_change_requests"
 )
+# ส่งคืนผู้จัดทำ with outstanding Change requests: one more marker (see
+# disbursement SENT_BACK_RULES), cleared on the next state change.
+SENT_BACK_RULE = (
+    "disbursement_change_request.excep_disbursement_sent_back_change_requests"
+)
 
 
 class DisbursementRequest(models.Model):
@@ -80,4 +85,12 @@ class DisbursementRequest(models.Model):
             reason = plaintext2html(
                 "\n".join(filter(None, [reason, _("ข้อแก้ไขที่ค้างอยู่:")] + lines))
             )
-        return super()._action_return_for_edit(reason)
+        res = super()._action_return_for_edit(reason)
+        # Only a request sent back to its maker (draft), not to its source.
+        if lines and self.state == "draft":
+            self.exception_ids = [(4, self.env.ref(SENT_BACK_RULE).id)]
+        return res
+
+    def _sent_back_rules(self):
+        rule = self.env.ref(SENT_BACK_RULE, raise_if_not_found=False)
+        return super()._sent_back_rules() | (rule or self.env["exception.rule"])
