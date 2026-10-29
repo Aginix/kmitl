@@ -19,7 +19,6 @@ class DisbursementRequest(models.Model):
         string="เลขที่สัญญายืมเงิน",
         domain="[('state', '=', 'in_progress'),"
         " ('operating_unit_id', '=', operating_unit_id)]",
-        context={"advance_payment_picker": True},
         index=True,
         copy=False,
         ondelete="restrict",
@@ -52,6 +51,13 @@ class DisbursementRequest(models.Model):
     advance_payment_return_due_status = fields.Selection(
         related="advance_payment_id.return_due_status", string="สถานะวันครบกำหนด"
     )
+
+    def read(self, fields=None, load="_classic_read"):
+        """The loan reads as in its picker: "<contract number> — <borrower>"
+        (advance.payment.name_get)."""
+        return super(
+            DisbursementRequest, self.with_context(advance_payment_picker=True)
+        ).read(fields=fields, load=load)
 
     @api.onchange("payment_type")
     def _onchange_payment_type_advance_payment(self):
@@ -100,7 +106,7 @@ class DisbursementRequest(models.Model):
             raise UserError(
                 _(
                     "Loan %(loan)s is not outstanding (ค้างชำระ): it cannot be cleared.",
-                    loan=loan.display_name,
+                    loan=loan.contract_number or loan.name,
                 )
             )
         if (
@@ -116,7 +122,7 @@ class DisbursementRequest(models.Model):
                     "The request amount %(amount)s exceeds what loan %(loan)s "
                     "still owes (%(remaining)s).",
                     amount=self.amount_total,
-                    loan=loan.display_name,
+                    loan=loan.contract_number or loan.name,
                     remaining=loan.amount_remaining,
                 )
             )

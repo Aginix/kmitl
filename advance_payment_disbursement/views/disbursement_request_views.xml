@@ -12,6 +12,7 @@
                 <field name="operating_unit_id" invisible="1" />
                 <field
                     name="advance_payment_id"
+                    context="{'advance_payment_picker': True}"
                     options="{'no_create': True, 'no_open': True}"
                     attrs="{'invisible': [('payment_type', '!=', 'advance')], 'required': [('payment_type', '=', 'advance')], 'readonly': [('can_edit_header', '=', False)]}"
                 />
