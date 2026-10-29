@@ -36,8 +36,8 @@ class TestDisbursementWorkCenter(TwoApproverCommon):
                 }
             )
         )
-        # The seeded stations start empty: seat one member each, and let the
-        # first station open the lines for editing.
+        # Seat one member each, require no act (a configuration module may
+        # have set some), and let the first station open the lines for editing.
         members = {
             "check": cls.officer,
             "director": cls.finance,
@@ -48,7 +48,9 @@ class TestDisbursementWorkCenter(TwoApproverCommon):
         }
         cls.members = members
         for key, station in cls.stations.items():
-            station.member_ids = [(6, 0, members[key].ids)]
+            station.write(
+                {"member_ids": [(6, 0, members[key].ids)], "required_act_ids": [(5,)]}
+            )
         cls.stations["check"].allowed_edit_ids = env["work.center.act"].search(
             [("code", "=", "disbursement.edit_lines")]
         )
