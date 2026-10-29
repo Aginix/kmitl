@@ -34,7 +34,8 @@ class DisbursementRequest(models.Model):
           -> booked    (accounting posts the payment moves through the
                         account.move maker-checker)
 
-    The two acts belong to the stations that list them (disbursement_wc), in
+    The audit is its own module (disbursement_payment_audit), like the approval
+    acts. The two acts belong to the stations that list them (disbursement_wc), in
     whatever order the route says; the stage is derived from the bills and the
     vouchers that exist and walks back by itself. Budget was consumed by its own
     act and is never touched again here.
@@ -68,17 +69,6 @@ class DisbursementRequest(models.Model):
     # chatter alone is not something a list can be built on. The authorizer's
     # history list stands on the stamp rather than on the state, so a request
     # stays in it once it is paid and booked.
-    payment_auditor_id = fields.Many2one(
-        comodel_name="res.users",
-        string="Payment Auditor",
-        copy=False,
-        readonly=True,
-    )
-    payment_audit_date = fields.Datetime(
-        string="Payment Audited On",
-        copy=False,
-        readonly=True,
-    )
     payment_authorizer_id = fields.Many2one(
         comodel_name="res.users",
         string="Payment Authorizer",
@@ -185,19 +175,11 @@ class DisbursementRequest(models.Model):
         self._ensure_payment_lines()
 
     # ------------------------------------------------------------------
-    # The audit and the authorization: acts of their stations
+    # The authorization: an act of its station
     # ------------------------------------------------------------------
     @api.model
     def _disbursement_acts(self):
         return super()._disbursement_acts() + [
-            {
-                "code": "disbursement.audit_payment",
-                "name": _lt("Audit Payment"),
-                "kind": "act",
-                "group": AUDITOR_GROUP,
-                "sequence": 60,
-                "module": "disbursement_finance_kmitl",
-            },
             {
                 "code": "disbursement.authorize_payment",
                 "name": _lt("Authorize Payment"),
@@ -208,7 +190,6 @@ class DisbursementRequest(models.Model):
             },
         ]
 
-    can_audit_payment = fields.Boolean(compute="_compute_payment_acts")
     can_authorize_payment = fields.Boolean(compute="_compute_payment_acts")
     can_edit_payment_subject = fields.Boolean(compute="_compute_payment_acts")
 
@@ -216,17 +197,23 @@ class DisbursementRequest(models.Model):
     @api.depends_context("uid")
     def _compute_payment_acts(self):
         for rec in self:
-            audit = rec._disbursement_act_offered("disbursement.audit_payment")
-            rec.can_audit_payment = audit and rec._bills_all_posted()
             # Once authorized, Create Payment is the way back in: authorizing
             # again would only re-stamp and fan the To-pay Todo out twice.
             rec.can_authorize_payment = not rec.payment_authorizer_id and (
                 rec._disbursement_act_offered("disbursement.authorize_payment")
             )
             # The subject is the auditor's to choose, until a voucher exists.
-            rec.can_edit_payment_subject = audit and not any(
+            rec.can_edit_payment_subject = rec._payment_subject_editable() and not any(
                 payment.state != "cancel" for payment in rec.payment_ids
             )
+
+    def _payment_subject_editable(self):
+        """Whether the current user may choose the payment subject now, vouchers
+        aside. disbursement_payment_audit narrows it to its audit act."""
+        self.ensure_one()
+        return self.state in ("signed", "in_progress") and self.env.user.has_group(
+            AUDITOR_GROUP
+        )
 
     # ------------------------------------------------------------------
     # Todo fan-out (mirrors accounting_kmitl_workflow._schedule_approval_todo)
@@ -432,25 +419,6 @@ class DisbursementRequest(models.Model):
     # The acts (no reject, and no order enforced: the route says what normally
     # happens, the visit log what did)
     # ------------------------------------------------------------------
-    def action_audit(self):
-        """The audit act: check the payees' banking coordinates once the bills
-        are posted."""
-        for record in self:
-            record._disbursement_check_act("disbursement.audit_payment")
-            if not record._bills_all_posted():
-                raise UserError(_("Post the bills first."))
-            record._ensure_payment_lines()
-            record._check_payment_classification()
-            record.write(
-                {
-                    "payment_auditor_id": self.env.user.id,
-                    "payment_audit_date": fields.Datetime.now(),
-                }
-            )
-            record._stamp_signature("payment_audit")
-            record._disbursement_act_done("disbursement.audit_payment")
-        return True
-
     def action_authorize(self):
         """The authorization act, which raises the vouchers.
 
@@ -694,9 +662,6 @@ class DisbursementRequest(models.Model):
             },
         }
 
-    def action_audit_batch(self):
-        return self._payment_batch("action_audit", lambda r: r.can_audit_payment)
-
     def action_authorize_batch(self):
         return self._payment_batch(
             "action_authorize", lambda r: r.can_authorize_payment
@@ -863,13 +828,11 @@ class DisbursementRequest(models.Model):
         return payments
 
     def action_draft(self):
-        """The audit and the authorization are stamped like every act: a request
-        sent back to its maker starts those rounds again."""
+        """The authorization is stamped like every act: a request sent back to
+        its maker starts that round again."""
         res = super().action_draft()
         self.write(
             {
-                "payment_auditor_id": False,
-                "payment_audit_date": False,
                 "payment_authorizer_id": False,
                 "payment_authorize_date": False,
             }

@@ -109,7 +109,8 @@ upfront.
   post-bill payment-execution phase of a disbursement request (audit → authorize → pay →
   clear); owns the payee-level **รายการจ่ายเงิน** and keeps apart the several records
   that all sound like "what this payment is" (เรื่องที่จ่าย, ประเภทธุรกรรม,
-  ลักษณะการจ่าย, หัวจ่าย, วิธีจ่าย, ใบสำคัญ).
+  ลักษณะการจ่าย, หัวจ่าย, วิธีจ่าย, ใบสำคัญ). The ตรวจจ่าย act is its own module,
+  `disbursement_payment_audit`.
 - [Cash & Revenue Handover](./disbursement_cash_revenue_handover/CONTEXT.md) — the
   **โอนเงินและรายได้** entry that re-recognises centrally-held government-budget cash
   and revenue under the dimensions of the unit actually spending it; the first bridge in

@@ -147,7 +147,6 @@ class TestCashMovement(TransactionCase):
         line.write(
             {"paying_account_id": paying_line.id, "paying_account_match": "manual"}
         )
-        line.request_id.action_audit()
         line.request_id.action_authorize()
         return line.request_id.payment_ids
 

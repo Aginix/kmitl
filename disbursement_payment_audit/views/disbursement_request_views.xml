@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_disbursement_request_form" model="ir.ui.view">
+        <field name="name">disbursement.request.form (disbursement_payment_audit)</field>
+        <field name="model">disbursement.request</field>
+        <field
+            name="inherit_id"
+            ref="disbursement_finance_kmitl.view_disbursement_request_form_inherit_finance"
+        />
+        <field name="arch" type="xml">
+            <button name="action_authorize" position="before">
+                <button
+                    name="action_audit"
+                    string="Audit Disbursements"
+                    type="object"
+                    class="oe_highlight"
+                    confirm="Confirm the audit of this disbursement"
+                    attrs="{'invisible': [('can_audit_payment', '=', False)]}"
+                    groups="disbursement_finance_kmitl.group_disbursement_payment_auditor"
+                />
+                <field name="can_audit_payment" invisible="1" />
+            </button>
+            <xpath
+                expr="//page[@name='payment_execution']//field[@name='payment_authorizer_id']"
+                position="before"
+            >
+                <field
+                    name="payment_auditor_id"
+                    attrs="{'invisible': [('payment_auditor_id', '=', False)]}"
+                />
+                <field
+                    name="payment_audit_date"
+                    attrs="{'invisible': [('payment_auditor_id', '=', False)]}"
+                />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_disbursement_request_search" model="ir.ui.view">
+        <field name="name">disbursement.request.search (disbursement_payment_audit)</field>
+        <field name="model">disbursement.request</field>
+        <field
+            name="inherit_id"
+            ref="disbursement_finance_kmitl.view_disbursement_request_search_inherit_finance"
+        />
+        <field name="arch" type="xml">
+            <filter name="my_payment_authorizations" position="before">
+                <filter
+                    string="Audited by Me"
+                    name="my_payment_audits"
+                    domain="[('payment_auditor_id', '=', uid)]"
+                />
+            </filter>
+        </field>
+    </record>
+
+    <record id="view_disbursement_request_queue_tree" model="ir.ui.view">
+        <field name="name">disbursement.request.queue.tree (disbursement_payment_audit)</field>
+        <field name="model">disbursement.request</field>
+        <field
+            name="inherit_id"
+            ref="disbursement_finance_kmitl.view_disbursement_request_queue_tree"
+        />
+        <field name="arch" type="xml">
+            <button name="action_authorize_batch" position="before">
+                <button
+                    name="action_audit_batch"
+                    type="object"
+                    string="Audit Selected"
+                    class="btn-primary"
+                    groups="disbursement_finance_kmitl.group_disbursement_payment_auditor"
+                />
+            </button>
+            <field name="payment_status_display" position="before">
+                <field name="payment_auditor_id" optional="hide" />
+                <field name="payment_audit_date" optional="hide" />
+            </field>
+            <button name="action_authorize" position="before">
+                <button
+                    name="action_audit"
+                    type="object"
+                    string="Audit"
+                    icon="fa-check"
+                    confirm="Confirm the audit of this disbursement"
+                    attrs="{'invisible': [('can_audit_payment', '=', False)]}"
+                    groups="disbursement_finance_kmitl.group_disbursement_payment_auditor"
+                />
+                <field name="can_audit_payment" invisible="1" />
+            </button>
+        </field>
+    </record>
+</odoo>

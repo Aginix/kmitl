@@ -31,13 +31,6 @@
                      the rest back row by row. -->
                 <header>
                     <button
-                        name="action_audit_batch"
-                        type="object"
-                        string="Audit Selected"
-                        class="btn-primary"
-                        groups="disbursement_finance_kmitl.group_disbursement_payment_auditor"
-                    />
-                    <button
                         name="action_authorize_batch"
                         type="object"
                         string="Authorize Selected"
@@ -68,8 +61,6 @@
                 <field name="department_analytic_id" optional="show" />
                 <field name="source_analytic_id" optional="show" />
                 <field name="account_fiscal_year_id" optional="hide" />
-                <field name="payment_auditor_id" optional="hide" />
-                <field name="payment_audit_date" optional="hide" />
                 <field name="payment_status_display" optional="hide" />
                 <field
                     name="state"
@@ -84,14 +75,6 @@
                 <!-- The single-record press, beside the row it acts on, for the
                      request that is looked at rather than swept up in a batch. -->
                 <button
-                    name="action_audit"
-                    type="object"
-                    string="Audit"
-                    icon="fa-check"
-                    attrs="{'invisible': [('can_audit_payment', '=', False)]}"
-                    groups="disbursement_finance_kmitl.group_disbursement_payment_auditor"
-                />
-                <button
                     name="action_authorize"
                     type="object"
                     string="Authorize"
@@ -100,7 +83,6 @@
                     attrs="{'invisible': [('can_authorize_payment', '=', False)]}"
                     groups="disbursement_finance_kmitl.group_disbursement_payment_authorizer"
                 />
-                <field name="can_audit_payment" invisible="1" />
                 <field name="can_authorize_payment" invisible="1" />
                 <field name="currency_id" invisible="1" />
             </tree>

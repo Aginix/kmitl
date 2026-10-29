@@ -92,7 +92,8 @@ overwrite the account the person just picked.
   apart by document weight: a payment line is a **รายการ**จ่ายเงิน (a row), the
   `account.payment` it becomes is an **ใบ**จ่ายเงิน (a document). Never call a payment
   "รายการจ่ายเงิน".
-- **Payment Audit** (`action_audit`, `bills_posted → payment_audited`): the auditor
+- **Payment Audit** (`action_audit`, `bills_posted → payment_audited`; its own module,
+  `disbursement_payment_audit`): the auditor
   checks the disbursement documents after the bills are posted, and sets the
   เรื่องที่จ่าย that gives every payee its paying account. It is the **only** checkpoint
   on the banking coordinates — the finance office has none of its own, so a coordinate
