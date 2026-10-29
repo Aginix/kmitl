@@ -22,5 +22,9 @@ Who may change them, until the agreement is closed or cancelled:
 
 Every addition and removal is logged on the agreement.
 
-Each in-system kind comes from a small bridge module, e.g.
-`advance_payment_related_document_sarabun`.
+The in-system kinds are master data the administrators configure under
+**การกำหนดค่า → ชนิดเอกสารอ้างอิง**: a model, its number field, and optionally
+its subject and date fields — no module per kind. Rows are looked up under
+sudo, so anyone who types a valid number learns that record's subject: only
+configure models whose subjects may be shown that way.
+`advance_payment_related_document_sarabun` seeds the หนังสือสารบรรณ kind.

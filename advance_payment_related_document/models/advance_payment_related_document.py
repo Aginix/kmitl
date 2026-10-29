@@ -1,5 +1,6 @@
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
+from odoo.tools import html2plaintext
 from odoo.tools.sql import escape_psql
 
 CLOSED_STATES = ("done", "cancel")
@@ -21,13 +22,13 @@ class AdvancePaymentRelatedDocument(models.Model):
         index=True,
     )
     sequence = fields.Integer(default=10)
-    # Bridges add their in-system kinds with selection_add and map them to a
-    # model in _get_document_kinds().
-    document_kind = fields.Selection(
-        selection=[("external", "เอกสารนอกระบบ")],
+    # Empty = an out-of-system document, given by number/subject. A kind is
+    # an in-system model the administrators configured (ADR-0029).
+    kind_id = fields.Many2one(
+        comodel_name="advance.payment.related.document.kind",
         string="ชนิดเอกสาร",
-        required=True,
-        default="external",
+        ondelete="restrict",
+        help="ว่างไว้ = เอกสารนอกระบบ",
     )
     document_number = fields.Char(string="เลขที่")
     document_date = fields.Date(
@@ -36,9 +37,12 @@ class AdvancePaymentRelatedDocument(models.Model):
     )
     name = fields.Char(string="เรื่อง")
     # The in-system document, set from the typed number. Kept off the views:
-    # even an invisible Reference widget name_get()s the document, which the
-    # reader may not be allowed to read (advance_payment ADR-0023).
-    document_ref = fields.Reference(selection=[], string="เอกสารในระบบ", readonly=True)
+    # a reference widget name_get()s the document, which the reader may not
+    # be allowed to read (advance_payment ADR-0023).
+    res_model = fields.Char(string="Document Model", readonly=True)
+    res_id = fields.Many2oneReference(
+        string="Document ID", model_field="res_model", readonly=True
+    )
     file = fields.Binary(string="ไฟล์แนบ", attachment=True)
     file_name = fields.Char(string="ชื่อไฟล์")
     added_by_id = fields.Many2one(
@@ -48,29 +52,32 @@ class AdvancePaymentRelatedDocument(models.Model):
         readonly=True,
     )
 
-    @api.model
-    def _get_document_kinds(self):
-        """Hook: {kind: (model, date field or None)} of the in-system kinds."""
-        return {}
-
     def _get_document_subject(self, document):
-        """Hook: the subject shown for an in-system document (read under
-        sudo)."""
-        return document.display_name
+        """The kind's subject field (plain text, first line), else the
+        document's display name. Read under sudo — so is the kind: regular
+        users cannot read ir.model.fields."""
+        field = self.kind_id.sudo().subject_field_id
+        subject = document[field.name] if field else document.display_name
+        if field and field.ttype == "html":
+            subject = html2plaintext(subject or "")
+        subject = (subject or "").strip().split("\n")[0]
+        return subject[:120].rstrip() + "…" if len(subject) > 120 else subject
 
     def _find_document(self):
         """The in-system document the row's number names, under sudo — the
         reader need not be able to open it. Raises when the number matches
         none, or several the date does not tell apart."""
         self.ensure_one()
-        model, date_field = self._get_document_kinds()[self.document_kind]
+        # sudo: the kind's field settings are ir.model.fields, which regular
+        # users cannot read.
+        kind = self.kind_id.sudo()
         number = (self.document_number or "").strip()
         if not number or number == "/":
             raise ValidationError(_("กรุณาระบุเลขที่เอกสาร"))
-        Document = self.env[model].sudo()
-        domain = [(Document._rec_name, "=ilike", escape_psql(number))]
-        if date_field and self.document_date:
-            domain.append((date_field, "=", self.document_date))
+        Document = self.env[kind.model_name].sudo()
+        domain = [(kind._get_number_field(), "=ilike", escape_psql(number))]
+        if kind.date_field_id and self.document_date:
+            domain.append((kind.date_field_id.name, "=", self.document_date))
         found = Document.search(domain, limit=2)
         if not found:
             raise ValidationError(_("ไม่พบเอกสารเลขที่ %(number)s", number=number))
@@ -88,22 +95,26 @@ class AdvancePaymentRelatedDocument(models.Model):
         it is the system filling in, not the user editing — a borrower adding
         a row to an outstanding loan must not trip the draft-only edit rule."""
         for rec in self:
-            if rec.document_kind == "external":
-                if rec.document_ref:
-                    rec.sudo().document_ref = False
+            if not rec.kind_id:
+                if rec.res_model or rec.res_id:
+                    rec.sudo().write({"res_model": False, "res_id": False})
                 continue
             document = rec._find_document()
             vals = {}
-            if rec.document_ref != document:
-                vals["document_ref"] = "%s,%s" % (document._name, document.id)
+            if (rec.res_model, rec.res_id) != (document._name, document.id):
+                vals.update(res_model=document._name, res_id=document.id)
+            # Store the document's own spelling of the number, not the typed one.
+            number = document[rec.kind_id.sudo()._get_number_field()]
+            if number and number != rec.document_number:
+                vals["document_number"] = number
             if not rec.name:
                 vals["name"] = rec._get_document_subject(document)
             if vals:
                 rec.sudo().write(vals)
 
-    @api.onchange("document_kind", "document_number", "document_date")
+    @api.onchange("kind_id", "document_number", "document_date")
     def _onchange_document_number(self):
-        if self.document_kind == "external" or not self.document_number:
+        if not self.kind_id or not self.document_number:
             return
         try:
             document = self._find_document()
@@ -181,7 +192,7 @@ class AdvancePaymentRelatedDocument(models.Model):
             self._check_loan_open()
             self._check_borrower_may_change()
         res = super().write(vals)
-        if {"document_kind", "document_number", "document_date"} & set(vals):
+        if {"kind_id", "document_number", "document_date"} & set(vals):
             self._resolve_document()
         return res
 

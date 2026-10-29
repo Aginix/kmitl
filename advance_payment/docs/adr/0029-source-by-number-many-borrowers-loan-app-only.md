@@ -20,7 +20,7 @@ Policy now requires every loan a borrower files to have a Source Reference (AR o
 - Both are blocking rules (ADR-0030) and replace `excep_ar_borrowing_headroom`.
 - The disbursement voucher takes the commitment header's `analytic_distribution` through `_prepare_account_payment_vals`. A commitment whose lines carry different dimensions is charged as a whole, and accounting may still correct the voucher.
 
-**Related documents** (`advance_payment_related_document`) are a separate extension. A loan may cite any number of further documents: in-system ones of a kind a bridge adds (first: `advance_payment_related_document_sarabun`), found by number like the source (plus ลงวันที่ when the number alone is ambiguous: Sarabun's register restarts every fiscal year), or out-of-system ones by number/subject with an optional file. They are evidence only.
+**Related documents** (`advance_payment_related_document`) are a separate extension. A loan may cite any number of further documents. An in-system one is of a **kind the administrators configure** (ชนิดเอกสารอ้างอิง: a model plus its number, subject and date fields — no module per kind; `advance_payment_related_document_sarabun` only seeds the หนังสือสารบรรณ kind). It is found by number like the source, plus ลงวันที่ when the number alone is ambiguous (Sarabun's register restarts every fiscal year). An out-of-system one is given by number/subject. Either may carry a file. They are evidence only.
 
 ## Considered options
 
@@ -30,6 +30,7 @@ Policy now requires every loan a borrower files to have a Source Reference (AR o
 - *Only the drafter (unit finance) links the source.* Kept as possible, but on its own it makes every borrower depend on staff.
 - *Headroom net of what the commitment spent elsewhere.* Rejected: direct payments usually follow the loans. And on a PR the PO and the loan are the same money, so netting both would count it twice.
 - *A declared "loan share" on the source.* Rejected: it needs new fields on live AR/PR and data entry on every request. Splitting the reservation is the loan officer's call at Verify.
+- *A bridge module per related-document kind.* Rejected: which documents get cited changes with practice, and each new kind would need a release. The cost is that an administrator can expose any model's subjects by configuring it.
 
 ## Consequences
 

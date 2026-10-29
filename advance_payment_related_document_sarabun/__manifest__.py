@@ -1,6 +1,6 @@
 {
     "name": "Advance Payment - Related Documents: Sarabun",
-    "summary": "Cite a หนังสือสารบรรณ on a loan by its number",
+    "summary": "Seed the หนังสือสารบรรณ related-document kind",
     "version": "16.0.1.0.0",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
@@ -8,6 +8,9 @@
     "depends": [
         "advance_payment_related_document",
         "agx_sarabun",
+    ],
+    "data": [
+        "data/advance_payment_related_document_kind_data.xml",
     ],
     "installable": True,
     "auto_install": True,

@@ -7,7 +7,7 @@
         <field name="arch" type="xml">
             <group name="attachments" position="after">
                 <group name="related_documents" string="เอกสารอ้างอิงเพิ่มเติม">
-                    <!-- document_ref stays off the view (see the model). -->
+                    <!-- res_model/res_id stay off the view (see the model). -->
                     <field
                         name="related_document_ids"
                         nolabel="1"
@@ -15,7 +15,11 @@
                         attrs="{'readonly': [('state', 'in', ['done', 'cancel'])]}"
                     >
                         <tree editable="bottom">
-                            <field name="document_kind" />
+                            <field
+                                name="kind_id"
+                                placeholder="เอกสารนอกระบบ"
+                                options="{'no_create': True, 'no_open': True}"
+                            />
                             <field name="document_number" />
                             <field name="document_date" optional="show" />
                             <field name="name" />
