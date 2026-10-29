@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_disbursement_request_form" model="ir.ui.view">
+        <field
+            name="name"
+        >disbursement.request.form (advance_payment_disbursement)</field>
+        <field name="model">disbursement.request</field>
+        <field name="inherit_id" ref="disbursement.view_disbursement_request_form" />
+        <field name="arch" type="xml">
+            <field name="payment_type" position="after">
+                <!-- The picker's domain reads it; the visible one is group-gated. -->
+                <field name="operating_unit_id" invisible="1" />
+                <field
+                    name="advance_payment_id"
+                    options="{'no_create': True, 'no_open': True}"
+                    attrs="{'invisible': [('payment_type', '!=', 'advance')], 'required': [('payment_type', '=', 'advance')], 'readonly': [('can_edit_header', '=', False)]}"
+                />
+                <field
+                    name="advance_payment_employee_id"
+                    options="{'no_open': True}"
+                    attrs="{'invisible': [('advance_payment_id', '=', False)]}"
+                />
+                <field
+                    name="advance_payment_loan_type_id"
+                    options="{'no_open': True}"
+                    attrs="{'invisible': [('advance_payment_id', '=', False)]}"
+                />
+                <field
+                    name="advance_payment_loan_amount"
+                    attrs="{'invisible': [('advance_payment_id', '=', False)]}"
+                />
+                <field
+                    name="advance_payment_actual_expense_amount"
+                    attrs="{'invisible': [('advance_payment_id', '=', False)]}"
+                />
+                <field
+                    name="advance_payment_amount_remaining"
+                    attrs="{'invisible': [('advance_payment_id', '=', False)]}"
+                />
+                <field
+                    name="advance_payment_effective_date"
+                    attrs="{'invisible': [('advance_payment_id', '=', False)]}"
+                />
+                <field
+                    name="advance_payment_return_due_date"
+                    attrs="{'invisible': [('advance_payment_id', '=', False)]}"
+                />
+                <field
+                    name="advance_payment_return_due_status"
+                    attrs="{'invisible': [('advance_payment_id', '=', False)]}"
+                />
+            </field>
+        </field>
+    </record>
+</odoo>
