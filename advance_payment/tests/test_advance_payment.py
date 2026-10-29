@@ -1124,6 +1124,18 @@ class TestAdvancePayment(TransactionCase):
     # Amounts                                                              #
     # ------------------------------------------------------------------ #
 
+    def test_borrower_cannot_set_due_date_or_cleared_amount(self):
+        """Both fields are read-only in the form; the server enforces it too."""
+        ap = self._in_progress(requested_by=self.user)
+        with self.assertRaises(UserError):
+            ap.with_user(self.user).write({"return_due_date": fields.Date.today()})
+        with self.assertRaises(UserError):
+            ap.with_user(self.user).write({"actual_expense_amount": 100})
+        with self.assertRaises(UserError):
+            ap.with_user(self.officer).write({"actual_expense_amount": 100})
+        ap.with_user(self.officer).write({"return_due_date": fields.Date.today()})
+        self.assertEqual(ap.return_due_date, fields.Date.today())
+
     def test_amounts(self):
         ap = self._make(amount=10000)
         ap.write({"state": "in_progress", "actual_expense_amount": 3000})

@@ -4,7 +4,7 @@
     <record id="mail_template_followup_borrower" model="mail.template">
         <field name="name">Advance Payment Followup: Borrower Digest</field>
         <field name="model_id" ref="base.model_res_partner"/>
-        <field name="subject">แจ้งเตือนติดตามเงินยืมค้างคืน - ${object.name}</field>
+        <field name="subject">แจ้งเตือนติดตามเงินยืมค้างคืน - {{ object.name }}</field>
         <field name="body_html" type="html">
             <div>
                 <p>เรียน <t t-esc="object.name"/></p>
@@ -34,7 +34,7 @@
     <record id="mail_template_followup_officer" model="mail.template">
         <field name="name">Advance Payment Followup: Officer Digest</field>
         <field name="model_id" ref="base.model_res_partner"/>
-        <field name="subject">สรุปลูกหนี้เงินยืมที่ต้องติดตาม - ${object.name}</field>
+        <field name="subject">สรุปลูกหนี้เงินยืมที่ต้องติดตาม - {{ object.name }}</field>
         <field name="body_html" type="html">
             <div>
                 <p>เรียน <t t-esc="object.name"/></p>

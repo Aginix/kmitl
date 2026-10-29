@@ -28,3 +28,14 @@ def migrate(cr, version):
            AND a.summary LIKE 'ติดตามลูกหนี้เงินยืม %%'
         """
     )
+    # Odoo 16 renders subjects with {{ }}; the old ${ } printed literally.
+    cr.execute(
+        """
+        UPDATE mail_template t
+           SET subject = replace(t.subject::text, '${object.name}', '{{ object.name }}')::jsonb
+          FROM ir_model_data d
+         WHERE d.model = 'mail.template'
+           AND d.res_id = t.id
+           AND d.module = 'advance_payment_followup'
+        """
+    )

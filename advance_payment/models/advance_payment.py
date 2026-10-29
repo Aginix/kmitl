@@ -973,6 +973,16 @@ class AdvancePayment(models.Model):
                 raise UserError(
                     _("Only an advance-payment manager can change the drafter.")
                 )
+        # Read-only in the form is not enough over RPC: the due date is the
+        # loan officer's call, and ส่งใช้คืน is cleared debt that only the
+        # system (the future ใบเบิก link, under sudo) or an admin may record.
+        if not (self.env.su or self.env.user.has_group("base.group_system")):
+            if "actual_expense_amount" in vals:
+                raise UserError(_("ส่งใช้คืน is recorded by the system only."))
+            if "return_due_date" in vals and not self.env.user.has_group(
+                "advance_payment.group_advance_payment_loan_officer"
+            ):
+                raise UserError(_("Only a loan officer can set the return due date."))
         protected = self._PROTECTED_FIELDS & set(vals)
         if protected:
             is_admin = self.env.user.has_group("base.group_system")
