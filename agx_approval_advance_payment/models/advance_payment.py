@@ -1,4 +1,5 @@
 from odoo import api, fields, models
+from odoo.tools import html2plaintext
 
 
 class AdvancePayment(models.Model):
@@ -87,7 +88,9 @@ class AdvancePayment(models.Model):
         ar = self.approval_request_id.sudo()
         if ar:
             summary.update(
-                subject=(ar.description or "").strip().split("\n")[0] or ar.name,
+                # The description holds HTML despite being a Text field.
+                subject=html2plaintext(ar.description or "").strip().split("\n")[0]
+                or ar.name,
                 unit=ar.requesting_department_id.display_name,
             )
         return summary

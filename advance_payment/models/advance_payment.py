@@ -466,7 +466,11 @@ class AdvancePayment(models.Model):
     def _compute_reference_summary(self):
         for rec in self:
             summary = rec._get_reference_summary() if rec.reference else {}
-            rec.reference_subject = summary.get("subject") or False
+            subject = (summary.get("subject") or "").strip()
+            # A one-line confirmation, not the whole description.
+            if len(subject) > 120:
+                subject = subject[:120].rstrip() + "…"
+            rec.reference_subject = subject or False
             rec.reference_unit = summary.get("unit") or False
 
     def _check_reference_status(self):
