@@ -63,3 +63,11 @@ class AdvancePayment(models.Model):
                 "date_director_reviewed",
             )
         return steps
+
+    def _contract_signatures(self):
+        """The director signs the เสนอ block here, so it shows the director's
+        own job title instead of the fixed "ผู้บังคับบัญชา"."""
+        res = super()._contract_signatures()
+        if self.is_office_route:
+            res["endorser"].pop("position", None)
+        return res

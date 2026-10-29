@@ -86,6 +86,7 @@ class TestContractPdf(TransactionCase):
         self.assertEqual(sigs["borrower"]["date"], "23 กรกฎาคม 2569")
         self.assertFalse(sigs["approver"]["signature"])
         self.assertFalse(sigs["receiver"]["signature"])
+        self.assertEqual(sigs["endorser"]["position"], "ผู้บังคับบัญชา")
 
         self.agreement.state = "in_progress"
         sigs = self.agreement._contract_signatures()

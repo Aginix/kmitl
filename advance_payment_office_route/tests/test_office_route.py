@@ -106,3 +106,5 @@ class TestOfficeRoute(TransactionCase):
         self.assertEqual(sig["employee"], ap.director_id.employee_id)
         self.assertEqual(sig["signature"], SIGNATURE)
         self.assertTrue(sig["date"])
+        # The director's own title, not the fixed "ผู้บังคับบัญชา".
+        self.assertNotIn("position", sig)

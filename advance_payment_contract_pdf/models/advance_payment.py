@@ -98,5 +98,8 @@ class AdvancePayment(models.Model):
         # digitised signature then stays off a debt they never confirmed.
         if "borrower" in res and not rec.is_submitted_by_borrower:
             res["borrower"].update(signature=False, date="")
+        # The เสนอ block names the role, not the supervisor's own job title.
+        if "endorser" in res:
+            res["endorser"]["position"] = "ผู้บังคับบัญชา"
         res["receiver"] = {"employee": rec.employee_id, "signature": False, "date": ""}
         return res

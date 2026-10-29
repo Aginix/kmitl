@@ -160,6 +160,12 @@
                                     >
                                         <t t-set="sig" t-value="sigs['endorser']" />
                                         <t t-set="label">ลงชื่อ</t>
+                                        <!-- Fixed by _contract_signatures; the Office
+                                             route drops it for the director's title -->
+                                        <t
+                                            t-set="position"
+                                            t-value="sigs['endorser'].get('position')"
+                                        />
                                         <t t-set="show_position" t-value="True" />
                                     </t>
                                 </td>
