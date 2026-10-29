@@ -782,6 +782,7 @@ class ApprovalRequest(models.Model):
         (ผู้ตรวจสอบคำขอ). No commitment exists before ยืนยันงบประมาณ, so
         nothing is released. The reason rides on the state tracking message."""
         self.ensure_one()
+        step = self.state
         if self.state == "to_commit":
             group, target = "agx_approval.group_approval_budget_commit", "to_verify"
         elif self.state == "to_verify":
@@ -796,6 +797,7 @@ class ApprovalRequest(models.Model):
             tools.plaintext2html(_("ตีกลับ: %s") % reason)
         )
         self.state = target
+        self._mark_sent_back(step)
         return True
 
     def action_submit(self):

@@ -245,8 +245,8 @@ msgstr "ถัดไป"
 
 #. module: disbursement_work_center
 #: model:ir.model.fields,field_description:disbursement_work_center.field_disbursement_request__work_center_responsible_ids
-msgid "Responsible"
-msgstr "ผู้รับผิดชอบ"
+msgid "Station Responsible"
+msgstr "ผู้รับผิดชอบที่สถานี"
 
 #. module: disbursement_work_center
 #: model_terms:ir.ui.view,arch_db:disbursement_work_center.view_disbursement_request_form

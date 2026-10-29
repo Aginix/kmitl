@@ -32,7 +32,7 @@ if self.partner_id.partner_type_id != self.request_id.partner_type_id:
         <field name="model">disbursement.request.line</field>
         <field name="exception_type">by_py_code</field>
         <field name="code">
-if self.partner_id and not self.partner_bank_id:
+if self.partner_id and not self.partner_bank_id and self._requires_partner_bank():
     failed = True
         </field>
         <field name="is_blocking" eval="False" />

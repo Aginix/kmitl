@@ -109,7 +109,7 @@
                          hidden once approved (completed) so the inline PDF is the focus. -->
                     <group
                         name="classification"
-                        attrs="{'invisible': [('state', '=', 'completed')]}"
+                        attrs="{'invisible': ['|', ('state', '=', 'completed'), ('is_editable', '=', False)]}"
                     >
                       <group>
                         <!-- Locked once set to an origin-only type: such a หนังสือ is
@@ -131,7 +131,7 @@
                          small register field like on the real document. -->
                     <group
                         name="registry_block"
-                        attrs="{'invisible': [('state', '=', 'completed')]}"
+                        attrs="{'invisible': ['|', ('state', '=', 'completed'), ('is_editable', '=', False)]}"
                     >
                         <!-- readonly is set per-field: a `readonly` attrs on the <group>
                              is NOT propagated to child fields by Odoo 16 (each node's

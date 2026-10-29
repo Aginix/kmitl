@@ -4,7 +4,7 @@ from datetime import date
 from unittest.mock import patch
 
 from odoo import fields
-from odoo.exceptions import UserError, ValidationError
+from odoo.exceptions import UserError
 from odoo.tests import Form
 from odoo.tests.common import tagged
 
@@ -118,9 +118,13 @@ class TestTaxable(TwoApproverCommon):
         form.partner_type_id = self.company_type
         self.assertTrue(form.has_tax)
 
-    def test_company_must_be_taxable(self):
-        with self.assertRaises(ValidationError):
-            self.DR.create({"partner_type_id": self.company_type.id, "has_tax": False})
+    def test_company_may_be_untaxed(self):
+        # A company still starts out taxed, but the user may untick it.
+        form = Form(self.DR)
+        form.partner_type_id = self.company_type
+        self.assertTrue(form.has_tax)
+        dr = self.DR.create({"partner_type_id": self.company_type.id, "has_tax": False})
+        self.assertFalse(dr.has_tax)
 
     def test_untaxed_request_clears_line_taxes(self):
         dr = self.DR.create(

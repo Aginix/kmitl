@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- A cheque payee prints วิธีจ่าย next to the bank row; the bank row only
+         takes the account of a transfer line, so a stale account never prints
+         for a cheque. -->
+    <template
+        id="report_disbursement_request"
+        inherit_id="disbursement_pdf.report_disbursement_request"
+    >
+        <xpath expr="//t[@t-set='partner_bank']" position="attributes">
+            <attribute
+                name="t-value"
+            >partner_lines.filtered(lambda l: l.payment_method != 'cheque')[:1].partner_bank_id</attribute>
+        </xpath>
+        <xpath expr="//div[@t-if='partner_bank']" position="before">
+            <div
+                class="row mb-2"
+                t-if="'cheque' in partner_lines.mapped('payment_method')"
+            >
+                <div class="col">วิธีจ่าย: จ่ายเช็ค</div>
+            </div>
+        </xpath>
+    </template>
+
+    <template
+        id="report_disbursement_request_body"
+        inherit_id="disbursement_sarabun.report_disbursement_request_body"
+    >
+        <xpath expr="//t[@t-set='partner_bank']" position="attributes">
+            <attribute
+                name="t-value"
+            >partner_lines.filtered(lambda l: l.payment_method != 'cheque')[:1].partner_bank_id</attribute>
+        </xpath>
+        <xpath expr="//div[@t-if='partner_bank']" position="before">
+            <div
+                class="row mb-2"
+                t-if="'cheque' in partner_lines.mapped('payment_method')"
+            >
+                <div class="col">วิธีจ่าย: จ่ายเช็ค</div>
+            </div>
+        </xpath>
+    </template>
+</odoo>

@@ -1079,8 +1079,8 @@ msgstr "ข้าม"
 
 #. module: work_center
 #: model:ir.model.fields,field_description:work_center.field_work_center_mixin__work_center_responsible_ids
-msgid "Responsible"
-msgstr "ผู้รับผิดชอบ"
+msgid "Station Responsible"
+msgstr "ผู้รับผิดชอบที่สถานี"
 
 #. module: work_center
 #: model:ir.model.fields,field_description:work_center.field_work_center_mixin__work_center_route_steps

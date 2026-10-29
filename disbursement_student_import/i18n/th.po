@@ -31,6 +31,11 @@ msgid "%s is not a student contact"
 msgstr "%s ไม่ใช่ผู้ติดต่อประเภทนักศึกษา"
 
 #. module: disbursement_student_import
+#: model:ir.model.fields,field_description:disbursement_student_import.field_disbursement_student_import__account_id
+msgid "Account"
+msgstr "บัญชี"
+
+#. module: disbursement_student_import
 #: model:ir.model.fields,field_description:disbursement_student_import.field_disbursement_student_import_line__acc_number
 #: code:addons/disbursement_student_import/wizards/disbursement_student_import.py:0
 #, python-format
@@ -42,6 +47,13 @@ msgstr "เลขที่บัญชี"
 #, python-format
 msgid "Account is archived or belongs to another company"
 msgstr "บัญชีถูกเก็บถาวรหรือเป็นของบริษัทอื่น"
+
+#. module: disbursement_student_import
+#: model_terms:ir.ui.view,arch_db:disbursement_student_import.view_disbursement_request_form
+msgid ""
+"Add them all at once from one Excel list instead of adding lines one by one."
+msgstr ""
+"เพิ่มทั้งหมดในครั้งเดียวจากไฟล์ Excel ไฟล์เดียว ไม่ต้องเพิ่มทีละรายการ"
 
 #. module: disbursement_student_import
 #: model:ir.model.fields,field_description:disbursement_student_import.field_disbursement_student_import_line__amount
@@ -126,11 +138,6 @@ msgstr "ดาวน์โหลดแบบฟอร์มนำเข้า"
 #: model:ir.model.fields,field_description:disbursement_student_import.field_disbursement_student_import__file
 msgid "Excel File"
 msgstr "ไฟล์ Excel"
-
-#. module: disbursement_student_import
-#: model:ir.model.fields,field_description:disbursement_student_import.field_disbursement_student_import__account_id
-msgid "Account"
-msgstr "บัญชี"
 
 #. module: disbursement_student_import
 #: model:ir.model.fields,field_description:disbursement_student_import.field_disbursement_student_import_line__student_faculty
@@ -227,6 +234,11 @@ msgstr ""
 "เลขบัตรประชาชน (กรณีมีภาษี) และรายละเอียด นักศึกษาที่มีในระบบแล้วใช้ชื่อเดิม"
 " ส่วนรายใหม่ใช้ชื่อจากทะเบียนนักศึกษา สจล. (เมื่อเชื่อมต่อไว้) "
 "รายการจะถูกเพิ่มต่อท้าย ไม่แทนที่รายการเดิม"
+
+#. module: disbursement_student_import
+#: model_terms:ir.ui.view,arch_db:disbursement_student_import.view_disbursement_request_form
+msgid "Paying many students?"
+msgstr "จ่ายเงินให้นักศึกษาหลายคน?"
 
 #. module: disbursement_student_import
 #: model:ir.model.fields.selection,name:disbursement_student_import.selection__disbursement_student_import__state__preview

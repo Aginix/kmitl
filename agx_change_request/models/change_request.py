@@ -245,6 +245,7 @@ class ChangeRequest(models.Model):
                 assignee_ids=[(6, 0, assignees.ids)],
             )
         )
+        record.sudo().message_subscribe(partner_ids=assignees.partner_id.ids)
         request._schedule_answer(assignees)
         request._post_step(
             _("Change request made"),
@@ -287,6 +288,9 @@ class ChangeRequest(models.Model):
             removed = self.assignee_ids - assignees
             if added or removed:
                 self._check_assignees(self._get_record(), added)
+                self._get_record().sudo().message_subscribe(
+                    partner_ids=added.partner_id.ids
+                )
                 self.assignee_ids = [(6, 0, assignees.ids)]
                 self._clear_activities(ANSWER_ACTIVITY, removed)
                 if self.state == "open":

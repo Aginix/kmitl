@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="approval_request_send_back_confirm_view_form" model="ir.ui.view">
+        <field
+            name="name"
+        >approval.request.send.back.confirm.form.change.request</field>
+        <field name="model">approval.request.send.back.confirm</field>
+        <field
+            name="inherit_id"
+            ref="agx_approval.approval_request_send_back_confirm_view_form"
+        />
+        <field name="arch" type="xml">
+            <!-- the base alert insists on a reason -->
+            <xpath expr="//div[hasclass('alert')]" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//div[hasclass('alert')]" position="after">
+                <div class="alert alert-warning" role="alert">
+                    ตีกลับคำขอไปยังขั้นตอนก่อนหน้า
+                    — กรุณากรอกเหตุผล (ไม่บังคับเมื่อมีข้อแก้ไขที่ค้างอยู่)
+                    เหตุผลและข้อแก้ไขจะแสดงพร้อมกับการเปลี่ยนสถานะใน chatter
+                </div>
+            </xpath>
+            <field name="reason" position="attributes">
+                <attribute
+                    name="attrs"
+                >{'required': [('outstanding_requests', '=', False)]}</attribute>
+                <attribute
+                    name="placeholder"
+                >ระบุเหตุผลที่ตีกลับ (ไม่บังคับเมื่อมีข้อแก้ไขที่ค้างอยู่)</attribute>
+            </field>
+            <field name="reason" position="before">
+                <field
+                    name="outstanding_requests"
+                    attrs="{'invisible': [('outstanding_requests', '=', False)]}"
+                />
+            </field>
+        </field>
+    </record>
+
+</odoo>

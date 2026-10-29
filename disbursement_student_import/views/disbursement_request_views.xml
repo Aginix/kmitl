@@ -7,19 +7,36 @@
         <field name="model">disbursement.request</field>
         <field name="inherit_id" ref="disbursement.view_disbursement_request_form" />
         <field name="arch" type="xml">
+            <xpath expr="//header/button[@name='action_submit']" position="after">
+                <button
+                    name="action_open_student_import"
+                    string="Import Students"
+                    type="object"
+                    icon="fa-file-excel-o"
+                    attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('is_student_payee', '=', False)]}"
+                />
+            </xpath>
             <xpath
                 expr="//page[@name='lines']/field[@name='line_ids']"
-                position="after"
+                position="before"
             >
                 <field name="is_student_payee" invisible="1" />
-                <div class="mt-2">
+                <div
+                    class="alert alert-info d-flex align-items-center gap-3"
+                    role="status"
+                    attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('is_student_payee', '=', False)]}"
+                >
+                    <i class="fa fa-file-excel-o fa-2x" title="Excel" />
+                    <div>
+                        <div class="fw-bold">Paying many students?</div>
+                        <div
+                        >Add them all at once from one Excel list instead of adding lines one by one.</div>
+                    </div>
                     <button
                         name="action_open_student_import"
                         string="Import Students"
                         type="object"
-                        icon="fa-file-excel-o"
-                        class="btn-secondary"
-                        attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('is_student_payee', '=', False)]}"
+                        class="btn-primary"
                     />
                 </div>
             </xpath>

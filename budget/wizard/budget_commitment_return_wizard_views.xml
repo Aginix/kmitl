@@ -26,6 +26,7 @@
                     attrs="{'invisible': [('step', '!=', 'review')]}"
                 >
                     <group>
+                        <field name="amount" />
                         <field name="date" />
                         <field name="name" />
                     </group>
