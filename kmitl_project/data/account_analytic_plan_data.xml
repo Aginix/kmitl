@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+
+    <record id="analytic_plan_project" model="account.analytic.plan">
+        <field name="color">1</field>
+        <field name="default_applicability">optional</field>
+        <field name="name">โครงการ/กิจกรรม/โครงการยุทธศาสตร์</field>
+        <field name="code">kmitl_project</field>
+    </record>
+</odoo>
