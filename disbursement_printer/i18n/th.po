@@ -26,3 +26,18 @@ msgstr "ผู้พิมพ์ใบขอเบิกเงิน"
 msgid "Print Disbursement Request"
 msgstr "พิมพ์ใบขอเบิกเงิน"
 
+#. module: disbursement_printer
+#: model:ir.model.fields,field_description:disbursement_printer.field_disbursement_request__is_printed
+#: model_terms:ir.ui.view,arch_db:disbursement_printer.disbursement_request_search_printer
+msgid "Printed"
+msgstr "พิมพ์แล้ว"
+
+#. module: disbursement_printer
+#: model_terms:ir.ui.view,arch_db:disbursement_printer.disbursement_request_search_printer
+msgid "Not Printed"
+msgstr "ยังไม่พิมพ์"
+
+#. module: disbursement_printer
+#: model:ir.model.fields,help:disbursement_printer.field_disbursement_request__is_printed
+msgid "The หนังสือ has been printed from the request's print button."
+msgstr "หนังสือถูกพิมพ์จากปุ่มพิมพ์ของใบขอเบิกแล้ว"

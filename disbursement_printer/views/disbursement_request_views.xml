@@ -19,4 +19,28 @@
         </field>
     </record>
 
+    <record id="disbursement_request_tree_printer" model="ir.ui.view">
+        <field name="name">disbursement.request.tree.printer</field>
+        <field name="model">disbursement.request</field>
+        <field name="inherit_id" ref="disbursement.view_disbursement_request_tree"/>
+        <field name="arch" type="xml">
+            <field name="state" position="after">
+                <field name="is_printed" optional="show"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="disbursement_request_search_printer" model="ir.ui.view">
+        <field name="name">disbursement.request.search.printer</field>
+        <field name="model">disbursement.request</field>
+        <field name="inherit_id" ref="disbursement.view_disbursement_request_search"/>
+        <field name="arch" type="xml">
+            <filter name="tofix" position="after">
+                <separator/>
+                <filter string="Printed" name="printed" domain="[('is_printed', '=', True)]"/>
+                <filter string="Not Printed" name="not_printed" domain="[('is_printed', '=', False)]"/>
+            </filter>
+        </field>
+    </record>
+
 </odoo>
