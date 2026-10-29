@@ -1,0 +1,74 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* disbursement_bill_posted_confirm
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-29 10:00+0000\n"
+"PO-Revision-Date: 2026-10-29 10:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: disbursement_bill_posted_confirm
+#: model:ir.model.fields.selection,name:disbursement_bill_posted_confirm.selection__disbursement_request_signature__step__bill_confirm
+msgid "Accounts Payable Officer"
+msgstr "เจ้าหน้าที่ตั้งหนี้"
+
+#. module: disbursement_bill_posted_confirm
+#: model:ir.model.fields,field_description:disbursement_bill_posted_confirm.field_disbursement_request__bill_confirm_date
+msgid "Bills Confirmed On"
+msgstr "วันที่ยืนยันการตั้งหนี้"
+
+#. module: disbursement_bill_posted_confirm
+#: model:ir.model.fields,field_description:disbursement_bill_posted_confirm.field_disbursement_request__bill_confirmer_id
+msgid "Bills Confirmed By"
+msgstr "ผู้ยืนยันการตั้งหนี้"
+
+#. module: disbursement_bill_posted_confirm
+#: model:ir.model.fields,field_description:disbursement_bill_posted_confirm.field_disbursement_request__can_confirm_bill
+msgid "Can Confirm Bill"
+msgstr "ยืนยันการตั้งหนี้ได้"
+
+#. module: disbursement_bill_posted_confirm
+#. odoo-python
+#: code:addons/disbursement_bill_posted_confirm/models/disbursement_request.py:0
+#: model_terms:ir.ui.view,arch_db:disbursement_bill_posted_confirm.view_disbursement_request_form
+#, python-format
+msgid "Confirm Bills Posted"
+msgstr "ยืนยันการตั้งหนี้"
+
+#. module: disbursement_bill_posted_confirm
+#. odoo-python
+#: code:addons/disbursement_bill_posted_confirm/models/disbursement_request.py:0
+#, python-format
+msgid "Create the bills first."
+msgstr "กรุณาสร้างใบตั้งหนี้ก่อน"
+
+#. module: disbursement_bill_posted_confirm
+#: model:ir.model,name:disbursement_bill_posted_confirm.model_disbursement_request
+msgid "Disbursement Request"
+msgstr "ใบขอเบิก"
+
+#. module: disbursement_bill_posted_confirm
+#: model:ir.model,name:disbursement_bill_posted_confirm.model_disbursement_request_signature
+msgid "Disbursement Request Signature"
+msgstr "ลายเซ็นในใบขอเบิก"
+
+#. module: disbursement_bill_posted_confirm
+#: model:ir.model.fields,field_description:disbursement_bill_posted_confirm.field_disbursement_request_signature__step
+msgid "Step"
+msgstr "ขั้นตอน"
+
+#. module: disbursement_bill_posted_confirm
+#. odoo-python
+#: code:addons/disbursement_bill_posted_confirm/models/disbursement_request.py:0
+#, python-format
+msgid "These bills are not posted yet: %s"
+msgstr "ใบตั้งหนี้เหล่านี้ยังไม่ผ่านรายการ: %s"
