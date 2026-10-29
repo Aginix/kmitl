@@ -10,7 +10,7 @@ OUTSTANDING_RULE = (
     "disbursement_change_request.excep_disbursement_outstanding_change_requests"
 )
 # ส่งคืนผู้จัดทำ with outstanding Change requests: one more marker (see
-# disbursement SENT_BACK_RULES), cleared on the next state change.
+# disbursement_return_exception), cleared on the next state change.
 SENT_BACK_RULE = (
     "disbursement_change_request.excep_disbursement_sent_back_change_requests"
 )

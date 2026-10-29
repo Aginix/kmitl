@@ -19,7 +19,7 @@
 
     <!-- ส่งคืนผู้จัดทำ marker: linked by the send-back while Change requests are
          outstanding and cleared on the next state change, never evaluated (see
-         disbursement SENT_BACK_RULES). -->
+         disbursement_return_exception). -->
     <record id="excep_disbursement_sent_back_change_requests" model="exception.rule">
         <field name="name">มีข้อแก้ไขที่ต้องแก้</field>
         <field

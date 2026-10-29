@@ -88,5 +88,6 @@ class TestDisbursementChangeRequest(TwoApproverCommon):
             {"request_id": dr.id, "reason": "แก้วันที่"}
         ).action_return()
         self.assertEqual(
-            dr.exception_ids, self.env.ref("disbursement.excep_disbursement_sent_back")
+            dr.exception_ids,
+            self.env.ref("disbursement_return_exception.excep_disbursement_sent_back"),
         )

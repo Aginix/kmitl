@@ -10,6 +10,7 @@
     "author": "KMITL",
     "depends": [
         "disbursement_validation",
+        "disbursement_return_exception",
         "agx_change_request",
     ],
     "data": [
