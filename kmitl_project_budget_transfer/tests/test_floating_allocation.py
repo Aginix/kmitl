@@ -389,22 +389,61 @@ class TestFloatingAllocation(TransactionCase):
             project.with_user(self.plain_user).action_open_floating_return()
 
     def test_pending_transfer_holds_money(self):
-        """A transfer naming the project's dimension that has not posted yet
-        keeps the project from being retargeted or deleted."""
+        """A submitted transfer naming the project's dimension that has not
+        posted yet keeps the project from being retargeted or deleted."""
+        self._appropriate(100000)
+        project = self._project()
+        wizard = self._wizard(project)
+        wizard.amount = 1000
+        transfer = self.env["budget.transfer"].create(wizard._prepare_transfer_vals())
+        self.assertFalse(project._has_pending_project_transfer())
+        transfer.action_submit()
+        self.assertTrue(project._has_pending_project_transfer())
+        with self.assertRaises(UserError):
+            project.unlink()
+
+    def test_draft_transfer_does_not_block_delete(self):
+        """A draft transfer has not been sent, so it holds no money: the
+        project is soft-deleted (the draft is its Ledger Footprint)."""
         self._appropriate(100000)
         project = self._project()
         wizard = self._wizard(project)
         wizard.amount = 1000
         self.env["budget.transfer"].create(wizard._prepare_transfer_vals())
-        self.assertTrue(project._has_pending_project_transfer())
-        with self.assertRaises(UserError):
-            project.unlink()
+        project.unlink()
+        self.assertEqual(project.state, "cancel")
+        self.assertFalse(project.active)
+
+    def test_transfer_in_then_out_while_to_send_soft_deletes(self):
+        """Money transferred in then straight back out while the budget is
+        confirmed (รอส่งขออนุมัติ) leaves nothing held: the project deletes."""
+        self._appropriate(100000)
+        project = self._project()
+        self._allocate(project, 30000)
+        self.env["kmitl.project.reserve.confirm"].create(
+            {"project_id": project.id}
+        ).action_confirm()
+        self.assertEqual(project.state, "to_send")
+        # An ordinary budget transfer back out (โอนคืนงบลอย is closed here).
+        wizard = self._return_wizard(project)
+        wizard.amount = 30000
+        transfer = self.env["budget.transfer"].create(wizard._prepare_transfer_vals())
+        transfer.action_submit()
+        transfer.action_post()
+        self.assertEqual(transfer.state, "posted")
+        self.assertEqual(project.budget_amount, 0)
+        self.assertFalse(project._get_held_money_reasons())
+        project.unlink()
+        self.assertEqual(project.state, "cancel")
+        self.assertFalse(project.active)
+        self.assertFalse(project.analytic_account_id.active)
 
     def test_full_return_then_delete_soft_deletes(self):
         self._appropriate(100000)
         project = self._project()
         self._allocate(project, 30000)
         wizard = self._return_wizard(project)
+        wizard.amount = 30000
         wizard.action_next()
         wizard.action_confirm()
         project.unlink()
