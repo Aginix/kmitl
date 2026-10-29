@@ -45,10 +45,8 @@ while a request that reserved its own budget returns its Remaining
 
 ## Consequences
 
-- Whoever may read a ใบขอเบิก may read the request it references (and so its
-  attachments): the OU record rule on the request gains that branch. The
-  attachment-check override of ADR-0009 goes away; receipts live on each
-  ใบขอเบิก.
+- The attachment-check override of ADR-0009 goes away; receipts live on each
+  ใบขอเบิก. Reading the referenced request stays under its own OU rules.
 - `to_disburse` / `billed` and the hand-off To-Dos disappear; requests in them
   migrate to approved. Old actual-expense rows are kept, unshown, in a
   legacy table (`approval_request_allocation_legacy`); the model is gone.
