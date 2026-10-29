@@ -6,6 +6,7 @@ from odoo import api, fields, models
 
 class PurchaseRequestLine(models.Model):
     _inherit = "purchase.request.line"
+    _order = "id"
 
     name = fields.Text(string="Item", tracking=True)
 
