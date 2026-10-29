@@ -11,6 +11,10 @@ before ตรวจสอบ (``to_verify → to_verify_budget``), cannot be cle
 the request is at ``to_verify_budget``, and stays editable until the request
 ends (done / rejected / cancelled).
 
+ส่งคำขอ without a ผู้ยืนยันตรวจสอบ skips straight to ``to_verify_budget``, so
+the exception rule *ต้องระบุผู้ยืนยันตรวจสอบ หรือผู้ยืนยันงบประมาณ* blocks
+submitting a draft with neither set.
+
 The reserve Todo (``purchase_request_budget_todo``'s *จองงบประมาณ* type) now
 goes to that person only:
 

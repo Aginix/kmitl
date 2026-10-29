@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <!-- ส่งคำขอ needs someone to receive a Todo: no ผู้ยืนยันตรวจสอบ skips to
+         to_verify_budget, which then needs the ผู้ยืนยันงบประมาณ -->
+    <record id="pr_exception_verifier_or_budget_verifier" model="exception.rule">
+        <field name="name">ต้องระบุผู้ยืนยันตรวจสอบ หรือผู้ยืนยันงบประมาณ</field>
+        <field name="description">ผู้ยืนยันตรวจสอบ / ผู้ยืนยันงบประมาณ</field>
+        <field name="model">purchase.request</field>
+        <field name="exception_type">by_py_code</field>
+        <field name="code"><![CDATA[
+if self.state == 'draft' and not self.assigned_to and not self.budget_verifier_id:
+    failed = True
+]]>
+        </field>
+    </record>
+</odoo>
