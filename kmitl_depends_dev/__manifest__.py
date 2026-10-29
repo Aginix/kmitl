@@ -77,6 +77,7 @@
         "advance_payment_contract_pdf",
         "advance_payment_exception",
         "advance_payment_partner_bank",
+        "advance_payment_office_route",
         "agx_approval_disbursement",
         "disbursement_accounting_kmitl",
         "disbursement_finance_kmitl",

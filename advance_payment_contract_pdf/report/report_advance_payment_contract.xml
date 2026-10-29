@@ -50,6 +50,12 @@
                         .section { text-align: center; font-weight: bold; font-size: 16pt; }
                         .indent { text-indent: 36pt; }
                         .justify { text-align: justify; }
+                        /* Thai distributed justify (_contract_thai_distribute):
+                           the negative word-spacing cancels the inserted
+                           word-boundary spaces (THSarabunNew space = 0.216em);
+                           real spaces sit in .rs and keep their width. */
+                        .distribute { text-align: justify; word-spacing: -0.216em; }
+                        .distribute .rs { word-spacing: normal; }
                         .right { text-align: right; }
                         .center { text-align: center; }
                         table.sign { width: 100%; border-collapse: collapse; }
@@ -57,8 +63,9 @@
                         /* wkhtmltopdf draws Bootstrap's solid 0-width tbody/tr borders as a gray box */
                         table.top tbody, table.top tr, table.sign tbody, table.sign tr { border-style: none; }
                         .sig-img { height: 34pt; text-align: center; }
-                        /* sits on the dotted line, like a pen signature */
-                        .sig-img img { max-height: 34pt; max-width: 130pt; position: relative; top: 12pt; }
+                        /* sits just above the dotted line — overlapping it, an
+                           opaque signature scan blanks out part of the line */
+                        .sig-img img { max-height: 34pt; max-width: 130pt; }
                         table.sign td.sig-fit { width: 1%; white-space: nowrap; vertical-align: bottom; }
                         table.sign td.sig-filler { width: 100%; }
                         /* fixed width so วันที่ lines up across the blocks */
@@ -106,17 +113,14 @@
                             <!-- 2. Borrower + purpose -->
                             <tr>
                                 <td colspan="2">
-                                    <div class="justify">
-                                        ข้าพเจ้า <t t-out="emp_name or dots" />
-                                        &#160;ตำแหน่ง <t t-out="emp_position or dots" />
-                                        สังกัด <t t-out="emp_department or dots" />
-                                        จังหวัด กรุงเทพมหานคร มีความประสงค์ขอยืมเงินจาก <t
-                                            t-out="org"
-                                        />
-                                    </div>
-                                    <div>เพื่อเป็นค่าใช้จ่ายในการ <t
-                                            t-out="(o.loan_reason and o.loan_reason.striptags()) or dots"
-                                        /> ดังรายละเอียดแนบท้าย</div>
+                                    <div
+                                        class="distribute"
+                                        t-out="o._contract_thai_distribute('ข้าพเจ้า %s \u00a0ตำแหน่ง %s สังกัด %s จังหวัด กรุงเทพมหานคร มีความประสงค์ขอยืมเงินจาก %s' % (emp_name or dots, emp_position or dots, emp_department or dots, org))"
+                                    />
+                                    <div
+                                        class="distribute"
+                                        t-out="o._contract_thai_distribute('เพื่อเป็นค่าใช้จ่ายในการ %s ดังรายละเอียดแนบท้าย' % ((o.loan_reason and o.loan_reason.striptags()) or dots))"
+                                    />
                                 </td>
                             </tr>
                             <!-- 3. Amount -->
@@ -174,7 +178,11 @@
                                     >
                                         <t t-set="sig" t-value="sigs['approver']" />
                                         <t t-set="label">ลงชื่อผู้อนุมัติ</t>
-                                        <t t-set="show_position" t-value="True" />
+                                        <!-- Fixed by the delegation of authority, not
+                                             the approver's own job title -->
+                                        <t
+                                            t-set="position"
+                                        >รองอธิการบดีฝ่ายการเงินและนิติการ ปฏิบัติการแทนอธิการบดี</t>
                                     </t>
                                 </td>
                             </tr>
@@ -212,8 +220,8 @@
     <!--
         One signature row: the signature image (or blank room to sign by hand)
         over the dotted line and the date, then the signer's name and, with
-        show_position, their position. Params: sig (a _contract_signatures
-        entry), label, suffix, show_position.
+        show_position, their job title (or a fixed `position`). Params: sig (a
+        _contract_signatures entry), label, suffix, show_position, position.
     -->
     <template id="contract_signature_row">
         <!-- label | dotted line | suffix | filler | date, one table level:
@@ -238,8 +246,9 @@
                 <td />
                 <td class="center sig-name">
                     <div>(<t t-out="sig['employee'].name" />)</div>
+                    <div t-if="position" t-out="position" />
                     <div
-                        t-if="show_position and sig['employee'].job_title"
+                        t-elif="show_position and sig['employee'].job_title"
                         t-out="sig['employee'].job_title"
                     />
                 </td>

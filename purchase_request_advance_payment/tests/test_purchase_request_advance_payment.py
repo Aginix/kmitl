@@ -269,7 +269,7 @@ class TestPurchaseRequestAdvancePayment(TransactionCase):
         pr = self._make_pr()
         ap = self._make_ap(pr)
         # Simulate approval + disbursement (bypass actual payment creation)
-        ap.write({"state": "approved", "disbursement_state": "pending"})
+        ap.write({"state": "approved"})
         msg_count_before = len(pr.message_ids)
         ap.action_start()
         pr.invalidate_recordset()

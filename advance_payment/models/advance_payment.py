@@ -4,7 +4,8 @@ from odoo.tools.misc import str2bool
 from odoo.tools.safe_eval import safe_eval
 
 # Activity type of the "To Do" raised on whoever a pending state waits for —
-# the loan officer at to_verify, the approver at to_approve. It is the generic
+# the loan officer at to_verify, the director at to_director, the approver at
+# to_approve. It is the generic
 # type, so every lookup must also match the summary (ADR-0013/0015).
 WORKFLOW_ACTIVITY_XMLID = "mail.mail_activity_data_todo"
 
@@ -14,11 +15,14 @@ class AdvancePayment(models.Model):
     Advance Payment (สัญญายืมเงิน).
 
     A single-disbursement employee loan. Lifecycle (see docs/adr/0001-0005,
-    docs/adr/0020 and docs/advance-payment-lifecycle.drawio):
+    docs/adr/0020, docs/adr/0027 and docs/advance-payment-lifecycle.drawio):
 
-        draft → to_endorse → to_verify → to_approve → approved → in_progress
-              → reported → to_reconcile → done
+        draft → to_endorse → to_verify → to_director → to_approve → approved
+              → in_progress → reported → to_reconcile → done
         (+ negative: cancel)
+
+    The pre-disbursement steps come from _get_route_states(), so a route
+    extension may skip one (ADR-0027).
 
     A borrower may hold only one active agreement at a time (serial borrowing).
     """
@@ -36,7 +40,14 @@ class AdvancePayment(models.Model):
 
     # States in which a borrower is considered to "hold" an agreement, for the
     # one-active-agreement-per-borrower rule (ADR-0001).
-    ACTIVE_STATES = ("to_endorse", "to_verify", "to_approve", "approved", "in_progress")
+    ACTIVE_STATES = (
+        "to_endorse",
+        "to_verify",
+        "to_director",
+        "to_approve",
+        "approved",
+        "in_progress",
+    )
 
     # Material ("สาระสำคัญ") fields — locked once the request leaves draft.
     # A finance officer may still correct them while in to_verify (and bank_id
@@ -62,6 +73,7 @@ class AdvancePayment(models.Model):
         for state in (
             "to_endorse",
             "to_verify",
+            "to_director",
             "to_approve",
             "approved",
             "in_progress",
@@ -76,6 +88,7 @@ class AdvancePayment(models.Model):
     REASON_READONLY_STATES = {
         state: [("readonly", True)]
         for state in (
+            "to_director",
             "to_approve",
             "approved",
             "in_progress",
@@ -87,14 +100,14 @@ class AdvancePayment(models.Model):
     }
 
     name = fields.Char(
-        string="Agreement Number",
+        string="เลขที่คำขอ",
         copy=False,
         tracking=True,
         default=lambda self: _("New"),
     )
 
     contract_number = fields.Char(
-        string="Contract Number",
+        string="เลขที่สัญญายืมเงิน",
         copy=False,
         readonly=True,
         tracking=True,
@@ -107,9 +120,10 @@ class AdvancePayment(models.Model):
             ("draft", "แบบร่าง"),
             ("to_endorse", "รอผู้บังคับบัญชาเห็นชอบ"),
             ("to_verify", "รอตรวจสอบคำขอ"),
-            ("to_approve", "รอรองอธิการบดีอนุมัติ"),
+            ("to_director", "รอผู้อำนวยการพิจารณา"),
+            ("to_approve", "รอผู้มีอำนาจอนุมัติ"),
             ("approved", "รอโอนเงิน"),
-            ("in_progress", "อยู่ในระยะเวลาสัญญา"),
+            ("in_progress", "ค้างชำระ"),
             ("reported", "ตรวจสอบการส่งเบิก"),
             ("to_reconcile", "รอตรวจสอบเงินคืน"),
             ("done", "ปิดสัญญา"),
@@ -190,6 +204,10 @@ class AdvancePayment(models.Model):
     # member (ADR-0013).
     can_verify = fields.Boolean(compute="_compute_can_verify")
 
+    # Mirrors _check_director_permission: only the director named on
+    # director_id (or an admin) may review (ADR-0027).
+    can_director_review = fields.Boolean(compute="_compute_can_director_review")
+
     # Mirrors _check_approve_permission: only the approver named on
     # approver_id (or an admin) may approve — not any loan-approver-group
     # member (ADR-0017).
@@ -258,6 +276,12 @@ class AdvancePayment(models.Model):
         is_admin = self.env.user.has_group("base.group_system")
         for rec in self:
             rec.can_verify = is_admin or rec.loan_verifier_id == self.env.user
+
+    @api.depends("director_id")
+    def _compute_can_director_review(self):
+        is_admin = self.env.user.has_group("base.group_system")
+        for rec in self:
+            rec.can_director_review = is_admin or rec.director_id == self.env.user
 
     @api.depends("approver_id")
     def _compute_can_approve(self):
@@ -507,7 +531,7 @@ class AdvancePayment(models.Model):
     book_bank_filename = fields.Char(copy=False)
 
     return_due_date = fields.Date(
-        string="วันครบกำหนดคืน",
+        string="วันที่ครบกำหนด",
         copy=False,
         tracking=True,
         help="Set by the loan officer after approval; drives the weekly "
@@ -642,6 +666,50 @@ class AdvancePayment(models.Model):
     )
 
     @api.model
+    def _director_candidates(self):
+        """Members of the director group who may be named as director —
+        matched the same way the field's own domain matches, as for the
+        approver (ADR-0017)."""
+        return self.env.ref(
+            "advance_payment.group_advance_payment_director"
+        ).users.filtered("active")
+
+    @api.model
+    def _default_director_id(self):
+        """The director configured in Settings, else the admin — one
+        institution-wide director, defaulted exactly like the approver
+        (ADR-0016, ADR-0027)."""
+        configured = (
+            self.env["ir.config_parameter"]
+            .sudo()
+            .get_param("advance_payment.default_director_id")
+        )
+        if configured:
+            try:
+                director = self.env["res.users"].browse(int(configured))
+            except (TypeError, ValueError):
+                director = self.env["res.users"]
+            if director & self._director_candidates():
+                return director.id
+        return self.env.ref("base.user_admin").id
+
+    director_id = fields.Many2one(
+        comodel_name="res.users",
+        string="ผู้อำนวยการสำนักงานคลัง",
+        domain=lambda self: [
+            (
+                "groups_id",
+                "in",
+                self.env.ref("advance_payment.group_advance_payment_director").ids,
+            )
+        ],
+        default=_default_director_id,
+        required=True,
+        tracking=True,
+        help="ผู้ที่จะได้รับงานให้พิจารณาเมื่อเจ้าหน้าที่ตรวจสอบคำขอเรียบร้อยแล้ว",
+    )
+
+    @api.model
     def _approver_candidates(self):
         """Members of the approver group who may be named as approver —
         matched the same way the field's own domain matches (direct
@@ -691,11 +759,11 @@ class AdvancePayment(models.Model):
         default=_default_approver_id,
         required=True,
         tracking=True,
-        help="ผู้ที่จะได้รับงานให้อนุมัติเมื่อเจ้าหน้าที่ตรวจสอบคำขอเรียบร้อยแล้ว",
+        help="ผู้ที่จะได้รับงานให้อนุมัติเมื่อผู้อำนวยการพิจารณาเรียบร้อยแล้ว",
     )
 
     effective_date = fields.Date(
-        string="Effective Date",
+        string="วันที่เป็นลูกหนี้",
         readonly=True,
         copy=False,
         tracking=True,
@@ -711,7 +779,7 @@ class AdvancePayment(models.Model):
     )
 
     actual_expense_amount = fields.Monetary(
-        string="ยอดค่าใช้จ่ายจริง",
+        string="ส่งใช้คืน",
         copy=False,
         tracking=True,
     )
@@ -724,7 +792,7 @@ class AdvancePayment(models.Model):
     )
 
     amount_remaining = fields.Monetary(
-        string="Amount Remaining",
+        string="คงเหลือ",
         compute="_compute_amounts",
         store=True,
     )
@@ -743,17 +811,6 @@ class AdvancePayment(models.Model):
         help="Amount returned beyond the return amount; requires donation consent.",
     )
 
-    # Informational usage records populated by integrations (e.g. the
-    # disbursement bridge). The debt is driven by actual_expense_amount, not by
-    # these lines — kept so bridges can extend the model.
-    usage_line_ids = fields.One2many(
-        comodel_name="advance.payment.usage.line",
-        inverse_name="agreement_id",
-        string="Usage Records",
-        readonly=True,
-        copy=False,
-    )
-
     payment_ids = fields.One2many(
         comodel_name="account.payment",
         inverse_name="advance_payment_id",
@@ -766,22 +823,16 @@ class AdvancePayment(models.Model):
         compute="_compute_payment_count",
     )
 
-    disbursement_state = fields.Selection(
-        selection=[
-            ("pending", "รอดำเนินการ"),
-            ("paid", "จ่ายเงินแล้ว"),
-        ],
-        string="สถานะการจ่ายเงิน",
-        readonly=True,
-        copy=False,
-        tracking=True,
+    date_submitted = fields.Datetime(string="วันที่ส่งคำขอ", readonly=True, copy=False)
+    date_endorsed = fields.Datetime(
+        string="วันที่บังคับบัญชาเห็นชอบ", readonly=True, copy=False
     )
-
-    date_submitted = fields.Datetime(string="Date Submitted", readonly=True, copy=False)
-    date_endorsed = fields.Datetime(string="Date Endorsed", readonly=True, copy=False)
-    date_verified = fields.Datetime(string="Date Verified", readonly=True, copy=False)
-    date_approved = fields.Datetime(string="Date Approved", readonly=True, copy=False)
-    date_closed = fields.Datetime(string="Date Closed", readonly=True, copy=False)
+    date_verified = fields.Datetime(string="วันที่ตรวจสอบ", readonly=True, copy=False)
+    date_director_reviewed = fields.Datetime(
+        string="วันที่ผอ.พิจารณา", readonly=True, copy=False
+    )
+    date_approved = fields.Datetime(string="วันที่อนุมัติ", readonly=True, copy=False)
+    date_closed = fields.Datetime(string="วันที่ปิดสัญญา", readonly=True, copy=False)
 
     terms_conditions = fields.Html(
         string="เงื่อนไขและข้อตกลงการยืมเงินทดรองจ่าย",
@@ -933,7 +984,7 @@ class AdvancePayment(models.Model):
     @api.constrains("name")
     def _check_name_unique(self):
         for rec in self:
-            if rec.name == _("New"):
+            if rec.name in ("New", _("New")):
                 continue
             if self.search([("name", "=", rec.name), ("id", "!=", rec.id)], limit=1):
                 raise ValidationError(
@@ -1019,6 +1070,7 @@ class AdvancePayment(models.Model):
                     editable |= self._PROTECTED_FIELDS
                 if is_loan_officer and rec.state in (
                     "to_verify",
+                    "to_director",
                     "to_approve",
                     "approved",
                 ):
@@ -1042,6 +1094,10 @@ class AdvancePayment(models.Model):
             # _schedule_workflow_activity drops the stale one first.
             for rec in self.filtered(lambda r: r.state == "to_endorse"):
                 rec._schedule_workflow_activity("to_endorse")
+        if "director_id" in vals:
+            # Same for a director reassigned while the request awaits them.
+            for rec in self.filtered(lambda r: r.state == "to_director"):
+                rec._schedule_workflow_activity("to_director")
         if "return_due_date" in vals:
             # The borrower's report To-Do is due on return_due_date (ADR-0021);
             # the officer usually sets or moves it after the transfer, so keep
@@ -1137,6 +1193,10 @@ class AdvancePayment(models.Model):
             "to_verify": (
                 _("ตรวจสอบคำขอยืมเงิน %s", self.name),
                 self.loan_verifier_id,
+            ),
+            "to_director": (
+                _("พิจารณาคำขอยืมเงิน %s", self.name),
+                self.director_id,
             ),
             "to_approve": (
                 _("อนุมัติคำขอยืมเงิน %s", self.name),
@@ -1234,22 +1294,58 @@ class AdvancePayment(models.Model):
         """
         self._workflow_activities(stage).sudo().unlink()
 
+    def _get_route_states(self):
+        """Ordered sign-off states a request passes through between submit
+        and `approved` — the Standard route (ADR-0027). A route extension
+        overrides this to skip a step; every transition below advances through
+        it instead of naming its target, so the core knows no other route."""
+        self.ensure_one()
+        return ["to_endorse", "to_verify", "to_director", "to_approve"]
+
+    def _next_route_state(self):
+        """The state the current sign-off step hands the request on to."""
+        self.ensure_one()
+        route = ["draft"] + self._get_route_states() + ["approved"]
+        return route[route.index(self.state) + 1]
+
+    def _advance_route(self, date_field=None):
+        """Move to the next route state, stamp `date_field`, and hand the
+        To-Do from the step just taken to the next one."""
+        self.ensure_one()
+        stage, next_state = self.state, self._next_route_state()
+        vals = {"state": next_state}
+        if date_field:
+            vals[date_field] = fields.Datetime.now()
+        self.write(vals)
+        done_messages = {
+            "to_endorse": _("เห็นชอบคำขอเรียบร้อย โดย %s"),
+            "to_verify": _("ตรวจสอบคำขอเรียบร้อย โดย %s"),
+            "to_director": _("พิจารณาคำขอเรียบร้อย โดย %s"),
+        }
+        if stage in done_messages:
+            self._done_workflow_activity(
+                stage, done_messages[stage] % self.env.user.name
+            )
+        self._schedule_workflow_activity(next_state)
+
     def action_submit(self):
-        """Submit the request for endorsement (draft → to_endorse, ADR-0020)."""
+        """Submit the request into its route (draft → first route state —
+        to_endorse on the Standard route, ADR-0020/0027)."""
         self._check_submit_permission()
         for rec in self:
             if rec.state != "draft":
                 raise UserError(_("Only draft agreements can be submitted."))
             rec._check_one_active_agreement()
-            if rec.name == _("New"):
+            # The placeholder is translated at create time, so a draft made in
+            # another language (API, import, en_US user) still reads "New".
+            if rec.name in ("New", _("New")):
                 rec.name = self.env["ir.sequence"].next_by_code("advance.payment")
-            rec.date_submitted = fields.Datetime.now()
             # endorser_id already tracks the borrower's manager in draft and
             # freezes itself on this write (_compute_endorser_id, ADR-0020).
-            rec.state = "to_endorse"
+            rec._advance_route("date_submitted")
             rec.message_post(
                 body=_(
-                    "Agreement submitted for endorsement by <b>%(user)s</b>."
+                    "Agreement submitted by <b>%(user)s</b>."
                     " Loan amount: <b>%(amount)s %(currency)s</b>.",
                     user=rec.employee_id.name,
                     amount=rec.loan_amount,
@@ -1257,7 +1353,6 @@ class AdvancePayment(models.Model):
                 ),
                 subtype_xmlid="mail.mt_note",
             )
-            rec._schedule_workflow_activity("to_endorse")
 
     def _check_endorse_permission(self):
         """Endorser-only: only the borrower's snapshotted manager (or an
@@ -1275,19 +1370,15 @@ class AdvancePayment(models.Model):
             )
 
     def action_endorse(self):
-        """Supervisor endorses the request (to_endorse → to_verify, ADR-0020)."""
+        """Supervisor endorses the request (to_endorse → next route state,
+        ADR-0020)."""
         self._check_endorse_permission()
         for rec in self:
             if rec.state != "to_endorse":
                 raise UserError(
                     _("Only agreements awaiting endorsement can be endorsed.")
                 )
-            rec.write({"state": "to_verify", "date_endorsed": fields.Datetime.now()})
-            rec._done_workflow_activity(
-                "to_endorse",
-                _("เห็นชอบคำขอเรียบร้อย โดย %s", self.env.user.name),
-            )
-            rec._schedule_workflow_activity("to_verify")
+            rec._advance_route("date_endorsed")
             rec.message_post(
                 body=_(
                     "เห็นชอบคำขอเรียบร้อย ส่งเข้าขั้นตรวจสอบ โดย <b>%(user)s</b>.",
@@ -1343,7 +1434,8 @@ class AdvancePayment(models.Model):
             )
 
     def action_verify(self):
-        """Finance officer confirms the document check (to_verify → to_approve)."""
+        """Finance officer confirms the document check (to_verify → next
+        route state)."""
         self._check_verify_permission()
         for rec in self:
             if rec.state != "to_verify":
@@ -1359,15 +1451,62 @@ class AdvancePayment(models.Model):
                         name=rec.name,
                     )
                 )
-            rec.write({"state": "to_approve", "date_verified": fields.Datetime.now()})
-            rec._done_workflow_activity(
-                "to_verify",
-                _("ตรวจสอบคำขอเรียบร้อย โดย %s", self.env.user.name),
-            )
-            rec._schedule_workflow_activity("to_approve")
+            rec._advance_route("date_verified")
             rec.message_post(
                 body=_(
-                    "ตรวจสอบคำขอเรียบร้อย ส่งเข้าขั้นอนุมัติ โดย <b>%(user)s</b>.",
+                    "ตรวจสอบคำขอเรียบร้อย สถานะถัดไป: %(state)s โดย <b>%(user)s</b>.",
+                    state=dict(rec._fields["state"].selection)[rec.state],
+                    user=self.env.user.name,
+                ),
+                subtype_xmlid="mail.mt_note",
+            )
+
+    def _check_director_permission(self):
+        """Director-only: only the named director (or an admin) may review
+        — not any director-group member (ADR-0027, as ADR-0017)."""
+        is_admin = self.env.user.has_group("base.group_system")
+        for rec in self:
+            if is_admin or rec.director_id == self.env.user:
+                continue
+            raise UserError(
+                _(
+                    "Only the assigned director (%(director)s) can review"
+                    " this agreement.",
+                    director=rec.director_id.name,
+                )
+            )
+
+    def action_director_review(self):
+        """Director considers the request and forwards it (to_director →
+        next route state, ADR-0027)."""
+        self._check_director_permission()
+        for rec in self:
+            if rec.state != "to_director":
+                raise UserError(
+                    _("Only agreements awaiting the director can be reviewed.")
+                )
+            rec._advance_route("date_director_reviewed")
+            rec.message_post(
+                body=_(
+                    "ผู้อำนวยการพิจารณาเรียบร้อย ส่งเข้าขั้นอนุมัติ โดย <b>%(user)s</b>.",
+                    user=self.env.user.name,
+                ),
+                subtype_xmlid="mail.mt_note",
+            )
+
+    def action_director_reject(self):
+        """Director sends the request back to draft (to_director → draft)."""
+        self._check_director_permission()
+        for rec in self:
+            if rec.state != "to_director":
+                raise UserError(
+                    _("Only agreements awaiting the director can be sent back.")
+                )
+            rec.state = "draft"
+            rec._drop_workflow_activities()
+            rec.message_post(
+                body=_(
+                    "ส่งกลับแก้ไข โดยผู้อำนวยการ <b>%(user)s</b>.",
                     user=self.env.user.name,
                 ),
                 subtype_xmlid="mail.mt_note",
@@ -1399,7 +1538,6 @@ class AdvancePayment(models.Model):
         self.write(
             {
                 "state": "approved",
-                "disbursement_state": "pending",
                 "date_approved": fields.Datetime.now(),
             }
         )
@@ -1529,7 +1667,7 @@ class AdvancePayment(models.Model):
             "base.group_system"
         ):
             raise UserError(_("Only the borrower can recall this request."))
-        if self.state not in ("to_endorse", "to_verify", "to_approve"):
+        if self.state not in self._get_route_states():
             raise UserError(_("Only a not-yet-approved request can be recalled."))
         self.state = "draft"
         self._drop_workflow_activities()
@@ -1581,6 +1719,7 @@ class AdvancePayment(models.Model):
                     "date_submitted": False,
                     "date_endorsed": False,
                     "date_verified": False,
+                    "date_director_reviewed": False,
                     "date_approved": False,
                 }
             )
@@ -1796,6 +1935,7 @@ class AdvancePayment(models.Model):
         if self.state not in (
             "to_endorse",
             "to_verify",
+            "to_director",
             "to_approve",
             "approved",
             "in_progress",
@@ -1804,9 +1944,7 @@ class AdvancePayment(models.Model):
         ):
             raise UserError(_("This agreement cannot be cancelled from its state."))
         self._cancel_payments()
-        self.write(
-            {"state": "cancel", "cancel_reason": reason, "disbursement_state": False}
-        )
+        self.write({"state": "cancel", "cancel_reason": reason})
         self._drop_workflow_activities()
         self.message_post(
             body=_("Agreement cancelled. Reason: %(reason)s", reason=reason),

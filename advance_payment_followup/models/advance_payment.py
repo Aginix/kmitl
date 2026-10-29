@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import logging
 
 from odoo import _, api, fields, models
@@ -41,6 +40,19 @@ class AdvancePayment(models.Model):
         ],
         string="ช่วงวันครบกำหนดคืน",
         compute="_compute_return_range",
+        store=True,
+    )
+
+    # Read literally by the calendar day — ครบกำหนด is the due date itself,
+    # not the reminder window (CONTEXT: Return due status).
+    return_due_status = fields.Selection(
+        [
+            ("not_due", "ยังไม่ถึงกำหนด"),
+            ("due", "ครบกำหนด"),
+            ("overdue", "เกินกำหนด"),
+        ],
+        string="สถานะวันครบกำหนด",
+        compute="_compute_return_due_status",
         store=True,
     )
 
@@ -92,6 +104,18 @@ class AdvancePayment(models.Model):
                 rec.return_range = "30+"
 
     @api.depends("days_to_return", "return_due_date", "state")
+    def _compute_return_due_status(self):
+        for rec in self:
+            if rec.state not in DEBTOR_STATES or not rec.return_due_date:
+                rec.return_due_status = False
+            elif rec.days_to_return < 0:
+                rec.return_due_status = "overdue"
+            elif rec.days_to_return == 0:
+                rec.return_due_status = "due"
+            else:
+                rec.return_due_status = "not_due"
+
+    @api.depends("days_to_return", "return_due_date", "state")
     def _compute_is_overdue(self):
         """Convenience boolean for tree decoration/search — past due and
         still an open debt."""
@@ -113,6 +137,7 @@ class AdvancePayment(models.Model):
         )
         records._compute_days_to_return()
         records._compute_return_range()
+        records._compute_return_due_status()
         records._compute_is_overdue()
 
     @api.model
@@ -188,8 +213,7 @@ class AdvancePayment(models.Model):
                 continue
             summary = rec._followup_activity_summary()
             existing = rec.activity_ids.filtered(
-                lambda a: a.activity_type_id == activity_type
-                and a.summary == summary
+                lambda a: a.activity_type_id == activity_type and a.summary == summary
             )
             if existing:
                 existing.sudo().write(
@@ -213,18 +237,20 @@ class AdvancePayment(models.Model):
         window) — otherwise it sits on the officer's desk forever pointing
         at a loan the tracker no longer considers a debtor."""
         activity_type = self.env.ref(FOLLOWUP_ACTIVITY_XMLID)
-        stale = self.env["mail.activity"].sudo().search(
-            [
-                ("activity_type_id", "=", activity_type.id),
-                ("res_model", "=", self._name),
-                ("res_id", "not in", eligible_loans.ids),
-                ("summary", "like", "ติดตามลูกหนี้เงินยืม%"),
-            ]
+        stale = (
+            self.env["mail.activity"]
+            .sudo()
+            .search(
+                [
+                    ("activity_type_id", "=", activity_type.id),
+                    ("res_model", "=", self._name),
+                    ("res_id", "not in", eligible_loans.ids),
+                    ("summary", "like", "ติดตามลูกหนี้เงินยืม%"),
+                ]
+            )
         )
         if stale:
-            stale.action_feedback(
-                feedback=_("ปิดอัตโนมัติ: ไม่อยู่ในเกณฑ์ติดตามลูกหนี้แล้ว")
-            )
+            stale.action_feedback(feedback=_("ปิดอัตโนมัติ: ไม่อยู่ในเกณฑ์ติดตามลูกหนี้แล้ว"))
 
     @api.model
     def _cron_send_followup_digest(self):

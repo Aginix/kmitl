@@ -87,7 +87,7 @@ class TestPartnerBankWizard(TransactionCase):
         self.assertEqual(loan.bank_id.acc_number, "123-4-56789-0")
         self.assertFalse(loan.use_unlisted_bank)
         loan.with_user(self.officer).action_verify()
-        self.assertEqual(loan.state, "to_approve")
+        self.assertEqual(loan.state, "to_director")
 
     def test_officer_correction_is_used(self):
         loan = self._loan()

@@ -29,6 +29,5 @@ class AccountPayment(models.Model):
         for payment in self.filtered(
             lambda p: p.advance_payment_id.state == "approved"
         ):
-            payment.advance_payment_id.write({"disbursement_state": "paid"})
             payment.advance_payment_id.action_start(payment=payment)
         return res

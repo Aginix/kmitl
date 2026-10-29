@@ -152,6 +152,24 @@ class TestAdvancePayment(TransactionCase):
                 ],
             }
         )
+        cls.director = Users.create(
+            {
+                "name": "Director",
+                "login": "director_ap",
+                "email": "director@test.local",
+                "groups_id": [
+                    (
+                        6,
+                        0,
+                        [
+                            cls.env.ref(
+                                "advance_payment.group_advance_payment_director"
+                            ).id
+                        ],
+                    )
+                ],
+            }
+        )
         cls.loan_officer = Users.create(
             {
                 "name": "Loan Officer",
@@ -355,7 +373,7 @@ class TestAdvancePayment(TransactionCase):
         ap.action_submit()
         ap.action_endorse()
         ap.with_user(self.officer).action_verify()
-        self.assertEqual(ap.state, "to_approve")
+        self.assertEqual(ap.state, "to_director")
         ap.write(
             {
                 "state": "reported",
@@ -588,12 +606,62 @@ class TestAdvancePayment(TransactionCase):
     # verify / approve guards                                              #
     # ------------------------------------------------------------------ #
 
-    def test_verify_moves_to_approve(self):
+    def test_verify_moves_to_director(self):
         ap = self._make()
         ap.action_submit()
         ap.action_endorse()
         ap.action_verify()
+        self.assertEqual(ap.state, "to_director")
+        self.assertTrue(ap.date_verified)
+
+    def test_director_review_moves_to_approve(self):
+        ap = self._make()
+        ap.director_id = self.director.id
+        ap.action_submit()
+        ap.action_endorse()
+        ap.action_verify()
+        todo = ap._workflow_activities("to_director")
+        self.assertEqual(todo.user_id, self.director)
+        self.assertTrue(ap.with_user(self.director).can_director_review)
+        ap.with_user(self.director).action_director_review()
         self.assertEqual(ap.state, "to_approve")
+        self.assertTrue(ap.date_director_reviewed)
+        self.assertFalse(ap._workflow_activities("to_director"))
+        self.assertEqual(ap._workflow_activities("to_approve").user_id, ap.approver_id)
+
+    def test_other_user_cannot_director_review(self):
+        ap = self._make()
+        ap.director_id = self.director.id
+        ap.action_submit()
+        ap.action_endorse()
+        ap.action_verify()
+        self.assertFalse(ap.with_user(self.approver).can_director_review)
+        with self.assertRaises(UserError):
+            ap.with_user(self.approver).action_director_review()
+        with self.assertRaises(UserError):
+            ap.with_user(self.approver).action_director_reject()
+
+    def test_director_review_only_from_to_director(self):
+        ap = self._make()
+        ap.action_submit()
+        with self.assertRaises(UserError):
+            ap.action_director_review()
+
+    def test_director_sends_back_to_draft(self):
+        ap = self._make()
+        ap.director_id = self.director.id
+        ap.action_submit()
+        ap.action_endorse()
+        ap.action_verify()
+        ap.with_user(self.director).action_director_reject()
+        self.assertEqual(ap.state, "draft")
+        self.assertFalse(ap._workflow_activities())
+
+    def test_route_is_the_standard_route(self):
+        self.assertEqual(
+            self._make()._get_route_states(),
+            ["to_endorse", "to_verify", "to_director", "to_approve"],
+        )
 
     def test_verify_blocked_without_bank_account(self):
         """An unlisted account has to be materialised before verify
@@ -625,9 +693,9 @@ class TestAdvancePayment(TransactionCase):
         ap.action_submit()
         ap.action_endorse()
         ap.with_user(self.officer).action_verify()
+        ap.action_director_review()
         ap.action_approve()
         self.assertEqual(ap.state, "approved")
-        self.assertEqual(ap.disbursement_state, "pending")
         self.assertTrue(ap.date_approved)
         self.assertEqual(ap.payment_count, 0)
 
@@ -637,7 +705,7 @@ class TestAdvancePayment(TransactionCase):
 
     def test_loan_officer_creates_payment_voucher(self):
         ap = self._make(requested_by=self.user, amount=1000)
-        ap.write({"state": "approved", "disbursement_state": "pending"})
+        ap.write({"state": "approved"})
         ap.with_user(self.officer).action_create_payment_voucher()
         self.assertEqual(ap.payment_count, 1)
         payment = ap.payment_ids
@@ -669,12 +737,12 @@ class TestAdvancePayment(TransactionCase):
         ap.action_submit()
         ap.action_endorse()
         ap.with_user(self.officer).action_verify()
+        ap.action_director_review()
         ap.action_approve()
         ap.with_user(self.officer).action_create_payment_voucher()
         ap._action_do_cancel("stopped")
         self.assertEqual(ap.state, "cancel")
         self.assertEqual(ap.payment_ids.state, "cancel")
-        self.assertFalse(ap.disbursement_state)
 
     # ------------------------------------------------------------------ #
     # Loan officer assignment (ADR-0013)                                   #
@@ -691,7 +759,7 @@ class TestAdvancePayment(TransactionCase):
         ap.action_endorse()
         self.assertTrue(ap.with_user(self.officer).can_verify)
         ap.with_user(self.officer).action_verify()
-        self.assertEqual(ap.state, "to_approve")
+        self.assertEqual(ap.state, "to_director")
 
     def test_other_officer_cannot_verify(self):
         ap = self._make()
@@ -706,7 +774,7 @@ class TestAdvancePayment(TransactionCase):
         ap.action_submit()
         ap.action_endorse()
         ap.with_user(self.manager).action_verify()
-        self.assertEqual(ap.state, "to_approve")
+        self.assertEqual(ap.state, "to_director")
 
     def test_submit_schedules_endorse_activity(self):
         ap = self._make()
@@ -873,11 +941,12 @@ class TestAdvancePayment(TransactionCase):
     def test_new_agreement_gets_approver(self):
         self.assertTrue(self._make().approver_id)
 
-    def test_verify_schedules_approve_activity(self):
+    def test_director_review_schedules_approve_activity(self):
         ap = self._make()
         ap.action_submit()
         ap.action_endorse()
         ap.with_user(self.officer).action_verify()
+        ap.action_director_review()
         todo = ap._workflow_activities("to_approve")
         self.assertTrue(todo)
         self.assertEqual(todo.user_id, ap.approver_id)
@@ -887,6 +956,7 @@ class TestAdvancePayment(TransactionCase):
         ap.action_submit()
         ap.action_endorse()
         ap.with_user(self.officer).action_verify()
+        ap.action_director_review()
         self.assertTrue(ap._workflow_activities("to_approve"))
         ap._action_do_cancel("dup")
         self.assertFalse(ap._workflow_activities())
@@ -901,6 +971,7 @@ class TestAdvancePayment(TransactionCase):
         ap.action_submit()
         ap.action_endorse()
         ap.with_user(self.officer).action_verify()
+        ap.action_director_review()
         self.assertTrue(ap.with_user(self.approver).can_approve)
         ap.with_user(self.approver).action_approve()
         self.assertEqual(ap.state, "approved")
@@ -911,6 +982,7 @@ class TestAdvancePayment(TransactionCase):
         ap.action_submit()
         ap.action_endorse()
         ap.with_user(self.officer).action_verify()
+        ap.action_director_review()
         self.assertFalse(ap.with_user(self.approver2).can_approve)
         with self.assertRaises(UserError):
             ap.with_user(self.approver2).action_approve()
@@ -921,6 +993,7 @@ class TestAdvancePayment(TransactionCase):
         ap.action_submit()
         ap.action_endorse()
         ap.with_user(self.officer).action_verify()
+        ap.action_director_review()
         ap.with_user(self.manager).action_approve()
         self.assertEqual(ap.state, "approved")
 
@@ -939,6 +1012,7 @@ class TestAdvancePayment(TransactionCase):
         ap.action_submit()
         ap.action_endorse()
         ap.with_user(self.officer).action_verify()
+        ap.action_director_review()
         ap.action_approve()
         self.assertEqual(ap._workflow_activities("approved").user_id, self.officer)
         ap.with_user(self.officer).action_create_payment_voucher()
@@ -1029,11 +1103,20 @@ class TestAdvancePayment(TransactionCase):
         ap.with_user(self.user).action_recall()
         self.assertEqual(ap.state, "draft")
 
+    def test_recall_from_to_director(self):
+        ap = self._make(requested_by=self.user)
+        ap.with_user(self.user).action_submit()
+        ap.action_endorse()
+        ap.action_verify()
+        ap.with_user(self.user).action_recall()
+        self.assertEqual(ap.state, "draft")
+
     def test_recall_from_to_approve(self):
         ap = self._make(requested_by=self.user)
         ap.with_user(self.user).action_submit()
         ap.action_endorse()
         ap.action_verify()
+        ap.action_director_review()
         ap.with_user(self.user).action_recall()
         self.assertEqual(ap.state, "draft")
 

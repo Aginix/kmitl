@@ -30,19 +30,19 @@ _Avoid_: officer (renamed to `loan_officer`; the plain `user` group is now the s
 Covering a multi-activity need with a *sequence* of single-draw agreements (borrow → clear → borrow again), **not** multiple draws on one agreement. Enforced by the one-active-agreement-per-borrower rule.
 _Avoid_: partial borrowing, installment, drawdown
 
-**ADV Running Number**:
+**ADV Running Number (เลขที่คำขอ)**:
 The record's running identifier (`ADV/<BE year>/####`), assigned when the request is first submitted (draft → to_endorse). Identifies the data row throughout its life.
 _Avoid_: contract number, agreement number
 
-**Contract Number (เลขที่สัญญา)**:
+**Contract Number (เลขที่สัญญายืมเงิน)**:
 The formal loan-contract number, assigned only when the disbursement transfer completes on the Effective Date — distinct from the ADV Running Number. Uses a simple running sequence for now; a dedicated override module may customize the format later.
 _Avoid_: ADV number, running number
 
 **Loan Contract Form (แบบ สค.001 / ใบสัญญาการยืมเงิน)**:
-The printed paper contract (`advance_payment_contract_pdf`, header button พิมพ์สัญญา, printable in any state). Each signature block — borrower, supervisor (เสนอ), approver (คำอนุมัติ), borrower again on ใบรับเงิน — carries the signer's digitized `hr.employee` signature once the record is past that signer's step; before that (or after ดึงกลับ / ส่งกลับแก้ไข / cancel) it is left blank to sign by hand. Page 1 is filled from the agreement; page 2 is the blank รายการส่งใช้เงินยืม ledger for handwriting. Its เลขที่ is the Contract Number, not the ADV Running Number.
+The printed paper contract (`advance_payment_contract_pdf`, header button พิมพ์สัญญา, printable in any state). Each signature block — borrower, supervisor (เสนอ; the Finance Director on the Office route), approver (คำอนุมัติ) — carries the signer's digitized `hr.employee` signature once the record is past that signer's step; before that (or after ดึงกลับ / ส่งกลับแก้ไข / cancel) it is left blank to sign by hand. The approver's position always reads รองอธิการบดีฝ่ายการเงินและนิติการ ปฏิบัติการแทนอธิการบดี. The borrower's ใบรับเงิน block is never pre-filled — signed and dated by hand; โอนเงินวันที่ is the Effective Date. Page 1 is filled from the agreement; page 2 is the blank รายการส่งใช้เงินยืม ledger for handwriting. Its เลขที่ is the Contract Number, not the ADV Running Number.
 _Avoid_: loan report, contract PDF (bare)
 
-**Effective Date (วันที่มีผลของสัญญา)**:
+**Effective Date (วันที่เป็นลูกหนี้)**:
 The date the disbursement transfer to the borrower completes. At this moment the agreement enters `in_progress` (from `approved`), becomes a formal debt ("ลูกหนี้โดยสมบูรณ์"), and receives its Contract Number.
 _Avoid_: approval date, disbursement request date
 
@@ -54,13 +54,24 @@ _Avoid_: approve, verify, validate
 The finance officer's check of the submitted request against the real paper documents, at `to_verify` — reached after the supervisor's Endorse, not directly from submit. Distinct from Approve. On failure the officer returns the request to the borrower to edit (back to `draft`). Only the officer named in the record's `loan_verifier_id` (or an admin) may verify (ADR-0013); endorsing raises a To Do activity for that officer, which verifying marks **done** and which cancel / ส่งกลับแก้ไข / ดึงกลับ **drop** unfinished, so the officer's inbox only ever holds requests they can actually act on (ADR-0015). `loan_verifier_id` defaults from the standing assignee configured in Settings, else from the sole officer when there is only one (ADR-0015). Verify is refused while `bank_id` is empty, so an Unlisted bank account must be materialised first (ADR-0022).
 _Avoid_: approve, review, validate
 
+**Approval route (เส้นทางการอนุมัติ)**:
+The ordered sign-off steps a request passes through between submit and disbursement. Two routes exist:
+- **Standard route (flow พื้นฐาน — คณะ/วิทยาลัย)**: Endorse → Verify → Director Review → Approve.
+- **Office route (flow สำนักงาน — สำนักงานภายใต้สำนักงานอธิการบดี)**: Verify → Director Review → Approve — **no supervisor Endorse**. On the printed contract the director's signature fills the supervisor's เสนอ block in its place.
+A request's route is fixed when it is submitted and does not change mid-flight if the configuration later changes. The Standard route is the base behaviour; the Office route is an opt-in extension that owns its own configuration (ADR-0027).
+_Avoid_: flow 1 / flow 2 (in docs), workflow, tier chain
+
+**Director Review (ผอ.พิจารณา)**:
+The Finance Director's (ผู้อำนวยการสำนักงานคลัง) consideration of a verified request, a step of its own **after Verify and before Approve** — the loan waits here as **รอผู้อำนวยการพิจารณา**. Distinct from Approve: the director considers and forwards; the authorised approver (ผู้มีอำนาจ) still gives the final release. Its date (วันที่ผอ.พิจารณา) is recorded separately from the approval date. The director is **one institution-wide person** (not per faculty/unit), named on each record in the same way as the approver — defaulted from the standing director configured in Settings, and only that named person (or an admin) may act.
+_Avoid_: approve, verify, endorse
+
 **Approve (อนุมัติ)**:
 The sign-off at `to_approve` — now the **second** tier, the Deputy Rector's — that releases the request to disbursement — a **single step**, a manual click by `action_approve`, which creates the disbursement `account.payment` and moves the loan to `approved`. The org-routed chain above this step (Faculty: Dean → Deputy Rector; สนอ.: ผอ.กองคลัง → Deputy Rector) is **still deferred** — only the supervisor's Endorse below `to_verify` was reintroduced (ADR-0020). There is no `rejected` state on the loan itself — a request that does not pass goes back to `draft`/`to_endorse`/`to_verify` (ส่งกลับแก้ไข) or to `cancel`. (An e-Saraban approval bridge, `advance_payment_sarabun`, was prototyped and removed for now — see ADR-0011.)
 Each record names its expected approver in `approver_id`, labelled **ผู้มีอำนาจอนุมัติเงินยืม** on the form (defaulted from the standing approver configured in Settings, else the admin), and finishing verification raises a To Do for that person; approving marks it done, cancel/ดึงกลับ drop it (ADR-0016). `action_approve` is restricted to that specific approver (or an admin) — not any `group_advance_payment_loan_approver` member — mirroring how ADR-0013 narrowed verify to the named officer (ADR-0017; supersedes ADR-0016's original "routing target, not an authority check").
 _Avoid_: verify, confirm, endorse
 
 **Debt (หนี้เงินยืม / ลูกหนี้)**:
-What the borrower owes the institute. Created when the disbursement transfers on the Effective Date (equal to the loan amount) and reduced by clearing; when it reaches zero the agreement can close.
+What the borrower owes the institute. Created when the disbursement transfers on the Effective Date (equal to the loan amount) and reduced by clearing; when it reaches zero the agreement can close. From the moment the transfer succeeds the borrower is a debtor (ลูกหนี้) and the agreement reads **ค้างชำระ** (outstanding) — it no longer reads "in the contract period".
 _Avoid_: balance, loan (the loan is the agreement, the debt is the owed amount)
 
 **Clearing (ล้างหนี้)**:
@@ -103,9 +114,13 @@ _Avoid_: usage record, usage line, itemized expenses
 A per-agreement flag that lets the borrower return the money in several transfers instead of one; set by the borrower at report time and adjustable by the officer. Off by default (single return).
 _Avoid_: partial return (that is any one transfer)
 
-**Leftover / Return amount (ยอดคงเหลือ / เงินเหลือจ่าย)**:
+**Leftover / Return amount (ยอดที่ต้องคืน / เงินเหลือจ่าย)**:
 Loan amount minus the actual expense — the cash to transfer back (`return_amount`, auto-computed). Returned in a single transfer, or — when the Return installment flag is on — several that accumulate to it. Each recorded return must equal the real transfer.
-_Avoid_: change, remaining balance
+_Avoid_: change, remaining balance, คงเหลือ (that is the Outstanding amount)
+
+**Outstanding amount (คงเหลือ)**:
+What the borrower still owes right now: loan amount minus the reported actual expense (labelled **ส่งใช้คืน** on the agreement) minus returned cash already received. Zero means the debt is settled.
+_Avoid_: leftover, return amount, ยอดคงเหลือ
 
 **Reconcile (ตรวจสอบยอดคืนในบัญชี)**:
 Finance confirming that returned cash actually arrived in the bank and matches the declared return. An exact match triggers automatic close; a mismatch is left unconfirmed (pending).
@@ -123,6 +138,10 @@ _Avoid_: refund, write-off
 A payee account the borrower declares on the loan because it is not yet among their work contact's `res.partner.bank`: tick `use_unlisted_bank`, then give the bank, account number and a Book Bank image. Ticking clears `bank_id`. At `to_verify` the loan officer checks it against the Book Bank and materialises it with **สร้างบัญชีธนาคาร** (`advance_payment_partner_bank`), which reuses or creates the account, sets `bank_id` and clears the tick. Verify is refused until `bank_id` is set (ADR-0022).
 _Avoid_: new bank account, manual bank account
 
-**Return due date (วันครบกำหนดคืน)**:
+**Return due date (วันที่ครบกำหนด)**:
 The date by which the borrower must clear the loan, set **manually by the loan officer after approval** — not derived from the activity end date or the effective date. Drives the weekly overdue reminders.
 _Avoid_: deadline, activity end date
+
+**Return due status (สถานะวันครบกำหนด)**:
+Where an outstanding loan stands against its Return due date, read literally by the calendar day: **ยังไม่ถึงกำหนด** (before the date), **ครบกำหนด** (today *is* the date), **เกินกำหนด** (past it). Shown only while the borrower is a debtor — from the Effective Date until the agreement closes, including while the report or the returned cash is still being checked; blank otherwise. Distinct from the reminder window ("notify N days before"), which is a separate notion.
+_Avoid_: overdue flag (that is only one of the three values), due range / ช่วงวันครบกำหนดคืน (the 0-7/8-15/… buckets)
