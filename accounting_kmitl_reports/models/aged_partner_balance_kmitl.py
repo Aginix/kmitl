@@ -32,9 +32,10 @@ class AgedPartnerBalanceKmitl(models.AbstractModel):
     # ------------------------------------------------------------------
     # Dimension filtering
     #
-    # The receivable/payable control line usually carries no
-    # ``analytic_distribution`` (the KMITL dimensions live on the invoice's
-    # income/expense lines). So we resolve the selected dimensions to the set
+    # The receivable/payable control line may or may not carry an
+    # ``analytic_distribution``: ``accounting_kmitl`` copies the header's onto
+    # every line, but otherwise the KMITL dimensions live on the invoice's
+    # income/expense lines. So we resolve the selected dimensions to the set
     # of moves that carry them, and restrict the aged move lines to those
     # moves via a ``move_id`` leaf passed through the context.
     # ------------------------------------------------------------------

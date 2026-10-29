@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <menuitem id="menu_invoice_kmitl_root"
+              name="Invoices"
+              sequence="49"
+              groups="invoice_kmitl.group_invoice_kmitl_viewer"
+              web_icon="invoice_kmitl,static/description/icon.png"/>
+    <menuitem id="menu_invoice_kmitl_invoices"
+              name="Invoices"
+              parent="menu_invoice_kmitl_root"
+              sequence="10"
+              groups="invoice_kmitl.group_invoice_kmitl_viewer"/>
+
+    <menuitem id="menu_invoice_kmitl_my_invoices"
+              name="My Invoices"
+              parent="menu_invoice_kmitl_invoices"
+              action="action_invoice_kmitl_my"
+              sequence="10"/>
+
+    <menuitem id="menu_invoice_kmitl_all_invoices"
+              name="All Invoices"
+              parent="menu_invoice_kmitl_invoices"
+              action="action_invoice_kmitl"
+              sequence="15"/>
+
+    <menuitem id="menu_invoice_kmitl_submissions"
+              name="Invoice Submissions"
+              parent="menu_invoice_kmitl_root"
+              action="action_invoice_submission"
+              sequence="20"/>
+
+    <menuitem id="menu_invoice_kmitl_reports"
+              name="Reports"
+              parent="menu_invoice_kmitl_root"
+              sequence="50"
+              groups="invoice_kmitl.group_invoice_kmitl_viewer"/>
+
+    <menuitem id="menu_invoice_kmitl_debtor_register"
+              name="Debtor Register"
+              parent="menu_invoice_kmitl_reports"
+              action="action_debtor_register"
+              sequence="10"/>
+</odoo>

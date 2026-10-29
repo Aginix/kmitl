@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_invoice_submission_reject_form" model="ir.ui.view">
+        <field name="name">kmitl.invoice.submission.reject.form</field>
+        <field name="model">kmitl.invoice.submission.reject</field>
+        <field name="arch" type="xml">
+            <form string="Reject Submission">
+                <group>
+                    <field name="submission_id"/>
+                    <field name="reason" placeholder="Please specify the rejection reason"/>
+                </group>
+                <footer>
+                    <button name="action_confirm"
+                            type="object"
+                            string="Confirm Reject"
+                            class="btn-primary"/>
+                    <button string="Cancel" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

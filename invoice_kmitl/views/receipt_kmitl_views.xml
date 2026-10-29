@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_receipt_kmitl_form" model="ir.ui.view">
+        <field name="name">kmitl.receipt.form.invoice</field>
+        <field name="model">kmitl.receipt</field>
+        <field name="inherit_id" ref="receipt_kmitl.view_receipt_kmitl_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='date']" position="after">
+                <field name="invoice_id"
+                       options="{'no_open': True}"
+                       attrs="{'invisible': [('invoice_id', '=', False)]}"/>
+            </xpath>
+            <!-- The payer of an invoice is its customer: the walk-in switch would
+                 swap the partner for the walk-in customer. -->
+            <xpath expr="//field[@name='is_walkin']" position="attributes">
+                <attribute name="attrs">{'readonly': ['|', ('state', '!=', 'draft'), ('invoice_id', '!=', False)]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='partner_id']" position="attributes">
+                <attribute name="attrs">{'readonly': ['|', '|', ('is_walkin', '=', True), ('state', '!=', 'draft'), ('invoice_id', '!=', False)]}</attribute>
+            </xpath>
+            <xpath expr="//page[@name='lines']/field[@name='line_ids']" position="before">
+                <div class="alert alert-info" role="alert" attrs="{'invisible': [('invoice_id', '=', False)]}">This receipt settles an invoice: the Income Account column only records where the revenue comes from, and the amount is credited to the customer's receivable account.</div>
+            </xpath>
+        </field>
+    </record>
+</odoo>
