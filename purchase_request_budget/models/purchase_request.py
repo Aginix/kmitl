@@ -285,9 +285,12 @@ class PurchaseRequest(models.Model):
         is_manager = self.env.user.has_group(
             "purchase_request.group_purchase_request_manager"
         )
+        # At to_verify_budget a live BC is attached — Reset would cancel it
+        # (ADR-0007). Only a manager can take that action; the requester must
+        # go through ตีกลับ/ดึงกลับ instead.
         for rec in self:
             if rec.state == "to_verify_budget":
-                rec.can_reset_to_draft = is_manager or rec.requested_by == self.env.user
+                rec.can_reset_to_draft = is_manager
 
     def _inverse_activity_analytic(self):
         """Update distribution when activity changes"""
@@ -392,6 +395,16 @@ class PurchaseRequest(models.Model):
         # Back at to_verify the verification is void until ตรวจสอบ is pressed again.
         return {"state": "to_verify", "verified_by": False, "date_verified": False}
 
+    def _back_to_verify_budget_vals(self):
+        # Back at to_verify_budget the commit stamp is void until Reserve is
+        # pressed again — but the live budget_commitment_id is intentionally
+        # preserved (ADR-0007: ดึงกลับ keeps the reservation).
+        return {
+            "state": "to_verify_budget",
+            "budget_committed_by": False,
+            "date_budget_committed": False,
+        }
+
     def action_recall_to_verify(self):
         """ดึงกลับ ถอยทีละขั้น (root ADR-0010): ผู้ตรวจสอบดึงเรื่องที่กดตรวจสอบไปแล้ว
         จาก ``to_verify_budget`` กลับมาแก้ที่ ``to_verify`` ได้ ตราบที่ยังไม่ได้จองงบ —
@@ -414,6 +427,40 @@ class PurchaseRequest(models.Model):
                 subtype_xmlid="mail.mt_note",
             )
         self.write(self._back_to_verify_vals())
+
+    def action_recall_to_verify_budget(self):
+        """ดึงกลับ ถอยทีละขั้น (root ADR-0010): ผู้จองงบประมาณดึงเรื่องที่กดจองงบฯ แล้ว
+        จาก ``to_approve`` กลับมาที่ ``to_verify_budget`` ได้ ตราบที่หนังสือสารบรรณยังไม่เวียน —
+        เวียนแล้วต้องให้ผู้อนุมัติตีกลับผ่านสารบรรณแทน. ใบจอง (BC) คงอยู่ ไม่ถูกยกเลิก
+        (ADR-0007: ดึงกลับไม่คืนเงินจอง)."""
+        self._check_step_group(
+            "to_approve",
+            "purchase_request_budget.group_purchase_request_budget_commit",
+            _("เฉพาะผู้จองงบประมาณแบบขอให้จัดหา (พ.1) เท่านั้นที่ดึงกลับได้"),
+        )
+        for rec in self:
+            if rec.state != "to_approve":
+                raise UserError(_("ดึงกลับได้เฉพาะคำขอที่รอส่งขอความเห็นชอบ"))
+            live_docs = rec.sarabun_document_ids.filtered(
+                lambda d: d.state not in ("draft", "cancelled")
+            )
+            if live_docs:
+                raise UserError(
+                    _("คำขอ %s หนังสือสารบรรณเวียนออกไปแล้ว ดึงกลับไม่ได้ — "
+                      "ให้ผู้อนุมัติตีกลับแทน") % rec.name
+                )
+            # Draft sarabun docs haven't consumed a register number yet (ADR-0011),
+            # unlink them so re-sending later mints a fresh หนังสือ.
+            draft_docs = rec.sarabun_document_ids.filtered(
+                lambda d: d.state == "draft"
+            )
+            if draft_docs:
+                draft_docs.sudo().unlink()
+            rec.message_post(
+                body=_("ดึงกลับคำขอ (พ.1) %s มาจองงบประมาณใหม่") % rec.name,
+                subtype_xmlid="mail.mt_note",
+            )
+        self.write(self._back_to_verify_budget_vals())
 
     def action_reserve_budget(self):
         """Reserve budget: either draw an existing reservation or reserve anew."""
