@@ -60,6 +60,7 @@ class DisbursementRequest(models.Model):
         if stale:
             self.approval_expense_ids -= stale
 
+    @api.onchange("account_fiscal_year_id")
     def _onchange_fiscal_year_clear_commitment(self):
         # Odoo runs every onchange on a new record's first onchange, which would
         # wipe the commitment prefilled from the approval request; keep one that
@@ -68,6 +69,16 @@ class DisbursementRequest(models.Model):
         super()._onchange_fiscal_year_clear_commitment()
         if commitment.account_fiscal_year_id == self.account_fiscal_year_id:
             self.budget_commitment_id = commitment
+
+    def _cancel_budget_commitment(self):
+        # The reservation belongs to the approval request (or the slip it
+        # draws), which stays open for further ใบขอเบิก: a cancelled one only
+        # reverses its own events, never cancels the reservation.
+        self.ensure_one()
+        if self.approval_request_id and self.budget_commitment_id:
+            self._reverse_own_commitment_lines(self.budget_commitment_id)
+            return True
+        return super()._cancel_budget_commitment()
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -87,13 +98,22 @@ class DisbursementRequest(models.Model):
         return records
 
     def write(self, vals):
+        # A ใบขอเบิก re-pointed away also changes the request it leaves.
+        requests = self.sudo().approval_request_id
         res = super().write(vals)
         if "approval_request_id" in vals:
             self._check_approval_request_open()
         if {"approval_request_id", "line_ids"} & set(vals):
             self._fill_single_approval_expense()
         if {"state", "budget_consumed_amount", "approval_request_id"} & set(vals):
-            self.sudo().approval_request_id._disbursement_sync_close()
+            (requests | self.sudo().approval_request_id)._disbursement_sync_close()
+        return res
+
+    def unlink(self):
+        # Deleting the last in-progress ใบขอเบิก may leave its request at zero.
+        requests = self.sudo().approval_request_id
+        res = super().unlink()
+        requests.exists()._disbursement_sync_close()
         return res
 
     def _check_approval_request_open(self):
