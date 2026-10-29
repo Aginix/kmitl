@@ -43,7 +43,7 @@ class DisbursementRequest(models.Model):
         for rec in self:
             rec.can_confirm_bill = (
                 not rec.bill_confirmer_id
-                and any(bill.state != "cancel" for bill in rec.bill_ids)
+                and rec.bill_count
                 and rec._disbursement_act_offered("disbursement.confirm_bill")
             )
 
@@ -65,8 +65,12 @@ class DisbursementRequest(models.Model):
         for rec in self:
             rec._disbursement_check_act("disbursement.confirm_bill")
             rec._check_bills_posted()
-            rec.bill_confirmer_id = self.env.user
-            rec.bill_confirm_date = fields.Datetime.now()
+            rec.write(
+                {
+                    "bill_confirmer_id": self.env.user.id,
+                    "bill_confirm_date": fields.Datetime.now(),
+                }
+            )
             rec._stamp_signature("bill_confirm")
             rec._disbursement_act_done("disbursement.confirm_bill")
         return True
@@ -82,7 +86,8 @@ class DisbursementRequest(models.Model):
         return res
 
     def _on_settlement_walked_back(self, previous_stage):
-        """A posted bill reset or cancelled: the confirmation no longer holds."""
+        """The bills are no longer all posted (a bill reset, or the last live
+        one cancelled): the confirmation no longer holds."""
         super()._on_settlement_walked_back(previous_stage)
         if self.settlement_stage == "none" and self.bill_confirmer_id:
             self._archive_signatures(["bill_confirm"])

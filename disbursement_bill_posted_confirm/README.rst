@@ -10,8 +10,9 @@ audit with a bill pending.
 The act code ``disbursement.confirm_bill`` is the one stations list as allowed or
 required (see ``disbursement/CONTEXT.md`` for the terms). The act changes no state: it
 stamps ``bill_confirmer_id`` / ``bill_confirm_date`` and leaves one ``bill_confirm``
-signature row. A reset to draft clears both, and so does a posted bill reset to draft
-or cancelled.
+signature row. A reset to draft clears both, and so does any bill change that leaves
+the request's bills no longer all posted (a posted bill reset to draft, or the last
+live bill cancelled).
 
 Configuration
 =============
