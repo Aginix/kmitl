@@ -194,3 +194,10 @@ class TestClearing(TransactionCase):
         self.assertEqual(loan.amount_remaining, 200.0)
         self.assertEqual(loan.state, "in_progress")
         self.assertFalse(loan.date_closed)
+
+    def test_cancel_clearing_nothing_keeps_a_closed_loan_closed(self):
+        loan = self._loan(amount=300.0)
+        request = self._request(loan, 100.0)
+        loan.write({"state": "done"})
+        request.action_cancel()
+        self.assertEqual(loan.state, "done")
