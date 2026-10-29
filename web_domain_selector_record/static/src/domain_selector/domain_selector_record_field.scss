@@ -1,0 +1,51 @@
+.o_ds_value_cell {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+
+    > .o-autocomplete {
+        flex: 1 1 120px;
+    }
+}
+
+.o_ds_record_avatar {
+    width: 20px;
+    height: 20px;
+    margin-right: 4px;
+    border-radius: 50%;
+    object-fit: cover;
+    vertical-align: middle;
+}
+
+.o_ds_value_cell .o_ds_record_avatar_input {
+    margin-right: 0;
+}
+
+.o_ds_value_cell .o_domain_leaf_value_input {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.o_ds_record_tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px 2px 4px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: $o-brand-primary;
+    background-color: rgba($o-brand-primary, 0.1);
+
+    .o_ds_record_avatar {
+        width: 18px;
+        height: 18px;
+    }
+    .o_domain_leaf_value_remove_tag_button {
+        margin-left: 6px;
+        opacity: 0.6;
+        &:hover {
+            opacity: 1;
+        }
+    }
+}

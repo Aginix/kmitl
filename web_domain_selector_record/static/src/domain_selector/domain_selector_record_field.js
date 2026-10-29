@@ -12,6 +12,11 @@ import { Component, onWillStart, onWillUpdateProps } from "@odoo/owl";
 const dso = registry.category("domain_selector/operator");
 const RECORD_OPERATORS = ["=", "!=", "in", "not in", "child_of", "parent_of"];
 const SEARCH_LIMIT = 8;
+const AVATAR_MODELS = ["res.users", "res.partner", "hr.employee"];
+
+function avatarUrl(resModel, id) {
+    return AVATAR_MODELS.includes(resModel) ? `/web/image/${resModel}/${id}/avatar_128` : false;
+}
 
 function toIds(value) {
     return (Array.isArray(value) ? value : [value]).filter((id) => Number.isInteger(id) && id > 0);
@@ -93,8 +98,17 @@ export class DomainSelectorRecordField extends Component {
     get inputValue() {
         return this.isMulti || !this.ids.length ? "" : this.displayName(this.ids[0]);
     }
+    avatar(id) {
+        return avatarUrl(this.props.field.relation, id);
+    }
     get sources() {
-        return [{ placeholder: _t("Loading..."), options: this.loadOptions.bind(this) }];
+        return [
+            {
+                placeholder: _t("Loading..."),
+                optionTemplate: "web_domain_selector_record.RecordOption",
+                options: this.loadOptions.bind(this),
+            },
+        ];
     }
 
     async loadOptions(request) {
@@ -106,7 +120,11 @@ export class DomainSelectorRecordField extends Component {
         if (!records.length) {
             return [{ label: _t("No records"), classList: "o_m2o_no_result", unselectable: true }];
         }
-        return records.map(([id, name]) => ({ value: id, label: name }));
+        return records.map(([id, name]) => ({
+            value: id,
+            label: name,
+            avatar: this.avatar(id),
+        }));
     }
 
     onSelect(option) {
@@ -155,6 +173,9 @@ export class DomainSelectorRecordValue extends Component {
     }
     displayName(value) {
         return this.names.get(this.props.resModel, value) || value;
+    }
+    avatar(id) {
+        return avatarUrl(this.props.resModel, id);
     }
 }
 DomainSelectorRecordValue.template = "web_domain_selector_record.DomainSelectorRecordValue";

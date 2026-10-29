@@ -11,6 +11,7 @@ This module replaces that text box with a searchable record picker:
 
 * ``=`` / ``!=`` / ``child of``: pick one record by name.
 * ``in`` / ``not in``: pick several records, shown as tags.
+* Users, partners and employees show their avatar next to the name.
 * ``contains`` / ``not contains`` still use a text box.
 
 Saved domains show the record names (e.g. ``User = "Administrator"``) instead of
