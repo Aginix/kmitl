@@ -1,0 +1,120 @@
+<odoo>
+
+    <record id="action_report_disbursement_voucher" model="ir.actions.report">
+        <field name="name">งบหน้าใบสำคัญคู่จ่าย</field>
+        <field name="model">approval.request</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">agx_approval.report_disbursement_voucher_document</field>
+        <field name="report_file">agx_approval.report_disbursement_voucher_document</field>
+        <field name="binding_model_id" ref="model_approval_request"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="paperformat_approval_request_report"/>
+    </record>
+
+    <template id="report_disbursement_voucher_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.basic_layout">
+                    <t t-set="o" t-value="o.with_context({'lang': 'th_TH'})" />
+                    <t t-set="faculty" t-value="o.owner_id.department_id.master_department_id or o.owner_id.department_id" />
+                    <t t-set="groups" t-value="o._voucher_groups()" />
+                    <t t-set="voucher_total" t-value="sum([g['voucher_count'] for g in groups])" />
+                    <style>
+                        * {
+                            font-family: 'THSarabunNew', Arial, sans-serif;
+                            --bs-body-font-size: 16pt;
+                        }
+                        p, span, div, td, th {
+                            font-size: 16pt;
+                            line-height: 1.25;
+                        }
+                        table.voucher td, table.voucher th {
+                            vertical-align: top;
+                        }
+                        table.items td {
+                            border: none !important;
+                            padding: 0 0 0 1.5em;
+                        }
+                    </style>
+
+                    <div class="page">
+                        <div class="text-center fw-bolder" style="font-size: 20pt;">
+                            งบหน้าใบสำคัญคู่จ่าย
+                        </div>
+                        <div class="text-center">
+                            <span t-out="faculty.name" />
+                            <span class="ms-1" t-out="o.company_id.name" />
+                        </div>
+                        <div class="text-center">
+                            ขอเบิกเงิน<span t-out="o.source_analytic_id.name or 'รายได้'" />
+                        </div>
+                        <div class="text-center mb-3">
+                            รวมใบสำคัญ <span class="fw-bolder" t-out="voucher_total" /> ฉบับ
+                        </div>
+
+                        <table class="table table-bordered table-sm voucher">
+                            <thead>
+                                <tr class="text-center">
+                                    <th style="width:7%">ลำดับที่</th>
+                                    <th>รายการ</th>
+                                    <th style="width:16%">ชื่อผู้ถูกหักภาษี</th>
+                                    <th style="width:12%">จำนวนที่ถูกหักภาษี</th>
+                                    <th style="width:14%">จำนวนเงินที่ขอเบิก</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td />
+                                    <td colspan="4" class="fw-bolder">
+                                        <span t-out="o.category_id.name" />
+                                        <span t-if="o.description" class="fw-normal ms-1" t-out="o.description" />
+                                    </td>
+                                </tr>
+                                <t t-set="no" t-value="1" />
+                                <t t-set="grand" t-value="0" />
+                                <t t-set="wht_grand" t-value="0" />
+                                <t t-foreach="groups" t-as="g">
+                                    <tr>
+                                        <td class="text-center" t-out="no" />
+                                        <td>
+                                            <div t-out="g['recipient'].name" />
+                                            <table class="items" style="width:100%">
+                                                <t t-foreach="g['allocs']" t-as="a">
+                                                    <tr>
+                                                        <td>
+                                                            - <t t-out="a.product_id.name" />
+                                                            <span class="text-muted"> · <t t-out="a.payment_type_label()" /></span>
+                                                        </td>
+                                                        <td style="text-align:right; width:30%" t-out="'{0:,.2f}'.format(a.amount)" />
+                                                    </tr>
+                                                </t>
+                                            </table>
+                                        </td>
+                                        <td t-out="g['recipient'].name if g['has_wht'] else ''" />
+                                        <td class="text-end" t-out="('{0:,.2f}'.format(g['wht_total'])) if g['has_wht'] else ''" />
+                                        <td class="text-end" t-out="'{0:,.2f}'.format(g['subtotal'])" />
+                                    </tr>
+                                    <t t-set="no" t-value="no + 1" />
+                                    <t t-set="grand" t-value="grand + g['subtotal']" />
+                                    <t t-set="wht_grand" t-value="wht_grand + g['wht_total']" />
+                                </t>
+                                <tr>
+                                    <td colspan="3" class="text-center fw-bolder">
+                                        รวมเป็นเงินทั้งสิ้น
+                                        <span class="fw-normal">
+                                            (<t t-esc="o.currency_id.with_context({'lang': 'th_TH'}).amount_to_text(grand)" />)
+                                        </span>
+                                    </td>
+                                    <td class="text-end fw-bolder" t-out="('{0:,.2f}'.format(wht_grand)) if wht_grand else ''" />
+                                    <td class="text-end fw-bolder" t-out="'{0:,.2f}'.format(grand)" />
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>
