@@ -1,11 +1,11 @@
 {
     "name": "Aginix Approval Disbursement Todos",
-    "version": "16.0.1.0.0",
+    "version": "16.0.2.0.0",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "Accounting",
-    "summary": "ต่อยอด agx_approval_budget_todo สายการเงิน/เบิกจ่าย: บันทึกค่าใช้จ่ายจริง, "
-    "แจ้งการเงินตรวจสอบและตั้งเบิก, และ FYI เมื่อเบิกจ่ายแล้ว",
+    "summary": "ต่อยอด agx_approval_budget_todo สายการเบิกจ่าย: แจ้ง FYI ผู้ขอเมื่อ"
+    "ใบขอเบิกของคำขอตัดงบแล้ว และเมื่อปิดคำขอ",
     "depends": [
         "agx_approval_budget_todo",
         "agx_approval_disbursement",

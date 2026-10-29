@@ -3,9 +3,10 @@ from odoo.exceptions import UserError, ValidationError
 
 
 class ApprovalRequestLine(models.Model):
-    """A planned expense line (ค่าใช้จ่าย) — broken down by expense type, not by
-    person, and carrying no payee. Who receives the money is decided later, on
-    the actual expense allocation (approval.request.allocation)."""
+    """A planned expense line (ค่าใช้จ่าย) — carrying no payee. On a category
+    with Expense Items it names one of them (or อื่น ๆ with a typed name); on
+    any other category the request has exactly one, a bare amount. The unit
+    finance disburses against: each ใบขอเบิก line pays one (ADR-0010)."""
 
     _name = "approval.request.line"
     _description = "Approval Request Line"
@@ -20,17 +21,23 @@ class ApprovalRequestLine(models.Model):
         ondelete="cascade",
     )
 
-    allowed_product_ids = fields.Many2many(
-        string="Allowed Product IDs",
-        compute="_compute_allowed_product_ids",
-        comodel_name="product.product",
+    expense_item_id = fields.Many2one(
+        "approval.category.expense.item",
+        string="รายการ",
+        ondelete="restrict",
     )
 
-    product_id = fields.Many2one(
-        string="รายการ",
-        comodel_name="product.product",
-        domain="[('id', 'in', allowed_product_ids)]",
-        required=True,
+    is_other = fields.Boolean(related="expense_item_id.is_other")
+
+    other_name = fields.Char(
+        string="ระบุรายการ",
+        help="ชื่อรายการที่ผู้ขอพิมพ์เอง เมื่อเลือก 'อื่น ๆ'",
+    )
+
+    name = fields.Char(
+        string="ค่าใช้จ่าย",
+        compute="_compute_name",
+        store=True,
     )
 
     description = fields.Text(
@@ -74,12 +81,44 @@ class ApprovalRequestLine(models.Model):
                 )
         return super().unlink()
 
-    @api.depends("request_id.category_id")
-    def _compute_allowed_product_ids(self):
-        for record in self:
-            record.allowed_product_ids = (
-                record.request_id.category_id.allowed_product_ids
-            )
+    @api.depends(
+        "expense_item_id.name", "other_name", "request_id.category_id.name"
+    )
+    def _compute_name(self):
+        for rec in self:
+            item = rec.expense_item_id
+            if item.is_other:
+                rec.name = _("อื่น ๆ: %s") % (rec.other_name or "")
+            elif item:
+                rec.name = item.name
+            else:
+                rec.name = rec.request_id.category_id.name
+
+    @api.onchange("expense_item_id")
+    def _onchange_expense_item_id(self):
+        # The typed name belongs to อื่น ๆ only.
+        if not self.expense_item_id.is_other:
+            self.other_name = False
+
+    @api.constrains("expense_item_id", "other_name")
+    def _check_expense_item(self):
+        for rec in self:
+            category = rec.request_id.category_id
+            if not category.has_expense_items:
+                continue
+            if not rec.expense_item_id:
+                raise ValidationError(
+                    _("กรุณาเลือกรายการของค่าใช้จ่ายทุกบรรทัด")
+                )
+            if rec.expense_item_id.category_id != category:
+                raise ValidationError(
+                    _("รายการ %s ไม่ใช่รายการของประเภท %s")
+                    % (rec.expense_item_id.name, category.name)
+                )
+            if rec.expense_item_id.is_other and not (rec.other_name or "").strip():
+                raise ValidationError(
+                    _("กรุณาระบุรายการเมื่อเลือก 'อื่น ๆ'")
+                )
 
     @api.constrains("total_amount")
     def _check_total_amount_positive(self):

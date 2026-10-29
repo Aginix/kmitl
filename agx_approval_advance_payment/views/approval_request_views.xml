@@ -11,26 +11,6 @@
             ref="agx_approval_disbursement.approval_request_view_form"
         />
         <field name="arch" type="xml">
-
-            <!-- Declare invisible computed fields in header -->
-            <xpath
-                expr="//header/field[@name='has_active_disbursement']"
-                position="after"
-            >
-                <field name="show_create_disbursement_button" invisible="1" />
-                <field name="advance_payment_count" invisible="1" />
-            </xpath>
-
-            <!-- Override "Create Bill" button to use our computed visibility field -->
-            <xpath
-                expr="//header/button[@name='action_create_disbursement_request']"
-                position="attributes"
-            >
-                <attribute name="attrs">
-                    {'invisible': [('show_create_disbursement_button', '=', False)]}
-                </attribute>
-            </xpath>
-
             <!-- Borrowing is pulled from the loan side: the borrower opens
                  their own สัญญายืม and picks this request (ADR-0003). There is
                  deliberately no "Create Advance Payment" button here. -->
@@ -51,27 +31,6 @@
                     />
                 </button>
             </xpath>
-
-            <!-- Funding Loan per เงินยืม row: which สัญญายืม the money came out
-                 of — chosen, not matched to the recipient (ADR-0003). Only the
-                 เงินยืม table carries this column. -->
-            <xpath
-                expr="//field[@name='allocation_advance_ids']/tree/field[@name='partner_bank_id']"
-                position="before"
-            >
-                <field
-                    name="advance_payment_id"
-                    domain="[('approval_request_id', '=', parent.id), ('state', '!=', 'cancel')]"
-                    options="{'no_create': True, 'no_create_edit': True}"
-                    attrs="{
-                        'readonly': [('parent.is_actual_editable', '=', False)],
-                        'required': [('parent.advance_payment_count', '!=', 0)],
-                        'column_invisible': [('parent.advance_payment_count', '=', 0)]
-                    }"
-                />
-            </xpath>
-
-
         </field>
     </record>
 </odoo>
