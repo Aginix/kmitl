@@ -38,10 +38,6 @@ class ApprovalRequest(models.Model):
         "เพราะเงินก้อนนั้นออกไปตามคำขอนี้แล้ว",
     )
 
-    has_advance_divergence = fields.Boolean(
-        compute="_compute_has_advance_divergence",
-    )
-
     show_create_disbursement_button = fields.Boolean(
         compute="_compute_show_create_disbursement_button",
     )
@@ -68,17 +64,6 @@ class ApprovalRequest(models.Model):
             rec.borrowing_cap = cap
             rec.borrowed_amount = drawn
             rec.borrowing_headroom = cap - drawn
-
-    @api.depends(
-        "advance_payment_ids.has_expense_divergence",
-        "allocation_ids.amount",
-        "allocation_ids.advance_payment_id",
-    )
-    def _compute_has_advance_divergence(self):
-        for rec in self:
-            rec.has_advance_divergence = any(
-                rec.advance_payment_ids.mapped("has_expense_divergence")
-            )
 
     @api.depends("state", "has_active_disbursement")
     def _compute_show_create_disbursement_button(self):

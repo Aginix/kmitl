@@ -28,31 +28,6 @@
                 />
             </xpath>
 
-            <!-- Expense report vs what the request itemises against this loan -->
-            <xpath expr="//field[@name='actual_expense_amount']" position="after">
-                <field
-                    name="allocation_expense_amount"
-                    attrs="{'invisible': [('approval_request_count', '=', 0)]}"
-                />
-                <field name="has_expense_divergence" invisible="1" />
-                <button
-                    name="action_prefill_expense_from_allocation"
-                    type="object"
-                    string="ดึงยอดจากใบขออนุมัติ"
-                    class="btn-link"
-                    attrs="{'invisible': ['|', ('state', '!=', 'in_progress'),
-                                          ('approval_request_count', '=', 0)]}"
-                />
-                <div
-                    class="alert alert-warning mb-0"
-                    role="alert"
-                    colspan="2"
-                    attrs="{'invisible': [('has_expense_divergence', '=', False)]}"
-                >
-                    ยอดค่าใช้จ่ายจริงที่รายงาน ไม่เท่ากับผลรวมแถวเงินยืมในใบขออนุมัติ
-                    — ยืนยันว่าถูกต้องได้ แต่โปรดตรวจสอบก่อนส่ง
-                </div>
-            </xpath>
 
             <xpath expr="//div[@name='button_box']" position="inside">
                 <field name="approval_request_count" invisible="1" />

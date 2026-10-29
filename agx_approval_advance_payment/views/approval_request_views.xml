@@ -19,7 +19,6 @@
             >
                 <field name="show_create_disbursement_button" invisible="1" />
                 <field name="advance_payment_count" invisible="1" />
-                <field name="has_advance_divergence" invisible="1" />
             </xpath>
 
             <!-- Override "Create Bill" button to use our computed visibility field -->
@@ -87,19 +86,6 @@
                 />
             </xpath>
 
-            <!-- Divergence between what a borrower reported and what this
-                 request itemises against their loan -->
-            <xpath expr="//field[@name='allocation_direct_ids']" position="before">
-                <div
-                    class="alert alert-warning"
-                    role="alert"
-                    attrs="{'invisible': [('has_advance_divergence', '=', False)]}"
-                >
-                    <strong>ยอดไม่ตรงกับรายงานค่าใช้จ่ายของผู้ยืม</strong>
-                    — ผลรวมแถวเงินยืมของสัญญาบางใบไม่เท่ากับยอดที่ผู้ยืมรายงานไว้
-                    ตรวจสอบได้จากปุ่มสัญญายืมเงินด้านบน
-                </div>
-            </xpath>
 
         </field>
     </record>

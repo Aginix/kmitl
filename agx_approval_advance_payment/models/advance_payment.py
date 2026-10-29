@@ -30,21 +30,6 @@ class AdvancePayment(models.Model):
         compute="_compute_approval_request_count",
     )
 
-    # Sum of the request's เงินยืม allocation rows that name this loan as their
-    # Funding Loan — used to prefill the expense report and to warn on drift.
-    # compute_sudo: the endorser may open the loan with no access to the
-    # request (advance_payment ADR-0020); these only summarise its rows.
-    allocation_expense_amount = fields.Monetary(
-        string="ค่าใช้จ่ายจริงตามใบขออนุมัติ",
-        compute="_compute_allocation_expense_amount",
-        compute_sudo=True,
-    )
-
-    has_expense_divergence = fields.Boolean(
-        compute="_compute_allocation_expense_amount",
-        compute_sudo=True,
-    )
-
     exceeds_ar_headroom = fields.Boolean(
         compute="_compute_exceeds_ar_headroom",
         help="Technical flag read by the borrowing-headroom exception rule.",
@@ -137,22 +122,6 @@ class AdvancePayment(models.Model):
             rec.approval_request_count = 1 if rec.approval_request_id else 0
 
     @api.depends(
-        "actual_expense_amount",
-        "approval_request_id.allocation_ids.amount",
-        "approval_request_id.allocation_ids.advance_payment_id",
-    )
-    def _compute_allocation_expense_amount(self):
-        for rec in self:
-            rows = rec.approval_request_id.allocation_ids.filtered(
-                lambda a, r=rec: a.advance_payment_id == r
-            )
-            total = sum(rows.mapped("amount"))
-            rec.allocation_expense_amount = total
-            rec.has_expense_divergence = bool(rows) and bool(
-                rec.currency_id.compare_amounts(rec.actual_expense_amount, total)
-            )
-
-    @api.depends(
         "loan_amount",
         "approval_request_id.borrowing_headroom",
         "approval_request_id.advance_payment_ids.loan_amount",
@@ -176,36 +145,6 @@ class AdvancePayment(models.Model):
                 ar.borrowing_cap
                 and rec.currency_id.compare_amounts(rec.loan_amount, available) > 0
             )
-
-    def action_prefill_expense_from_allocation(self):
-        """Fill the expense report from the request's เงินยืม rows naming this
-        loan. Prefill, not derive: the borrower still confirms and submits it,
-        because the debt is theirs (ADR-0005)."""
-        self.ensure_one()
-        rows = self.approval_request_id.allocation_ids.filtered(
-            lambda a: a.advance_payment_id == self
-        )
-        if not rows:
-            raise ValidationError(
-                _(
-                    "There are no เงินยืม rows on %(name)s naming this agreement yet.",
-                    name=self.approval_request_id.display_name,
-                )
-            )
-        self.write(
-            {
-                "actual_expense_amount": sum(rows.mapped("amount")),
-                "expense_description": "\n".join(
-                    "- %s %s: %s"
-                    % (
-                        row.partner_id.display_name,
-                        row.product_id.display_name or "",
-                        row.amount,
-                    )
-                    for row in rows
-                ),
-            }
-        )
 
     def action_view_approval_request(self):
         self.ensure_one()

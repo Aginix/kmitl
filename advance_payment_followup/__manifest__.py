@@ -1,7 +1,6 @@
-# -*- coding: utf-8 -*-
 {
     "name": "Advance Payment Followup",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.1.0",
     "summary": """ ติดตามลูกหนี้เงินยืม: countdown, หน้าติดตาม, digest รายสัปดาห์ """,
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",

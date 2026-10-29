@@ -75,8 +75,8 @@ What the borrower owes the institute. Created when the disbursement transfers on
 _Avoid_: balance, loan (the loan is the agreement, the debt is the owed amount)
 
 **Clearing (ล้างหนี้)**:
-Reducing the debt during the report/return stage, by (a) verified actual expenses and (b) returned leftover cash. Internal to the agreement — it does **not** involve a Disbursement Request (ใบเบิก/DR). ส่งเบิก (`action_submit_report`, `in_progress → reported`) is the borrower's act of *submitting* the clearing report — not to be confused with a Disbursement Request.
-_Avoid_: settlement, reconciliation, reimbursement, ใบเบิก/DR (that is a different document entirely)
+Reducing the debt while the agreement is **ค้างชำระ**, by (a) spending evidenced through Disbursement Requests (ใบเบิก) and (b) leftover cash returned against a receipt (ใบเสร็จรับเงิน). Neither link exists yet (ADR-0028): for now the debt is cleared outside the app and the loan officer closes the agreement by hand. There is no borrower expense report and no in-app return step any more.
+_Avoid_: settlement, reconciliation, reimbursement, ส่งเบิก / expense report (removed)
 
 **Reset to draft (ตั้งกลับเป็นแบบร่าง)**:
 Any transition that puts a request back in `draft`, keeping the ADV number. Four distinct paths, deliberately sharing one UI verb because they are the same thing from the borrower's point of view — the request is editable again:
@@ -84,7 +84,7 @@ Any transition that puts a request back in `draft`, keeping the ADV number. Four
 - the **supervisor's ส่งกลับแก้ไข** (`action_endorse_reject`, from `to_endorse`) — sending it back before it even reaches the finance officer (ADR-0020);
 - the **loan officer's ส่งกลับแก้ไข** (`action_reset_to_draft` / `_action_do_reject`, from `to_verify`) — sending it back for the borrower to fix;
 - the **manager's un-cancel** (`action_reset_cancel_to_draft`, from `cancel`) — ad-hoc recovery of a request cancelled before the money moved.
-_Avoid_: recall / ดึงกลับ (reserved for e-Saraban's own ดึงกลับ — see ADR-0011), withdraw, reopen (that is `action_reopen`: `done` → `in_progress`/`to_reconcile`)
+_Avoid_: recall / ดึงกลับ (reserved for e-Saraban's own ดึงกลับ — see ADR-0011), withdraw, reopen (that is `action_reopen`: `done` → `in_progress`)
 
 **Source Reference (AR / PR)**:
 The upstream document a loan is created from — an Approval Request (ใบขออนุมัติ / expense plan, `approval.request`) or a Purchase Request (คำขอให้จัดหา, `purchase.request`). A Purchase Request backs **one** live loan, made only in the loan app by picking the request (ADR-0026); an Approval Request may back **several**, one per person who chose to borrow (no longer restricted to its participants, ADR-0025), each capped by the request's remaining headroom (`agx_approval` ADR-0003). Held in the `reference` Reference field, with `reference_model` derived from it; each bridge additionally mirrors it into a typed Many2one (`purchase_request_id`, `approval_request_id`) for searching, grouping and FK integrity. advance_payment never depends on these models directly (true since ADR-0023 moved the `purchase.request` selection value into `purchase_request_advance_payment`); the selection values, typed pickers, mirrors and auto-fill live only in bridge modules. A Disbursement Request (ใบเบิก/DR) is *not* a source and is unrelated to loans. See ADR-0007.
@@ -106,33 +106,13 @@ _Avoid_: reference type, document type
 A domain over the loan type's required model that narrows which source documents the borrower is offered. It may use `employee_id`, `partner_id`, `user_id` (all the borrower's), `uid` and `company_id`. It is evaluated server-side and ANDed with each bridge's mandatory baseline (AR and PR: approved). The result drives the typed picker (`reference_picker_domain`) and is re-checked while the loan is in draft (ADR-0023).
 _Avoid_: reference domain (bare), picker domain (that is the computed result)
 
-**Expense Report / บันทึกค่าใช้จ่ายจริง**:
-The borrower's end-of-activity summary recorded directly on the agreement — description, actual expense amount, auto-computed return amount, and evidence (**no itemized lines**). Submitted to leave `in_progress`; the loan-responsible finance officer must accept it before the debt can close. It covers every baht drawn on the loan, which may include money the borrower paid to *other* people — the debt is the borrower's alone even when the spending was the group's.
-_Avoid_: usage record, usage line, itemized expenses
-
-**Return installment (คืนหลายงวด)**:
-A per-agreement flag that lets the borrower return the money in several transfers instead of one; set by the borrower at report time and adjustable by the officer. Off by default (single return).
-_Avoid_: partial return (that is any one transfer)
-
-**Leftover / Return amount (ยอดที่ต้องคืน / เงินเหลือจ่าย)**:
-Loan amount minus the actual expense — the cash to transfer back (`return_amount`, auto-computed). Returned in a single transfer, or — when the Return installment flag is on — several that accumulate to it. Each recorded return must equal the real transfer.
-_Avoid_: change, remaining balance, คงเหลือ (that is the Outstanding amount)
+**Cleared amount (ส่งใช้คืน)**:
+The part of the debt already cleared. Read-only on the agreement; it will be fed by the Disbursement Requests (ใบเบิก) linked to the loan (ADR-0028).
+_Avoid_: actual expense report, ยอดค่าใช้จ่ายจริง
 
 **Outstanding amount (คงเหลือ)**:
-What the borrower still owes right now: loan amount minus the reported actual expense (labelled **ส่งใช้คืน** on the agreement) minus returned cash already received. Zero means the debt is settled.
+What the borrower still owes right now: loan amount minus ส่งใช้คืน. Zero means the debt is settled.
 _Avoid_: leftover, return amount, ยอดคงเหลือ
-
-**Reconcile (ตรวจสอบยอดคืนในบัญชี)**:
-Finance confirming that returned cash actually arrived in the bank and matches the declared return. An exact match triggers automatic close; a mismatch is left unconfirmed (pending).
-_Avoid_: verify (that is the request-stage document check by the officer)
-
-**Over-return (คืนเกิน)**:
-When the borrower transfers back more than the Leftover. The excess is never refunded — the borrower must confirm donating it to the institute before the agreement can close.
-_Avoid_: overpayment, refund
-
-**Donation of excess (บริจาคเงินส่วนเกิน)**:
-The borrower's mandatory, consented donation of an over-returned excess to the institute, recorded with an audit trail (who confirmed + timestamp). Closing is blocked until consent is given.
-_Avoid_: refund, write-off
 
 **Unlisted bank account (บัญชีธนาคารนอกรายการ)**:
 A payee account the borrower declares on the loan because it is not yet among their work contact's `res.partner.bank`: tick `use_unlisted_bank`, then give the bank, account number and a Book Bank image. Ticking clears `bank_id`. At `to_verify` the loan officer checks it against the Book Bank and materialises it with **สร้างบัญชีธนาคาร** (`advance_payment_partner_bank`), which reuses or creates the account, sets `bank_id` and clears the tick. Verify is refused until `bank_id` is set (ADR-0022).
@@ -143,5 +123,5 @@ The date by which the borrower must clear the loan, set **manually by the loan o
 _Avoid_: deadline, activity end date
 
 **Return due status (สถานะวันครบกำหนด)**:
-Where an outstanding loan stands against its Return due date, read literally by the calendar day: **ยังไม่ถึงกำหนด** (before the date), **ครบกำหนด** (today *is* the date), **เกินกำหนด** (past it). Shown only while the borrower is a debtor — from the Effective Date until the agreement closes, including while the report or the returned cash is still being checked; blank otherwise. Distinct from the reminder window ("notify N days before"), which is a separate notion.
+Where an outstanding loan stands against its Return due date, read literally by the calendar day: **ยังไม่ถึงกำหนด** (before the date), **ครบกำหนด** (today *is* the date), **เกินกำหนด** (past it). Shown only while the borrower is a debtor — from the Effective Date until the agreement closes; blank otherwise. Distinct from the reminder window ("notify N days before"), which is a separate notion.
 _Avoid_: overdue flag (that is only one of the three values), due range / ช่วงวันครบกำหนดคืน (the 0-7/8-15/… buckets)

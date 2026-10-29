@@ -15,7 +15,6 @@
                 <field name="loan_verifier_id"/>
                 <field name="loan_amount"/>
                 <field name="amount_remaining"/>
-                <field name="return_amount"/>
                 <field name="return_due_date"/>
                 <field name="days_to_return_display" string="จำนวนวันคงเหลือ"/>
                 <field name="return_range"/>
@@ -38,7 +37,6 @@
                 <field name="loan_verifier_id" type="row"/>
                 <field name="return_range" type="col"/>
                 <field name="amount_remaining" type="measure"/>
-                <field name="return_amount" type="measure"/>
             </pivot>
         </field>
     </record>
@@ -89,7 +87,7 @@
         <field name="name">ติดตามลูกหนี้เงินยืม</field>
         <field name="res_model">advance.payment</field>
         <field name="view_mode">tree,pivot,form</field>
-        <field name="domain">[('state','in',['in_progress','reported','to_reconcile'])]</field>
+        <field name="domain">[('state','=','in_progress')]</field>
         <field name="search_view_id" ref="view_advance_payment_search_followup"/>
         <field name="context">{'search_default_group_return_range': 1}</field>
     </record>

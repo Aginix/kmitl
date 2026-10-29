@@ -18,7 +18,7 @@ class AdvancePayment(models.Model):
     docs/adr/0020, docs/adr/0027 and docs/advance-payment-lifecycle.drawio):
 
         draft → to_endorse → to_verify → to_director → to_approve → approved
-              → in_progress → reported → to_reconcile → done
+              → in_progress → done
         (+ negative: cancel)
 
     The pre-disbursement steps come from _get_route_states(), so a route
@@ -77,8 +77,6 @@ class AdvancePayment(models.Model):
             "to_approve",
             "approved",
             "in_progress",
-            "reported",
-            "to_reconcile",
             "done",
             "cancel",
         )
@@ -92,8 +90,6 @@ class AdvancePayment(models.Model):
             "to_approve",
             "approved",
             "in_progress",
-            "reported",
-            "to_reconcile",
             "done",
             "cancel",
         )
@@ -124,8 +120,6 @@ class AdvancePayment(models.Model):
             ("to_approve", "รอผู้มีอำนาจอนุมัติ"),
             ("approved", "รอโอนเงิน"),
             ("in_progress", "ค้างชำระ"),
-            ("reported", "ตรวจสอบการส่งเบิก"),
-            ("to_reconcile", "รอตรวจสอบเงินคืน"),
             ("done", "ปิดสัญญา"),
             ("cancel", "ยกเลิก"),
         ],
@@ -771,44 +765,20 @@ class AdvancePayment(models.Model):
         "a formal debt (ลูกหนี้โดยสมบูรณ์) at this moment.",
     )
 
-    # Actual-expense summary (บันทึกค่าใช้จ่ายจริง) — recorded on the agreement,
-    # not itemized (ADR-0003).
-    expense_description = fields.Text(
-        string="คำอธิบายค่าใช้จ่าย",
-        copy=False,
-    )
-
+    # The cleared part of the debt and what is still owed. Read-only until the
+    # disbursement-request (ใบเบิก) link feeds ส่งใช้คืน; the expense report and
+    # in-app returns were dropped (ADR-0028).
     actual_expense_amount = fields.Monetary(
         string="ส่งใช้คืน",
+        readonly=True,
         copy=False,
         tracking=True,
-    )
-
-    return_installment = fields.Boolean(
-        string="คืนหลายงวด",
-        copy=False,
-        help="Allow the money to be returned in several transfers instead of "
-        "one; the officer may toggle this in emergencies.",
     )
 
     amount_remaining = fields.Monetary(
         string="คงเหลือ",
         compute="_compute_amounts",
         store=True,
-    )
-
-    return_amount = fields.Monetary(
-        string="ยอดที่ต้องคืน",
-        compute="_compute_amounts",
-        store=True,
-        help="Loan amount minus the actual expense — the cash to return.",
-    )
-
-    excess_amount = fields.Monetary(
-        string="เงินคืนส่วนเกิน",
-        compute="_compute_amounts",
-        store=True,
-        help="Amount returned beyond the return amount; requires donation consent.",
     )
 
     payment_ids = fields.One2many(
@@ -849,41 +819,6 @@ class AdvancePayment(models.Model):
     )
 
     cancel_reason = fields.Text(string="Reason", readonly=True, copy=False)
-
-    # Over-return donation consent (ADR-0003). The excess is never refunded —
-    # the borrower must consent to donate it to the institute before closing.
-    donate_excess = fields.Boolean(
-        string="ยินยอมบริจาคเงินส่วนเกินให้สถาบัน",
-        copy=False,
-    )
-    donate_consent_uid = fields.Many2one(
-        comodel_name="res.users",
-        string="ผู้ยืนยันการบริจาค",
-        readonly=True,
-        copy=False,
-    )
-    donate_consent_date = fields.Datetime(
-        string="เวลายืนยันการบริจาค",
-        readonly=True,
-        copy=False,
-    )
-
-    return_line_ids = fields.One2many(
-        comodel_name="advance.payment.return.line",
-        inverse_name="agreement_id",
-        string="Return Lines",
-        copy=False,
-    )
-
-    amount_returned = fields.Monetary(
-        string="Amount Returned",
-        compute="_compute_amounts",
-        store=True,
-    )
-
-    return_count = fields.Integer(
-        compute="_compute_return_count",
-    )
 
     # res_field excludes book_bank_file's own attachment: the client saves
     # this field with a SET command, whose search would otherwise sweep that
@@ -941,24 +876,10 @@ class AdvancePayment(models.Model):
                 self.book_bank_filename = False
             self._onchange_employee_id()
 
-    @api.depends(
-        "loan_amount",
-        "actual_expense_amount",
-        "return_line_ids.amount",
-        "return_line_ids.state",
-    )
+    @api.depends("loan_amount", "actual_expense_amount")
     def _compute_amounts(self):
         for rec in self:
-            expense = rec.actual_expense_amount
-            returned = sum(
-                rec.return_line_ids.filtered(lambda l: l.state == "done").mapped(
-                    "amount"
-                )
-            )
-            rec.amount_returned = returned
-            rec.amount_remaining = rec.loan_amount - expense - returned
-            rec.return_amount = rec.loan_amount - expense
-            rec.excess_amount = max(0.0, returned - rec.return_amount)
+            rec.amount_remaining = rec.loan_amount - rec.actual_expense_amount
 
     @api.depends("payment_ids")
     def _compute_payment_count(self):
@@ -973,11 +894,6 @@ class AdvancePayment(models.Model):
         )
         for rec in self:
             rec.can_view_payments = allowed
-
-    @api.depends("return_line_ids")
-    def _compute_return_count(self):
-        for rec in self:
-            rec.return_count = len(rec.return_line_ids)
 
     @api.constrains("loan_amount")
     def _check_loan_amount_positive(self):
@@ -1112,17 +1028,6 @@ class AdvancePayment(models.Model):
             # Same for a director reassigned while the request awaits them.
             for rec in self.filtered(lambda r: r.state == "to_director"):
                 rec._schedule_workflow_activity("to_director")
-        if "return_due_date" in vals:
-            # The borrower's report To-Do is due on return_due_date (ADR-0021);
-            # the officer usually sets or moves it after the transfer, so keep
-            # the deadline in step in place rather than re-raising the task.
-            for rec in self.filtered(lambda r: r.state == "in_progress"):
-                rec._workflow_activities("in_progress").sudo().write(
-                    {
-                        "date_deadline": rec.return_due_date
-                        or fields.Date.context_today(rec)
-                    }
-                )
         return res
 
     def unlink(self):
@@ -1192,13 +1097,10 @@ class AdvancePayment(models.Model):
         One entry per state that waits on a named person, keyed by that state
         so the transitions can name the stage they are leaving or entering
         rather than repeating a set of near-identical helpers (ADR-0015).
-        The back half — approved through to_reconcile — joined in ADR-0021;
-        two of its stages wait on the borrower rather than on staff.
+        The back half (ADR-0021) is down to the voucher step since the
+        expense report and in-app returns were dropped (ADR-0028).
         """
         self.ensure_one()
-        # sudo: any actor builds every entry; a non-HR one crashes reading the
-        # borrower through hr.employee.public (see _compute_is_requester).
-        borrower_user = self.employee_id.sudo().user_id
         return {
             "to_endorse": (
                 _("เห็นชอบคำขอยืมเงิน %s", self.name),
@@ -1220,26 +1122,7 @@ class AdvancePayment(models.Model):
                 _("สร้างใบสำคัญจ่ายเงินยืม %s", self.name),
                 self.loan_verifier_id,
             ),
-            "in_progress": (
-                _("ส่งรายงานค่าใช้จ่ายเงินยืม %s", self.name),
-                borrower_user,
-            ),
-            "reported": (
-                _("ตรวจรับรายงานค่าใช้จ่ายเงินยืม %s", self.name),
-                self.loan_verifier_id,
-            ),
-            "to_reconcile": (
-                _("คืนเงินยืม %s", self.name),
-                borrower_user,
-            ),
         }
-
-    def _workflow_activity_deadline(self, stage):
-        """Due date for `stage`'s To-Do, or False for the activity type's own
-        default. Only the borrower's expense report has a real one: the
-        return due date the loan officer sets after approval (ADR-0021)."""
-        self.ensure_one()
-        return self.return_due_date if stage == "in_progress" else False
 
     def _workflow_activities(self, stage=None):
         """The records' open workflow To-Dos — one stage, or all of them.
@@ -1277,12 +1160,10 @@ class AdvancePayment(models.Model):
             rec._drop_workflow_activities(stage)
             if not assignee:
                 continue
-            deadline = rec._workflow_activity_deadline(stage)
             rec.activity_schedule(
                 WORKFLOW_ACTIVITY_XMLID,
                 user_id=assignee.id,
                 summary=summary,
-                **({"date_deadline": deadline} if deadline else {}),
             )
 
     def _done_workflow_activity(self, stage, feedback):
@@ -1674,11 +1555,9 @@ class AdvancePayment(models.Model):
             # leftover (a voucher made outside action_create_payment_voucher)
             # so it cannot outlive the stage it belongs to.
             rec._drop_workflow_activities("approved")
-            rec._schedule_workflow_activity("in_progress")
             body = _(
                 "โอนเงินยืมสำเร็จ — เป็นลูกหนี้โดยสมบูรณ์ เลขที่สัญญา"
-                " <b>%(contract)s</b> วันที่มีผล <b>%(date)s</b>."
-                " ขั้นตอนถัดไป: ใช้เงินตามวัตถุประสงค์ แล้วนำส่งรายงานค่าใช้จ่าย",
+                " <b>%(contract)s</b> วันที่มีผล <b>%(date)s</b>.",
                 contract=rec.contract_number or "-",
                 date=rec.effective_date or "-",
             )
@@ -1729,9 +1608,9 @@ class AdvancePayment(models.Model):
         """Manager reopens a cancelled agreement back to draft (ad-hoc recovery).
 
         Only before the money moved: once the transfer completed
-        (`effective_date`) the record carries a contract number, an expense
-        report and return lines from its first cycle, and re-approving would
-        mint a second disbursement payment (ADR-0012).
+        (`effective_date`) the record carries a contract number from its first
+        cycle, and re-approving would mint a second disbursement payment
+        (ADR-0012).
         """
         for rec in self:
             if rec.state != "cancel":
@@ -1760,134 +1639,23 @@ class AdvancePayment(models.Model):
             )
 
     # ------------------------------------------------------------------ #
-    # Settle: report → reconcile → close                                   #
+    # Close                                                                #
     # ------------------------------------------------------------------ #
 
-    def action_submit_report(self):
-        """Borrower submits the actual-expense report (in_progress → reported)."""
+    def action_close(self):
+        """Loan officer closes an outstanding agreement (in_progress → done)
+        once the debt is cleared outside the app — until the ใบเบิก and
+        ใบเสร็จรับเงิน links record the clearing (ADR-0028)."""
+        if not self.env.user.has_group(
+            "advance_payment.group_advance_payment_loan_officer"
+        ):
+            raise AccessError(_("Only a loan officer can close the agreement."))
         for rec in self:
             if rec.state != "in_progress":
-                raise UserError(
-                    _("Only in-progress agreements can submit an expense report.")
-                )
-            if not rec.expense_description:
-                raise UserError(
-                    _(
-                        "Record the actual expense (description + amount) before"
-                        " submitting the report."
-                    )
-                )
-            rec.state = "reported"
-            rec._done_workflow_activity(
-                "in_progress",
-                _("นำส่งรายงานค่าใช้จ่ายเรียบร้อย โดย %s", self.env.user.name),
-            )
-            rec._schedule_workflow_activity("reported")
+                raise UserError(_("Only an outstanding agreement can be closed."))
+            rec.write({"state": "done", "date_closed": fields.Datetime.now()})
             rec.message_post(
-                body=_(
-                    "นำส่งรายงานค่าใช้จ่าย: ใช้จริง <b>%(used)s</b>,"
-                    " ต้องคืน <b>%(left)s</b> %(currency)s",
-                    used=rec.actual_expense_amount,
-                    left=rec.return_amount,
-                    currency=rec.currency_id.name,
-                ),
-                subtype_xmlid="mail.mt_note",
-            )
-
-    def action_accept_report(self):
-        """Finance officer accepts the expense report (reported → ...).
-        No amount to return → close; return_amount > 0 → to_reconcile."""
-        for rec in self:
-            if rec.state != "reported":
-                raise UserError(_("Only submitted reports can be accepted."))
-            if rec.return_amount <= 0:
-                rec.message_post(
-                    body=_("ตรวจรับรายงานค่าใช้จ่าย ไม่มีเงินต้องคืน ปิดสัญญา"),
-                    subtype_xmlid="mail.mt_note",
-                )
-                rec._do_close()
-            else:
-                rec.state = "to_reconcile"
-                rec._done_workflow_activity(
-                    "reported",
-                    _("ตรวจรับรายงานเรียบร้อย โดย %s", self.env.user.name),
-                )
-                rec._schedule_workflow_activity("to_reconcile")
-                rec.message_post(
-                    body=_(
-                        "ตรวจรับรายงานค่าใช้จ่าย ต้องคืน <b>%(left)s %(currency)s</b>"
-                        " รอผู้ยืมโอนคืน",
-                        left=rec.return_amount,
-                        currency=rec.currency_id.name,
-                    ),
-                    subtype_xmlid="mail.mt_note",
-                )
-
-    def action_confirm_donation(self):
-        """Borrower consents to donate the over-returned excess (ADR-0003)."""
-        self.ensure_one()
-        if self.excess_amount <= 0:
-            raise UserError(_("There is no excess to donate."))
-        self.write(
-            {
-                "donate_excess": True,
-                "donate_consent_uid": self.env.user.id,
-                "donate_consent_date": fields.Datetime.now(),
-            }
-        )
-        self.message_post(
-            body=_(
-                "ยินยอมบริจาคเงินส่วนเกิน <b>%(amount)s %(currency)s</b>"
-                " ให้สถาบัน โดย <b>%(user)s</b>",
-                amount=self.excess_amount,
-                currency=self.currency_id.name,
-                user=self.env.user.name,
-            ),
-            subtype_xmlid="mail.mt_note",
-        )
-        self._try_auto_close()
-
-    def _try_auto_close(self):
-        """Auto-close when the debt is settled (ADR-0003)."""
-        for rec in self:
-            if rec.state != "to_reconcile":
-                continue
-            if rec.amount_remaining > 0:
-                continue  # still owes money
-            if rec.excess_amount > 0 and not rec.donate_excess:
-                continue  # over-return needs donation consent first
-            rec._do_close()
-
-    def action_close(self):
-        """Officer closes from reported when there is no leftover."""
-        self.ensure_one()
-        if self.state == "reported" and self.return_amount <= 0:
-            return self._do_close()
-        raise UserError(
-            _("An agreement closes automatically once the debt is fully settled.")
-        )
-
-    def _do_close(self):
-        """Close the agreement (ปิดสัญญา)."""
-        for rec in self:
-            if rec.state not in ("reported", "to_reconcile"):
-                raise UserError(_("This agreement cannot be closed from its state."))
-            # The single choke point every close goes through — accept with
-            # nothing to return, action_close, and the auto-close once the
-            # debt is settled — so the open reported/to_reconcile To-Do is
-            # closed here rather than in each caller (ADR-0021).
-            rec._done_workflow_activity(
-                rec.state, _("ปิดสัญญาเรียบร้อย โดย %s", self.env.user.name)
-            )
-            rec.date_closed = fields.Datetime.now()
-            rec.state = "done"
-            rec.message_post(
-                body=_(
-                    "ปิดสัญญา ใช้จริง <b>%(used)s</b> คืน <b>%(returned)s</b> %(currency)s",
-                    used=rec.actual_expense_amount,
-                    returned=rec.amount_returned,
-                    currency=rec.currency_id.name,
-                ),
+                body=_("ปิดสัญญา โดย <b>%(user)s</b>.", user=self.env.user.name),
                 subtype_xmlid="mail.mt_note",
             )
 
@@ -1896,8 +1664,7 @@ class AdvancePayment(models.Model):
         for rec in self:
             if rec.state != "done":
                 raise UserError(_("Only closed agreements can be reopened."))
-            rec.date_closed = False
-            rec.state = "to_reconcile" if rec.return_amount > 0 else "in_progress"
+            rec.write({"state": "in_progress", "date_closed": False})
             rec.message_post(
                 body=_(
                     "Agreement reopened by <b>%(user)s</b>.", user=self.env.user.name
@@ -1967,8 +1734,6 @@ class AdvancePayment(models.Model):
             "to_approve",
             "approved",
             "in_progress",
-            "reported",
-            "to_reconcile",
         ):
             raise UserError(_("This agreement cannot be cancelled from its state."))
         self._cancel_payments()
@@ -2020,30 +1785,4 @@ class AdvancePayment(models.Model):
             action["res_id"] = payment_ids.id
         else:
             action["domain"] = [("id", "in", payment_ids.ids)]
-        return action
-
-    def action_open_return_wizard(self):
-        self.ensure_one()
-        return {
-            "type": "ir.actions.act_window",
-            "name": _("คืนเงิน"),
-            "res_model": "advance.payment.return.wizard",
-            "view_mode": "form",
-            "target": "new",
-            "context": {"default_agreement_id": self.id},
-        }
-
-    def action_view_return_lines(self):
-        self.ensure_one()
-        action = {
-            "type": "ir.actions.act_window",
-            "name": _("รายการคืนเงิน"),
-            "res_model": "advance.payment.return.line",
-            "view_mode": "tree,form",
-            "domain": [("agreement_id", "=", self.id)],
-            "context": {"default_agreement_id": self.id},
-        }
-        if self.return_count == 1:
-            action["views"] = [(False, "form")]
-            action["res_id"] = self.return_line_ids.id
         return action
