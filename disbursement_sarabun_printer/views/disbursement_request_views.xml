@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="disbursement_request_form_printer" model="ir.ui.view">
+        <field name="name">disbursement.request.form.printer</field>
+        <field name="model">disbursement.request</field>
+        <field name="inherit_id" ref="disbursement.view_disbursement_request_form"/>
+        <field name="arch" type="xml">
+            <!-- The หนังสือ's official PDF, once Submit to Sarabun has created it
+                 (sarabun_has_live_document comes from disbursement_sarabun). -->
+            <xpath expr="//button[@name='action_cancel']" position="before">
+                <button name="action_print_sarabun_document"
+                        string="Print Disbursement Request"
+                        type="object"
+                        class="btn btn-secondary"
+                        attrs="{'invisible': [('sarabun_has_live_document', '=', False)]}"
+                        groups="disbursement_sarabun_printer.group_disbursement_printer"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="disbursement_request_tree_printer" model="ir.ui.view">
+        <field name="name">disbursement.request.tree.printer</field>
+        <field name="model">disbursement.request</field>
+        <field name="inherit_id" ref="disbursement.view_disbursement_request_tree"/>
+        <field name="arch" type="xml">
+            <field name="state" position="after">
+                <field name="is_printed" optional="hide"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="disbursement_request_search_printer" model="ir.ui.view">
+        <field name="name">disbursement.request.search.printer</field>
+        <field name="model">disbursement.request</field>
+        <field name="inherit_id" ref="disbursement.view_disbursement_request_search"/>
+        <field name="arch" type="xml">
+            <filter name="tofix" position="after">
+                <separator/>
+                <filter string="Printed" name="printed" domain="[('is_printed', '=', True)]"/>
+                <filter string="Not Printed" name="not_printed" domain="[('is_printed', '=', False)]"/>
+            </filter>
+        </field>
+    </record>
+
+</odoo>
