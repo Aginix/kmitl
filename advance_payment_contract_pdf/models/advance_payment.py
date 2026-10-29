@@ -14,13 +14,6 @@ _logger = logging.getLogger(__name__)
 class AdvancePayment(models.Model):
     _inherit = "advance.payment"
 
-    # Signature block → (state its signer acts in, date stamped by the act).
-    _CONTRACT_SIGN_STEPS = {
-        "borrower": ("draft", "date_submitted"),
-        "endorser": ("to_endorse", "date_endorsed"),
-        "approver": ("to_approve", "date_approved"),
-    }
-
     def _contract_date_th(self, value):
         """Format a Date/Datetime as a Thai long date for the printed
         contract, e.g. ``23 กรกฎาคม 2569``. Returns "" when empty."""
@@ -65,6 +58,16 @@ class AdvancePayment(models.Model):
             prev = token
         return Markup("").join(out)
 
+    def _contract_sign_steps(self):
+        """Signature block → (signer employee, state the signer acts in, date
+        stamped by the act). A route extension swaps a block's signer here."""
+        self.ensure_one()
+        return {
+            "borrower": (self.employee_id, "draft", "date_submitted"),
+            "endorser": (self.endorser_id.employee_id, "to_endorse", "date_endorsed"),
+            "approver": (self.approver_id.employee_id, "to_approve", "date_approved"),
+        }
+
     def _contract_signatures(self):
         """Signer, signature image and date of each signature block on the
         printed contract: ``borrower`` (ผู้ยืม), ``endorser`` (ผู้บังคับบัญชา,
@@ -79,19 +82,15 @@ class AdvancePayment(models.Model):
         self.ensure_one()
         rec = self.sudo()
         states = [state for state, _label in self._fields["state"].selection]
-        signers = {
-            "borrower": rec.employee_id,
-            "endorser": rec.endorser_id.employee_id,
-            "approver": rec.approver_id.employee_id,
-        }
         res = {}
-        for block, (step_state, date_field) in self._CONTRACT_SIGN_STEPS.items():
+        steps = rec._contract_sign_steps()
+        for block, (signer, step_state, date_field) in steps.items():
             signed = rec.state != "cancel" and states.index(rec.state) > states.index(
                 step_state
             )
             res[block] = {
-                "employee": signers[block],
-                "signature": signed and signers[block].signature,
+                "employee": signer,
+                "signature": signed and signer.signature,
                 "date": signed and self._contract_date_th(rec[date_field]) or "",
             }
         res["receiver"] = {"employee": rec.employee_id, "signature": False, "date": ""}

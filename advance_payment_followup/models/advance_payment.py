@@ -56,12 +56,6 @@ class AdvancePayment(models.Model):
         store=True,
     )
 
-    is_overdue = fields.Boolean(
-        string="เกินกำหนดคืน",
-        compute="_compute_is_overdue",
-        store=True,
-    )
-
     @api.depends("return_due_date", "state")
     def _compute_days_to_return(self):
         """Countdown to `return_due_date`; 0 outside the debtor window."""
@@ -115,17 +109,6 @@ class AdvancePayment(models.Model):
             else:
                 rec.return_due_status = "not_due"
 
-    @api.depends("days_to_return", "return_due_date", "state")
-    def _compute_is_overdue(self):
-        """Convenience boolean for tree decoration/search — past due and
-        still an open debt."""
-        for rec in self:
-            rec.is_overdue = (
-                rec.state in DEBTOR_STATES
-                and bool(rec.return_due_date)
-                and rec.days_to_return < 0
-            )
-
     @api.model
     def _cron_recompute_return_days(self):
         """`days_to_return` is stored but computed against "today", so it
@@ -138,7 +121,6 @@ class AdvancePayment(models.Model):
         records._compute_days_to_return()
         records._compute_return_range()
         records._compute_return_due_status()
-        records._compute_is_overdue()
 
     @api.model
     def _followup_notify_before_days(self):

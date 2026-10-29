@@ -52,21 +52,14 @@ class AdvancePayment(models.Model):
                 rec.endorser_id = False
         return super().action_submit()
 
-    def _contract_signatures(self):
+    def _contract_sign_steps(self):
         """No supervisor on the Office route: the director's review fills the
         เสนอ block in the supervisor's place."""
-        res = super()._contract_signatures()
-        if not self.is_office_route:
-            return res
-        rec = self.sudo()
-        states = [state for state, _label in self._fields["state"].selection]
-        signed = rec.state != "cancel" and states.index(rec.state) > states.index(
-            "to_director"
-        )
-        employee = rec.director_id.employee_id
-        res["endorser"] = {
-            "employee": employee,
-            "signature": signed and employee.signature,
-            "date": signed and self._contract_date_th(rec.date_director_reviewed) or "",
-        }
-        return res
+        steps = super()._contract_sign_steps()
+        if self.is_office_route:
+            steps["endorser"] = (
+                self.director_id.employee_id,
+                "to_director",
+                "date_director_reviewed",
+            )
+        return steps

@@ -583,6 +583,19 @@ class AdvancePayment(models.Model):
                 raise ValidationError(_("ผู้ยืมไม่สามารถเป็นผู้เห็นชอบคำขอของตนเองได้"))
 
     @api.model
+    def _configured_user(self, param, candidates):
+        """The user saved in Settings under `param`, if still one of
+        `candidates` — a stale setting (user deleted, archived or dropped
+        from the group since) would be rejected by the field's own domain,
+        so it is ignored. Empty recordset otherwise."""
+        configured = self.env["ir.config_parameter"].sudo().get_param(param)
+        try:
+            user = self.env["res.users"].browse(int(configured or 0))
+        except (TypeError, ValueError):
+            return self.env["res.users"]
+        return user & candidates
+
+    @api.model
     def _loan_officer_group_members(self):
         """Everyone `loan_verifier_id`'s own domain accepts: direct members of
         the officer group, matched the same way the domain matches — so a user
@@ -626,22 +639,13 @@ class AdvancePayment(models.Model):
         threw away a deliberate choice of admin — whom the Settings picker
         offers, admin being a standing member of the group.
         """
-        candidates = self._loan_officer_candidates()
-        configured = (
-            self.env["ir.config_parameter"]
-            .sudo()
-            .get_param("advance_payment.default_loan_verifier_id")
+        officer = self._configured_user(
+            "advance_payment.default_loan_verifier_id",
+            self._loan_officer_group_members(),
         )
-        if configured:
-            # Ignore a stale setting: the user may have been deleted, archived
-            # or dropped from the group since it was saved, and the field's own
-            # domain would then reject the default.
-            try:
-                officer = self.env["res.users"].browse(int(configured))
-            except (TypeError, ValueError):
-                officer = self.env["res.users"]
-            if officer & self._loan_officer_group_members():
-                return officer.id
+        if officer:
+            return officer.id
+        candidates = self._loan_officer_candidates()
         return candidates.id if len(candidates) == 1 else False
 
     loan_verifier_id = fields.Many2one(
@@ -673,19 +677,10 @@ class AdvancePayment(models.Model):
         """The director configured in Settings, else the admin — one
         institution-wide director, defaulted exactly like the approver
         (ADR-0016, ADR-0027)."""
-        configured = (
-            self.env["ir.config_parameter"]
-            .sudo()
-            .get_param("advance_payment.default_director_id")
+        director = self._configured_user(
+            "advance_payment.default_director_id", self._director_candidates()
         )
-        if configured:
-            try:
-                director = self.env["res.users"].browse(int(configured))
-            except (TypeError, ValueError):
-                director = self.env["res.users"]
-            if director & self._director_candidates():
-                return director.id
-        return self.env.ref("base.user_admin").id
+        return (director or self.env.ref("base.user_admin")).id
 
     director_id = fields.Many2one(
         comodel_name="res.users",
@@ -725,20 +720,10 @@ class AdvancePayment(models.Model):
         that never configured this still works instead of blocking every
         create (ADR-0016).
         """
-        configured = (
-            self.env["ir.config_parameter"]
-            .sudo()
-            .get_param("advance_payment.default_approver_id")
+        approver = self._configured_user(
+            "advance_payment.default_approver_id", self._approver_candidates()
         )
-        if configured:
-            # Ignore a stale setting the field's own domain would reject.
-            try:
-                approver = self.env["res.users"].browse(int(configured))
-            except (TypeError, ValueError):
-                approver = self.env["res.users"]
-            if approver & self._approver_candidates():
-                return approver.id
-        return self.env.ref("base.user_admin").id
+        return (approver or self.env.ref("base.user_admin")).id
 
     approver_id = fields.Many2one(
         comodel_name="res.users",
@@ -1203,19 +1188,17 @@ class AdvancePayment(models.Model):
         route = ["draft"] + self._get_route_states() + ["approved"]
         return route[route.index(self.state) + 1]
 
-    def _advance_route(self, date_field=None):
+    def _advance_route(self, date_field):
         """Move to the next route state, stamp `date_field`, and hand the
         To-Do from the step just taken to the next one."""
         self.ensure_one()
         stage, next_state = self.state, self._next_route_state()
-        vals = {"state": next_state}
-        if date_field:
-            vals[date_field] = fields.Datetime.now()
-        self.write(vals)
+        self.write({"state": next_state, date_field: fields.Datetime.now()})
         done_messages = {
             "to_endorse": _("เห็นชอบคำขอเรียบร้อย โดย %s"),
             "to_verify": _("ตรวจสอบคำขอเรียบร้อย โดย %s"),
             "to_director": _("พิจารณาคำขอเรียบร้อย โดย %s"),
+            "to_approve": _("อนุมัติคำขอเรียบร้อย โดย %s"),
         }
         if stage in done_messages:
             self._done_workflow_activity(
@@ -1430,17 +1413,8 @@ class AdvancePayment(models.Model):
         for rec in self:
             if rec.state != "to_approve":
                 raise UserError(_("Only agreements awaiting approval can be approved."))
-        self.write(
-            {
-                "state": "approved",
-                "date_approved": fields.Datetime.now(),
-            }
-        )
-        self._done_workflow_activity(
-            "to_approve", _("อนุมัติคำขอเรียบร้อย โดย %s", self.env.user.name)
-        )
-        self._schedule_workflow_activity("approved")
         for rec in self:
+            rec._advance_route("date_approved")
             rec.message_post(
                 body=_(
                     "Agreement approved by <b>%(user)s</b>."
@@ -1727,14 +1701,7 @@ class AdvancePayment(models.Model):
 
     def _action_do_cancel(self, reason):
         self.ensure_one()
-        if self.state not in (
-            "to_endorse",
-            "to_verify",
-            "to_director",
-            "to_approve",
-            "approved",
-            "in_progress",
-        ):
+        if self.state not in self.ACTIVE_STATES:
             raise UserError(_("This agreement cannot be cancelled from its state."))
         self._cancel_payments()
         self.write({"state": "cancel", "cancel_reason": reason})

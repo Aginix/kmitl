@@ -7,7 +7,7 @@
         <field name="model">advance.payment</field>
         <field name="arch" type="xml">
             <tree string="ติดตามลูกหนี้เงินยืม"
-                  decoration-danger="is_overdue"
+                  decoration-danger="return_due_status == 'overdue'"
                   decoration-warning="return_range in ('0-7','8-15')">
                 <field name="name"/>
                 <field name="contract_number"/>
@@ -22,7 +22,6 @@
                        decoration-danger="return_due_status == 'overdue'"
                        decoration-warning="return_due_status == 'due'"
                        decoration-success="return_due_status == 'not_due'"/>
-                <field name="is_overdue" invisible="1"/>
                 <field name="state" widget="badge"/>
             </tree>
         </field>
