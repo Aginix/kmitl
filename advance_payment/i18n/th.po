@@ -206,11 +206,6 @@ msgid "Amount (%(amount)s) exceeds remaining balance (%(remaining)s)."
 msgstr "จำนวนเงิน (%(amount)s) เกินยอมคงเหลือ (%(remaining)s)"
 
 #. module: advance_payment
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_wizard__amount_remaining
-msgid "Amount Remaining"
-msgstr "จำนวนเงินคงเหลือ"
-
-#. module: advance_payment
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment__amount_returned
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_wizard__amount_returned
 msgid "Amount Returned"

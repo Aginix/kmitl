@@ -68,6 +68,7 @@
                     <field name="can_director_review" invisible="1" />
                     <field name="can_approve" invisible="1" />
                     <field name="excess_amount" invisible="1" />
+                    <field name="can_view_payments" invisible="1" />
                     <button
                         name="action_submit"
                         string="ส่งคำขอ"
@@ -213,7 +214,7 @@
                             type="object"
                             class="oe_stat_button"
                             icon="fa-credit-card"
-                            attrs="{'invisible': [('payment_count', '=', 0)]}"
+                            attrs="{'invisible': ['|', ('payment_count', '=', 0), ('can_view_payments', '=', False)]}"
                             groups="advance_payment.group_advance_payment_loan_officer"
                         >
                             <field

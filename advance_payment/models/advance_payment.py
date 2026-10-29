@@ -823,6 +823,10 @@ class AdvancePayment(models.Model):
         compute="_compute_payment_count",
     )
 
+    # The loan officer issues the voucher under sudo but need not hold any
+    # Accounting/Budget group, so opening account.payment is gated separately.
+    can_view_payments = fields.Boolean(compute="_compute_can_view_payments")
+
     date_submitted = fields.Datetime(string="วันที่ส่งคำขอ", readonly=True, copy=False)
     date_endorsed = fields.Datetime(
         string="วันที่บังคับบัญชาเห็นชอบ", readonly=True, copy=False
@@ -881,11 +885,14 @@ class AdvancePayment(models.Model):
         compute="_compute_return_count",
     )
 
+    # res_field excludes book_bank_file's own attachment: the client saves
+    # this field with a SET command, whose search would otherwise sweep that
+    # attachment up and detach it (or AccessError for a non-admin user).
     attachment_ids = fields.One2many(
         "ir.attachment",
         "res_id",
         string="Attachments",
-        domain=[("res_model", "=", "advance.payment")],
+        domain=[("res_model", "=", "advance.payment"), ("res_field", "=", False)],
     )
 
     def _default_bank_id(self):
@@ -959,6 +966,13 @@ class AdvancePayment(models.Model):
         # a loan officer viewing the smart button has no reason to hold.
         for rec in self:
             rec.payment_count = len(rec.sudo().payment_ids)
+
+    def _compute_can_view_payments(self):
+        allowed = self.env["account.payment"].check_access_rights(
+            "read", raise_exception=False
+        )
+        for rec in self:
+            rec.can_view_payments = allowed
 
     @api.depends("return_line_ids")
     def _compute_return_count(self):
@@ -1610,6 +1624,20 @@ class AdvancePayment(models.Model):
                 ),
                 subtype_xmlid="mail.mt_note",
             )
+        if not self.env["account.payment"].check_access_rights(
+            "read", raise_exception=False
+        ):
+            # A loan officer without Accounting rights stays on the loan
+            # rather than being sent to a form they may not open.
+            return {
+                "type": "ir.actions.client",
+                "tag": "display_notification",
+                "params": {
+                    "type": "success",
+                    "message": _("สร้างใบสำคัญจ่ายเรียบร้อย รอฝ่ายการเงินดำเนินการโอนเงิน"),
+                    "next": {"type": "ir.actions.client", "tag": "soft_reload"},
+                },
+            }
         if len(payments) == 1:
             return {
                 "type": "ir.actions.act_window",

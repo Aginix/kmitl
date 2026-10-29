@@ -26,6 +26,14 @@ def migrate(cr, version):
         """,
         (RENAMED_FIELDS,),
     )
+    cr.execute(
+        """
+        UPDATE ir_model_fields
+           SET field_description = field_description - 'th_TH'
+         WHERE model = 'advance.payment.return.wizard'
+           AND name IN ('actual_expense_amount', 'amount_remaining')
+        """
+    )
     # Every state label is a Thai source string now; the old th.po mapped
     # them from English (Draft → ฉบับร่าง, In Progress → กำลังดำเนินการ, …).
     cr.execute(

@@ -33,7 +33,7 @@ class AdvancePaymentReturnWizard(models.TransientModel):
     )
 
     actual_expense_amount = fields.Monetary(
-        string="ยอดค่าใช้จ่ายจริง",
+        string="ส่งใช้คืน",
         related="agreement_id.actual_expense_amount",
         readonly=True,
     )
@@ -51,7 +51,7 @@ class AdvancePaymentReturnWizard(models.TransientModel):
     )
 
     amount_remaining = fields.Monetary(
-        string="Amount Remaining",
+        string="คงเหลือ",
         related="agreement_id.amount_remaining",
         readonly=True,
     )
@@ -90,11 +90,15 @@ class AdvancePaymentReturnWizard(models.TransientModel):
             lambda l: l.state != "rejected"
         ):
             raise UserError(
-                _("This agreement returns in a single transfer. Ask the loan"
-                  " officer to enable installments (คืนหลายงวด) to add another.")
+                _(
+                    "This agreement returns in a single transfer. Ask the loan"
+                    " officer to enable installments (คืนหลายงวด) to add another."
+                )
             )
         if not self.attachment_ids:
-            raise UserError(_("Please attach proof of bank transfer before confirming."))
+            raise UserError(
+                _("Please attach proof of bank transfer before confirming.")
+            )
         line = self.env["advance.payment.return.line"].create(
             {
                 "agreement_id": self.agreement_id.id,
