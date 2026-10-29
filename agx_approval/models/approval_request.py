@@ -930,6 +930,10 @@ class ApprovalRequest(models.Model):
 
     def action_draft(self):
         for record in self:
+            if record.is_correction:
+                # A disbursement return is a narrow correction on an
+                # already-billed request — it can only be confirmed back.
+                raise UserError(_("คำขอที่ถูกตีกลับจากใบเบิก ไม่สามารถกลับไปแบบร่างได้"))
             record.state = "draft"
             record._release_budget_commitment(_("reset to draft"))
         return True

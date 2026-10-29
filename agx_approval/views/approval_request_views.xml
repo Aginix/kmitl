@@ -50,6 +50,9 @@
                     <button name="action_open_pull_back_wizard" string="Pull Back" type="object"
                         class="btn btn-secondary"
                         attrs="{'invisible': [('state', 'not in', ['to_verify', 'to_commit', 'to_send'])]}" />
+                    <button name="action_draft" string="กลับไปแบบร่าง" type="object"
+                        class="btn btn-secondary"
+                        attrs="{'invisible': ['|', ('state', '!=', 'returned'), ('is_correction', '=', True)]}" />
                     <button name="action_cancel" string="Cancel / Reject" type="object"
                         attrs="{'invisible': [('state', 'not in', ['to_verify', 'to_commit', 'to_send', 'approved'])]}"
                         groups="agx_approval.group_approval_manager" />
