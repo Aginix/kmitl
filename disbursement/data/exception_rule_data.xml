@@ -38,4 +38,18 @@ if self.partner_id and not self.partner_bank_id and self._requires_partner_bank(
         <field name="is_blocking" eval="False" />
         <field name="active" eval="True" />
     </record>
+
+    <!-- ส่งคืนผู้จัดทำ marker: linked by the send-back and cleared on the next
+         state change, never evaluated (see SENT_BACK_RULES). -->
+    <record id="excep_disbursement_sent_back" model="exception.rule">
+        <field name="name">ส่งคืนผู้จัดทำ</field>
+        <field name="description">หมวดตรวจส่งคืนใบขอเบิกให้ผู้จัดทำแก้ไขแล้วส่งใหม่ ดูเหตุผลในประวัติของใบขอเบิก</field>
+        <field name="sequence">80</field>
+        <field name="model">disbursement.request</field>
+        <field name="exception_type">by_py_code</field>
+        <field name="code"># set by the send-back, never evaluated
+failed = False</field>
+        <field name="is_blocking" eval="False" />
+        <field name="active" eval="True" />
+    </record>
 </odoo>
