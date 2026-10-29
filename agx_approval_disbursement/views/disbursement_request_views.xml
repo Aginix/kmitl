@@ -22,6 +22,13 @@
                     attrs="{'invisible': [('approval_request_id', '=', False)]}"
                 />
             </xpath>
+            <xpath expr="//group[@name='attachment']" position="after">
+                <group name="approval_attachment" string="หลักฐานจากใบขออนุมัติ"
+                    attrs="{'invisible': [('approval_attachment_ids', '=', [])]}">
+                    <field name="approval_attachment_ids" nolabel="1" colspan="2"
+                        widget="many2many_binary" readonly="1" />
+                </group>
+            </xpath>
         </field>
     </record>
 </odoo>

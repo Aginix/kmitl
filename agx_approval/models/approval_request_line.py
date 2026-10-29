@@ -4,8 +4,8 @@ from odoo.exceptions import UserError, ValidationError
 
 class ApprovalRequestLine(models.Model):
     """A planned expense line (ค่าใช้จ่าย) — broken down by expense type, not by
-    person, and carrying no payee. Who receives the money is decided later, on
-    the actual expense allocation (approval.request.allocation)."""
+    person, and carrying no payee. Who receives the money is decided later, by
+    finance on the ใบขอเบิก (ADR-0009)."""
 
     _name = "approval.request.line"
     _description = "Approval Request Line"
