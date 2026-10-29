@@ -226,6 +226,12 @@ class WithholdingTaxRemittanceCommon(TransactionCase):
             }
         )
 
+    def _enable_wht_reconcile(self, account=None):
+        """ติ๊ก Allow Reconciliation — ค่าเริ่มต้นเป็น False เพราะ liability_current
+        ไม่ถูก _compute_reconcile ของ core แตะ
+        """
+        (account or self.wht_account_53).write({"reconcile": True})
+
     def _set_bank_accounts(self, remittance):
         remittance.write(
             {
