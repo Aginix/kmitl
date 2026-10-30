@@ -54,40 +54,82 @@ class ApprovalCategory(models.Model):
         required=True
     )
 
-    allowed_product_ids = fields.Many2many(
-        string="Allowed Expenses",
-        comodel_name="product.product",
-    )
-
-    multi_product = fields.Boolean(
-        string="มีรายการย่อย (เลือกได้หลายรายการ)",
+    # รายการค่าใช้จ่ายย่อย (ADR-0010): owned by this category, never shared.
+    # Unticked, a request carries one Expense (a bare amount); ticked, the
+    # requester itemizes against these items (and อื่น ๆ when allowed).
+    has_expense_items = fields.Boolean(
+        string="มีรายการค่าใช้จ่ายย่อย",
         default=False,
-        help="เปิดใช้เฉพาะประเภทค่าใช้จ่ายที่ให้ผู้ขอเลือกรายการย่อยได้เอง "
-        "(เช่น ฝึกอบรม/เดินทาง) — ประเภทค่าใช้จ่ายทั่วไปมีสินค้าเดียวตายตัว "
-        "ผู้ขอจึงกรอกเพียงจำนวนเงินและรายละเอียด",
+        help="ติ๊กเพื่อให้ผู้ขอแจกแจงค่าใช้จ่ายเป็นหลายบรรทัด โดยเลือกจากรายการ"
+        "ค่าใช้จ่ายย่อยของประเภทนี้ — ถ้าไม่ติ๊ก ผู้ขอกรอกจำนวนเงินก้อนเดียว",
+    )
+    expense_item_ids = fields.One2many(
+        "approval.category.expense.item",
+        "category_id",
+        string="รายการค่าใช้จ่ายย่อย",
+        domain=[("is_other", "=", False)],
+        context={"active_test": False},
+    )
+    allow_other_expense = fields.Boolean(
+        string="อนุญาตรายการ อื่น ๆ (ระบุ)",
+        default=True,
+        help="ให้ผู้ขอเลือก 'อื่น ๆ' แล้วพิมพ์ชื่อรายการเองได้ เมื่อไม่มีในรายการ",
     )
 
-    @api.constrains("multi_product", "allowed_product_ids")
-    def _check_allowed_product_ids_count(self):
+    @api.constrains("has_expense_items", "allow_other_expense", "expense_item_ids")
+    def _check_expense_items(self):
         for rec in self:
-            count = len(rec.allowed_product_ids)
-            if rec.multi_product:
-                if count < 2:
-                    raise ValidationError(
-                        _(
-                            "ประเภทค่าใช้จ่ายแบบมีรายการย่อย (%s) ต้องมีสินค้าที่เลือกได้"
-                            " อย่างน้อย 2 รายการ"
-                        )
-                        % rec.name
-                    )
-            elif count != 1:
+            if (
+                rec.has_expense_items
+                and not rec.allow_other_expense
+                and not rec.expense_item_ids.filtered("active")
+            ):
                 raise ValidationError(
                     _(
-                        "ประเภทค่าใช้จ่ายแบบรายการเดียว (%s) ต้องมีสินค้าที่เลือกได้"
-                        " เท่ากับ 1 รายการเท่านั้น"
+                        "ประเภทค่าใช้จ่ายที่มีรายการค่าใช้จ่ายย่อย (%s) ต้องมีรายการ"
+                        "อย่างน้อย 1 รายการ หรืออนุญาตรายการ อื่น ๆ"
                     )
                     % rec.name
                 )
+
+    def _other_expense_item(self):
+        """The category's อื่น ๆ item, archived ones included."""
+        self.ensure_one()
+        return (
+            self.env["approval.category.expense.item"]
+            .with_context(active_test=False)
+            .search([("category_id", "=", self.id), ("is_other", "=", True)], limit=1)
+        )
+
+    def _sync_other_expense_item(self):
+        """Keep exactly one อื่น ๆ item per category, active only while the
+        category itemizes and allows it."""
+        for rec in self:
+            wanted = rec.has_expense_items and rec.allow_other_expense
+            item = rec._other_expense_item()
+            if item:
+                if item.active != wanted:
+                    item.active = wanted
+            elif wanted:
+                item.create(
+                    {
+                        "name": _("อื่น ๆ"),
+                        "category_id": rec.id,
+                        "is_other": True,
+                    }
+                )
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        records = super().create(vals_list)
+        records._sync_other_expense_item()
+        return records
+
+    def write(self, vals):
+        res = super().write(vals)
+        if {"has_expense_items", "allow_other_expense"} & set(vals):
+            self._sync_other_expense_item()
+        return res
 
     allowed_partner_type_ids = fields.Many2many(
         "res.partner.type",

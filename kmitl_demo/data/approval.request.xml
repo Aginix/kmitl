@@ -4,8 +4,8 @@
 
         <!-- ============================================================ -->
         <!-- Expense plans (ค่าใช้จ่าย by type) + participant roster (รายชื่อ). -->
-        <!-- Payee is no longer on the plan; recipients are recorded per       -->
-        <!-- allocation after the mission.                                      -->
+        <!-- Payee is not on the plan; finance names recipients on the        -->
+        <!-- ใบขอเบิก it raises against the request (ADR-0010).                 -->
         <!-- ============================================================ -->
 
         <!-- 1) International travel - 3 expense lines, one traveller -->
@@ -26,15 +26,15 @@
                 model="base"
                 eval="[
                     (0, 0, {
-                        'product_id': obj().env['product.product'].search([('default_code', '=', '5103020001')], limit=1).id,
+                        'expense_item_id': ref('agx_approval.approval_category_5103020000_item_5103020001'),
                         'total_amount': 45000.0,
                     }),
                     (0, 0, {
-                        'product_id': obj().env['product.product'].search([('default_code', '=', '5103020002')], limit=1).id,
+                        'expense_item_id': ref('agx_approval.approval_category_5103020000_item_5103020002'),
                         'total_amount': 28000.0,
                     }),
                     (0, 0, {
-                        'product_id': obj().env['product.product'].search([('default_code', '=', '5103020003')], limit=1).id,
+                        'expense_item_id': ref('agx_approval.approval_category_5103020000_item_5103020003'),
                         'total_amount': 14000.0,
                     }),
                 ]"
@@ -59,15 +59,15 @@
                 model="base"
                 eval="[
                     (0, 0, {
-                        'product_id': obj().env['product.product'].search([('default_code', '=', '5103010001')], limit=1).id,
+                        'expense_item_id': ref('agx_approval.approval_category_5103010000_item_5103010001'),
                         'total_amount': 8500.0,
                     }),
                     (0, 0, {
-                        'product_id': obj().env['product.product'].search([('default_code', '=', '5103010002')], limit=1).id,
+                        'expense_item_id': ref('agx_approval.approval_category_5103010000_item_5103010002'),
                         'total_amount': 4200.0,
                     }),
                     (0, 0, {
-                        'product_id': obj().env['product.product'].search([('default_code', '=', '5103010003')], limit=1).id,
+                        'expense_item_id': ref('agx_approval.approval_category_5103010000_item_5103010003'),
                         'total_amount': 2400.0,
                     }),
                 ]"
@@ -89,7 +89,6 @@
                 model="base"
                 eval="[
                     (0, 0, {
-                        'product_id': obj().env['product.product'].search([('default_code', '=', '5108000003')], limit=1).id,
                         'total_amount': 30000.0,
                     }),
                 ]"
@@ -111,7 +110,6 @@
                 model="base"
                 eval="[
                     (0, 0, {
-                        'product_id': obj().env['product.product'].search([('default_code', '=', '5108000004')], limit=1).id,
                         'total_amount': 12000.0,
                     }),
                 ]"
@@ -136,19 +134,20 @@
                 model="base"
                 eval="[
                     (0, 0, {
-                        'product_id': obj().env['product.product'].search([('default_code', '=', '5103020001')], limit=1).id,
+                        'expense_item_id': ref('agx_approval.approval_category_5103020000_item_5103020001'),
                         'total_amount': 62000.0,
                     }),
                     (0, 0, {
-                        'product_id': obj().env['product.product'].search([('default_code', '=', '5103020002')], limit=1).id,
+                        'expense_item_id': ref('agx_approval.approval_category_5103020000_item_5103020002'),
                         'total_amount': 35000.0,
                     }),
                     (0, 0, {
-                        'product_id': obj().env['product.product'].search([('default_code', '=', '5103020003')], limit=1).id,
+                        'expense_item_id': ref('agx_approval.approval_category_5103020000_item_5103020003'),
                         'total_amount': 18000.0,
                     }),
                     (0, 0, {
-                        'product_id': obj().env['product.product'].search([('default_code', '=', '5103020099')], limit=1).id,
+                        'expense_item_id': obj().env.ref('agx_approval.approval_category_5103020000')._other_expense_item().id,
+                        'other_name': 'ค่าใช้จ่ายอื่น ๆ',
                         'total_amount': 6000.0,
                     }),
                 ]"
@@ -178,7 +177,6 @@
                 model="base"
                 eval="[
                     (0, 0, {
-                        'product_id': obj().env['product.product'].search([('default_code', '=', '5104010202')], limit=1).id,
                         'total_amount': 4500.0,
                     }),
                 ]"
@@ -206,7 +204,7 @@
                 model="base"
                 eval="[
                     (0, 0, {
-                        'product_id': obj().env['product.product'].search([('default_code', '=', '5103010001')], limit=1).id,
+                        'expense_item_id': ref('agx_approval.approval_category_5103010000_item_5103010001'),
                         'total_amount': 30000.0,
                     }),
                 ]"
@@ -234,7 +232,6 @@
                 model="base"
                 eval="[
                     (0, 0, {
-                        'product_id': obj().env['product.product'].search([('default_code', '=', '5104010202')], limit=1).id,
                         'total_amount': 7500.0,
                     }),
                 ]"
@@ -257,7 +254,6 @@
                 model="base"
                 eval="[
                     (0, 0, {
-                        'product_id': obj().env['product.product'].search([('default_code', '=', '5108000004')], limit=1).id,
                         'total_amount': 16000.0,
                     }),
                 ]"
@@ -283,7 +279,6 @@
                 model="base"
                 eval="[
                     (0, 0, {
-                        'product_id': obj().env['product.product'].search([('default_code', '=', '5104010202')], limit=1).id,
                         'total_amount': 2500.0,
                     }),
                 ]"

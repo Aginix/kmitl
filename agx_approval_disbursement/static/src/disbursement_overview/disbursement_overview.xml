@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+    <t t-name="agx_approval_disbursement.OverviewSummary" owl="1">
+        <div t-if="data" class="o_ado">
+            <div class="o_ado_kpis">
+                <div class="o_ado_kpi">
+                    <div class="o_ado_label">ยอดอนุมัติ</div>
+                    <div class="o_ado_value" t-esc="money(data.approved)" />
+                </div>
+                <div class="o_ado_op">−</div>
+                <div class="o_ado_kpi">
+                    <div class="o_ado_label"><i class="o_ado_dot o_ado_disbursed" />เบิกจ่ายแล้ว</div>
+                    <div class="o_ado_value" t-esc="money(data.disbursed)" />
+                    <div class="o_ado_sub">ตัดงบแล้ว</div>
+                </div>
+                <div class="o_ado_op">−</div>
+                <div class="o_ado_kpi">
+                    <div class="o_ado_label"><i class="o_ado_dot o_ado_in_progress" />อยู่ระหว่างเบิก</div>
+                    <div class="o_ado_value" t-esc="money(data.in_progress)" />
+                    <div class="o_ado_sub">ยังไม่ตัดงบ รวมฉบับร่าง</div>
+                </div>
+                <t t-if="data.closed">
+                    <div class="o_ado_op">−</div>
+                    <div class="o_ado_kpi">
+                        <div class="o_ado_label"><i class="o_ado_dot o_ado_closed" /><t t-esc="closedLabel" /></div>
+                        <div class="o_ado_value" t-esc="money(data.closed)" />
+                        <div class="o_ado_sub">เมื่อปิดคำขอ</div>
+                    </div>
+                </t>
+                <div class="o_ado_op">=</div>
+                <div
+                    class="o_ado_kpi o_ado_hero"
+                    t-att-class="{'o_ado_negative': data.remaining &lt; 0}"
+                >
+                    <div class="o_ado_label">คงเหลือ</div>
+                    <div class="o_ado_value" t-esc="money(data.remaining)" />
+                </div>
+            </div>
+            <t t-set="b" t-value="bar" />
+            <div class="o_ado_bar">
+                <div class="o_ado_disbursed" t-att-style="'width: ' + b.disbursed + '%'" />
+                <div class="o_ado_in_progress" t-att-style="'width: ' + b.inProgress + '%'" />
+                <div class="o_ado_closed" t-att-style="'width: ' + b.closed + '%'" />
+                <div class="o_ado_remaining" t-att-style="'width: ' + b.remaining + '%'" />
+            </div>
+
+            <div t-if="data.remaining &lt; 0" class="alert alert-danger mt-3 mb-0" role="alert">
+                <strong>ใบขอเบิกเกินยอดอนุมัติ <t t-esc="money(-data.remaining)" /></strong>
+                — มีฉบับร่างที่ทำให้ยอดเกิน ต้องลดยอดก่อนยื่น จึงจะส่งเข้าวงจรได้
+            </div>
+            <div t-if="data.state === 'done'" class="alert alert-success mt-3 mb-0" role="status">
+                <strong>ปิดคำขอแล้ว</strong>
+                <t t-if="data.returned"> — ส่งคืนเงินเหลือจ่าย <t t-esc="money(data.returned)" /> ที่ใบจองงบประมาณแล้ว</t>
+                <t t-elif="data.closed and data.shared"> — ยอดที่ไม่ได้ใช้ <t t-esc="money(data.closed)" /> อยู่ในใบจองร่วม (โครงการ/แผน)</t>
+                <t t-elif="data.closed"> — ปิดยอดที่ไม่ได้ใช้ <t t-esc="money(data.closed)" /></t>
+                <t t-else=""> — เบิกจ่ายครบยอดอนุมัติ</t>
+            </div>
+        </div>
+    </t>
+
+    <t t-name="agx_approval_disbursement.OverviewDetail" owl="1">
+        <div t-if="data" class="o_ado">
+            <div class="o_ado_section mt-0">ค่าใช้จ่าย</div>
+            <div class="table-responsive">
+            <table class="table table-sm o_ado_table">
+                <thead>
+                    <tr>
+                        <th>ค่าใช้จ่าย</th>
+                        <th class="text-end">จำนวนเงิน</th>
+                        <th class="text-end">เบิกแล้ว</th>
+                        <th class="text-end">ระหว่างเบิก</th>
+                        <th class="text-end" t-esc="data.state === 'done' ? 'ไม่ได้ใช้' : 'คงเหลือ'" />
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr t-foreach="data.expenses" t-as="e" t-key="e_index">
+                        <td>
+                            <div t-esc="e.name" />
+                            <div t-if="e.description" class="o_ado_muted" t-esc="e.description" />
+                        </td>
+                        <td class="text-end" t-esc="money(e.amount)" />
+                        <td class="text-end" t-esc="e.disbursed ? money(e.disbursed) : '-'" />
+                        <td class="text-end" t-esc="e.in_progress ? money(e.in_progress) : '-'" />
+                        <td class="text-end fw-bold" t-att-class="{'o_ado_over': e.over and data.state !== 'done'}" t-esc="money(e.remaining)" />
+                    </tr>
+                </tbody>
+                <tfoot t-if="data.expenses.length &gt; 1">
+                    <t t-set="t" t-value="totals" />
+                    <tr>
+                        <td>รวม</td>
+                        <td class="text-end" t-esc="money(t.amount)" />
+                        <td class="text-end" t-esc="money(t.disbursed)" />
+                        <td class="text-end" t-esc="money(t.inProgress)" />
+                        <td class="text-end" t-esc="money(t.remaining)" />
+                    </tr>
+                </tfoot>
+            </table>
+            </div>
+
+            <div class="o_ado_section">ใบขอเบิก</div>
+            <div t-if="data.requests.length" class="table-responsive">
+            <table class="table table-sm o_ado_table">
+                <thead>
+                    <tr>
+                        <th>ใบขอเบิก</th>
+                        <th>เลขที่หนังสือ</th>
+                        <th class="text-end">ยอด</th>
+                        <th>สถานะ</th>
+                        <th t-if="data.can_open" />
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr
+                        t-foreach="data.requests"
+                        t-as="r"
+                        t-key="r.id"
+                        t-att-class="{'o_ado_cancelled': r.stage === 'cancel'}"
+                    >
+                        <td t-esc="r.name" />
+                        <td t-esc="r.memo_number or '-'" />
+                        <td class="text-end" t-esc="money(r.amount)" />
+                        <td>
+                            <span
+                                class="badge rounded-pill"
+                                t-att-class="{
+                                    'text-bg-success': r.stage === 'disbursed',
+                                    'text-bg-warning': r.stage === 'in_progress',
+                                    'text-bg-light': r.stage === 'cancel',
+                                }"
+                                t-esc="r.state"
+                            />
+                        </td>
+                        <td t-if="data.can_open" class="text-end">
+                            <a t-att-href="drUrl(r)" target="_blank" rel="noopener" title="เปิดใบเบิกในแท็บใหม่">
+                                เปิดใบเบิก <i class="fa fa-external-link" />
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            </div>
+            <div t-else="" class="o_ado_empty">ยังไม่มีใบขอเบิก</div>
+        </div>
+    </t>
+
+</templates>

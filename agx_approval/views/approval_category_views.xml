@@ -14,8 +14,6 @@
                         <field name="has_period" />
                         <field name="has_city" />
                         <field name="has_country_id" />
-                        <field name="multi_product" />
-                        <field name="allowed_product_ids" widget="many2many_tags"/>
                         <field name="allowed_partner_type_ids" widget="many2many_tags"/>
                         <field name="budget_account_id" options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"/>
                         <field name="activity_analytic_id" options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"/>
@@ -23,7 +21,24 @@
                         <field name="fund_analytic_id" widget="selection"/>
                         <field name="source_analytic_id" widget="selection"/>
                         <field name="default_description" />
-
+                    </group>
+                    <group name="expense_items" string="รายการค่าใช้จ่าย">
+                        <field name="has_expense_items" />
+                        <field name="allow_other_expense"
+                            attrs="{'invisible': [('has_expense_items', '=', False)]}" />
+                        <div colspan="2" class="text-muted"
+                            attrs="{'invisible': [('has_expense_items', '=', True)]}">
+                            ผู้ขอกรอกจำนวนเงินก้อนเดียว — ติ๊ก "มีรายการค่าใช้จ่ายย่อย"
+                            เพื่อให้แจกแจงตามรายการของประเภทนี้
+                        </div>
+                        <field name="expense_item_ids" colspan="2" nolabel="1"
+                            attrs="{'invisible': [('has_expense_items', '=', False)]}">
+                            <tree editable="bottom">
+                                <field name="sequence" widget="handle" />
+                                <field name="name" />
+                                <field name="active" widget="boolean_toggle" />
+                            </tree>
+                        </field>
                     </group>
                 </sheet>
             </form>

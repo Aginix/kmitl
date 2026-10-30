@@ -77,8 +77,7 @@ class ApprovalRequest(models.Model):
 
         A gate on the *draw*, not a standing invariant: once the slip is drawn
         (``budget_commitment_id`` is that slip) the check goes quiet. Every
-        later ``detect_exceptions()`` — notably agx_approval_disbursement's
-        action_create_disbursement_request — would otherwise re-test the *plan*
+        later ``detect_exceptions()`` would otherwise re-test the *plan*
         total against an availability that legitimately shrank meanwhile (a
         shared project slip drawn by sibling requests), blocking a request whose
         แผน can no longer be edited (is_plan_editable) and whose actual spend may
@@ -97,12 +96,12 @@ class ApprovalRequest(models.Model):
         )
 
     def _exception_plan_amount_mismatch(self):
-        """True when a multi-product request's lines do not add up to its
-        จำนวนเงิน (``plan_amount``) — the ceiling the requester declared up
-        front. Single-product requests mirror plan_amount onto their one line,
-        so they can never mismatch."""
+        """True when an itemized request's lines (category with Expense Items)
+        do not add up to its จำนวนเงิน (``plan_amount``) — the ceiling the
+        requester declared up front. Without Expense Items the amount is
+        mirrored onto the one line, so it can never mismatch."""
         self.ensure_one()
-        if not self.multi_product:
+        if not self.has_expense_items:
             return False
         return bool(
             self.currency_id.compare_amounts(self.total_amount, self.plan_amount)
