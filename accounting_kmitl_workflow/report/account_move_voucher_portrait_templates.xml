@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--
+        ใบสำคัญรายการบัญชี ฉบับแนวตั้ง — the portrait voucher laid out like the
+        form the accounting office files (ใบสำคัญตั้งเจ้าหนี้). The landscape
+        report_account_move_voucher stays as it is; this one sits beside it.
+    -->
+    <template id="report_account_move_voucher_portrait">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-set="o" t-value="o.with_context(lang='th_TH')"/>
+                <t t-set="thai" t-value="o.env['thai.date.mixin']"/>
+                <t t-set="lines" t-value="o._kmitl_voucher_lines()"/>
+                <t t-set="dims" t-value="o._kmitl_voucher_dimensions()"/>
+                <t t-set="no_dim" t-value="o.env['account.analytic.account']"/>
+                <t t-set="dept" t-value="dims.get('departments', no_dim)"/>
+                <t t-set="dept_root" t-value="o._kmitl_voucher_ancestors(dept)[:1]"/>
+                <!-- Activity hierarchy, root first: ด้าน → แผนงาน → กิจกรรมหลัก → กิจกรรมรอง → กิจกรรมย่อย -->
+                <t t-set="activity_chain" t-value="o._kmitl_voucher_ancestors(dims.get('activities', no_dim))"/>
+                <t t-set="activity_levels" t-value="[(1, 'แผนงาน'), (0, 'ด้าน'), (2, 'กิจกรรมหลัก'), (3, 'กิจกรรมรอง'), (4, 'กิจกรรมย่อย')]"/>
+                <t t-set="title" t-value="{'in_invoice': 'ใบสำคัญตั้งเจ้าหนี้', 'out_invoice': 'ใบสำคัญตั้งลูกหนี้'}.get(o.move_type, 'ใบสำคัญรายการบัญชี')"/>
+                <t t-call="web.basic_layout">
+                    <div class="page">
+                        <style>
+                            .kv-p { font-family: "THSarabunNew", Arial, sans-serif; font-size: 15pt; color: #000; line-height: 1.05; }
+                            .kv-p div, .kv-p span, .kv-p td, .kv-p th { line-height: 1.05; }
+                            /* The forms are borderless; override any report-wide table grid. */
+                            .kv-p table, .kv-p thead, .kv-p tbody, .kv-p tr, .kv-p th, .kv-p td { border: 0 !important; }
+                            .kv-p .ctr { text-align: center; }
+                            .kv-p .num { text-align: right; white-space: nowrap; }
+                            .kv-p .b { font-weight: 700; }
+                            .kv-p .dot { display: inline-block; white-space: nowrap; min-width: 150px; border-bottom: 1px dotted #000; padding: 0 4px; vertical-align: baseline; }
+                            .kv-p .dot.wide { min-width: 300px; }
+
+                            /* Header */
+                            .kv-p .kv-faculty { text-align: right; }
+                            .kv-p .kv-org { font-size: 18pt; font-weight: 700; }
+                            .kv-p .kv-title { font-size: 18pt; font-weight: 700; display: inline-block; padding-bottom: 4px; border-bottom: 2px solid #000; margin-bottom: 8px; }
+
+                            /* Key / value */
+                            .kv-p table.kv { width: 100%; }
+                            .kv-p table.kv td { padding: 0 2px !important; vertical-align: bottom; }
+                            .kv-p table.kv td.lbl { white-space: nowrap; text-align: right; width: 1%; }
+
+                            /* Dimensions */
+                            .kv-p table.dims { width: 100%; margin-top: 10px; }
+                            .kv-p table.dims td { width: 50%; vertical-align: top; padding: 0 4px !important; }
+
+                            /* Accounting lines */
+                            .kv-p table.items { width: 100%; margin-top: 10px; }
+                            .kv-p table.items th { font-weight: 700; padding: 2px 4px !important; }
+                            .kv-p table.items td { padding: 1px 4px !important; vertical-align: top; }
+                            .kv-p table.items tr.total td { font-weight: 700; }
+
+                            /* Signatures */
+                            .kv-p table.sign { width: 100%; margin-top: 14px; page-break-inside: avoid; }
+                            .kv-p table.sign td { width: 33%; text-align: center; vertical-align: top; padding: 0 6px !important; }
+                            .kv-p .sig-space { height: 36px; }
+                            .kv-p .sig-date { font-size: 13pt; }
+                        </style>
+
+                        <div class="kv-p">
+
+                            <!-- Header -->
+                            <div class="kv-faculty">คณะ/สำนัก : <span t-out="dept_root.name or ''"/></div>
+                            <div class="ctr">
+                                <div class="kv-org" t-out="o.company_id.name"/>
+                                <div class="kv-title" t-out="title"/>
+                            </div>
+
+                            <!-- Document numbers -->
+                            <table class="kv">
+                                <tr>
+                                    <td style="width: 50%;"/>
+                                    <td class="lbl">เลขที่ใบสำคัญ :</td>
+                                    <td><span class="dot" t-out="o.name if o.name != '/' else ''"/></td>
+                                </tr>
+                                <tr>
+                                    <td/>
+                                    <td class="lbl">เลขที่ใบแจ้งหนี้ :</td>
+                                    <td><span class="dot" t-out="o.payment_reference if o.payment_reference not in (False, o.name) else ''"/></td>
+                                </tr>
+                                <tr>
+                                    <td/>
+                                    <td class="lbl">เลขที่ใบกำกับภาษี :</td>
+                                    <td><span class="dot" t-out="', '.join(set(o.tax_invoice_ids.filtered('tax_invoice_number').mapped('tax_invoice_number')))"/></td>
+                                </tr>
+                            </table>
+
+                            <!-- Meta -->
+                            <table class="kv mt-2">
+                                <tr>
+                                    <td class="lbl">วันที่พิมพ์รายงาน :</td>
+                                    <td colspan="5"><span class="dot" t-out="thai.format_date_thai(context_timestamp(datetime.datetime.now())).replace('พ.ศ. ', '')"/></td>
+                                </tr>
+                                <tr>
+                                    <td class="lbl">ผู้ขาย/ผู้ซื้อ/ผู้เบิก :</td>
+                                    <td colspan="5"><span class="dot wide" t-out="o.partner_id.name or ''"/></td>
+                                </tr>
+                                <tr>
+                                    <td class="lbl">ประเภทรายการ :</td>
+                                    <td colspan="5"><span class="dot wide" t-out="o.journal_id.name"/></td>
+                                </tr>
+                                <tr>
+                                    <td class="lbl">เลขที่รายการรับ :</td>
+                                    <td colspan="5"><span class="dot"/></td>
+                                </tr>
+                                <tr>
+                                    <td class="lbl">วันที่ตั้งหนี้ :</td>
+                                    <td colspan="2"><span class="dot" t-out="thai.format_date_thai(o.invoice_date or o.date).replace('พ.ศ. ', '')"/></td>
+                                    <td class="lbl">วันที่รายการรับ :</td>
+                                    <td colspan="2"><span class="dot"/></td>
+                                </tr>
+                                <tr>
+                                    <td class="lbl">วันที่ครบกำหนด :</td>
+                                    <td colspan="2"><span class="dot" t-out="thai.format_date_thai(o.invoice_date_due).replace('พ.ศ. ', '') if o.is_invoice(include_receipts=True) else ''"/></td>
+                                    <td class="lbl">รหัสภาษี :</td>
+                                    <td colspan="2"><span class="dot" t-out="', '.join(lines.mapped('tax_ids.name'))"/></td>
+                                </tr>
+                                <tr>
+                                    <td class="lbl">สกุลเงิน :</td>
+                                    <td><span class="dot" t-out="o.currency_id.name if o.currency_id != o.company_currency_id else ''"/></td>
+                                    <td class="lbl">อัตราแลกเปลี่ยน :</td>
+                                    <td><span class="dot" t-out="'{:,.4f}'.format(abs(o.amount_total_signed / o.amount_total)) if o.currency_id != o.company_currency_id and o.amount_total else ''"/></td>
+                                    <td class="lbl">มูลค่า :</td>
+                                    <td><span class="dot" t-out="'{:,.2f}'.format(sum(lines.mapped('debit')))"/></td>
+                                </tr>
+                                <tr>
+                                    <td class="lbl">รหัสงบประมาณ :</td>
+                                    <td colspan="5"><span class="dot" t-out="', '.join(dict.fromkeys(lines.filtered(lambda l: l.analytic_distribution and l.account_id.internal_group in ('expense', 'income')).mapped('account_id.code')))"/></td>
+                                </tr>
+                                <tr>
+                                    <td class="lbl">อ้างถึงเอกสาร :</td>
+                                    <td colspan="5"><span class="dot" t-out="o.ref or ''"/></td>
+                                </tr>
+                                <tr>
+                                    <td class="lbl">รหัสโครงการ :</td>
+                                    <td colspan="5"><span class="dot" t-out="dims.get('kmitl_project', no_dim).code or ''"/></td>
+                                </tr>
+                            </table>
+
+                            <!-- Financial dimensions -->
+                            <div class="mt-3"><span class="b">อ้างอิง จากแหล่งเงิน</span> :: <t t-if="'sources' in dims"><span t-out="dims['sources'].name"/> (<span t-out="dims['sources'].code"/>)</t></div>
+                            <table class="dims">
+                                <tr>
+                                    <td>
+                                        <div><span class="b">คณะ/สำนัก</span> :: <t t-if="dept_root"><span t-out="dept_root.name"/> (<span t-out="dept_root.code"/>)</t></div>
+                                        <div><span class="b">หน่วยงาน</span> :: <t t-if="dept"><span t-out="dept.name"/> (<span t-out="dept.code"/>)</t></div>
+                                        <div><span class="b">โครงการ</span> :: <span t-out="dims.get('kmitl_project', no_dim).name or ''"/></div>
+                                        <div><span class="b">หลักสูตร/สาขาวิชา</span> ::</div>
+                                    </td>
+                                    <td>
+                                        <t t-foreach="activity_levels" t-as="level">
+                                            <t t-set="acc" t-value="activity_chain[level[0]] if len(activity_chain) &gt; level[0] else no_dim"/>
+                                            <t t-set="acc_name" t-value="acc.name or ''"/>
+                                            <div><span class="b" t-out="level[1]"/> :: <t t-if="acc"><span t-out="acc_name[len(level[1]):].strip() if acc_name.startswith(level[1]) else acc_name"/> (<span t-out="acc.code"/>)</t></div>
+                                        </t>
+                                        <div><span class="b">กองทุน</span> :: <t t-if="'funds' in dims"><span t-out="dims['funds'].name"/> (<span t-out="dims['funds'].code"/>)</t></div>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Accounting lines -->
+                            <table class="items">
+                                <thead style="display: table-header-group;">
+                                    <tr>
+                                        <th style="width: 17%;">รหัสบัญชี</th>
+                                        <th class="ctr" style="width: 53%;">รายการ</th>
+                                        <th class="num" style="width: 15%;">เดบิต</th>
+                                        <th class="num" style="width: 15%;">เครดิต</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr t-foreach="lines" t-as="line">
+                                        <td t-out="line.account_id.code"/>
+                                        <td t-out="line.account_id.name"/>
+                                        <td class="num" t-out="'{:,.2f}'.format(line.debit) if line.debit else ''"/>
+                                        <td class="num" t-out="'{:,.2f}'.format(line.credit) if line.credit else ''"/>
+                                    </tr>
+                                    <tr class="total">
+                                        <td/>
+                                        <td class="ctr">(<span t-out="o.currency_id.with_context(lang='th_TH').amount_to_text(sum(lines.mapped('debit')))"/>)</td>
+                                        <td class="num" t-out="'{:,.2f}'.format(sum(lines.mapped('debit')))"/>
+                                        <td class="num" t-out="'{:,.2f}'.format(sum(lines.mapped('credit')))"/>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <!-- Narration -->
+                            <div class="mt-2">
+                                <span class="b">หมายเหตุ</span>
+                                <t t-if="not is_html_empty(o.narration)"><span t-field="o.narration"/></t>
+                            </div>
+
+                            <!-- Workflow signatures: the maker both prepares and checks
+                                 (ผู้จัดทำ/ผู้ตรวจสอบ), the approver posts. -->
+                            <table class="sign">
+                                <tr>
+                                    <td><div class="b">ผู้จัดทำ</div></td>
+                                    <td><div class="b">ผู้ตรวจสอบ</div></td>
+                                    <td><div class="b">ผู้อนุมัติการบันทึกบัญชี</div></td>
+                                </tr>
+                                <tr>
+                                    <t t-foreach="[(o.submitted_by, o.submitted_date), (o.submitted_by, o.submitted_date), (o.approved_by, o.approved_date)]" t-as="signer">
+                                        <td>
+                                            <div class="sig-space"/>
+                                            <div>( <span t-out="signer[0].name or '…………………………………'"/> )</div>
+                                            <div class="sig-date" t-out="thai.format_datetime_thai_sign(signer[1])"/>
+                                        </td>
+                                    </t>
+                                </tr>
+                            </table>
+
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>
