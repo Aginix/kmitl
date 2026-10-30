@@ -11,6 +11,7 @@
     "license": "AGPL-3",
     "depends": [
         "accounting_kmitl",
+        "hr",
         "mail_activity_todo",
         "l10n_th_fonts",
         "l10n_th_amount_to_text",

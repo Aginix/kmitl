@@ -154,7 +154,7 @@
                                         <t t-foreach="activity_levels" t-as="level">
                                             <t t-set="acc" t-value="activity_chain[level[0]] if len(activity_chain) &gt; level[0] else no_dim"/>
                                             <t t-set="acc_name" t-value="acc.name or ''"/>
-                                            <div><span class="b" t-out="level[1]"/> :: <t t-if="acc"><span t-out="acc_name[len(level[1]):].strip() if acc_name.startswith(level[1]) else acc_name"/> (<span t-out="acc.code"/>)</t></div>
+                                            <div><span class="b" t-out="level[1]"/> :: <t t-if="acc"><span t-out="acc_name[len(level[1]) + 1:] if acc_name.startswith(level[1] + ' ') else acc_name"/> (<span t-out="acc.code"/>)</t></div>
                                         </t>
                                         <div><span class="b">กองทุน</span> :: <t t-if="'funds' in dims"><span t-out="dims['funds'].name"/> (<span t-out="dims['funds'].code"/>)</t></div>
                                     </td>
@@ -194,7 +194,12 @@
                             </div>
 
                             <!-- Workflow signatures: the maker both prepares and checks
-                                 (ผู้จัดทำ/ผู้ตรวจสอบ), the approver posts. -->
+                                 (ผู้จัดทำ/ผู้ตรวจสอบ), the approver posts. Each signs only
+                                 by their own act: the maker while the entry stays submitted
+                                 (a recalled or rejected draft keeps submitted_by), the
+                                 approver once approved. Printed by the employee's Thai name
+                                 and position, as on the paper form. -->
+                            <t t-set="maker" t-value="o.submitted_by if o.state in ('submitted', 'posted') else o.submitted_by.browse()"/>
                             <table class="sign">
                                 <tr>
                                     <td><div class="b">ผู้จัดทำ</div></td>
@@ -202,11 +207,13 @@
                                     <td><div class="b">ผู้อนุมัติการบันทึกบัญชี</div></td>
                                 </tr>
                                 <tr>
-                                    <t t-foreach="[(o.submitted_by, o.submitted_date), (o.submitted_by, o.submitted_date), (o.approved_by, o.approved_date)]" t-as="signer">
+                                    <t t-foreach="[(maker, o.submitted_date), (maker, o.submitted_date), (o.approved_by, o.approved_date)]" t-as="signer">
+                                        <t t-set="emp" t-value="signer[0].employee_id"/>
                                         <td>
                                             <div class="sig-space"/>
-                                            <div>( <span t-out="signer[0].name or '…………………………………'"/> )</div>
-                                            <div class="sig-date" t-out="thai.format_datetime_thai_sign(signer[1])"/>
+                                            <div>( <span t-out="emp.name or signer[0].name or '…………………………………'"/> )</div>
+                                            <div t-if="signer[0]" t-out="emp.job_title or emp.job_id.name or ''"/>
+                                            <div t-if="signer[0]" class="sig-date" t-out="thai.format_datetime_thai_sign(signer[1])"/>
                                         </td>
                                     </t>
                                 </tr>
