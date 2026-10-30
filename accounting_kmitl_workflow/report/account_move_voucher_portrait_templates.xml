@@ -56,7 +56,8 @@
                             /* Signatures */
                             .kv-p table.sign { width: 100%; margin-top: 14px; page-break-inside: avoid; }
                             .kv-p table.sign td { width: 33%; text-align: center; vertical-align: top; padding: 0 6px !important; }
-                            .kv-p .sig-space { height: 36px; }
+                            .kv-p .sig-space { height: 40px; }
+                            .kv-p .sig-space img { max-height: 40px; max-width: 160px; }
                             .kv-p .sig-date { font-size: 13pt; }
                         </style>
 
@@ -197,8 +198,8 @@
                                  (ผู้จัดทำ/ผู้ตรวจสอบ), the approver posts. Each signs only
                                  by their own act: the maker while the entry stays submitted
                                  (a recalled or rejected draft keeps submitted_by), the
-                                 approver once approved. Printed by the employee's Thai name
-                                 and position, as on the paper form. -->
+                                 approver once approved. Printed with the employee's own signature
+                                 image, Thai name and position, as on the paper form. -->
                             <t t-set="maker" t-value="o.submitted_by if o.state in ('submitted', 'posted') else o.submitted_by.browse()"/>
                             <table class="sign">
                                 <tr>
@@ -210,7 +211,7 @@
                                     <t t-foreach="[(maker, o.submitted_date), (maker, o.submitted_date), (o.approved_by, o.approved_date)]" t-as="signer">
                                         <t t-set="emp" t-value="signer[0].employee_id"/>
                                         <td>
-                                            <div class="sig-space"/>
+                                            <div class="sig-space"><img t-if="signer[0] and emp.signature" t-att-src="image_data_uri(emp.signature)" alt="signature"/></div>
                                             <div>( <span t-out="emp.name or signer[0].name or '…………………………………'"/> )</div>
                                             <div t-if="signer[0]" t-out="emp.job_title or emp.job_id.name or ''"/>
                                             <div t-if="signer[0]" class="sig-date" t-out="thai.format_datetime_thai_sign(signer[1])"/>
