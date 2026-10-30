@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!-- Seed kind; the administrators own it from here on (noupdate). The
      register number restarts every fiscal year, so ลงวันที่ tells repeated
-     numbers apart. -->
+     numbers apart. A letter is cited by its number across units. -->
 <odoo noupdate="1">
-    <record id="kind_sarabun_document" model="advance.payment.related.document.kind">
+    <record id="kind_sarabun_document" model="related.document.kind">
         <field name="name">หนังสือสารบรรณ</field>
         <field name="model_id" ref="agx_sarabun.model_sarabun_document" />
         <field name="number_field_id" ref="agx_sarabun.field_sarabun_document__name" />
@@ -12,5 +12,6 @@
             ref="agx_sarabun.field_sarabun_document__subject"
         />
         <field name="date_field_id" ref="agx_sarabun.field_sarabun_document__date" />
+        <field name="allow_number_lookup" eval="True" />
     </record>
 </odoo>
