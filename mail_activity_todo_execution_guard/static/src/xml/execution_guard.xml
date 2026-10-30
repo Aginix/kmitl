@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+    <t t-inherit="mail.Activity" t-inherit-mode="extension" owl="1">
+        <xpath
+            expr="//button[hasclass('o_Activity_markDoneButton')]"
+            position="attributes"
+        >
+            <attribute name="t-if">!activityView.activity.isSourceCleared</attribute>
+        </xpath>
+        <xpath
+            expr="//button[hasclass('o_Activity_uploadButton')]"
+            position="attributes"
+        >
+            <attribute name="t-if">!activityView.activity.isSourceCleared</attribute>
+        </xpath>
+        <xpath
+            expr="//button[hasclass('o_Activity_cancelButton')]"
+            position="attributes"
+        >
+            <attribute name="t-if">!activityView.activity.isSourceCleared</attribute>
+        </xpath>
+        <xpath expr="//div[@name='tools']" position="inside">
+            <span
+                t-if="activityView.activity.isSourceCleared"
+                class="o_Activity_sourceClearedHint text-muted small align-self-center"
+            >
+                <i
+                    class="fa fa-info-circle"
+                /> Complete this task on the document itself.
+            </span>
+        </xpath>
+    </t>
+
+    <t t-inherit="mail.ActivityListViewItem" t-inherit-mode="extension" owl="1">
+        <xpath expr="//button[hasclass('fa-upload')]" position="attributes">
+            <attribute
+                name="t-if"
+            >activityListViewItem.fileUploader and !activityListViewItem.activity.isSourceCleared</attribute>
+        </xpath>
+    </t>
+</templates>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Execution Todos clear at the source: no Mark as Done in the popup. -->
+    <record id="mail_activity_view_form_popup" model="ir.ui.view">
+        <field name="name">mail.activity.form.popup.execution.guard</field>
+        <field name="model">mail.activity</field>
+        <field name="inherit_id" ref="mail.mail_activity_view_form_popup" />
+        <field name="priority">99</field>
+        <field name="arch" type="xml">
+            <field name="id" position="after">
+                <field name="todo_category" invisible="1" />
+            </field>
+            <!-- keeps calendar's meeting condition; priority 99 applies after it -->
+            <xpath expr="//footer/button[@name='action_done']" position="attributes">
+                <attribute
+                    name="attrs"
+                >{'invisible': ['|', '|', ('activity_category', '=', 'meeting'), ('chaining_type', '=', 'trigger'), ('todo_category', '=', 'execution')]}</attribute>
+            </xpath>
+            <xpath
+                expr="//footer/button[@name='action_done_schedule_next'][1]"
+                position="attributes"
+            >
+                <attribute
+                    name="attrs"
+                >{'invisible': ['|', ('chaining_type', '=', 'trigger'), ('todo_category', '=', 'execution')]}</attribute>
+            </xpath>
+            <xpath
+                expr="//footer/button[@name='action_done_schedule_next'][2]"
+                position="attributes"
+            >
+                <attribute
+                    name="attrs"
+                >{'invisible': ['|', ('chaining_type', '=', 'suggest'), ('todo_category', '=', 'execution')]}</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>
