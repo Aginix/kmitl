@@ -30,6 +30,42 @@
         groups="kris_project.group_kris_project_viewer"
     />
 
+    <!-- Reports menu -->
+    <menuitem
+        id="menu_kris_project_report"
+        name="รายงาน"
+        parent="menu_kris_project_root"
+        sequence="50"
+        groups="kris_project.group_kris_project_viewer"
+    />
+
+    <menuitem
+        id="menu_kris_project_installment_report"
+        name="รายงานงวดงาน"
+        parent="menu_kris_project_report"
+        action="action_kris_project_installment_report"
+        sequence="10"
+        groups="kris_project.group_kris_project_viewer"
+    />
+
+    <menuitem
+        id="menu_kris_project_receipt_report"
+        name="รายงานรายได้/ใบเสร็จ"
+        parent="menu_kris_project_report"
+        action="action_kris_project_receipt_report"
+        sequence="20"
+        groups="kris_project.group_kris_project_viewer"
+    />
+
+    <menuitem
+        id="menu_kris_project_allocation_report"
+        name="รายงานการจัดสรร"
+        parent="menu_kris_project_report"
+        action="action_kris_project_allocation_report"
+        sequence="30"
+        groups="kris_project.group_kris_project_viewer"
+    />
+
     <!-- Configuration menu -->
     <menuitem
         id="menu_kris_project_config"
