@@ -87,6 +87,36 @@ class ApprovalRequest(models.Model):
         self.state = "to_send"
         return super()._on_sarabun_cancelled(document)
 
+    def action_draft(self):
+        res = super().action_draft()
+        self._abandon_stale_sarabun_documents()
+        return res
+
+    def _abandon_stale_sarabun_documents(self):
+        """Discard the un-numbered หนังสือ (a draft not yet sent, or one ตีกลับ/
+        ดึงกลับ for revision) when the request goes back to draft — otherwise
+        ``sarabun_has_live_document`` keeps hiding Create Document on the next
+        round. Mirrors kmitl_project_sarabun: a draft is deleted, a ``returned``
+        doc already went out so it is voided like ยกเลิกการส่ง and kept."""
+        for request in self:
+            stale = request.sarabun_document_ids.filtered(
+                lambda d: d.state in ("draft", "returned")
+            )
+            deletable = stale.filtered(
+                lambda d: d.state == "draft" and not d.register_number_id
+            )
+            for document in stale - deletable:
+                document.routing_step_ids._clear_activities()
+                document.routing_step_ids.filtered(
+                    lambda s: s.state in ("waiting", "active")
+                ).write({"state": "skipped"})
+                document.state = "cancelled"
+                document._void_register("cancelled")
+                document.message_post(
+                    body=_("ยกเลิกหนังสือ เนื่องจากคำขอถูกกลับไปแบบร่าง")
+                )
+            deletable.unlink()
+
     @api.depends("state", "sarabun_state")
     def _compute_is_plan_editable(self):
         """A Sarabun-returned request reopens the whole plan for editing (except
