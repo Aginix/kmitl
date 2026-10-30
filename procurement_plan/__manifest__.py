@@ -1,6 +1,6 @@
 {
     "name": "Procurement Plan",
-    "version": "16.0.1.3.0",
+    "version": "16.0.1.4.0",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
@@ -13,6 +13,7 @@
     "data": [
         "data/account.analytic.plan.csv",
         "data/sequence.xml",
+        "data/mail_message_subtype.xml",
         "security/security.xml",
         "security/ir.model.access.csv",
         "views/analytic_views.xml",

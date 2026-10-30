@@ -13,12 +13,34 @@ class BudgetTransfer(models.Model):
     dimension (ปรับเข้าแผน); normally the plan is then reserved by hand
     (ยืนยัน → ``action_verify`` → ``_reserve_plan_commitment``). This bridge
     closes the loop: when a transfer is approved/posted and a plan it funded
-    now has its allocated budget (``budget_amount``) exactly matching its
-    planned amount (``total_price``), the plan is verified — and therefore
-    reserved — automatically.
+    now has its allocated budget (``budget_amount``) covering its planned
+    amount (``total_price``), the plan is verified — and therefore reserved for
+    what it received — automatically (procurement_plan ADR-0003).
     """
 
     _inherit = "budget.transfer"
+
+    # Mark the transfers a Direct Floating Allocation / Floating Return creates
+    # from a plan — they post on confirm, without approval, so stay auditable.
+    is_procurement_plan_floating_allocation = fields.Boolean(
+        string="จัดสรรตรงจากงบลอยเข้าแผน",
+        readonly=True,
+        copy=False,
+        help="โอนจากเงินลอยเข้ามิติแผนจัดซื้อจัดจ้างโดยตรง (ไม่ผ่านกระบวนการขออนุมัติโอนงบประมาณ)",
+    )
+    is_procurement_plan_floating_return = fields.Boolean(
+        string="โอนคืนงบลอยจากแผน",
+        readonly=True,
+        copy=False,
+        help="โอนเงินจากมิติแผนจัดซื้อจัดจ้างคืนเป็นเงินลอย (ไม่ผ่านกระบวนการขออนุมัติโอนงบประมาณ)",
+    )
+    procurement_plan_id = fields.Many2one(
+        "procurement.plan",
+        string="แผนจัดซื้อจัดจ้าง",
+        readonly=True,
+        copy=False,
+        index=True,
+    )
 
     procurement_plan_line_ids = fields.Many2many(
         "budget.move.line",
@@ -36,6 +58,13 @@ class BudgetTransfer(models.Model):
             transfer.procurement_plan_line_ids = (
                 transfer.from_line_ids | transfer.to_line_ids
             ).filtered("procurement_plan_analytic_id")
+
+    def _skip_submit_review(self):
+        return (
+            self.is_procurement_plan_floating_allocation
+            or self.is_procurement_plan_floating_return
+            or super()._skip_submit_review()
+        )
 
     def _post_transfer(self):
         # Reserve only after super() has posted the delegated move and moved the
@@ -86,7 +115,7 @@ class BudgetTransfer(models.Model):
                         plan.total_price,
                         precision_rounding=rounding,
                     )
-                    == 0
+                    >= 0
                 )
                 if not fully_funded:
                     continue

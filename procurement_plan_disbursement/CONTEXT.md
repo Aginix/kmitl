@@ -19,5 +19,8 @@ _Avoid_: assignment, allocation
 The budget a งวด has really consumed = the linked DR's consumed amount, counted
 only once the budget act has consumed it (the plan's reservation is drawn down
 then). A linked DR whose budget is not consumed yet is *กำลังดำเนินการ* and
-counts as zero.
+counts as zero. Per-งวด tracking only: the plan-level เบิกจ่ายจริง shown on the
+plan and the public portal is the budget **consumed at the plan's dimension**
+(see [Plan Budget Remaining](../procurement_plan/CONTEXT.md)), which also counts
+consumption not linked to any งวด.
 _Avoid_: paid, spent, planned amount (that is the งวด's own `amount`)

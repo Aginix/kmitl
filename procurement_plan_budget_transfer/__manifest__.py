@@ -1,6 +1,6 @@
 {
     "name": "Procurement Plan Budget Transfer",
-    "version": "16.0.1.3.0",
+    "version": "16.0.1.4.0",
     "summary": "จองงบประมาณแผนจัดซื้อจัดจ้างอัตโนมัติเมื่อโอนงบเข้าครบตามแผน",
     "author": "Aginix Technologies",
     "website": "https://github.com/Aginix/kmitl",
@@ -10,8 +10,15 @@
         "budget_transfer",
     ],
     "data": [
+        "security/ir.model.access.csv",
         "views/budget_transfer_views.xml",
+        "wizard/procurement_plan_floating_return_views.xml",
     ],
+    "assets": {
+        "web.assets_backend": [
+            "procurement_plan_budget_transfer/static/src/floating_return/*",
+        ],
+    },
     "installable": True,
     # Auto-install wherever a budget transfer can fund a procurement plan.
     "auto_install": True,

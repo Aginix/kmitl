@@ -1,6 +1,6 @@
 {
     "name": "Procurement Plan Budget",
-    "version": "16.0.1.1.3",
+    "version": "16.0.1.2.0",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",

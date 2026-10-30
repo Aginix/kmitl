@@ -1,0 +1,113 @@
+// บัญชีแผน — the same page as KMITL Project's บัญชีโครงการ, copied per procurement_plan ADR-0006.
+
+$ppbo-muted: #6b7280;
+$ppbo-line: #e5e7eb;
+$ppbo-accent: $o-brand-primary;
+$ppbo-accent-soft: mix($o-brand-primary, #fff, 10%);
+$ppbo-consumed: #b42318;
+$ppbo-warn: #f0ad4e;
+$ppbo-empty: #eef0f2;
+
+.o_ppbo {
+    margin: 8px 0 16px;
+    font-variant-numeric: tabular-nums;
+}
+
+.o_ppbo_kpis {
+    display: flex;
+    align-items: stretch;
+    border: 1px solid $ppbo-line;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.o_ppbo_kpi {
+    flex: 1 1 0;
+    padding: 12px 16px;
+
+    &.o_ppbo_hero {
+        background: $ppbo-accent-soft;
+        .o_ppbo_value {
+            color: $ppbo-accent;
+        }
+    }
+    &.o_ppbo_negative .o_ppbo_value {
+        color: $ppbo-consumed;
+    }
+}
+
+.o_ppbo_label,
+.o_ppbo_sub {
+    font-size: $o-font-size-base * 0.92;
+    color: $ppbo-muted;
+}
+
+.o_ppbo_value {
+    font-size: $o-font-size-base * 1.9;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.o_ppbo_op {
+    display: flex;
+    align-items: center;
+    color: $ppbo-muted;
+    font-size: $o-font-size-base * 1.5;
+}
+
+.o_ppbo_bar {
+    display: flex;
+    height: 10px;
+    margin-top: 12px;
+    border-radius: 5px;
+    overflow: hidden;
+    background: $ppbo-empty;
+}
+
+.o_ppbo_seg_consumed {
+    background: $ppbo-consumed;
+}
+.o_ppbo_seg_remaining {
+    background: $ppbo-accent;
+}
+.o_ppbo_seg_unreserved {
+    background: $ppbo-warn;
+}
+.o_ppbo_seg_empty {
+    background: $ppbo-empty;
+}
+
+.o_ppbo_legend {
+    display: flex;
+    gap: 16px;
+    margin-top: 4px;
+    font-size: $o-font-size-base * 0.92;
+    color: $ppbo-muted;
+
+    i {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        margin-right: 4px;
+        border-radius: 2px;
+        vertical-align: -1px;
+    }
+}
+
+.o_ppbo_actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 8px 0 12px;
+}
+
+.o_ppbo_footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 8px;
+
+    .o_ppbo_total {
+        font-weight: 600;
+    }
+}

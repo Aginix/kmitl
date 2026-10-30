@@ -4,10 +4,8 @@ from odoo import Command
 from odoo.tests.common import TransactionCase, tagged
 
 
-@tagged("post_install", "-at_install")
-class TestProcurementPlanBudgetTransfer(TransactionCase):
-    """A transfer that funds a procurement plan's dimension to exactly its
-    planned amount auto-reserves the plan (จองงบ) the moment it posts."""
+class PlanTransferCommon(TransactionCase):
+    """Budget codes, dimensions and helpers shared by the plan transfer tests."""
 
     @classmethod
     def setUpClass(cls):
@@ -85,6 +83,14 @@ class TestProcurementPlanBudgetTransfer(TransactionCase):
         move.action_post()
         return move
 
+    def _post(self, transfer):
+        """ยืนยัน → (ตรวจสอบ, when budget_transfer_verify is installed) → อนุมัติ."""
+        transfer.action_submit()
+        if transfer.state == "to_verify":
+            transfer.action_verify()
+        transfer.action_approve()
+        return transfer
+
     def _make_plan(self, total_price):
         plan = self.env["procurement.plan"].create(
             {
@@ -141,16 +147,18 @@ class TestProcurementPlanBudgetTransfer(TransactionCase):
         )
         return transfer
 
-    # ------------------------------------------------------------------
-    # tests
-    # ------------------------------------------------------------------
+
+@tagged("post_install", "-at_install")
+class TestProcurementPlanBudgetTransfer(PlanTransferCommon):
+    """A transfer that funds a procurement plan's dimension to exactly its
+    planned amount auto-reserves the plan (จองงบ) the moment it posts."""
+
     def test_full_funding_auto_reserves(self):
         self._appropriate(self.src, 5000)
         plan = self._make_plan(5000)
         transfer = self._fund_plan_transfer(plan, 5000)
 
-        transfer.action_submit()
-        transfer.action_approve()  # approve = post (base flow)
+        self._post(transfer)
 
         self.assertEqual(transfer.state, "posted")
         self.assertEqual(plan.budget_amount, 5000)
@@ -165,8 +173,7 @@ class TestProcurementPlanBudgetTransfer(TransactionCase):
         plan = self._make_plan(5000)
         transfer = self._fund_plan_transfer(plan, 3000)  # under the planned amount
 
-        transfer.action_submit()
-        transfer.action_approve()
+        self._post(transfer)
 
         self.assertEqual(transfer.state, "posted")
         self.assertEqual(plan.budget_amount, 3000)
