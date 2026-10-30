@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="action_report_procurement_plan" model="ir.actions.report">
+        <field name="name">แผนจัดซื้อจัดจ้าง</field>
+        <field name="binding_model_id" ref="model_procurement_plan" />
+        <field name="model">procurement.plan</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">procurement_plan.report_procurement_plan</field>
+        <field name="report_file">procurement_plan.report_procurement_plan</field>
+        <field
+            name="print_report_name"
+        >'แผนจัดซื้อจัดจ้าง - %s' % (object.name or object.id)</field>
+        <field name="paperformat_id" ref="paperformat_procurement_plan" />
+    </record>
+
+</odoo>
