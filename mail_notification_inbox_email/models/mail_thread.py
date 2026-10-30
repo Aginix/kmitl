@@ -24,6 +24,8 @@ class MailThread(models.AbstractModel):
         if inbox_rdata:
             self._notify_thread_by_inbox(message, inbox_rdata, msg_vals=msg_vals, **kwargs)
         if email_rdata:
-            email_message = message.copy()
+            # A user notification, as message_notify makes: it carries the
+            # email notifications without showing twice in the chatter.
+            email_message = message.copy({'message_type': 'user_notification'})
             self._notify_thread_by_email(email_message, email_rdata, msg_vals=msg_vals, **kwargs)
         return rdata

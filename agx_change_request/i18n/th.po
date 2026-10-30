@@ -238,6 +238,14 @@ msgid "Change requests"
 msgstr "ข้อแก้ไข"
 
 #. module: agx_change_request
+#. odoo-python
+#: code:addons/agx_change_request/models/change_request.py:0
+#: model:mail.activity.type,name:agx_change_request.mail_activity_change_request_check
+#, python-format
+msgid "Check the answer to a change request"
+msgstr "ตรวจคำตอบข้อแก้ไข"
+
+#. module: agx_change_request
 #. odoo-javascript
 #: code:addons/agx_change_request/static/src/xml/change_request.xml:0
 #: code:addons/agx_change_request/static/src/xml/change_request.xml:0

@@ -7,6 +7,7 @@ from odoo.tools import plaintext2html
 from .change_request_mixin import OUTSTANDING
 
 ANSWER_ACTIVITY = "agx_change_request.mail_activity_change_request_answer"
+CHECK_ACTIVITY = "agx_change_request.mail_activity_change_request_check"
 # Bus notification telling the forms showing a record that its requests
 # changed; it carries no content, they read them again with their own rights.
 CHANGED_NOTIFICATION = "agx_change_request/changed"
@@ -223,6 +224,14 @@ class ChangeRequest(models.Model):
     def _schedule_answer(self, users):
         self._schedule(ANSWER_ACTIVITY, users, _("Answer a change request"))
 
+    def _schedule_check(self):
+        """Tell the author their request was answered: one activity, renewed
+        on each Reply."""
+        self._clear_activities(CHECK_ACTIVITY)
+        self._schedule(
+            CHECK_ACTIVITY, self.author_id, _("Check the answer to a change request")
+        )
+
     # ------------------------------------------------------------------
     # Steps (called as the user; they work in sudo once checked)
     # ------------------------------------------------------------------
@@ -315,7 +324,8 @@ class ChangeRequest(models.Model):
 
         A reply from someone else answers the request; its author replying to
         an answered one (e.g. "still missing") opens it again, giving the
-        Assignees their activity back. Nobody is notified otherwise.
+        Assignees their activity back. The author has an activity to check a
+        Reply from someone else until they reply or close it.
         """
         self.ensure_one()
         if self.state not in OUTSTANDING:
@@ -330,8 +340,10 @@ class ChangeRequest(models.Model):
             if self.state == "open":
                 self.state = "answered"
             self._clear_activities(ANSWER_ACTIVITY)
+            self._schedule_check()
         elif self.state == "answered":
             self.state = "open"
+            self._clear_activities(CHECK_ACTIVITY)
             self._schedule_answer(self.assignee_ids)
         self._post_step(
             _("Reply to change request #%s", self.id),
