@@ -191,7 +191,8 @@ class RelatedDocument(models.Model):
                 vals.pop("name")
             vals = {k: v for k, v in vals.items() if rec[k] != v}
             if vals:
-                rec.sudo().write(vals)
+                # Flagged: the snapshot's number is not a retyped one.
+                rec.sudo().with_context(related_document_resolving=True).write(vals)
 
     @api.onchange("target_res_id")
     def _onchange_target_res_id(self):
@@ -208,9 +209,24 @@ class RelatedDocument(models.Model):
         if "document_date" in snapshot:
             self.document_date = snapshot["document_date"]
 
+    def _describes_target(self):
+        """True when the number and date already are those of the cited
+        document, e.g. just filled in from the one picked in the dropdown."""
+        kind = self.kind_id.sudo()
+        if not self.target_res_id or self.target_res_model != kind.model_name:
+            return False
+        document = self.env[kind.model_name].sudo().browse(self.target_res_id).exists()
+        return bool(document) and (
+            document[kind._get_number_field()] == self.document_number
+            and (
+                not kind.date_field_id
+                or document[kind.date_field_id.name] == self.document_date
+            )
+        )
+
     @api.onchange("kind_id", "document_number", "document_date")
     def _onchange_document_number(self):
-        if not self.kind_id or not self.document_number:
+        if not self.kind_id or not self.document_number or self._describes_target():
             return
         try:
             document = self._find_document()
@@ -415,6 +431,8 @@ class RelatedDocument(models.Model):
             if {"res_model", "res_id"} & set(vals):
                 raise UserError(_("ย้ายเอกสารอ้างอิงไปเอกสารอื่นไม่ได้"))
             self._check_change("write")
+        if self.env.context.get("related_document_resolving"):
+            return super().write(vals)
         lookup = {"kind_id", "document_number", "document_date"} & set(vals)
         if lookup and "target_res_id" not in vals:
             # Retyped number: find the document again.

@@ -18,6 +18,7 @@
             "agx_related_document/static/src/**/*",
         ],
     },
+    "uninstall_hook": "uninstall_hook",
     "installable": True,
     "auto_install": False,
     "license": "LGPL-3",
