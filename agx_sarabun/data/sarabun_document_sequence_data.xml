@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ทะเบียนหนังสือ (เล่มทะเบียนสารบรรณ) ประจำแต่ละส่วนงาน
+         สร้างจาก sarabun_document.csv — noupdate="1" เพื่อให้ผ่าน module upgrade
+
+         sender_department_id ค้นหาจากชื่อ hr.department ในฐานข้อมูล:
+         - ถ้าเจอ → link อัตโนมัติ
+         - ถ้าไม่เจอ → ว่าง (admin กรอกเพิ่มเติมใน Configuration ▸ Sequences) -->
+    <data noupdate="1">
+
+        <!-- สถาบัน — institute-level outgoing register -->
+        <record id="seq_7000" model="sarabun.document.sequence">
+            <field name="name">สถาบันฯ (เลขที่หนังสือส่งออก)</field>
+            <field name="prefix">อว 7000/e</field>
+            <field name="sender_department_id" model="hr.department" search="[('name', '=', 'สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง')]"/>
+        </record>
+
+        <!-- สำนักงานอธิการบดี -->
+        <record id="seq_7001" model="sarabun.document.sequence">
+            <field name="name">สำนักงานอธิการบดี (หนังสือบันทึกข้อความ)</field>
+            <field name="prefix">อว 7001/e</field>
+            <field name="sender_department_id" model="hr.department" search="[('name', '=', 'สำนักงานอธิการบดี')]"/>
+        </record>
+
+        <record id="seq_7001_01" model="sarabun.document.sequence">
+            <field name="name">สำนักงานบริหารงานทั่วไปและกิจการพิเศษ</field>
+            <field name="prefix">อว 7001.01/e</field>
+            <field name="sender_department_id" model="hr.department" search="[('name', '=', 'สำนักงานบริหารงานทั่วไปและกิจการพิเศษ')]"/>
+        </record>
+
+        <record id="seq_7001_02" model="sarabun.document.sequence">
+            <field name="name">สำนักงานบริหารทรัพยากรบุคคล</field>
+            <field name="prefix">อว 7001.02/e</field>
+            <field name="sender_department_id" model="hr.department" search="[('name', '=', 'สำนักงานบริหารทรัพยากรบุคคล')]"/>
+        </record>
+
+        <record id="seq_7001_03" model="sarabun.document.sequence">
+            <field name="name">สำนักงานกิจการนักศึกษาและศิษย์เก่าสัมพันธ์</field>
+            <field name="prefix">อว 7001.03/e</field>
+            <field name="sender_department_id" model="hr.department" search="[('name', '=', 'สำนักงานกิจการนักศึกษาและศิษย์เก่าสัมพันธ์')]"/>
+        </record>
+
+        <record id="seq_7001_04" model="sarabun.document.sequence">
+            <field name="name">สำนักงานคลัง</field>
+            <field name="prefix">อว 7001.04/e</field>
+            <field name="sender_department_id" model="hr.department" search="[('name', '=', 'สำนักงานคลัง')]"/>
+        </record>
+
+        <record id="seq_7001_05" model="sarabun.document.sequence">
+            <field name="name">สำนักงานกิจการต่างประเทศ</field>
+            <field name="prefix">อว 7001.05/e</field>
+            <field name="sender_department_id" model="hr.department" search="[('name', '=', 'สำนักงานกิจการต่างประเทศ')]"/>
+        </record>
+
+        <record id="seq_7001_06" model="sarabun.document.sequence">
+            <field name="name">สำนักงานบริหารยุทธศาสตร์</field>
+            <field name="prefix">อว 7001.06/e</field>
+            <field name="sender_department_id" model="hr.department" search="[('name', '=', 'สำนักงานบริหารยุทธศาสตร์')]"/>
+        </record>
+
+        <record id="seq_7001_07" model="sarabun.document.sequence">
+            <field name="name">สำนักงานบริหารทรัพยากรกายภาพและสิ่งแวดล้อม</field>
+            <field name="prefix">อว 7001.07/e</field>
+            <field name="sender_department_id" model="hr.department" search="[('name', '=', 'สำนักงานบริหารทรัพยากรกายภาพและสิ่งแวดล้อม')]"/>
+        </record>
+
+        <record id="seq_7001_10" model="sarabun.document.sequence">
+            <field name="name">สำนักงานนิติการ</field>
+            <field name="prefix">อว 7001.10/e</field>
+            <field name="sender_department_id" model="hr.department" search="[('name', '=', 'สำนักงานนิติการ')]"/>
+        </record>
+
+        <!-- ชื่อในฐานข้อมูล: "สำนักงานบริหารวิชาการและคุณภาพการศึกษา" -->
+        <record id="seq_7001_11" model="sarabun.document.sequence">
+            <field name="name">สำนักงานบริหารวิชาการและประกันคุณภาพ</field>
+            <field name="prefix">อว 7001.11/e</field>
+            <field name="sender_department_id" model="hr.department" search="[('name', '=', 'สำนักงานบริหารวิชาการและคุณภาพการศึกษา')]"/>
+        </record>
+
+        <!-- ศูนย์บ่มเพาะวิสาหกิจฯ — ไม่มีใน hr.department, admin กรอกเอง -->
+        <record id="seq_7001_12" model="sarabun.document.sequence">
+            <field name="name">ศูนย์บ่มเพาะวิสาหกิจพระจอมเกล้าลาดกระบัง</field>
+            <field name="prefix">อว 7001.12/e</field>
+        </record>
+
+        <record id="seq_7001_14" model="sarabun.document.sequence">
+            <field name="name">สำนักงานพัสดุ</field>
+            <field name="prefix">อว 7001.14/e</field>
+            <field name="sender_department_id" model="hr.department" search="[('name', '=', 'สำนักงานพัสดุ')]"/>
+        </record>
+
+        <record id="seq_7001_17" model="sarabun.document.sequence">
+            <field name="name">สำนักงานสื่อสารองค์กร</field>
+            <field name="prefix">อว 7001.17/e</field>
+            <field name="sender_department_id" model="hr.department" search="[('name', '=', 'สำนักงานสื่อสารองค์กร')]"/>
+        </record>
+
+        <record id="seq_7001_19" model="sarabun.document.sequence">
+            <field name="name">สำนักงานบริหารทรัพย์สิน</field>
+            <field name="prefix">อว 7001.19/e</field>
+            <field name="sender_department_id" model="hr.department" search="[('name', '=', 'สำนักงานบริหารทรัพย์สิน')]"/>
+        </record>
+
+        <!-- ชื่อในฐานข้อมูล: "โรงเรียนสาธิตนานาชาติ สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง" -->
+        <record id="seq_7001_20" model="sarabun.document.sequence">
+            <field name="name">โรงเรียนสาธิตนานาชาติพระจอมเกล้า</field>
+            <field name="prefix">อว 7001.20/e</field>
+            <field name="sender_department_id" model="hr.department" search="[('name', '=', 'โรงเรียนสาธิตนานาชาติ สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง')]"/>
+        </record>
+
+        <record id="seq_7001_22" model="sarabun.document.sequence">
+            <field name="name">สำนักงานบริหารวารสารวิชาการ</field>
+            <field name="prefix">อว 7001.22/e</field>
+            <field name="sender_department_id" model="hr.department" search="[('name', '=', 'สำนักงานบริหารวารสารวิชาการ')]"/>
+        </record>
+
+        <!-- คณะ / วิทยาลัย / สำนัก ระดับสถาบัน -->
+        <record id="seq_7002" model="sarabun.document.sequence">
+            <field name="name">คณะวิศวกรรมศาสตร์</field>
+            <field name="prefix">อว 7002/e</field>
+            <field name="sender_department_id" model="hr.department" search="[('name', '=', 'คณะวิศวกรรมศาสตร์')]"/>
+        </record>
+
+        <record id="seq_7003" model="sarabun.document.sequence">
+            <field name="name">คณะสถาปัตยกรรม ศิลปะและการออกแบบ</field>
+            <field name="prefix">อว 7003/e</field>
+            <field name="sender_department_id" model="hr.department" search="[('name', '=', 'คณะสถาปัตยกรรม ศิลปะและการออกแบบ')]"/>
+        </record>
+
+        <record id="seq_7004" model="sarabun.document.sequence">
+            <field name="name">คณะครุศาสตร์อุตสาหกรรมและเทคโนโลยี</field>
+            <field name="prefix">อว 7004/e</field>
+            <field name="sender_department_id" model="hr.department" search="[('name', '=', 'คณะครุศาสตร์อุตสาหกรรมและเทคโนโลยี')]"/>
+        </record>
+
+        <record id="seq_7005" model="sarabun.document.sequence">
+            <field name="name">คณะเทคโนโลยีการเกษตร</field>
+            <field name="prefix">อว 7005/e</field>
+            <field name="sender_department_id" model="hr.department" search="[('name', '=', 'คณะเทคโนโลยีการเกษตร')]"/>
+        </record>
+
+        <record id="seq_7006" model="sarabun.document.sequence">
+            <field name="name">สำนักบริหารข้อมูลดิจิทัลพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</field>
+            <field name="prefix">อว 7006/e</field>
+            <field name="sender_department_id" model="hr.department" search="[('name', '=', 'สำนักบริหารข้อมูลดิจิทัลพระจอมเกล้าเจ้าคุณทหารลาดกระบัง')]"/>
+        </record>
+
+        <record id="seq_7008" model="sarabun.document.sequence">
+            <field name="name">คณะวิทยาศาสตร์</field>
+            <field name="prefix">อว 7008/e</field>
+            <field name="sender_department_id" model="hr.department" search="[('name', '=', 'คณะวิทยาศาสตร์')]"/>
+        </record>
+
+        <record id="seq_7009" model="sarabun.document.sequence">
+            <field name="name">สำนักการเรียนรู้ตลอดชีวิตพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</field>
+            <field name="prefix">อว 7009/e</field>
+            <field name="sender_department_id" model="hr.department" search="[('name', '=', 'สำนักการเรียนรู้ตลอดชีวิตพระจอมเกล้าเจ้าคุณทหารลาดกระบัง')]"/>
+        </record>
+
+        <record id="seq_7010" model="sarabun.document.sequence">
+            <field name="name">วิทยาเขตชุมพรเขตรอุดมศักดิ์</field>
+            <field name="prefix">อว 7010/e</field>
+            <field name="sender_department_id" model="hr.department" search="[('name', '=', 'วิทยาเขตชุมพรเขตรอุดมศักดิ์')]"/>
+        </record>
+
+        <record id="seq_7011" model="sarabun.document.sequence">
+            <field name="name">คณะเทคโนโลยีสารสนเทศ</field>
+            <field name="prefix">อว 7011/e</field>
+            <field name="sender_department_id" model="hr.department" search="[('name', '=', 'คณะเทคโนโลยีสารสนเทศ')]"/>
+        </record>
+
+        <record id="seq_7012" model="sarabun.document.sequence">
+            <field name="name">สำนักทะเบียนและบริการการศึกษา</field>
+            <field name="prefix">อว 7012/e</field>
+            <field name="sender_department_id" model="hr.department" search="[('name', '=', 'สำนักทะเบียนและบริการการศึกษา')]"/>
+        </record>
+
+        <record id="seq_7014" model="sarabun.document.sequence">
+            <field name="name">คณะอุตสาหกรรมอาหาร</field>
+            <field name="prefix">อว 7014/e</field>
+            <field name="sender_department_id" model="hr.department" search="[('name', '=', 'คณะอุตสาหกรรมอาหาร')]"/>
+        </record>
+
+        <record id="seq_7015" model="sarabun.document.sequence">
+            <field name="name">สำนักบริหารงานวิจัยและนวัตกรรมพระจอมเกล้าลาดกระบัง</field>
+            <field name="prefix">อว 7015/e</field>
+            <field name="sender_department_id" model="hr.department" search="[('name', '=', 'สำนักบริหารงานวิจัยและนวัตกรรมพระจอมเกล้าลาดกระบัง')]"/>
+        </record>
+
+        <!-- สำนักงานสภาคณาจารย์และพนักงาน — ไม่มีใน hr.department, admin กรอกเอง -->
+        <record id="seq_7016" model="sarabun.document.sequence">
+            <field name="name">สำนักงานสภาคณาจารย์และพนักงาน</field>
+            <field name="prefix">อว 7016/e</field>
+        </record>
+
+        <record id="seq_7017" model="sarabun.document.sequence">
+            <field name="name">สำนักงานสภาสถาบัน</field>
+            <field name="prefix">อว 7017/e</field>
+            <field name="sender_department_id" model="hr.department" search="[('name', '=', 'สำนักงานสภาสถาบัน')]"/>
+        </record>
+
+        <record id="seq_7018" model="sarabun.document.sequence">
+            <field name="name">สำนักวิชาศึกษาทั่วไป</field>
+            <field name="prefix">อว 7018/e</field>
+            <field name="sender_department_id" model="hr.department" search="[('name', '=', 'สำนักวิชาศึกษาทั่วไป')]"/>
+        </record>
+
+        <record id="seq_7025" model="sarabun.document.sequence">
+            <field name="name">คณะบริหารธุรกิจ</field>
+            <field name="prefix">อว 7025/e</field>
+            <field name="sender_department_id" model="hr.department" search="[('name', '=', 'คณะบริหารธุรกิจ')]"/>
+        </record>
+
+        <!-- ชื่อในฐานข้อมูล: "วิทยาลัยการจัดการนวัตกรรมและอุตสาหกรรม" -->
+        <record id="seq_7026" model="sarabun.document.sequence">
+            <field name="name">วิทยาลัยนวัตกรรมและอุตสาหกรรม</field>
+            <field name="prefix">อว 7026/e</field>
+            <field name="sender_department_id" model="hr.department" search="[('name', '=', 'วิทยาลัยการจัดการนวัตกรรมและอุตสาหกรรม')]"/>
+        </record>
+
+        <record id="seq_7027" model="sarabun.document.sequence">
+            <field name="name">วิทยาลัยอุตสาหกรรมการบินนานาชาติ</field>
+            <field name="prefix">อว 7027/e</field>
+            <field name="sender_department_id" model="hr.department" search="[('name', '=', 'วิทยาลัยอุตสาหกรรมการบินนานาชาติ')]"/>
+        </record>
+
+        <record id="seq_7028" model="sarabun.document.sequence">
+            <field name="name">คณะแพทยศาสตร์</field>
+            <field name="prefix">อว 7028/e</field>
+            <field name="sender_department_id" model="hr.department" search="[('name', '=', 'คณะแพทยศาสตร์')]"/>
+        </record>
+
+        <record id="seq_7029" model="sarabun.document.sequence">
+            <field name="name">คณะศิลปศาสตร์</field>
+            <field name="prefix">อว 7029/e</field>
+            <field name="sender_department_id" model="hr.department" search="[('name', '=', 'คณะศิลปศาสตร์')]"/>
+        </record>
+
+        <record id="seq_7030" model="sarabun.document.sequence">
+            <field name="name">วิทยาลัยวิศวกรรมสังคีต</field>
+            <field name="prefix">อว 7030/e</field>
+            <field name="sender_department_id" model="hr.department" search="[('name', '=', 'วิทยาลัยวิศวกรรมสังคีต')]"/>
+        </record>
+
+        <record id="seq_7031" model="sarabun.document.sequence">
+            <field name="name">สำนักวิจัยนวัตกรรมเมืองอัจฉริยะ</field>
+            <field name="prefix">อว 7031/e</field>
+            <field name="sender_department_id" model="hr.department" search="[('name', '=', 'สำนักวิจัยนวัตกรรมเมืองอัจฉริยะ')]"/>
+        </record>
+
+        <record id="seq_7032" model="sarabun.document.sequence">
+            <field name="name">โรงพยาบาลพระจอมเกล้าเจ้าคุณทหาร</field>
+            <field name="prefix">อว 7032/e</field>
+            <field name="sender_department_id" model="hr.department" search="[('name', '=', 'โรงพยาบาลพระจอมเกล้าเจ้าคุณทหาร')]"/>
+        </record>
+
+        <record id="seq_7033" model="sarabun.document.sequence">
+            <field name="name">คณะทันตแพทยศาสตร์</field>
+            <field name="prefix">อว 7033/e</field>
+            <field name="sender_department_id" model="hr.department" search="[('name', '=', 'คณะทันตแพทยศาสตร์')]"/>
+        </record>
+
+        <record id="seq_7034" model="sarabun.document.sequence">
+            <field name="name">42 บางกอก</field>
+            <field name="prefix">อว 7034/e</field>
+            <field name="sender_department_id" model="hr.department" search="[('name', '=', '42 บางกอก')]"/>
+        </record>
+
+        <record id="seq_7035" model="sarabun.document.sequence">
+            <field name="name">คณะพยาบาลศาสตร์</field>
+            <field name="prefix">อว 7035/e</field>
+            <field name="sender_department_id" model="hr.department" search="[('name', '=', 'คณะพยาบาลศาสตร์')]"/>
+        </record>
+
+        <record id="seq_7036" model="sarabun.document.sequence">
+            <field name="name">คณะเทคโนโลยีนวัตกรรมบูรณาการ</field>
+            <field name="prefix">อว 7036/e</field>
+            <field name="sender_department_id" model="hr.department" search="[('name', '=', 'คณะเทคโนโลยีนวัตกรรมบูรณาการ')]"/>
+        </record>
+
+        <!-- ชื่อในฐานข้อมูล: "สถาบันโคเซ็นแห่งสถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง" -->
+        <record id="seq_7037" model="sarabun.document.sequence">
+            <field name="name">สถาบัน KOSEN KMITL</field>
+            <field name="prefix">อว 7037/e</field>
+            <field name="sender_department_id" model="hr.department" search="[('name', '=', 'สถาบันโคเซ็นแห่งสถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง')]"/>
+        </record>
+
+    </data>
+</odoo>
