@@ -7,27 +7,13 @@
         <field name="arch" type="xml">
             <group name="attachments" position="after">
                 <group name="related_documents" string="เอกสารอ้างอิงเพิ่มเติม">
-                    <!-- res_model/res_id stay off the view (see the model). -->
                     <field
                         name="related_document_ids"
                         nolabel="1"
                         colspan="2"
+                        context="{'tree_view_ref': 'agx_related_document.view_related_document_embedded_tree', 'default_res_model': 'advance.payment'}"
                         attrs="{'readonly': [('state', 'in', ['done', 'cancel'])]}"
-                    >
-                        <tree editable="bottom">
-                            <field
-                                name="kind_id"
-                                placeholder="เอกสารนอกระบบ"
-                                options="{'no_create': True, 'no_open': True}"
-                            />
-                            <field name="document_number" />
-                            <field name="document_date" optional="show" />
-                            <field name="name" />
-                            <field name="file_name" invisible="1" />
-                            <field name="file" filename="file_name" />
-                            <field name="added_by_id" optional="hide" />
-                        </tree>
-                    </field>
+                    />
                 </group>
             </group>
         </field>

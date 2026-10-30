@@ -20,7 +20,9 @@ Policy now requires every loan a borrower files to have a Source Reference (AR o
 - Both are blocking rules (ADR-0030) and replace `excep_ar_borrowing_headroom`.
 - The disbursement voucher takes the commitment header's `analytic_distribution` through `_prepare_account_payment_vals`. A commitment whose lines carry different dimensions is charged as a whole, and accounting may still correct the voucher.
 
-**Related documents** (`advance_payment_related_document`) are a separate extension. A loan may cite any number of further documents. An in-system one is of a **kind the administrators configure** (ชนิดเอกสารอ้างอิง: a model plus its number, subject and date fields — no module per kind; `advance_payment_related_document_sarabun` only seeds the หนังสือสารบรรณ kind). It is found by number like the source, plus ลงวันที่ when the number alone is ambiguous (Sarabun's register restarts every fiscal year). An out-of-system one is given by number/subject. Either may carry a file. They are evidence only.
+**Related documents** (`advance_payment_related_document`) are a separate extension. A loan may cite any number of further documents. An in-system one is of a **kind the administrators configure** (ชนิดเอกสารอ้างอิง: a model plus its number, subject and date fields — no module per kind; `agx_related_document_sarabun` only seeds the หนังสือสารบรรณ kind). It is found by number like the source, plus ลงวันที่ when the number alone is ambiguous (Sarabun's register restarts every fiscal year). An out-of-system one is given by number/subject. Either may carry a file. They are evidence only.
+
+> **Superseded in part (2026-10-30).** The generic related-document mechanism (kinds, lookup, snapshot, access, logging) moved to `agx_related_document` (its ADR-0001). `advance_payment_related_document` is now a thin bridge that keeps only the loan's who-may-change rules; `agx_related_document_sarabun` seeds the หนังสือสารบรรณ kind. Rows are no longer found by sudo alone: the dropdown runs under the user's rights, and the sudo number lookup is a per-kind opt-in.
 
 ## Considered options
 

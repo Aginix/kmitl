@@ -86,7 +86,7 @@
         "advance_payment_budget_commitment",
         "advance_payment_loan_type_group",
         "advance_payment_related_document",
-        "advance_payment_related_document_sarabun",
+        "agx_related_document_sarabun",
         "agx_approval_disbursement",
         "disbursement_accounting_kmitl",
         "disbursement_finance_kmitl",

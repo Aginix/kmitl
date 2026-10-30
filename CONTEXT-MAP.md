@@ -173,6 +173,13 @@ upfront.
   an activity, every step lands in the chatter, and its author (or someone on their
   behalf) closes it. Opt-in
   per model through a mixin.
+- [Related Documents](./agx_related_document/CONTEXT.md) — a record cites other
+  documents (in-system or not) as supporting evidence: kinds configured by admins,
+  a snapshot row per citation, opened under the reader's own rights, and an automatic
+  ถูกอ้างอิงโดย list on the cited model. Opt-in per model through a mixin; consumers are
+  thin bridges (`budget_support_request_related_document`,
+  `budget_transfer_related_document`, `advance_payment_related_document`,
+  `agx_related_document_sarabun`).
 - [Photo Viewer — Annotation History](./agx_photoviewer_annotation_history/CONTEXT.md) —
   a side panel listing who added, changed or removed marks on a file in each visit, and
   drawing the layer as any of those Changes left it.

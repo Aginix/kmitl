@@ -1,3 +1,1 @@
-from . import advance_payment_related_document_kind
-from . import advance_payment_related_document
-from . import advance_payment
+from . import advance_payment  # noqa: F401

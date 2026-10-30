@@ -7,11 +7,9 @@
     "category": "KMITL",
     "depends": [
         "advance_payment",
+        "agx_related_document",
     ],
     "data": [
-        "security/ir.model.access.csv",
-        "security/security.xml",
-        "views/advance_payment_related_document_kind_views.xml",
         "views/advance_payment_views.xml",
     ],
     "installable": True,
