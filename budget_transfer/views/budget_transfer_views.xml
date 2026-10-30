@@ -8,11 +8,11 @@
         <field name="arch" type="xml">
             <form string="Budget Transfer">
                 <header>
-                    <button name="action_submit" type="object" string="Submit for Approval" class="btn-primary" attrs="{'invisible': [('show_submit_button', '=', False)]}"/>
-                    <button name="action_approve" type="object" string="Approve &amp; Post" class="btn-success" attrs="{'invisible': [('show_approve_button', '=', False)]}" confirm="Approval will automatically post the transfer. Do you want to continue?"/>
-                    <button name="action_reset_to_draft" type="object" string="Reset to Draft" attrs="{'invisible': [('show_reset_button', '=', False)]}"/>
-                    <button name="action_reset_to_draft" type="object" string="Reset to Draft" attrs="{'invisible': [('show_reset_posted_button', '=', False)]}" confirm="Resetting a posted transfer back to draft will reverse the budget entry that has already been recorded, and may lead to budget inconsistencies. Do you want to continue?"/>
-                    <button name="action_cancel" type="object" string="Cancel" attrs="{'invisible': [('show_cancel_button', '=', False)]}"/>
+                    <button name="action_submit" type="object" groups="budget.group_budget_user" string="Submit for Approval" class="btn-primary" attrs="{'invisible': [('show_submit_button', '=', False)]}"/>
+                    <button name="action_approve" type="object" groups="budget.group_budget_user" string="Approve &amp; Post" class="btn-success" attrs="{'invisible': [('show_approve_button', '=', False)]}" confirm="Approval will automatically post the transfer. Do you want to continue?"/>
+                    <button name="action_reset_to_draft" type="object" groups="budget.group_budget_user" string="Reset to Draft" attrs="{'invisible': [('show_reset_button', '=', False)]}"/>
+                    <button name="action_reset_to_draft" type="object" groups="budget.group_budget_user" string="Reset to Draft" attrs="{'invisible': [('show_reset_posted_button', '=', False)]}" confirm="Resetting a posted transfer back to draft will reverse the budget entry that has already been recorded, and may lead to budget inconsistencies. Do you want to continue?"/>
+                    <button name="action_cancel" type="object" groups="budget.group_budget_user" string="Cancel" attrs="{'invisible': [('show_cancel_button', '=', False)]}"/>
 
                     <field name="state" widget="statusbar" statusbar_visible="draft,submitted,posted"/>
                 </header>
