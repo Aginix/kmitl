@@ -1,6 +1,6 @@
 {
     "name": "Purchase Request Budget Verifier",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.1.0",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
@@ -10,6 +10,7 @@
         "purchase_request_verifier",
     ],
     "data": [
+        "data/purchase_request_exception.xml",
         "views/purchase_request_views.xml",
     ],
     "post_init_hook": "post_init_hook",

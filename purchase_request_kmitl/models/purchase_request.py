@@ -212,11 +212,15 @@ class PurchaseRequest(models.Model):
         for record in self:
             record.is_editable = record.state in editable_states
 
+    def _get_submit_state(self):
+        """State a พ.1 enters on ส่งคำขอ; extension hook."""
+        return "to_verify"
+
     def button_to_verify(self):
         self.ensure_one()
         if self.detect_exceptions() and not self.ignore_exception:
             return self._popup_exceptions()
-        vals = {"state": "to_verify"}
+        vals = {"state": self._get_submit_state()}
         if not self.date_start:
             vals["date_start"] = fields.Date.context_today(self)
         self.write(vals)
