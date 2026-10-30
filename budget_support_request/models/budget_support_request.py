@@ -103,8 +103,7 @@ class BudgetSupportRequest(models.Model):
         store=True,
         tracking=True,
     )
-    # กองทุน/กิจกรรม/รหัสงบประมาณ are no longer asked for (central picks them
-    # on the fulfilment document); kept for requests filed before.
+    # No longer on the form; kept for existing requests.
     budget_account_id = fields.Many2one(
         comodel_name="budget.account",
         string="รหัสงบประมาณ",
@@ -813,9 +812,8 @@ class BudgetSupportRequest(models.Model):
 
     def _prepare_transfer_vals(self):
         """Default values for the draft ``budget.transfer`` opened by
-        :meth:`action_fulfil_transfer`. Central picks both lines'
-        ``account_id`` on the (unsaved) form — a hard required field, so
-        nothing is persisted before central has filled it in."""
+        :meth:`action_fulfil_transfer`. Central picks the other dimensions
+        and ``account_id`` on the form."""
         self.ensure_one()
         return {
             # No ``move_type``: it is not on the transfer form, so default_get
@@ -824,13 +822,7 @@ class BudgetSupportRequest(models.Model):
             "reason": html2plaintext(self.reason or ""),
             "date": self.date,
             "account_fiscal_year_id": self.account_fiscal_year_id.id,
-            # แหล่งเงิน IS known and must match on both sides of a transfer
-            # (ADR-0009), unlike the department.
             "source_analytic_id": self.source_analytic_id.id,
-            # NO header department: on a budget.transfer the header IS the
-            # source (FROM lines hide the field and always take it), and a
-            # support request is central funding a unit — central picks its
-            # own source department here. Only the destination is known.
             "support_request_id": self.id,
             # ``to_line_ids`` — NOT ``line_ids``: the transfer form view only
             # carries the from/to authoring boxes, and ``default_get`` is only
@@ -842,7 +834,6 @@ class BudgetSupportRequest(models.Model):
                     {
                         "transfer_direction": "to",
                         "amount": self.amount_requested,
-                        "department_analytic_id": self.department_analytic_id.id,
                     },
                 )
             ],
@@ -851,15 +842,12 @@ class BudgetSupportRequest(models.Model):
     def _prepare_commitment_vals(self):
         """Default values for the draft ``budget.commitment`` opened by
         :meth:`action_fulfil_reserve`. No ``line_ids`` — the native Reserve
-        button synthesizes the reserve line from the header. Central picks
-        the ``account_id`` on the form (see :meth:`_prepare_transfer_vals`)."""
+        button synthesizes the reserve line from the header."""
         self.ensure_one()
         return {
             "title": _("สนับสนุน %s") % (self.name or ""),
             "account_fiscal_year_id": self.account_fiscal_year_id.id,
             "amount": self.amount_requested,
-            # The department stays central's (budget ADR-0011), picked on
-            # the form, as are the กองทุน/กิจกรรม and รหัสงบประมาณ.
             "source_analytic_id": self.source_analytic_id.id,
             "support_request_id": self.id,
         }

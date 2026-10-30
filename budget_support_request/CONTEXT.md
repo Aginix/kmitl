@@ -14,18 +14,17 @@ routed by a separate bridge).
 **Budget Support Request (คำขอรับการสนับสนุนงบประมาณ)**:
 The document a requesting unit files to ask central for budget. It carries only the
 *request* side — the requester's `department` dimension, the amount asked for, a
-rich-text justification (เหตุผล/ความจำเป็น), the **รหัสงบประมาณ** (`budget.account`) it
-wants the money on, and supporting attachments. It does **not** name the pool the money comes
-out of; central picks that when fulfilling. The รหัสงบประมาณ pre-fills the fulfilment
-document's account (the transfer's destination line / the commitment), which central may
-still change there.
+rich-text justification (เหตุผล/ความจำเป็น), and supporting attachments. It does **not**
+name the pool the money comes out of, nor the กองทุน/กิจกรรม/**รหัสงบประมาณ** — central
+picks those on the fulfilment document (the transfer / the commitment).
 _Avoid_: budget request (ambiguous with พ.1 purchase request), transfer
 
 **แหล่งเงิน of a support request**:
 Always **งบประมาณเงินรายได้** — central supports units out of revenue budget and nothing
 else, so this is a stated fact about the request, not a question put to the requester. It
 is shown, and travels onto whichever document fulfils the request (where ADR-0009 requires
-both sides of a transfer to agree on it), but it is never chosen. A request naming any
+both sides of a transfer to agree on it) — the only dimension that does — but it is never
+chosen. A request naming any
 other แหล่งเงิน is refused outright, however it was written.
 _Avoid_: funding source (that is the *pool* central picks at fulfilment — a different
 choice), budget type
@@ -57,7 +56,7 @@ _Avoid_: allocation (that is ปรับเข้าแผน into a project di
 **Fulfil (จัดสรร)**:
 The act, after approval, of opening the target document from an approved request: central
 chooses the method, and the request opens a **new, pre-filled but unsaved**
-`budget.transfer` form (requester's department + amount pre-filled as context defaults) or
+`budget.transfer` form (amount + แหล่งเงิน pre-filled as context defaults; no other dimension) or
 `budget.commitment` form (amount pre-filled; the beneficiary OU is pre-filled by the
 Operating Unit bridge) — never a persisted draft. `budget.move.line.account_id` and
 `budget.commitment.account_id` are hard `required=True` with no default, so the document
