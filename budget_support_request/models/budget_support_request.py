@@ -62,7 +62,7 @@ class BudgetSupportRequest(models.Model):
 
     department_analytic_id = fields.Many2one(
         "account.analytic.account",
-        string="ส่วนงาน",
+        string="ส่วนงานต้นทาง",
         compute="_compute_analytic_id",
         inverse="_inverse_department_analytic",
         domain=[("root_plan_id.code", "=", "departments")],
@@ -103,8 +103,8 @@ class BudgetSupportRequest(models.Model):
         store=True,
         tracking=True,
     )
-    # รหัสงบประมาณ — the budget code the unit asks support on. Pre-fills the
-    # fulfilment document's account; central may still change it there.
+    # กองทุน/กิจกรรม/รหัสงบประมาณ are no longer asked for (central picks them
+    # on the fulfilment document); kept for requests filed before.
     budget_account_id = fields.Many2one(
         comodel_name="budget.account",
         string="รหัสงบประมาณ",
@@ -688,12 +688,6 @@ class BudgetSupportRequest(models.Model):
                 raise ValidationError(
                     _("Please select the requesting unit's department dimension.")
                 )
-            if not (request.fund_analytic_id and request.activity_analytic_id):
-                raise ValidationError(
-                    _("กรุณาระบุกองทุนและด้าน/แผนงาน/กิจกรรมที่ขอรับการสนับสนุน")
-                )
-            if not request.budget_account_id:
-                raise ValidationError(_("กรุณาระบุรหัสงบประมาณที่ขอรับการสนับสนุน"))
             if not request.account_fiscal_year_id:
                 raise ValidationError(_("Please set the fiscal year."))
             if request.amount_requested <= 0:
@@ -819,10 +813,9 @@ class BudgetSupportRequest(models.Model):
 
     def _prepare_transfer_vals(self):
         """Default values for the draft ``budget.transfer`` opened by
-        :meth:`action_fulfil_transfer`. The destination line's ``account_id``
-        is the requested รหัสงบประมาณ; central picks the source line's on the
-        (unsaved) form — a hard required field, so nothing is persisted
-        before central has filled it in."""
+        :meth:`action_fulfil_transfer`. Central picks both lines'
+        ``account_id`` on the (unsaved) form — a hard required field, so
+        nothing is persisted before central has filled it in."""
         self.ensure_one()
         return {
             # No ``move_type``: it is not on the transfer form, so default_get
@@ -849,10 +842,7 @@ class BudgetSupportRequest(models.Model):
                     {
                         "transfer_direction": "to",
                         "amount": self.amount_requested,
-                        "account_id": self.budget_account_id.id,
                         "department_analytic_id": self.department_analytic_id.id,
-                        "fund_analytic_id": self.fund_analytic_id.id,
-                        "activity_analytic_id": self.activity_analytic_id.id,
                     },
                 )
             ],
@@ -861,19 +851,15 @@ class BudgetSupportRequest(models.Model):
     def _prepare_commitment_vals(self):
         """Default values for the draft ``budget.commitment`` opened by
         :meth:`action_fulfil_reserve`. No ``line_ids`` — the native Reserve
-        button synthesizes the reserve line from the header. ``account_id``
-        is pre-filled with the requested รหัสงบประมาณ; central may change it
-        on the form (see :meth:`_prepare_transfer_vals`)."""
+        button synthesizes the reserve line from the header. Central picks
+        the ``account_id`` on the form (see :meth:`_prepare_transfer_vals`)."""
         self.ensure_one()
         return {
             "title": _("สนับสนุน %s") % (self.name or ""),
             "account_fiscal_year_id": self.account_fiscal_year_id.id,
             "amount": self.amount_requested,
-            "account_id": self.budget_account_id.id,
+            # The department stays central's (budget ADR-0011), picked on
+            # the form, as are the กองทุน/กิจกรรม and รหัสงบประมาณ.
             "source_analytic_id": self.source_analytic_id.id,
-            # The requested กองทุน/กิจกรรม; the department stays central's
-            # (budget ADR-0011), picked on the form.
-            "fund_analytic_id": self.fund_analytic_id.id,
-            "activity_analytic_id": self.activity_analytic_id.id,
             "support_request_id": self.id,
         }

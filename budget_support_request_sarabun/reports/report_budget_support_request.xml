@@ -13,15 +13,11 @@
     <template id="report_budget_support_request_body">
         <!-- A borderless หัวข้อ : ค่า list, the way an official บันทึกข้อความ
              sets out details — no ruled cells for wkhtmltopdf to drop
-             hairlines from. Dimensions print their full hierarchy
+             hairlines from. The ส่วนงาน prints its full hierarchy
              ("[code] complete name"). -->
         <t t-set="rows" t-value="[
             ('เลขที่คำขอ', o.name or '-'),
-            ('ส่วนงานผู้ขอรับการสนับสนุน', o.department_analytic_id.display_name or '-'),
-            ('แหล่งเงินงบประมาณ', o.source_analytic_id.display_name or '-'),
-            ('กองทุน', o.fund_analytic_id.display_name or '-'),
-            ('ด้าน/แผนงาน/กิจกรรม', o.activity_analytic_id.display_name or '-'),
-            ('รหัสงบประมาณ', o.budget_account_id.display_name or '-'),
+            ('ส่วนงานต้นทาง', o.department_analytic_id.display_name or '-'),
             ('ปีงบประมาณ', o.account_fiscal_year_id.name or '-'),
         ]"/>
         <!-- Inline styles, not Bootstrap utilities: the หนังสือ must print the
