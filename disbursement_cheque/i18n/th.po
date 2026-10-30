@@ -31,3 +31,10 @@ msgstr ""
 #: model:ir.model.fields,field_description:disbursement_cheque.field_disbursement_request_line__payment_method
 msgid "Payment Method"
 msgstr "วิธีจ่าย"
+
+#. module: disbursement_cheque
+#. odoo-python
+#: code:addons/disbursement_cheque/models/disbursement_request_line.py:0
+#, python-format
+msgid "Payment method is required on each line."
+msgstr "กรุณาระบุวิธีจ่ายในทุกรายการ"

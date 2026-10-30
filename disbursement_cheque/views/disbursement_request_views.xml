@@ -9,7 +9,10 @@
                 expr="//field[@name='line_ids']/tree/field[@name='partner_id']"
                 position="after"
             >
-                <field name="payment_method" />
+                <field
+                    name="payment_method"
+                    attrs="{'required': [('parent.pays_out', '=', True)], 'column_invisible': [('parent.pays_out', '=', False)]}"
+                />
             </xpath>
             <xpath
                 expr="//field[@name='line_ids']/tree/field[@name='partner_bank_id']"
@@ -17,7 +20,7 @@
             >
                 <attribute
                     name="attrs"
-                >{'invisible': [('payment_method', '=', 'cheque')]}</attribute>
+                >{'invisible': [('payment_method', '=', 'cheque')], 'column_invisible': [('parent.pays_out', '=', False)]}</attribute>
             </xpath>
         </field>
     </record>

@@ -3,7 +3,7 @@
 {
     "name": "Disbursement Cheque",
     "summary": "Pay a disbursement request payee by cheque instead of bank transfer",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.1.0",
     "category": "Disbursement",
     "license": "LGPL-3",
     "author": "KMITL",
