@@ -2,7 +2,7 @@
     "name": "Change Requests",
     "summary": "Ask a record's maker to fix or explain something and follow it "
     "until its author closes it",
-    "version": "16.0.1.0.1",
+    "version": "16.0.1.1.0",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "development_status": "Beta",
