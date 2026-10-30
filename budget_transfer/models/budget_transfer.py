@@ -287,6 +287,7 @@ class BudgetTransfer(models.Model):
             )
 
     @api.depends("state", "user_id")
+    @api.depends_context("uid")
     def _compute_button_visibility(self):
         is_manager = self.env.user.has_group("budget.group_budget_manager")
         is_admin = self.env.is_admin()
