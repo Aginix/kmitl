@@ -51,11 +51,12 @@
                             .kv-p table.items { width: 100%; margin-top: 10px; }
                             .kv-p table.items th { font-weight: 700; padding: 2px 4px !important; }
                             .kv-p table.items td { padding: 1px 4px !important; vertical-align: top; }
+                            .kv-p table.items th, .kv-p table.items td { border: 1px solid #000 !important; }
                             .kv-p table.items tr.total td { font-weight: 700; }
 
                             /* Signatures */
                             .kv-p table.sign { width: 100%; margin-top: 14px; page-break-inside: avoid; }
-                            .kv-p table.sign td { width: 33%; text-align: center; vertical-align: top; padding: 0 6px !important; }
+                            .kv-p table.sign td { width: 50%; text-align: center; vertical-align: top; padding: 0 6px !important; }
                             .kv-p .sig-space { height: 40px; }
                             .kv-p .sig-space img { max-height: 40px; max-width: 160px; }
                             .kv-p .sig-date { font-size: 13pt; }
@@ -79,13 +80,8 @@
                                 </tr>
                                 <tr>
                                     <td/>
-                                    <td class="lbl">เลขที่ใบแจ้งหนี้ :</td>
-                                    <td><span class="dot" t-out="o.payment_reference if o.payment_reference not in (False, o.name) else ''"/></td>
-                                </tr>
-                                <tr>
-                                    <td/>
-                                    <td class="lbl">เลขที่ใบกำกับภาษี :</td>
-                                    <td><span class="dot" t-out="', '.join(set(o.tax_invoice_ids.filtered('tax_invoice_number').mapped('tax_invoice_number')))"/></td>
+                                    <td class="lbl">เลขที่อ้างอิง :</td>
+                                    <td><span class="dot" t-out="o.ref or ''"/></td>
                                 </tr>
                             </table>
 
@@ -93,71 +89,54 @@
                             <table class="kv mt-2">
                                 <tr>
                                     <td class="lbl">วันที่พิมพ์รายงาน :</td>
-                                    <td colspan="5"><span class="dot" t-out="thai.format_date_thai(context_timestamp(datetime.datetime.now())).replace('พ.ศ. ', '')"/></td>
+                                    <td><span class="dot" t-out="thai.format_date_thai(context_timestamp(datetime.datetime.now())).replace('พ.ศ. ', '')"/></td>
                                 </tr>
                                 <tr>
                                     <td class="lbl">ผู้ขาย/ผู้ซื้อ/ผู้เบิก :</td>
-                                    <td colspan="5"><span class="dot wide" t-out="o.partner_id.name or ''"/></td>
+                                    <td><span class="dot wide" t-out="o.partner_id.name or ''"/></td>
                                 </tr>
                                 <tr>
                                     <td class="lbl">ประเภทรายการ :</td>
-                                    <td colspan="5"><span class="dot wide" t-out="o.journal_id.name"/></td>
-                                </tr>
-                                <tr>
-                                    <td class="lbl">เลขที่รายการรับ :</td>
-                                    <td colspan="5"><span class="dot"/></td>
+                                    <td><span class="dot wide" t-out="o.journal_id.name"/></td>
                                 </tr>
                                 <tr>
                                     <td class="lbl">วันที่ตั้งหนี้ :</td>
-                                    <td colspan="2"><span class="dot" t-out="thai.format_date_thai(o.invoice_date or o.date).replace('พ.ศ. ', '')"/></td>
-                                    <td class="lbl">วันที่รายการรับ :</td>
-                                    <td colspan="2"><span class="dot"/></td>
+                                    <td><span class="dot" t-out="thai.format_date_thai(o.invoice_date or o.date).replace('พ.ศ. ', '')"/></td>
                                 </tr>
                                 <tr>
                                     <td class="lbl">วันที่ครบกำหนด :</td>
-                                    <td colspan="2"><span class="dot" t-out="thai.format_date_thai(o.invoice_date_due).replace('พ.ศ. ', '') if o.is_invoice(include_receipts=True) else ''"/></td>
-                                    <td class="lbl">รหัสภาษี :</td>
-                                    <td colspan="2"><span class="dot" t-out="', '.join(lines.mapped('tax_ids.name'))"/></td>
+                                    <td><span class="dot" t-out="thai.format_date_thai(o.invoice_date_due).replace('พ.ศ. ', '') if o.is_invoice(include_receipts=True) else ''"/></td>
                                 </tr>
                                 <tr>
-                                    <td class="lbl">สกุลเงิน :</td>
-                                    <td><span class="dot" t-out="o.currency_id.name if o.currency_id != o.company_currency_id else ''"/></td>
-                                    <td class="lbl">อัตราแลกเปลี่ยน :</td>
-                                    <td><span class="dot" t-out="'{:,.4f}'.format(abs(o.amount_total_signed / o.amount_total)) if o.currency_id != o.company_currency_id and o.amount_total else ''"/></td>
                                     <td class="lbl">มูลค่า :</td>
                                     <td><span class="dot" t-out="'{:,.2f}'.format(sum(lines.mapped('debit')))"/></td>
                                 </tr>
                                 <tr>
                                     <td class="lbl">รหัสงบประมาณ :</td>
-                                    <td colspan="5"><span class="dot" t-out="', '.join(dict.fromkeys(lines.filtered(lambda l: l.analytic_distribution and l.account_id.internal_group in ('expense', 'income')).mapped('account_id.code')))"/></td>
-                                </tr>
-                                <tr>
-                                    <td class="lbl">อ้างถึงเอกสาร :</td>
-                                    <td colspan="5"><span class="dot" t-out="o.ref or ''"/></td>
+                                    <td><span class="dot" t-out="', '.join(dict.fromkeys(lines.filtered(lambda l: l.analytic_distribution and l.account_id.internal_group in ('expense', 'income')).mapped('account_id.code')))"/></td>
                                 </tr>
                                 <tr>
                                     <td class="lbl">รหัสโครงการ :</td>
-                                    <td colspan="5"><span class="dot" t-out="dims.get('kmitl_project', no_dim).code or ''"/></td>
+                                    <td><span class="dot" t-out="dims.get('kmitl_project', no_dim).code or ''"/></td>
                                 </tr>
                             </table>
 
                             <!-- Financial dimensions -->
-                            <div class="mt-3"><span class="b">อ้างอิง จากแหล่งเงิน</span> :: <t t-if="'sources' in dims"><span t-out="dims['sources'].name"/> (<span t-out="dims['sources'].code"/>)</t></div>
+                            <div class="mt-3"><span class="b">อ้างอิง จากแหล่งเงิน</span> : <t t-if="'sources' in dims"><span t-out="dims['sources'].name"/> (<span t-out="dims['sources'].code"/>)</t></div>
                             <table class="dims">
                                 <tr>
                                     <td>
-                                        <div><span class="b">คณะ/สำนัก</span> :: <t t-if="dept_root"><span t-out="dept_root.name"/> (<span t-out="dept_root.code"/>)</t></div>
-                                        <div><span class="b">หน่วยงาน</span> :: <t t-if="dept"><span t-out="dept.name"/> (<span t-out="dept.code"/>)</t></div>
-                                        <div><span class="b">โครงการ</span> :: <span t-out="dims.get('kmitl_project', no_dim).name or ''"/></div>
-                                        <div><span class="b">หลักสูตร/สาขาวิชา</span> ::</div>
+                                        <div><span class="b">หน่วยงาน</span> : <t t-if="dept"><span t-out="dept.name"/> (<span t-out="dept.code"/>)</t></div>
+                                        <div><span class="b">โครงการ</span> : <span t-out="dims.get('kmitl_project', no_dim).name or ''"/></div>
+                                        <div><span class="b">หลักสูตร/สาขาวิชา</span> :</div>
                                     </td>
                                     <td>
                                         <t t-foreach="activity_levels" t-as="level">
                                             <t t-set="acc" t-value="activity_chain[level[0]] if len(activity_chain) &gt; level[0] else no_dim"/>
                                             <t t-set="acc_name" t-value="acc.name or ''"/>
-                                            <div><span class="b" t-out="level[1]"/> :: <t t-if="acc"><span t-out="acc_name[len(level[1]) + 1:] if acc_name.startswith(level[1] + ' ') else acc_name"/> (<span t-out="acc.code"/>)</t></div>
+                                            <div><span class="b" t-out="level[1]"/> : <t t-if="acc"><span t-out="acc_name[len(level[1]) + 1:] if acc_name.startswith(level[1] + ' ') else acc_name"/> (<span t-out="acc.code"/>)</t></div>
                                         </t>
-                                        <div><span class="b">กองทุน</span> :: <t t-if="'funds' in dims"><span t-out="dims['funds'].name"/> (<span t-out="dims['funds'].code"/>)</t></div>
+                                        <div><span class="b">กองทุน</span> : <t t-if="'funds' in dims"><span t-out="dims['funds'].name"/> (<span t-out="dims['funds'].code"/>)</t></div>
                                     </td>
                                 </tr>
                             </table>
@@ -166,10 +145,10 @@
                             <table class="items">
                                 <thead style="display: table-header-group;">
                                     <tr>
-                                        <th style="width: 17%;">รหัสบัญชี</th>
+                                        <th class="ctr" style="width: 17%;">รหัสบัญชี</th>
                                         <th class="ctr" style="width: 53%;">รายการ</th>
-                                        <th class="num" style="width: 15%;">เดบิต</th>
-                                        <th class="num" style="width: 15%;">เครดิต</th>
+                                        <th class="ctr" style="width: 15%;">เดบิต</th>
+                                        <th class="ctr" style="width: 15%;">เครดิต</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -203,12 +182,11 @@
                             <t t-set="maker" t-value="o.submitted_by if o.state in ('submitted', 'posted') else o.submitted_by.browse()"/>
                             <table class="sign">
                                 <tr>
-                                    <td><div class="b">ผู้จัดทำ</div></td>
-                                    <td><div class="b">ผู้ตรวจสอบ</div></td>
+                                    <td><div class="b">ผู้จัดทำ/ผู้ตรวจสอบ</div></td>
                                     <td><div class="b">ผู้อนุมัติการบันทึกบัญชี</div></td>
                                 </tr>
                                 <tr>
-                                    <t t-foreach="[(maker, o.submitted_date), (maker, o.submitted_date), (o.approved_by, o.approved_date)]" t-as="signer">
+                                    <t t-foreach="[(maker, o.submitted_date), (o.approved_by, o.approved_date)]" t-as="signer">
                                         <t t-set="emp" t-value="signer[0].employee_id"/>
                                         <td>
                                             <div class="sig-space"><img t-if="signer[0] and emp.signature" t-att-src="image_data_uri(emp.signature)" alt="signature"/></div>
