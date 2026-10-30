@@ -23,3 +23,7 @@ When one unit reserves budget *for* another (the support scenario: central reser
 ## Amendment (ADR-0016)
 
 The **Used** side of the engine (`_sum_used`) now runs `sudo()`: a shared pool may carry reservations from other operating units, and counting them can only *lower* Available, never leak budget. The appropriation/**Current** side keeps its OU fence. This is the H3 fix — previously `used` ran under the OU record rules and undercounted reservations other units had made on a shared pool, overstating Available.
+
+## Amendment (cross-OU budget transfer)
+
+A Budget Transfer is one `budget.move` stamped with its **author's** OU, so every line — FROM and TO alike — carried that OU, and the OU-fenced **Current** side hid the TO line from the receiving unit: central (OU 89, 89300) transferring to OU 01 left OU 01 seeing no budget, in the dashboard and in Available. Since a transfer *moves ownership* of the money, the add-on `budget_operating_unit_department` (so the settled OU modules need no upgrade) widens the `budget.move.line` rule by one clause: a **transfer line** (`transfer_direction` set) is also visible to the OU its own `department` analytic is tagged with (`department_analytic_id.operating_unit_ids`). The match is per line, so the receiving unit sees only its own side (never the funder's FROM line), and a transfer *out of* a unit's department authored elsewhere lowers that unit's figures too. The `budget.transfer` / `budget.move` documents keep the author's OU fence.
