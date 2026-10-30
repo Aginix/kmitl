@@ -4,7 +4,7 @@ The plan's reservation is sized to its **Plan Budget** (`budget_amount`, the net
 
 ## Consequences
 
-- Verify reserves automatically when Plan Budget ≥ Plan Amount; an under-funded plan stays unreserved until a budget user reserves it by hand (with a warning that it is short).
+- Verify reserves only once Plan Budget ≥ Plan Amount, and then reserves the whole Plan Budget. **Amended 2026-10-30:** an under-funded plan cannot be reserved at all — not even by a budget user — until it has received its full Plan Amount; the form says how much is still missing.
 - Later transfers into the plan's dimension top the reservation up through the existing pool-owner commitment lookup.
 - Plan Amount and Plan Budget are two quantities shown side by side and never reconciled automatically.
 - Production: reservations already made at the old (Plan Amount) size are left as they are; only new plans follow this rule.

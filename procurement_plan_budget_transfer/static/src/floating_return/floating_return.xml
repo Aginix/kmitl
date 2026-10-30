@@ -3,23 +3,44 @@
 
     <t t-name="procurement_plan_budget_transfer.FloatingReturn" owl="1">
         <div class="o_ppfr">
-            <!-- Nothing left to return -->
-            <t t-if="data.step === 'input' and isExhausted">
+            <!-- No floating pool covers the plan, or it is used up -->
+            <t t-if="data.step === 'input' and (!data.pool_found or isExhausted)">
                 <div class="o_ppfr_nopool">
                     <div class="o_ppfr_icon"><i class="fa fa-info" /></div>
-                    <h3>ไม่มีเงินที่โอนคืนงบลอยได้</h3>
-                    <p t-if="data.claimed_amount">
-                        เงินของแผนถูกกันไว้สำหรับ<t t-esc="data.claimed_label" /> ฿<t
-                            t-esc="money(data.claimed_amount)"
-                        /> แล้ว
+                    <t t-if="isReturn">
+                        <h3>ไม่มีเงินที่โอนคืนงบลอยได้</h3>
+                        <p t-if="isExhausted and data.claimed_amount">
+                            เงินของแผนถูกกันไว้สำหรับ<t t-esc="data.claimed_label" /> ฿<t
+                                t-esc="money(data.claimed_amount)"
+                            /> แล้ว
+                        </p>
+                        <p t-elif="isExhausted">แผนยังไม่ได้รับงบประมาณ หรือโอนคืนครบแล้ว</p>
+                        <p t-else="">
+                            แผนยังไม่มีรหัสงบประมาณหรือมิติแผน
+                        </p>
+                    </t>
+                    <t t-else="">
+                    <h3 t-if="isExhausted">เงินลอยสำหรับแผนนี้ถูกใช้หมดแล้ว</h3>
+                    <h3 t-else="">ไม่พบเงินลอยสำหรับแผนนี้</h3>
+                    <p t-if="isExhausted">
+                        เงินลอยที่พิกัดงบประมาณของแผนคงเหลือ ฿<t
+                                t-esc="money(data.floating_available)"
+                            />
                     </p>
-                    <p t-else="">แผนยังไม่ได้รับงบประมาณ หรือโอนคืนครบแล้ว</p>
+                    <p t-else="">
+                        ยังไม่มีงบประมาณจัดสรร (เงินลอย) ที่พิกัดงบประมาณของแผน<br
+                            />หรือระดับที่ครอบพิกัดนี้
+                    </p>
+                    </t>
                     <div class="o_ppfr_coord">
                         <div class="o_ppfr_kicker">พิกัดงบประมาณของแผน</div>
                         <div class="o_ppfr_title" t-esc="data.plan_label" />
                         <t t-call="procurement_plan_budget_transfer.Dims">
                             <t t-set="dims" t-value="planDims" />
                         </t>
+                    </div>
+                    <div t-if="!isReturn" class="o_ppfr_next">
+                        หากต้องการโอนงบประมาณจากพิกัดอื่น กรุณาทำใบโอนงบประมาณตามขั้นตอนปกติ
                     </div>
                 </div>
             </t>
@@ -30,12 +51,27 @@
                 <!-- Step 1: from → to + amount -->
                 <t t-if="data.step === 'input'">
                     <div class="o_ppfr_flow">
-                        <t t-call="procurement_plan_budget_transfer.PlanCard">
-                            <t t-set="kicker" t-value="'จาก · แผนจัดซื้อจัดจ้าง'" />
+                        <t t-if="isReturn">
+                            <t t-call="procurement_plan_budget_transfer.PlanCard">
+                                <t t-set="kicker" t-value="'จาก · แผนจัดซื้อจัดจ้าง'" />
+                            </t>
+                            <div class="o_ppfr_arrow"><i
+                                    class="fa fa-long-arrow-right"
+                                /></div>
+                            <t t-call="procurement_plan_budget_transfer.PoolCard">
+                                <t t-set="kicker" t-value="'ไป'" />
+                            </t>
                         </t>
-                        <div class="o_ppfr_arrow"><i class="fa fa-long-arrow-right" /></div>
-                        <t t-call="procurement_plan_budget_transfer.PoolCard">
-                            <t t-set="kicker" t-value="'ไป'" />
+                        <t t-else="">
+                            <t t-call="procurement_plan_budget_transfer.PoolCard">
+                                <t t-set="kicker" t-value="'จาก'" />
+                            </t>
+                            <div class="o_ppfr_arrow"><i
+                                    class="fa fa-long-arrow-right"
+                                /></div>
+                            <t t-call="procurement_plan_budget_transfer.PlanCard">
+                                <t t-set="kicker" t-value="'ไป · แผนจัดซื้อจัดจ้าง'" />
+                            </t>
                         </t>
                     </div>
 
@@ -43,7 +79,11 @@
                         class="o_ppfr_amount"
                         t-att-class="{'o_ppfr_amount_bad': isOverAvailable}"
                     >
-                        <label for="o_ppfr_amount_input">จำนวนเงินที่ต้องการโอนคืน</label>
+                        <label for="o_ppfr_amount_input"><t
+                                t-if="isReturn"
+                            >จำนวนเงินที่ต้องการโอนคืน</t><t
+                                t-else=""
+                            >จำนวนเงินที่ต้องการจัดสรร</t></label>
                         <div class="o_ppfr_amount_field">
                             <span class="o_ppfr_currency">฿</span>
                             <input
@@ -59,21 +99,53 @@
                             />
                         </div>
                         <div class="o_ppfr_hint">
-                            <t t-if="isOverAvailable">เกินยอดที่โอนคืนได้ ฿<t
-                                    t-esc="money(data.returnable)"
+                            <t t-if="isOverAvailable"><t
+                                    t-if="isReturn"
+                                >เกินยอดที่โอนคืนได้</t><t
+                                    t-else=""
+                                >เกินเงินลอยคงเหลือ</t> ฿<t
+                                    t-esc="money(data.floating_available)"
                                 /></t>
-                            <a t-else="" href="#" t-on-click.prevent="onFillMax">คืนทั้งหมด ฿<t
-                                    t-esc="money(data.returnable)"
+                            <a
+                                t-elif="isReturn"
+                                href="#"
+                                t-on-click.prevent="onFillMax"
+                            >คืนทั้งหมด ฿<t
+                                    t-esc="money(data.floating_available)"
                                 /></a>
+                            <t t-elif="data.plan_total">วงเงินตามแผน ฿<t
+                                    t-esc="money(data.plan_total)"
+                                /></t>
                         </div>
                     </div>
-                    <div t-if="data.claimed_amount" class="o_ppfr_msg">
+                    <div
+                        t-if="isOverPlan and !isOverAvailable"
+                        class="o_ppfr_msg o_ppfr_msg_warn"
+                    >
+                        ยอดหลังโอนเกินวงเงินตามแผน
+                    </div>
+                    <div t-if="isReturn and data.claimed_amount" class="o_ppfr_msg">
                         กันไว้สำหรับ<t t-esc="data.claimed_label" /> ฿<t
                             t-esc="money(data.claimed_amount)"
                         /> — ส่วนนี้โอนคืนไม่ได้
                     </div>
-                    <div t-if="data.commitment_status !== 'none'" class="o_ppfr_msg">
+                    <div
+                        t-if="isReturn and data.commitment_status !== 'none'"
+                        class="o_ppfr_msg"
+                    >
                         แผนจองงบประมาณแล้ว — ยอดจองที่ยังไม่ผูกพันจะลดลงตามเงินที่โอนคืนอัตโนมัติ
+                    </div>
+                    <div
+                        t-if="!isReturn and data.commitment_status === 'reserved'"
+                        class="o_ppfr_msg"
+                    >
+                        แผนจองงบประมาณแล้ว — ใบจองจะปรับเป็นยอดใหม่อัตโนมัติ
+                    </div>
+                    <div
+                        t-if="!isReturn and data.commitment_status === 'spending'"
+                        class="o_ppfr_msg o_ppfr_msg_warn"
+                    >
+                        แผนเริ่มใช้จ่ายแล้ว — เงินที่จัดสรรเพิ่มจะเข้ามิติแผน แต่ใบจองเดิมจะไม่ขยายตามอัตโนมัติ
                     </div>
                 </t>
 
@@ -87,7 +159,9 @@
                         <t t-call="procurement_plan_budget_transfer.FromTo" />
                         <div class="o_ppfr_row">
                             <div class="o_ppfr_row_label">บันทึกช่วยจำ</div>
-                            <div class="o_ppfr_row_value"><t t-esc="data.note or '—'" /></div>
+                            <div class="o_ppfr_row_value"><t
+                                    t-esc="data.note or '—'"
+                                /></div>
                         </div>
                     </div>
                     <div
@@ -97,9 +171,15 @@
 
                 <!-- Step 3: the slip -->
                 <div t-elif="data.step === 'done'" class="o_ppfr_sum">
-                    <div class="o_ppfr_icon o_ppfr_icon_ok"><i class="fa fa-check" /></div>
+                    <div class="o_ppfr_icon o_ppfr_icon_ok"><i
+                            class="fa fa-check"
+                        /></div>
                     <div class="o_ppfr_big">
-                        <div class="o_ppfr_big_label">โอนคืนงบลอยสำเร็จ</div>
+                        <div class="o_ppfr_big_label"><t
+                                t-if="isReturn"
+                            >โอนคืนงบลอยสำเร็จ</t><t
+                                t-else=""
+                            >จัดสรรงบประมาณสำเร็จ</t></div>
                         <div class="o_ppfr_big_value">฿<t t-esc="money(amount)" /></div>
                     </div>
                     <div class="o_ppfr_rows">
@@ -155,26 +235,32 @@
         </dl>
     </t>
 
-    <!-- The floating pool the money goes back to. -->
+    <!-- The floating pool (allocation) or the plan's own coordinate it goes back to (return). -->
     <t t-name="procurement_plan_budget_transfer.PoolCard" owl="1">
-        <div class="o_ppfr_acct o_ppfr_acct_to">
+        <div class="o_ppfr_acct" t-att-class="{'o_ppfr_acct_to': isReturn}">
             <div class="o_ppfr_kicker" t-esc="kicker" />
-            <div class="o_ppfr_title">เงินลอย (พิกัดของแผน)</div>
+            <div class="o_ppfr_title"><t t-if="isReturn">เงินลอย (พิกัดของแผน)</t><t
+                    t-else=""
+                >เงินลอย</t></div>
             <t t-call="procurement_plan_budget_transfer.Dims">
                 <t t-set="dims" t-value="poolDims" />
             </t>
             <div class="o_ppfr_bal">
-                <span class="o_ppfr_bal_label">คืนได้</span>
-                <span class="o_ppfr_bal_value">฿<t t-esc="money(data.returnable)" /></span>
+                <span class="o_ppfr_bal_label"><t t-if="isReturn">คืนได้</t><t
+                        t-else=""
+                    >คงเหลือ</t></span>
+                <span class="o_ppfr_bal_value">฿<t
+                        t-esc="money(data.floating_available)"
+                    /></span>
             </div>
             <div class="o_ppfr_after" t-att-class="{'o_ppfr_neg': isOverAvailable}">
-                <t t-if="amount">หลังโอน <b>฿<t t-esc="money(returnableAfter)" /></b></t>
+                <t t-if="amount">หลังโอน <b>฿<t t-esc="money(floatingAfter)" /></b></t>
             </div>
         </div>
     </t>
 
     <t t-name="procurement_plan_budget_transfer.PlanCard" owl="1">
-        <div class="o_ppfr_acct">
+        <div class="o_ppfr_acct" t-att-class="{'o_ppfr_acct_to': !isReturn}">
             <div class="o_ppfr_kicker" t-esc="kicker" />
             <div class="o_ppfr_title" t-esc="data.plan_label" />
             <t t-call="procurement_plan_budget_transfer.Dims">
@@ -182,7 +268,9 @@
             </t>
             <div class="o_ppfr_bal">
                 <span class="o_ppfr_bal_label">ได้รับจัดสรรแล้ว</span>
-                <span class="o_ppfr_bal_value">฿<t t-esc="money(data.plan_received)" /></span>
+                <span class="o_ppfr_bal_value">฿<t
+                        t-esc="money(data.plan_received)"
+                    /></span>
             </div>
             <div class="o_ppfr_after">
                 <t t-if="amount">หลังโอน <b>฿<t t-esc="money(planAfter)" /></b></t>
@@ -194,15 +282,17 @@
         <div class="o_ppfr_row">
             <div class="o_ppfr_row_label">จาก</div>
             <div class="o_ppfr_row_value">
-                <t t-esc="data.plan_label" />
-                <small t-esc="budgetCode(planDims)" />
+                <t t-if="isReturn" t-esc="data.plan_label" />
+                <t t-else="">เงินลอย</t>
+                <small t-esc="budgetCode(fromDims)" />
             </div>
         </div>
         <div class="o_ppfr_row">
             <div class="o_ppfr_row_label">ไป</div>
             <div class="o_ppfr_row_value">
-                เงินลอย (พิกัดของแผน)
-                <small t-esc="budgetCode(poolDims)" />
+                <t t-if="isReturn">เงินลอย (พิกัดของแผน)</t>
+                <t t-else="" t-esc="data.plan_label" />
+                <small t-esc="budgetCode(toDims)" />
             </div>
         </div>
     </t>

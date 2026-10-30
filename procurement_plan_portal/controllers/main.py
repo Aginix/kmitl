@@ -282,7 +282,7 @@ class ProcurementPlanPortal(http.Controller):
         gov_plans = all_plans.filtered(lambda p: p.source_analytic_id.id in gov_ids)
         total = sum(all_plans.mapped("total_price"))
         gov_total = sum(gov_plans.mapped("total_price"))
-        actual = sum(-p.analytic_account_balance for p in all_plans)
+        actual = sum(all_plans.mapped("budget_consumed"))
         methods = Counter(
             p.procurement_method_id.name or "ไม่ระบุ" for p in all_plans
         ).most_common()
@@ -406,7 +406,7 @@ class ProcurementPlanPortal(http.Controller):
             if idx is not None:
                 prev = idx
 
-        actual = -plan.analytic_account_balance
+        actual = plan.budget_consumed
         values = self._common_values(fiscal_years, current_fy)
         values.update(
             {

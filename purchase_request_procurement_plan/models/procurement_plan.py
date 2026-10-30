@@ -29,15 +29,5 @@ class ProcurementPlan(models.Model):
         """The total of the plan's live purchase requests: a Floating Return
         must leave that much behind."""
         res = super()._get_plan_claims()
-        requests = (
-            self.env["purchase.request"]
-            .sudo()
-            .search(
-                [
-                    ("procurement_plan_id", "=", self.id),
-                    ("state", "not in", ("rejected", "cancelled")),
-                ]
-            )
-        )
-        res.append((_("ใบขอซื้อขอจ้าง (พ.1)"), sum(requests.mapped("estimated_cost"))))
+        res.append((_("ใบขอซื้อขอจ้าง (พ.1)"), self._plan_pr_total()))
         return res

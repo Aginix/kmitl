@@ -477,7 +477,7 @@
                                         />
                                         <t
                                             t-set="plan_actual"
-                                            t-value="-plan.analytic_account_balance"
+                                            t-value="plan.budget_consumed"
                                         />
                                         <tr
                                             t-att-onclick="'window.location=\'%s\'' % plan_url"

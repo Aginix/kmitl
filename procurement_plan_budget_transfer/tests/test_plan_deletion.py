@@ -26,7 +26,7 @@ class TestPlanDeletion(PlanTransferCommon):
         wizard = self.env["procurement.plan.floating.return"].create(
             {"plan_id": plan.id}
         )
-        wizard.amount = wizard.returnable
+        wizard.amount = wizard.floating_available
         wizard.action_confirm()
         plan.invalidate_recordset()
         return wizard
@@ -35,8 +35,7 @@ class TestPlanDeletion(PlanTransferCommon):
         self._appropriate(self.src, amount)
         plan = self._make_plan(amount)
         transfer = self._fund_plan_transfer(plan, funded or amount)
-        transfer.action_submit()
-        transfer.action_approve()
+        self._post(transfer)
         plan.invalidate_recordset()
         return plan
 
@@ -71,7 +70,7 @@ class TestPlanDeletion(PlanTransferCommon):
         with self.assertRaisesRegex(UserError, "มีงบประมาณค้างในมิติแผน"):
             plan.unlink()
         wizard = self._return_all(plan)
-        self.assertEqual(wizard.returnable, 3000)
+        self.assertEqual(wizard.floating_available, 3000)
         self.assertFalse(plan.has_held_money)
         self.assertEqual(plan.budget_amount, 0)
         plan.unlink()  # footprint, never spent → soft delete

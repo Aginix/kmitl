@@ -36,13 +36,17 @@
                 <field name="allowed_procurement_plan_analytic_ids" invisible="1" />
             </xpath>
             <xpath expr="//div[hasclass('oe_title')]" position="before">
+                <field name="is_procurement_plan_floating_allocation" invisible="1" />
                 <field name="is_procurement_plan_floating_return" invisible="1" />
                 <div
                     class="alert alert-warning"
                     role="status"
-                    attrs="{'invisible': [('is_procurement_plan_floating_return', '=', False)]}"
+                    attrs="{'invisible': [('is_procurement_plan_floating_allocation', '=', False), ('is_procurement_plan_floating_return', '=', False)]}"
                 >
-                    <i class="fa fa-bolt" /> โอนคืนงบลอย — ใบโอนนี้สร้างจากหน้าแผนจัดซื้อจัดจ้าง <field
+                    <i class="fa fa-bolt" />
+                    <span attrs="{'invisible': [('is_procurement_plan_floating_allocation', '=', False)]}">จัดสรรตรงจากงบลอย</span>
+                    <span attrs="{'invisible': [('is_procurement_plan_floating_return', '=', False)]}">โอนคืนงบลอย</span>
+                    — ใบโอนนี้สร้างจากหน้าแผนจัดซื้อจัดจ้าง <field
                         name="procurement_plan_id"
                         readonly="1"
                         class="oe_inline fw-bold"
@@ -83,6 +87,13 @@
         <field name="arch" type="xml">
             <header position="inside">
                 <field name="has_held_money" invisible="1" />
+                <button
+                    name="action_open_floating_allocation"
+                    string="จัดสรรงบประมาณ (งบลอย)"
+                    type="object"
+                    groups="budget.group_budget_user"
+                    attrs="{'invisible': ['|', ('state', 'not in', ('to_verify', 'verified', 'in_progress')), ('analytic_account_id', '=', False)]}"
+                />
                 <button
                     name="action_open_floating_return"
                     string="โอนคืนงบลอย"

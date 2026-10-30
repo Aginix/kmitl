@@ -1,24 +1,25 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 
-    <record id="view_procurement_plan_floating_return_form" model="ir.ui.view">
-        <field name="name">procurement.plan.floating.return.form</field>
-        <field name="model">procurement.plan.floating.return</field>
+    <record id="view_procurement_plan_floating_allocation_form" model="ir.ui.view">
+        <field name="name">procurement.plan.floating.allocation.form</field>
+        <field name="model">procurement.plan.floating.allocation</field>
         <field name="arch" type="xml">
-            <form string="โอนคืนงบลอย">
+            <form string="จัดสรรงบประมาณ (งบลอย)">
                 <!-- Read by the procurement_plan_floating_return widget (record.data). -->
                 <field name="plan_id" invisible="1" force_save="1" />
                 <field name="currency_id" invisible="1" />
+                <field name="direction" invisible="1" />
                 <field name="step" invisible="1" />
                 <field name="amount" invisible="1" />
-                <field name="returnable" invisible="1" />
-                <field name="claimed_label" invisible="1" />
-                <field name="claimed_amount" invisible="1" />
-                <field name="plan_received" invisible="1" />
-                <field name="plan_label" invisible="1" />
-                <field name="plan_dims" invisible="1" />
+                <field name="pool_found" invisible="1" />
                 <field name="pool_dims" invisible="1" />
                 <field name="posted_pool_dims" invisible="1" />
+                <field name="floating_available" invisible="1" />
+                <field name="plan_label" invisible="1" />
+                <field name="plan_dims" invisible="1" />
+                <field name="plan_received" invisible="1" />
+                <field name="plan_total" invisible="1" />
                 <field name="commitment_status" invisible="1" />
                 <field name="transfer_name" invisible="1" />
                 <field name="transfer_date" invisible="1" />
@@ -26,7 +27,7 @@
                 <widget name="procurement_plan_floating_return" />
                 <div
                     class="o_ppfr_note"
-                    attrs="{'invisible': ['|', ('step', '!=', 'input'), ('returnable', '&lt;=', 0)]}"
+                    attrs="{'invisible': ['|', '|', ('step', '!=', 'input'), ('pool_found', '=', False), ('floating_available', '&lt;=', 0)]}"
                 >
                     <field name="note" placeholder="บันทึกช่วยจำ (ไม่บังคับ)" />
                 </div>
@@ -36,7 +37,92 @@
                         type="object"
                         string="ถัดไป"
                         class="btn-primary"
-                        attrs="{'invisible': ['|', ('step', '!=', 'input'), ('returnable', '&lt;=', 0)]}"
+                        attrs="{'invisible': ['|', '|', ('step', '!=', 'input'), ('pool_found', '=', False), ('floating_available', '&lt;=', 0)]}"
+                    />
+                    <button
+                        name="action_confirm"
+                        type="object"
+                        string="ยืนยันจัดสรร"
+                        class="btn-primary"
+                        attrs="{'invisible': [('step', '!=', 'review')]}"
+                    />
+                    <button
+                        name="action_back"
+                        type="object"
+                        string="ย้อนกลับ"
+                        class="btn-secondary"
+                        attrs="{'invisible': [('step', '!=', 'review')]}"
+                    />
+                    <button
+                        string="เสร็จสิ้น"
+                        special="cancel"
+                        class="btn-primary"
+                        attrs="{'invisible': [('step', '!=', 'done')]}"
+                    />
+                    <button
+                        name="action_open_transfer"
+                        type="object"
+                        string="ดูใบโอน"
+                        class="btn-secondary"
+                        attrs="{'invisible': [('step', '!=', 'done')]}"
+                    />
+                    <!-- Nothing to move: nothing to do but close. -->
+                    <button
+                        string="ปิด"
+                        special="cancel"
+                        class="btn-primary"
+                        attrs="{'invisible': ['|', ('step', '!=', 'input'), '&amp;', ('pool_found', '=', True), ('floating_available', '>', 0)]}"
+                    />
+                    <button
+                        string="ยกเลิก"
+                        special="cancel"
+                        class="btn-secondary"
+                        attrs="{'invisible': ['|', ('step', '=', 'done'), '&amp;', ('step', '=', 'input'), '|', ('pool_found', '=', False), ('floating_available', '&lt;=', 0)]}"
+                    />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_procurement_plan_floating_return_form" model="ir.ui.view">
+        <field name="name">procurement.plan.floating.return.form</field>
+        <field name="model">procurement.plan.floating.return</field>
+        <field name="arch" type="xml">
+            <form string="โอนคืนงบลอย">
+                <!-- Read by the procurement_plan_floating_return widget (record.data). -->
+                <field name="plan_id" invisible="1" force_save="1" />
+                <field name="currency_id" invisible="1" />
+                <field name="direction" invisible="1" />
+                <field name="step" invisible="1" />
+                <field name="amount" invisible="1" />
+                <field name="pool_found" invisible="1" />
+                <field name="pool_dims" invisible="1" />
+                <field name="posted_pool_dims" invisible="1" />
+                <field name="floating_available" invisible="1" />
+                <field name="plan_label" invisible="1" />
+                <field name="plan_dims" invisible="1" />
+                <field name="plan_received" invisible="1" />
+                <field name="plan_total" invisible="1" />
+                <field name="commitment_status" invisible="1" />
+                <field name="claimed_label" invisible="1" />
+                <field name="claimed_amount" invisible="1" />
+                <field name="transfer_name" invisible="1" />
+                <field name="transfer_date" invisible="1" />
+                <field name="transfer_user_id" invisible="1" />
+                <widget name="procurement_plan_floating_return" />
+                <div
+                    class="o_ppfr_note"
+                    attrs="{'invisible': ['|', '|', ('step', '!=', 'input'), ('pool_found', '=', False), ('floating_available', '&lt;=', 0)]}"
+                >
+                    <field name="note" placeholder="บันทึกช่วยจำ (ไม่บังคับ)" />
+                </div>
+                <footer>
+                    <button
+                        name="action_next"
+                        type="object"
+                        string="ถัดไป"
+                        class="btn-primary"
+                        attrs="{'invisible': ['|', '|', ('step', '!=', 'input'), ('pool_found', '=', False), ('floating_available', '&lt;=', 0)]}"
                     />
                     <button
                         name="action_confirm"
@@ -65,18 +151,18 @@
                         class="btn-secondary"
                         attrs="{'invisible': [('step', '!=', 'done')]}"
                     />
-                    <!-- Nothing to return: nothing to do but close. -->
+                    <!-- Nothing to move: nothing to do but close. -->
                     <button
                         string="ปิด"
                         special="cancel"
                         class="btn-primary"
-                        attrs="{'invisible': ['|', ('step', '!=', 'input'), ('returnable', '>', 0)]}"
+                        attrs="{'invisible': ['|', ('step', '!=', 'input'), '&amp;', ('pool_found', '=', True), ('floating_available', '>', 0)]}"
                     />
                     <button
                         string="ยกเลิก"
                         special="cancel"
                         class="btn-secondary"
-                        attrs="{'invisible': ['|', ('step', '=', 'done'), '&amp;', ('step', '=', 'input'), ('returnable', '&lt;=', 0)]}"
+                        attrs="{'invisible': ['|', ('step', '=', 'done'), '&amp;', ('step', '=', 'input'), '|', ('pool_found', '=', False), ('floating_available', '&lt;=', 0)]}"
                     />
                 </footer>
             </form>

@@ -1,6 +1,6 @@
 import logging
 
-from odoo.tools import float_is_zero
+from odoo.tools import float_compare, float_is_zero
 from odoo.tools.misc import format_amount
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
@@ -61,6 +61,25 @@ class ProcurementPlan(models.Model):
         string="รายการเคลื่อนไหวงบ",
         compute="_compute_budget_move_line_count",
     )
+    # Read from the ledger, which plan users cannot read: compute as sudo.
+    budget_consumed = fields.Float(
+        string="เบิกจ่ายแล้ว",
+        digits="Product Price",
+        compute="_compute_budget_remaining",
+        compute_sudo=True,
+        help="ยอดตัดงบ (เบิกจ่าย) ที่ผ่านแล้ว ณ รหัสงบและมิติทั้งหมดของแผน",
+    )
+    budget_remaining = fields.Float(
+        string="งบประมาณคงเหลือ",
+        digits="Product Price",
+        compute="_compute_budget_remaining",
+        compute_sudo=True,
+        help="งบประมาณที่ได้รับการจัดสรร หักด้วยยอดที่เบิกจ่ายไปแล้ว (เงินที่ยังอยู่ในแผน)",
+    )
+    budget_short = fields.Boolean(
+        compute="_compute_budget_short",
+        help="ได้รับงบประมาณแล้วแต่ยังไม่ครบวงเงินตามแผน จึงยังจองงบไม่ได้",
+    )
     has_held_money = fields.Boolean(
         string="มีเงินค้างในมิติแผน",
         compute="_compute_has_held_money",
@@ -97,20 +116,54 @@ class ProcurementPlan(models.Model):
             ):
                 rec.budget_amount = 0.0
                 continue
-            domain = [
-                ("parent_state", "=", "posted"),
+            domain = rec._budget_coordinate_domain() + [
                 ("move_type", "in", list(_APPROPRIATION_TYPES)),
-                ("account_fiscal_year_id", "=", rec.account_fiscal_year_id.id),
-                ("company_id", "=", rec.company_id.id),
-                ("account_id", "=", rec.budget_account_id.id),
-                ("procurement_plan_analytic_id", "=", rec.analytic_account_id.id),
-                ("department_analytic_id", "=", rec.department_analytic_id.id),
-                ("fund_analytic_id", "=", rec.fund_analytic_id.id),
-                ("source_analytic_id", "=", rec.source_analytic_id.id),
-                ("activity_analytic_id", "=", rec.activity_analytic_id.id),
             ]
             groups = BML.read_group(domain, ["balance"], [])
             rec.budget_amount = (groups[0].get("balance") or 0.0) if groups else 0.0
+
+    def _budget_coordinate_domain(self):
+        """Posted budget.move.line at the plan's full coordinate: รหัสงบ, fiscal
+        year and every budget dimension, its own plan dimension included."""
+        self.ensure_one()
+        return [
+            ("parent_state", "=", "posted"),
+            ("account_fiscal_year_id", "=", self.account_fiscal_year_id.id),
+            ("company_id", "=", self.company_id.id),
+            ("account_id", "=", self.budget_account_id.id),
+            ("procurement_plan_analytic_id", "=", self.analytic_account_id.id),
+            ("department_analytic_id", "=", self.department_analytic_id.id),
+            ("fund_analytic_id", "=", self.fund_analytic_id.id),
+            ("source_analytic_id", "=", self.source_analytic_id.id),
+            ("activity_analytic_id", "=", self.activity_analytic_id.id),
+        ]
+
+    @api.depends("budget_amount")
+    def _compute_budget_remaining(self):
+        """Money still at the plan = Plan Budget − posted ตัดงบ at the same
+        coordinate (Plan Budget Remaining)."""
+        BML = self.env["budget.move.line"]
+        for rec in self:
+            consumed = 0.0
+            if (
+                rec.analytic_account_id
+                and rec.account_fiscal_year_id
+                and rec.budget_account_id
+            ):
+                groups = BML.read_group(
+                    rec._budget_coordinate_domain() + [("move_type", "=", "consume")],
+                    ["balance"],
+                    [],
+                )
+                # Consume lines post a negative balance.
+                consumed = -(groups[0].get("balance") or 0.0) if groups else 0.0
+            rec.budget_consumed = consumed
+            rec.budget_remaining = rec.budget_amount - consumed
+
+    @api.depends("budget_amount", "total_price")
+    def _compute_budget_short(self):
+        for rec in self:
+            rec.budget_short = 0 < rec.budget_amount < rec.total_price
 
     def _compute_budget_move_line_count(self):
         BML = self.env["budget.move.line"]
@@ -174,10 +227,9 @@ class ProcurementPlan(models.Model):
 
     def _reserve_plan_commitment(self):
         """Reserve one shared budget.commitment for the plan when it is
-        verified (จองงบ). Idempotent: skips when an active (non-cancelled)
-        commitment already exists. Blocks on insufficient budget unless
-        budget.allow_negative is set. Downstream PR/PO/DR draw this single
-        commitment down."""
+        verified (จองงบ), sized to its Plan Budget — what it received — and only
+        once that covers its Plan Amount (ADR-0003). Idempotent: skips when an
+        active commitment already exists. Downstream PR/PO/DR draw it down."""
         self.ensure_one()
         if self.budget_commitment_ids.filtered(lambda c: c.state != "cancel"):
             return
@@ -185,12 +237,28 @@ class ProcurementPlan(models.Model):
             raise UserError(_("กรุณาระบุรหัสงบประมาณก่อนจองงบประมาณ"))
         if self.total_price <= 0:
             raise UserError(_("กรุณาระบุวงเงินรวมให้มากกว่า 0 ก่อนจองงบประมาณ"))
+        self.invalidate_recordset(["budget_amount"])
         if self.budget_amount <= 0:
             raise UserError(
                 _(
                     "ยังไม่ได้รับการจัดสรรงบประมาณ กรุณารอให้งานแผนโอนงบเข้าแผน "
                     "(ปรับเข้าแผน) ก่อนจึงจะจองงบประมาณได้"
                 )
+            )
+        if float_compare(self.budget_amount, self.total_price, precision_digits=2) < 0:
+            raise UserError(
+                _(
+                    "แผนได้รับงบประมาณ %(received)s ยังไม่ครบวงเงินตามแผน %(planned)s "
+                    "กรุณารอให้งานแผนโอนงบเข้าแผนให้ครบก่อนจึงจะจองงบประมาณได้"
+                )
+                % {
+                    "received": format_amount(
+                        self.env, self.budget_amount, self.currency_id
+                    ),
+                    "planned": format_amount(
+                        self.env, self.total_price, self.currency_id
+                    ),
+                }
             )
         analytic_data = {
             "account_id": self.budget_account_id.id,
@@ -212,7 +280,7 @@ class ProcurementPlan(models.Model):
         if not allow_negative:
             self.env["budget.controller"].check_budget_availability(
                 analytic_data,
-                self.total_price,
+                self.budget_amount,
                 self.account_fiscal_year_id.id,
                 self.company_id.id,
             )
@@ -224,7 +292,7 @@ class ProcurementPlan(models.Model):
             body=_("จองงบประมาณ %s จำนวน %s")
             % (
                 commitment.name,
-                format_amount(self.env, self.total_price, self.currency_id),
+                format_amount(self.env, self.budget_amount, self.currency_id),
             )
         )
 
@@ -238,7 +306,7 @@ class ProcurementPlan(models.Model):
         dist = dict(self.analytic_distribution or {})
         return {
             "account_id": self.budget_account_id.id,
-            "amount": self.total_price,
+            "amount": self.budget_amount,
             "analytic_distribution": dist or False,
             "account_fiscal_year_id": self.account_fiscal_year_id.id,
             "company_id": self.company_id.id,

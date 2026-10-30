@@ -22,14 +22,15 @@ function parseDims(json) {
 }
 
 /**
- * โอนคืนงบลอย of a procurement plan — the body of the wizard. The same three
- * steps as KMITL Project's floating wizard, implemented separately
- * (procurement_plan ADR-0006): ``input`` (FROM the plan → TO the floating pool,
- * side by side, the amount typed here and the balances after the return
- * recomputed live), ``review`` and ``done`` (the slip). The amount is written
- * back with ``record.update`` so the footer buttons save it.
+ * จัดสรรงบประมาณ (งบลอย) / โอนคืนงบลอย of a procurement plan — the body of
+ * both wizards (``direction`` = ``allocate`` or ``return``). The same three
+ * steps as KMITL Project's floating wizard, copied per procurement_plan
+ * ADR-0006: ``input`` (from → to side by side, the amount typed here and the
+ * balances after the transfer recomputed live), ``review`` and ``done`` (the
+ * slip). The amount is written back with ``record.update`` so the footer
+ * buttons save it.
  */
-export class PlanFloatingReturnWidget extends Component {
+export class PlanFloatingWidget extends Component {
     setup() {
         this.steps = STEPS;
         const amount = this.props.record.data.amount;
@@ -45,23 +46,41 @@ export class PlanFloatingReturnWidget extends Component {
     get amount() {
         return this.data.amount || 0;
     }
+    get isReturn() {
+        return this.data.direction === "return";
+    }
     get poolDims() {
         return parseDims(this.data.posted_pool_dims || this.data.pool_dims);
     }
     get planDims() {
         return parseDims(this.data.plan_dims);
     }
-    get isExhausted() {
-        return this.data.returnable <= 0.005;
+    get fromDims() {
+        return this.isReturn ? this.planDims : this.poolDims;
     }
-    get returnableAfter() {
-        return this.data.returnable - this.amount;
+    get toDims() {
+        return this.isReturn ? this.poolDims : this.planDims;
+    }
+    get isExhausted() {
+        return this.data.pool_found && this.data.floating_available <= 0.005;
+    }
+    get floatingAfter() {
+        return this.data.floating_available - this.amount;
     }
     get planAfter() {
-        return this.data.plan_received - this.amount;
+        return this.isReturn
+            ? this.data.plan_received - this.amount
+            : this.data.plan_received + this.amount;
     }
     get isOverAvailable() {
-        return this.amount - this.data.returnable > 0.005;
+        return this.amount - this.data.floating_available > 0.005;
+    }
+    get isOverPlan() {
+        return (
+            !this.isReturn &&
+            this.data.plan_total > 0 &&
+            this.planAfter - this.data.plan_total > 0.005
+        );
     }
     get transferDate() {
         return this.data.transfer_date ? formatDateTime(this.data.transfer_date) : "";
@@ -94,7 +113,7 @@ export class PlanFloatingReturnWidget extends Component {
     }
 
     onFillMax() {
-        const value = this.data.returnable || 0;
+        const value = this.data.floating_available || 0;
         this.state.raw = moneyFormat.format(value);
         this.props.record.update({amount: value});
     }
@@ -104,9 +123,9 @@ export class PlanFloatingReturnWidget extends Component {
     }
 }
 
-PlanFloatingReturnWidget.template = "procurement_plan_budget_transfer.FloatingReturn";
-PlanFloatingReturnWidget.props = {...standardWidgetProps};
+PlanFloatingWidget.template = "procurement_plan_budget_transfer.FloatingReturn";
+PlanFloatingWidget.props = {...standardWidgetProps};
 
 registry
     .category("view_widgets")
-    .add("procurement_plan_floating_return", PlanFloatingReturnWidget);
+    .add("procurement_plan_floating_return", PlanFloatingWidget);
