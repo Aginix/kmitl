@@ -1,6 +1,6 @@
 {
     "name": "KMITL Budget Transfer Exception",
-    "version": "16.0.1.1.0",
+    "version": "16.0.1.2.0",
     "summary": """ base.exception framework for reviewing budget transfers on confirm """,
     "category": "KMITL/Budgeting",
     "author": "Aginix Technologies",
@@ -12,7 +12,7 @@
     "data": [
         "security/ir.model.access.csv",
         # The transfer's own toggleable policy rules (4 core dims, availability,
-        # line Pool-Tag / duplicate policies).
+        # line Pool-Tag policies).
         "data/exception_rule_data.xml",
         # The review popup raised on ยืนยัน (_get_popup_action refs
         # action_budget_transfer_exception_confirm from here).
