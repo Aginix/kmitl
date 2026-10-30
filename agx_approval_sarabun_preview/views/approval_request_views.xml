@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="approval_request_view_form_sarabun_preview" model="ir.ui.view">
+        <field name="name">approval.request.form.sarabun.preview</field>
+        <field name="model">approval.request</field>
+        <field name="inherit_id" ref="agx_approval.approval_request_view_form"/>
+        <field name="arch" type="xml">
+            <!-- The หนังสือ this request sends to e-Saraban, before and after
+                 Create Document. -->
+            <xpath expr="//button[@name='action_cancel']" position="before">
+                <button name="action_preview_sarabun_document"
+                        string="ดูตัวอย่างเอกสาร"
+                        type="object"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
