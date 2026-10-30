@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- Parent menu: รายงาน (Reports) under จัดสรรงบประมาณ -->
+    <menuitem
+        id="menu_budget_appropriation_report"
+        name="รายงาน"
+        parent="budget_appropriation.menu_budget_appropriation_root"
+        sequence="80"
+    />
+
+    <!-- Action: open the Budget Appropriation Expense MIS Report preview -->
+    <record
+        id="action_mis_report_budget_appropriation_expense"
+        model="ir.actions.act_window"
+    >
+        <field name="name">รายงานการจัดสรรงบประมาณรายจ่าย แยกตามประเภทงบประมาณ</field>
+        <field name="res_model">mis.report.instance</field>
+        <field name="view_mode">form</field>
+        <field
+            name="view_id"
+            ref="mis_builder.mis_report_instance_result_view_form"
+        />
+        <field
+            name="res_id"
+            eval="ref('mis_report_instance_budget_appropriation_expense')"
+        />
+        <field name="target">current</field>
+    </record>
+
+    <menuitem
+        id="menu_mis_report_budget_appropriation_expense"
+        name="รายงานการจัดสรรงบประมาณรายจ่าย แยกตามประเภทงบประมาณ"
+        parent="menu_budget_appropriation_report"
+        action="action_mis_report_budget_appropriation_expense"
+        sequence="10"
+    />
+
+    <!-- Optional: menu to view raw appropriation lines with debit/credit columns -->
+    <menuitem
+        id="menu_budget_appropriation_line_mis"
+        name="รายการการจัดสรรงบประมาณ (Debit/Credit)"
+        parent="menu_budget_appropriation_report"
+        action="action_budget_appropriation_line_mis"
+        sequence="20"
+    />
+
+</odoo>
