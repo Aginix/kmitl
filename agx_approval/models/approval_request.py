@@ -884,16 +884,13 @@ class ApprovalRequest(models.Model):
             raise UserError(
                 _("ตีกลับได้เฉพาะสถานะ 'รอการเงินตรวจสอบ/ส่งเบิก'")
             )
-        wizard = self.env["approval.request.finance.return.confirm"].create(
-            {"request_id": self.id}
-        )
         return {
             "type": "ir.actions.act_window",
             "name": _("ตีกลับเพื่อให้แก้ไข"),
             "res_model": "approval.request.finance.return.confirm",
             "view_mode": "form",
-            "res_id": wizard.id,
             "target": "new",
+            "context": {"default_request_id": self.id},
         }
 
     def _finance_return_for_edit(self, reason):
