@@ -14,8 +14,8 @@ _Avoid_: department, faculty (those name the financial dimension)
 On a Budget Reservation, the OU that reserved the money and whose pool it draws from — the *funder* (normally central). This is the plain `operating_unit_id`.
 _Avoid_: beneficiary, requester
 
-**Beneficiary Unit (หน่วยงานผู้รับการสนับสนุน/ผู้ใช้, `beneficiary_operating_unit_id`)**:
-On a Budget Reservation, the single OU the reservation is made *for* — the unit that requested support and will spend the slip. A separate Many2one (one unit per slip). A user sees a reservation when their OU matches **either** the Owning Unit **or** the Beneficiary Unit. Kept single (not M2m) but explicit so the funder need not always be central — a unit may in future reserve for another unit.
+**Beneficiary Unit (หน่วยงานผู้รับการสนับสนุน/ผู้ใช้, `beneficiary_operating_unit_ids`)**:
+On a Budget Reservation, the OUs the reservation is made *for* — the units that requested support and will spend the slip. A separate Many2many (one slip may serve several units). A user sees a reservation when their OU matches **either** the Owning Unit **or** any Beneficiary Unit. Explicit so the funder need not always be central — a unit may in future reserve for another unit.
 _Avoid_: owner, funder (that is the Owning Unit)
 
 **Buddy (เจ้าหน้าที่ Buddy)**:

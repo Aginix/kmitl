@@ -8,7 +8,7 @@ ACCESS_ALL_MOVE_LINE_DOMAIN = (
     "'budget_operating_unit_access_all.group_all_ou_budget') else (0, '=', 1),"
     "('operating_unit_id','=',False),"
     "('operating_unit_id','in', user.operating_unit_ids.ids),"
-    "('commitment_id.beneficiary_operating_unit_id','in', "
+    "('commitment_id.beneficiary_operating_unit_ids','in', "
     "user.operating_unit_ids.ids)]"
 )
 
