@@ -29,6 +29,22 @@ class BudgetCommitment(models.Model):
             "reservation used by the owning unit itself."
         ),
     )
+    # Read-only display of the units above: showing the Many2many as tags makes
+    # the web client read ``operating.unit`` as the user, and the OU rule hides
+    # every unit the user does not hold — so a beneficiary unit opening a slip
+    # shared with another unit would hit an AccessError. Computed as sudo.
+    beneficiary_operating_unit_names = fields.Char(
+        string="หน่วยงานผู้รับการสนับสนุน",
+        compute="_compute_beneficiary_operating_unit_names",
+        compute_sudo=True,
+    )
+
+    @api.depends("beneficiary_operating_unit_ids")
+    def _compute_beneficiary_operating_unit_names(self):
+        for rec in self:
+            rec.beneficiary_operating_unit_names = ", ".join(
+                rec.beneficiary_operating_unit_ids.mapped("display_name")
+            )
 
     @api.constrains("beneficiary_operating_unit_ids", "operating_unit_id")
     def _check_beneficiary_reserve_right(self):

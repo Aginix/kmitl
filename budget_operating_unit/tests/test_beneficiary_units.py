@@ -93,3 +93,15 @@ class TestBeneficiaryUnits(TransactionCase):
             Commitment.create(
                 self._commitment_vals(self.ou_owner, self.ou_owner | self.ou_b)
             )
+
+    def test_beneficiary_names_readable_by_each_unit(self):
+        """Unit B cannot read unit C, yet the form's read-only names list both."""
+        commitment = self.env["budget.commitment"].create(
+            self._commitment_vals(self.ou_owner, self.ou_b | self.ou_c)
+        )
+        as_b = commitment.with_user(self.users[self.ou_b])
+        names = as_b.read(["beneficiary_operating_unit_names"])[0][
+            "beneficiary_operating_unit_names"
+        ]
+        self.assertIn(self.ou_b.name, names)
+        self.assertIn(self.ou_c.name, names)
