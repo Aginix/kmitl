@@ -127,7 +127,7 @@ lines, so a transfer's reservation top-up lines never count as a pool.
 - **Transfer reset after a cancelled reservation** also cancels the reversal
   move the cancellation posted for the top-up/release (Q6).
 - **Beneficiary unit sees the ledger.** The `budget_operating_unit` rules on
-  `budget.move(.line)` keep the `commitment_id.beneficiary_operating_unit_id`
+  `budget.move(.line)` keep the `commitment_id.beneficiary_operating_unit_ids`
   clause (ADR-0011), so the engine and the dashboard count a reservation made
   for a unit by another.
 - **Floating-era tagged reservations are reported.** A tagged reservation whose
