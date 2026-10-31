@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- ปันส่วน is granted to selected users only (disbursement ADR-0009).
+         No category: an independent tick on top of whatever disbursement level
+         the user holds. -->
+    <record id="group_disbursement_apportionment" model="res.groups">
+        <field name="name">Disbursement Apportionment</field>
+        <field name="implied_ids" eval="[(4, ref('disbursement.group_disbursement_user'))]" />
+        <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]" />
+    </record>
+</odoo>

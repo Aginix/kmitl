@@ -63,6 +63,31 @@ _Avoid_: จ่ายตรง / Direct paid (that is the **payment type** — p
 the payee rather than as an advance or a prepayment), Stand-alone request (a
 request without budget control at all).
 
+**Apportionment** (ปันส่วน):
+The share of income a request passes on to units inside the institute instead
+of paying it out — e.g. KRIS receives 1,000,000 for academic-service work, pays
+900,000 to the project head and apportions 100,000 to สำนักงานอธิการบดี, the
+lecturer's unit and KRIS. No money is paid: under budget control the ตัดงบประมาณ
+act consumes the payee lines from the pool and moves the apportioned share by
+a budget transfer (ใบโอนงบประมาณ) from the request's own budget code and
+dimensions to each **apportionment line**. An apportioned request has no
+reservation and still goes through e-Saraban; it is not a **direct claim**
+(see ADR 0009; opt-in via `disbursement_apportionment`, set by users granted
+the ปันส่วน right).
+_Avoid_: Allocation / จัดสรร (that is ปรับเข้าแผน into a project or plan
+dimension), revenue share, payment (nothing is paid).
+
+**Apportionment line** (ปลายทางปันส่วน):
+One destination of an apportionment: a budget code, ส่วนงาน, กองทุน, กิจกรรม and
+an amount, typed by hand. Its แหล่งเงิน is always the request's — a transfer
+never crosses sources.
+_Avoid_: Payee (a destination receives budget, not money).
+
+**Budget total** (ยอดตัดงบรวม):
+What an apportioned request takes out of its own budget code and dimensions:
+the request's total (paid to the payees) plus its apportionment.
+_Avoid_: Total (the request's own `amount_total`, the payee lines only).
+
 **Memo number** (เลขที่หนังสือ):
 The number of the official memo (หนังสือบันทึกข้อความ) authorising the request.
 Typed in by hand on a direct claim; on any other request it is the number
