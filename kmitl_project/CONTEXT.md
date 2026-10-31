@@ -52,6 +52,10 @@ _Avoid_: Project Budget (that is the received, computed `budget_amount`); budget
 The ส่วนงาน (`departments` dimension) on the **FROM side** of a transfer that moves money into a project's dimension — i.e. who the money came from. Each Funding Unit sends its support in **its own transfer**, so one transfer has exactly one Funding Unit. The transfer's OU (who keyed it, e.g. งานแผน on a unit's behalf) and the TO side's ส่วนงาน (always the project's own) never identify it.
 _Avoid_: OU / operating unit (the operator, not the funder); beneficiary unit (budget's reservation term, ADR-0011)
 
+**Organizer Department (ส่วนงานผู้จัดโครงการ)**:
+The ส่วนงาน that runs the project (`organizer_department_id`, add-on `kmitl_project_organizer_department`) — e.g. วิศวกรรมศาสตร์ organizing a project funded from งบกลางสำนักงานอธิการบดี. Defaults to the project's budget ส่วนงาน and is kept once chosen; it is not a budget dimension and never enters `analytic_distribution`.
+_Avoid_: the ส่วนงาน budget dimension (`department_analytic_id`, whose money it is); Funding Unit; OU
+
 **Project Budget Movements (การเคลื่อนไหวงบประมาณโครงการ)**:
 The project's read-only list of every budget movement on its dimension, one row per movement line, each with a **Movement Kind**, a **Movement Status**, a signed amount (in positive, out negative), the **Funding Unit** on transfer rows and the source document on ตัดงบ rows. Reservations (จองงบ/ผูกพัน) are not movements and are not listed. Posted allocation, transfer and budget-entry rows net to the **Project Budget**. Readable without any budget rights by every **Project Owner** (from any operating unit) and by project officers. See [ADR-0007](./docs/adr/0007-project-budget-movements-instead-of-ledger-access.md).
 _Avoid_: Funding Summary / เงินสนับสนุนที่ได้รับ (the earlier, inflow-only version of this list); budget move / ledger (this is a project-level view, not access to `budget.move`)
