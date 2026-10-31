@@ -231,7 +231,12 @@ class BudgetCommitment(models.Model):
             (line.account_id, line.amount) for line in self._pending_reserve_lines()
         }
         wanted = {(s.account_id, s.amount) for s in self.split_ids if s.amount > 0}
-        if current == wanted:
+        # A dimension change re-cuts too: the events carry the coordinate.
+        same_coordinate = all(
+            (line.analytic_distribution or {}) == (self.analytic_distribution or {})
+            for line in self._pending_reserve_lines()
+        )
+        if current == wanted and same_coordinate:
             return
         self._pending_reserve_lines().action_cancel()
         amounts = {}
@@ -260,11 +265,24 @@ class BudgetCommitment(models.Model):
         records.filtered("split_ids")._sync_split_primary()
         return records
 
+    # Header fields whose change re-derives row ★ and re-cuts a reserved slip.
+    _SPLIT_HEADER_FIELDS = {
+        "amount",
+        "account_id",
+        "analytic_distribution",
+        "department_analytic_id",
+        "source_analytic_id",
+        "fund_analytic_id",
+        "activity_analytic_id",
+    }
+
     def write(self, vals):
+        nested = self.env.context.get("budget_split_batch")
         res = super(BudgetCommitment, self.with_context(budget_split_batch=True)).write(
             vals
         )
-        if {"split_ids", "amount", "account_id"} & set(vals):
+        # Once per save: the dimension inverses write again from inside.
+        if not nested and ({"split_ids"} | self._SPLIT_HEADER_FIELDS) & set(vals):
             self.filtered("split_ids")._on_split_changed()
         return res
 

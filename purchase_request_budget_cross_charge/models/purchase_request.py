@@ -38,7 +38,7 @@ class PurchaseRequest(models.Model):
             slip.action_reset_to_draft()
         if slip.state == "draft":
             vals.pop("company_id", None)
-            slip.write(vals)
+            slip.with_context(budget_slip_from_request=True).write(vals)
         else:
             slip = self.env["budget.commitment"].sudo().create(vals)
             self.sudo().budget_commitment_id = slip

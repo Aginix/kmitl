@@ -27,19 +27,25 @@
                 <attribute name="invisible">1</attribute>
             </xpath>
             <xpath expr="//field[@name='source_analytic_id']" position="attributes">
-                <attribute name="readonly">1</attribute>
+                <attribute name="attrs">{'readonly': [('split_editable', '=', False)]}</attribute>
             </xpath>
             <xpath expr="//field[@name='department_analytic_id']" position="attributes">
-                <attribute name="readonly">1</attribute>
+                <attribute name="attrs">{'readonly': [('split_editable', '=', False)]}</attribute>
             </xpath>
             <xpath expr="//field[@name='fund_analytic_id']" position="attributes">
-                <attribute name="readonly">1</attribute>
+                <attribute name="attrs">{'readonly': [('split_editable', '=', False)]}</attribute>
             </xpath>
             <xpath expr="//field[@name='activity_analytic_id']" position="attributes">
-                <attribute name="readonly">1</attribute>
+                <attribute name="attrs">{'readonly': [('split_editable', '=', False)]}</attribute>
             </xpath>
+            <!-- Code and dimensions editable in the พ.1's windows: saving a
+                 reserved slip re-cuts it in one step (released, re-checked,
+                 re-reserved) and copies them back to the พ.1 (ADR-0020). -->
             <xpath expr="//field[@name='account_id']" position="attributes">
-                <attribute name="readonly">1</attribute>
+                <attribute name="attrs">{'readonly': [('split_editable', '=', False)]}</attribute>
+                <attribute
+                    name="domain"
+                >[('budgetable', '=', True), ('budget_type', '=', 'expense'), ('purchase_ok', '=', True), ('product_id', '!=', False)]</attribute>
                 <attribute name="string">รหัสหลัก</attribute>
             </xpath>
             <xpath expr="//field[@name='amount']" position="attributes">

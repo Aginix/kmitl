@@ -19,9 +19,9 @@ an event is immutable from the moment it is created, even on a draft slip (ADR-0
 ## Decision
 
 - **D1. ถัวจ่าย is entered on the ใบจองงบประมาณ, not on the พ.1.** The พ.1 keeps one
-  code, the **Primary Code** (รหัสหลัก). Its dimensions and code are still entered on
+  code, the **Primary Code** (รหัสหลัก). Its dimensions and code are first entered on
   the พ.1, by the verifier and then the budget committer (root ADR-0010 is unchanged
-  there).
+  there); the dialog may then change them (D-edit), and the พ.1 follows the slip.
 - **D6. The `cross_chargeable` flag governs eligibility** (ADR-0006 stands). A ถัว code
   must be flagged, budgetable, an expense code, and funded at the slip's dimensions
   (Available > 0). The Primary Code must be flagged too once there is more than one
@@ -43,8 +43,8 @@ an event is immutable from the moment it is created, even on a draft slip (ADR-0
     only while nothing has been obligated, consumed or returned.
 - **P2. Reserve on a พ.1 opens the same form as a dialog** (D-form). The button creates
   — or refreshes, when one was left behind — a **draft** slip from the พ.1: ปีงบ,
-  dimensions, Primary Code and วงเงิน = the พ.1 total, all locked in the dialog. To
-  change them, close the dialog, edit the พ.1 and press Reserve again. ยืนยันจองงบประมาณ
+  dimensions, Primary Code and วงเงิน = the พ.1 total. The วงเงิน and ปีงบ are locked;
+  the code and dimensions are editable (D-edit). ยืนยันจองงบประมาณ
   reserves every row at once and advances the พ.1; ปิด leaves a harmless draft (a draft
   locks no budget). The single-code case is the same dialog with one row, which gives
   ADR-0010's planned ตรวจสอบงบประมาณ preview for free. Reserve called from code (demo
@@ -57,6 +57,16 @@ an event is immutable from the moment it is created, even on a draft slip (ADR-0
   and ถัว rows included. Without it, changing the Primary Code after reserving needs a ดึงกลับ to draft by
   the PR manager, because the slip form has no Cancel and an open พ.1 blocks
   กลับแบบร่าง on its slip.
+- **D-edit (2026-10-31). The Primary Code and the four dimensions are editable in the
+  dialog, in the same windows as the split.** Saving a reserved slip re-cuts it in one
+  step, like ปรับถัวจ่าย: its reserve events are cancelled, every pool at the new
+  coordinate is checked with the slip's own money given back, and the new events are
+  posted. When the new code or dimension has no money the save is refused and the slip
+  keeps its reservation untouched; nothing is released in between, unlike a
+  reset-to-draft (budget.transfer). The พ.1's code, dimensions, line dimensions and
+  product are copied from the slip. Typical use: after ตรวจสอบ, switch to another
+  ส่วนงาน's budget without giving up the reservation first. A new Primary Code that is
+  already a ถัว row merges into row ★; the old Primary Code is not kept as a ถัว row.
 - **D-window. A slip linked to a พ.1 has exactly two editable windows:**
   - draft, while the พ.1 is at รอจองงบประมาณ (`to_verify_budget`);
   - reserved and unused, while the พ.1 is at `to_approve` — reserved but not yet sent to
@@ -70,7 +80,8 @@ an event is immutable from the moment it is created, even on a draft slip (ADR-0
 - **D-acl (P4).** `group_purchase_request_budget_commit` gets write on
   `budget.commitment` and full access to `budget.commitment.split`, but **no create or
   unlink on the slip** — the slip is created server-side. Instead of a record rule, a
-  write guard lets a user who is not a Budget User write **only the split**, and only
+  write guard lets a user who is not a Budget User write **only the split, the Primary
+  Code and the dimensions** (never the วงเงิน), and only
   on a slip whose พ.1 is in one of its windows. The reserve and re-cut themselves still
   run as sudo after the group and พ.1-state checks.
 
