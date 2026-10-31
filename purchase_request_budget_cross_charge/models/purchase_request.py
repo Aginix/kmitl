@@ -49,13 +49,13 @@ class PurchaseRequest(models.Model):
         return self.budget_commitment_id._action_open_request_dialog()
 
     def action_adjust_cross_charge(self):
-        """ปรับถัวจ่าย: reopen the reserved slip's dialog while the พ.1 is
+        """แก้ไขใบจอง: reopen the reserved slip's dialog while the พ.1 is
         reserved but not yet sent to e-Saraban (ADR-0020)."""
         self.ensure_one()
         commitment = self.budget_commitment_id
         if not commitment.split_editable:
             raise UserError(
-                _("ปรับถัวจ่ายได้เฉพาะคำขอที่จองงบแล้ว ยังไม่ส่งหนังสือ และยังไม่มีการใช้เงิน")
+                _("แก้ไขใบจองได้เฉพาะคำขอที่จองงบแล้ว ยังไม่ส่งหนังสือ และยังไม่มีการใช้เงิน")
             )
         if not commitment.split_ids:
             commitment.sudo()._sync_split_primary()

@@ -212,7 +212,7 @@ class BudgetCommitment(models.Model):
         return self.env["budget.commitment.line"].create(vals_list)
 
     def _recut_reserve_split(self):
-        """ปรับถัวจ่าย: re-cut a reserved, unused reservation to its split —
+        """แก้ไขใบจอง: re-cut a reserved, unused reservation to its split —
         cancel the reserve events, re-check every pool with this reservation
         given back, then post the new events."""
         self.ensure_one()
@@ -224,7 +224,7 @@ class BudgetCommitment(models.Model):
         )
         if used:
             raise UserError(
-                _("ใบจอง %s มีการผูกพัน เบิกจ่าย หรือส่งคืนแล้ว ปรับถัวจ่ายไม่ได้") % self.name
+                _("ใบจอง %s มีการผูกพัน เบิกจ่าย หรือส่งคืนแล้ว แก้ไขใบจองไม่ได้") % self.name
             )
         self._check_split()
         current = {

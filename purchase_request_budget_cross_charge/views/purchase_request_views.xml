@@ -9,13 +9,13 @@
             <xpath expr="//button[@name='action_reserve_budget']" position="attributes">
                 <attribute name="context">{'budget_reserve_dialog': True}</attribute>
             </xpath>
-            <!-- ปรับถัวจ่าย: reserved, not yet sent to e-Saraban, unused
+            <!-- แก้ไขใบจอง: reserved, not yet sent to e-Saraban, unused
                  (the server re-checks the window). -->
             <xpath expr="//button[@name='action_reserve_budget']" position="after">
                 <button
                     name="action_adjust_cross_charge"
                     type="object"
-                    string="ปรับถัวจ่าย"
+                    string="แก้ไขใบจอง"
                     attrs="{'invisible': ['|', '|', ('state', '!=', 'to_approve'), ('budget_commitment_state', '!=', 'reserved'), ('budget_selection_mode', '!=', 'normal')]}"
                     groups="purchase_request_budget.group_purchase_request_budget_commit"
                 />

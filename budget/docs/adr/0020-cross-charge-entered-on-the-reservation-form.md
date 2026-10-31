@@ -49,8 +49,9 @@ an event is immutable from the moment it is created, even on a draft slip (ADR-0
   locks no budget). The single-code case is the same dialog with one row, which gives
   ADR-0010's planned ตรวจสอบงบประมาณ preview for free. Reserve called from code (demo
   data, tests) still reserves the single code directly.
-- **P3. ปรับถัวจ่าย after reserve.** The same dialog opens on the reserved slip.
-- **ยกเลิกการจองงบ.** In the same window as ปรับถัวจ่าย (reserved, unused, not yet sent),
+- **P3. แก้ไขใบจอง after reserve** (button first named ปรับถัวจ่าย; renamed 2026-10-31
+  once it also changes the code and dimensions). The same dialog opens on the reserved slip.
+- **ยกเลิกการจองงบ.** In the same window as แก้ไขใบจอง (reserved, unused, not yet sent),
   the budget committer may cancel the reservation from the พ.1: the slip is cancelled
   (its money released) and the พ.1 steps back to รอยืนยันงบประมาณ, where the Primary
   Code and dimensions are editable again. The next Reserve revives the same slip, number
@@ -59,7 +60,7 @@ an event is immutable from the moment it is created, even on a draft slip (ADR-0
   กลับแบบร่าง on its slip.
 - **D-edit (2026-10-31). The Primary Code and the four dimensions are editable in the
   dialog, in the same windows as the split.** Saving a reserved slip re-cuts it in one
-  step, like ปรับถัวจ่าย: its reserve events are cancelled, every pool at the new
+  step, as for a ถัว change: its reserve events are cancelled, every pool at the new
   coordinate is checked with the slip's own money given back, and the new events are
   posted. When the new code or dimension has no money the save is refused and the slip
   keeps its reservation untouched; nothing is released in between, unlike a
@@ -88,7 +89,7 @@ an event is immutable from the moment it is created, even on a draft slip (ADR-0
 - **Packaging: ถัวจ่าย is an add-on, not core.** `budget_commitment_cross_charge` (depends
   `budget`) owns the Reservation Split, its grid, the re-cut and the account-form flag;
   `purchase_request_budget_cross_charge` (auto-installs with `purchase_request_budget`)
-  owns the พ.1 dialog, ปรับถัวจ่าย, the edit windows and the committer's write access.
+  owns the พ.1 dialog, แก้ไขใบจอง, the edit windows and the committer's write access.
   Core keeps only two seams: `_check_reserve_availability(amounts=…)` and
   `_create_reserve_line_from_header` (overridden to post one event per row); the พ.1
   keeps `_reserve_new_budget` and ยกเลิกการจองงบ, which is useful without ถัวจ่าย.

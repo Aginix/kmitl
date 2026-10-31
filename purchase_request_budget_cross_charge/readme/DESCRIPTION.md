@@ -6,7 +6,7 @@
   and วงเงิน = the พ.1 total (วงเงิน and ปีงบ locked). The budget committer
   adds ถัว codes, and may change the primary code or dimensions, then **ยืนยันจองงบประมาณ** reserves every row and advances the
   พ.1. **ปิด** leaves a harmless draft that the next press reuses.
-- **ปรับถัวจ่าย** reopens the dialog while the พ.1 is reserved, unused and
+- **แก้ไขใบจอง** reopens the dialog while the พ.1 is reserved, unused and
   not yet sent to e-Saraban. Saving re-cuts the reservation in one step —
   a changed code, ส่วนงาน or other dimension is re-checked with the slip's
   own money given back, refused (reservation untouched) when it has no

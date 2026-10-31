@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <!-- The พ.1's Reserve / ปรับถัวจ่าย dialog (budget ADR-0020): the same
+    <!-- The พ.1's Reserve / แก้ไขใบจอง dialog (budget ADR-0020): the same
          ใบจองงบประมาณ form, header locked to what the พ.1 says, only the
          รายการจองงบประมาณ editable. -->
     <record id="budget_commitment_request_dialog_form" model="ir.ui.view">
