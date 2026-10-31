@@ -146,7 +146,7 @@
                 <group expand="0" name="group_by" string="Group By">
                     <filter name="group_by_state" string="Status" domain="[]" context="{'group_by': 'state'}"/>
                     <filter name="group_by_fiscal_year" string="Fiscal Year" domain="[]" context="{'group_by': 'account_fiscal_year_id'}"/>
-                    <filter name="group_by_department" string="ส่วนงานต้นทาง" domain="[]" context="{'group_by': 'department_analytic_id'}"/>
+                    <filter name="group_by_department" string="ส่วนงานผู้ขอรับการสนับสนุน" domain="[]" context="{'group_by': 'department_analytic_id'}"/>
                     <filter name="group_by_user" string="ผู้ขอ" domain="[]" context="{'group_by': 'user_id'}"/>
                     <filter name="group_by_officer" string="เจ้าหน้าที่ Buddy" domain="[]" context="{'group_by': 'officer_id'}"/>
                 </group>

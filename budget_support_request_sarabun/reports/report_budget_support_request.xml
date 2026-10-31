@@ -17,7 +17,7 @@
              ("[code] complete name"). -->
         <t t-set="rows" t-value="[
             ('เลขที่คำขอ', o.name or '-'),
-            ('ส่วนงานต้นทาง', o.department_analytic_id.display_name or '-'),
+            ('ส่วนงานผู้ขอรับการสนับสนุน', o.department_analytic_id.display_name or '-'),
             ('ปีงบประมาณ', o.account_fiscal_year_id.name or '-'),
         ]"/>
         <!-- Inline styles, not Bootstrap utilities: the หนังสือ must print the
