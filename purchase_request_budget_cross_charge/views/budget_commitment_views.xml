@@ -70,7 +70,7 @@
                     />
                     <button
                         name="action_save_request_split"
-                        string="บันทึกการถัวจ่าย"
+                        string="บันทึก"
                         type="object"
                         class="btn-primary"
                         attrs="{'invisible': ['|', ('state', '!=', 'reserved'), ('split_editable', '=', False)]}"

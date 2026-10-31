@@ -172,7 +172,7 @@ class BudgetCommitment(models.Model):
         return {"type": "ir.actions.act_window_close"}
 
     def action_save_request_split(self):
-        """บันทึกการถัวจ่าย: the save itself re-cut the reservation (the
+        """บันทึก: the save itself re-cut the reservation (the
         button saves the dialog first); just go back to the พ.1."""
         self.ensure_one()
         self._get_split_request()
