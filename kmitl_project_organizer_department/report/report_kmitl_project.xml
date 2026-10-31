@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <template
+        id="report_kmitl_project_organizer_department"
+        inherit_id="kmitl_project.report_kmitl_project"
+    >
+        <xpath
+            expr="//span[@t-out=&quot;o.department_analytic_id.name or '-'&quot;]/.."
+            position="replace"
+        >
+            <div>ส่วนงานผู้จัดโครงการ : <span
+                    t-out="o.organizer_department_id.name or '-'"
+                /></div>
+        </xpath>
+    </template>
+</odoo>
