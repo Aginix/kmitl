@@ -79,6 +79,11 @@ upfront.
   field; consumers turn classification on for a model by shipping data XML
   (`ir.attachment.document.type.config` + `ir.attachment.document.type.rel`), no
   Python/JS per consumer.
+- [X2many Flow Diagram](./web_widget_x2many_flow/CONTEXT.md) — generic `x2many_flow`
+  field widget drawing a one2many as **Layers** of cards (lines sharing one numeric
+  Layer Key side by side), with drag-and-drop Join / New Layer by **Minimal Shift**;
+  purely presentational. First consumer: e-Saraban's route (a **Stage** is one Layer)
+  via `agx_sarabun_widget_flow`.
 - [e-Saraban](./agx_sarabun/CONTEXT.md) — electronic official-correspondence
   (งานสารบรรณ); a registered, numbered หนังสือ routed through an approval/endorsement
   chain. Other modules attach as origin records that spawn a Document.
