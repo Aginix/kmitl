@@ -67,14 +67,55 @@ class BudgetCommitment(models.Model):
                         _("ใบจอง %s แก้ไขรายการจองงบประมาณ (ถัวจ่าย) ในขั้นนี้ไม่ได้")
                         % record.display_name
                     )
+        # Clearing the code or a dimension is refused up front, before the
+        # re-cut reports it as a budget shortfall.
+        cleared = [
+            f for f in self._REQUEST_REQUIRED_FIELDS if f in vals and not vals[f]
+        ]
+        if cleared and self.sudo().purchase_request_ids:
+            labels = dict(self._request_required_labels())
+            raise UserError(
+                _("กรุณาระบุข้อมูลงบประมาณให้ครบ: %s")
+                % ", ".join(labels[f] for f in cleared)
+            )
         res = super().write(vals)
         if (
             not self.env.context.get("budget_split_batch")
             and not self.env.context.get("budget_slip_from_request")
             and (self._REQUEST_DIALOG_FIELDS - {"split_ids"}) & set(vals)
         ):
+            self._check_request_budget_fields()
             self._sync_request_from_slip()
         return res
+
+    _REQUEST_REQUIRED_FIELDS = (
+        "account_id",
+        "department_analytic_id",
+        "source_analytic_id",
+        "fund_analytic_id",
+        "activity_analytic_id",
+    )
+
+    def _request_required_labels(self):
+        return [
+            ("account_id", _("รหัสงบประมาณ")),
+            ("department_analytic_id", _("ส่วนงาน")),
+            ("source_analytic_id", _("แหล่งเงิน")),
+            ("fund_analytic_id", _("กองทุน")),
+            ("activity_analytic_id", _("กิจกรรม")),
+        ]
+
+    def _check_request_budget_fields(self):
+        """A พ.1's slip needs its code and all four dimensions, as Reserve on
+        the พ.1 demands."""
+        for record in self.filtered(lambda r: r.sudo().purchase_request_ids):
+            missing = [
+                label
+                for fname, label in self._request_required_labels()
+                if not record[fname]
+            ]
+            if missing:
+                raise UserError(_("กรุณาระบุข้อมูลงบประมาณให้ครบ: %s") % ", ".join(missing))
 
     def _sync_request_from_slip(self):
         """Copy the slip's primary code and dimensions back to its พ.1 (and the
@@ -121,6 +162,7 @@ class BudgetCommitment(models.Model):
             "to_approve",
         ):
             raise UserError(_("ใบจอง %s ยืนยันจองงบประมาณในขั้นนี้ไม่ได้") % self.display_name)
+        self._check_request_budget_fields()
         self.sudo().action_reserve()
         request.message_post(
             body=_("Budget reserved: %s for amount %s") % (self.name, self.amount)

@@ -34,9 +34,11 @@
             </xpath>
             <xpath expr="//field[@name='fund_analytic_id']" position="attributes">
                 <attribute name="attrs">{'readonly': [('split_editable', '=', False)]}</attribute>
+                <attribute name="required">1</attribute>
             </xpath>
             <xpath expr="//field[@name='activity_analytic_id']" position="attributes">
                 <attribute name="attrs">{'readonly': [('split_editable', '=', False)]}</attribute>
+                <attribute name="required">1</attribute>
             </xpath>
             <!-- Code and dimensions editable in the พ.1's windows: saving a
                  reserved slip re-cuts it in one step (released, re-checked,
