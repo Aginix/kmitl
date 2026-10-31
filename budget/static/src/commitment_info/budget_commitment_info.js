@@ -22,21 +22,25 @@ export class BudgetCommitmentInfoField extends Many2OneField {
         this.orm = useService("orm");
         this.info = useState({ data: null });
         onWillStart(() => this.loadInfo(this.commitmentId(this.props)));
-        onWillUpdateProps((nextProps) => this.loadInfo(this.commitmentId(nextProps)));
+        // A reload (e.g. after the reservation dialog closes) hands a new value
+        // array even for the same slip: refetch then, not on every re-render.
+        onWillUpdateProps((nextProps) =>
+            this.loadInfo(this.commitmentId(nextProps), nextProps.value !== this.props.value)
+        );
     }
 
     commitmentId(props) {
         return (props.value && props.value[0]) || false;
     }
 
-    async loadInfo(commitmentId) {
+    async loadInfo(commitmentId, force = false) {
         // The card is a form-only affordance: in a list/tree view it would
         // render a full card in every cell of every row.
         if (!commitmentId || this.env.config.viewType === "list") {
             this.info.data = null;
             return;
         }
-        if (this.info.data && this.info.data.id === commitmentId) {
+        if (!force && this.info.data && this.info.data.id === commitmentId) {
             return;
         }
         const [data] = await this.orm.call(
@@ -45,6 +49,23 @@ export class BudgetCommitmentInfoField extends Many2OneField {
             [[commitmentId]]
         );
         this.info.data = data || null;
+    }
+
+    /**
+     * "[code] a / b / leaf" → {code, leaf, path: "a / b"}. A value without a
+     * "[code]" prefix or " / " separators comes back as the leaf alone.
+     */
+    splitName(value) {
+        let rest = value || "";
+        let code = "";
+        const match = rest.match(/^\[([^\]]+)\]\s*(.*)$/s);
+        if (match) {
+            code = match[1];
+            rest = match[2];
+        }
+        const segments = rest.split(" / ");
+        const leaf = segments.pop();
+        return { code, leaf, path: segments.join(" / ") };
     }
 }
 

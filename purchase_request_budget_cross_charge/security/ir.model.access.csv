@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_budget_commitment_pr_budget_commit,budget.commitment พ.1 budget committer (split only),budget.model_budget_commitment,purchase_request_budget.group_purchase_request_budget_commit,1,1,0,0
+access_budget_commitment_split_pr_user,budget.commitment.split purchase request user (read),budget_commitment_cross_charge.model_budget_commitment_split,purchase_request.group_purchase_request_user,1,0,0,0
+access_budget_commitment_split_pr_budget_commit,budget.commitment.split พ.1 budget committer,budget_commitment_cross_charge.model_budget_commitment_split,purchase_request_budget.group_purchase_request_budget_commit,1,1,1,1

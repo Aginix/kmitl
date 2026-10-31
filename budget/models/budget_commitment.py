@@ -821,7 +821,7 @@ class BudgetCommitment(models.Model):
         self._budget_event_lines(source=source, move_types=move_types).action_cancel()
         return True
 
-    def _check_reserve_availability(self):
+    def _check_reserve_availability(self, amounts=None):
         """Block reserving more than the control-node Available (ADR-0005).
 
         Runs while the commitment is still ``draft`` (so its own reserve lines are
@@ -829,7 +829,9 @@ class BudgetCommitment(models.Model):
         Availability is evaluated with the **header** dimension combination
         (``analytic_distribution``) — the reserve lines a host mixin builds carry
         only a subset (activity+fund) while the header carries all dimensions —
-        paired with each reserve line's own budget account.
+        paired with each reserve line's own budget account — or with
+        ``amounts`` ({budget.account: amount}) when given, for events not
+        created yet (a ถัวจ่าย re-cut, budget_commitment_cross_charge).
 
         The amounts are summed **per pool**, not per budget code: the codes of a
         ถัวจ่าย reservation that resolve to the same funded ancestor draw on one
@@ -850,11 +852,11 @@ class BudgetCommitment(models.Model):
         company_id = self.company_id.id
         rounding = self.currency_id.rounding or 0.01
         avail_distribution = self._availability_distribution()
-        reserve_lines = self._pending_reserve_lines()
-        per_account = {}
-        for line in reserve_lines:
-            per_account.setdefault(line.account_id, 0.0)
-            per_account[line.account_id] += line.amount
+        per_account = dict(amounts or {})
+        if amounts is None:
+            for line in self._pending_reserve_lines():
+                per_account.setdefault(line.account_id, 0.0)
+                per_account[line.account_id] += line.amount
         # Group the reserve amounts by the *pool* they resolve to, not by account:
         # several child codes can draw one coarse pool, so summing per account
         # would let each child pass on its own while together they overspend the

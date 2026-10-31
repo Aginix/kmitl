@@ -17,6 +17,11 @@
         <field name="widget_option">many2many_tags</field>
     </record>
 
+    <record id="mass_editing_budget_account_cross_chargeable" model="ir.actions.server.mass.edit.line">
+        <field name="server_action_id" ref="mass_edit_budget_account_budgetable" />
+        <field name="field_id" ref="budget.field_budget_account__cross_chargeable" />
+    </record>
+
     <!-- Add context actions -->
     <function model="ir.actions.server" name="create_action">
         <value eval="[ref('mass_edit_budget_account_budgetable')]" />
