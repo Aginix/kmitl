@@ -62,7 +62,7 @@ class BudgetSupportRequest(models.Model):
 
     department_analytic_id = fields.Many2one(
         "account.analytic.account",
-        string="ส่วนงานต้นทาง",
+        string="ส่วนงานผู้ขอรับการสนับสนุน",
         compute="_compute_analytic_id",
         inverse="_inverse_department_analytic",
         domain=[("root_plan_id.code", "=", "departments")],
