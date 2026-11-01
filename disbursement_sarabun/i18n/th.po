@@ -70,3 +70,8 @@ msgstr "ส่งใบขอเบิกไปยังหัวหน้าห
 #: code:addons/disbursement_sarabun/models/disbursement_request.py:0
 msgid "This request's memo is still circulating in e-Saraban: pull it back or cancel sending it there first."
 msgstr "หนังสือของใบขอเบิกนี้ยังเดินอยู่ใน e-Saraban กรุณาดึงกลับหรือยกเลิกการส่งก่อน"
+
+#. module: disbursement_sarabun
+#: model_terms:ir.ui.view,arch_db:disbursement_sarabun.report_sarabun_document_disbursement
+msgid "Page"
+msgstr "หน้า"
