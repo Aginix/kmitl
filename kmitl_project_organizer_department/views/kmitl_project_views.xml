@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_kmitl_project_form_organizer_department" model="ir.ui.view">
+        <field name="name">view.kmitl.project.form.organizer.department</field>
+        <field name="model">kmitl.project</field>
+        <field name="inherit_id" ref="kmitl_project.view_kmitl_project_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='operating_unit_id']" position="after">
+                <field
+                    name="organizer_department_id"
+                    required="1"
+                    options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"
+                />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_kmitl_project_tree_organizer_department" model="ir.ui.view">
+        <field name="name">view.kmitl.project.tree.organizer.department</field>
+        <field name="model">kmitl.project</field>
+        <field name="inherit_id" ref="kmitl_project.view_kmitl_project_tree" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='department_analytic_id']" position="after">
+                <field name="organizer_department_id" optional="show" />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_kmitl_project_search_organizer_department" model="ir.ui.view">
+        <field name="name">view.kmitl.project.search.organizer.department</field>
+        <field name="model">kmitl.project</field>
+        <field name="inherit_id" ref="kmitl_project.view_kmitl_project_search" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='department_analytic_id']" position="after">
+                <field name="organizer_department_id" />
+            </xpath>
+            <xpath expr="//filter[@name='by_department']" position="after">
+                <filter
+                    string="ส่วนงานผู้จัดโครงการ"
+                    name="by_organizer_department"
+                    domain="[]"
+                    context="{'group_by': 'organizer_department_id'}"
+                />
+            </xpath>
+        </field>
+    </record>
+</odoo>
