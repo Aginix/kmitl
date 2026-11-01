@@ -279,15 +279,8 @@ class PurchaseRequest(models.Model):
             if rec.state == "to_verify_budget":
                 rec.is_editable = True
 
-    @api.depends("state", "requested_by")
-    def _compute_can_reset_to_draft(self):
-        super()._compute_can_reset_to_draft()
-        is_manager = self.env.user.has_group(
-            "purchase_request.group_purchase_request_manager"
-        )
-        for rec in self:
-            if rec.state == "to_verify_budget":
-                rec.can_reset_to_draft = is_manager or rec.requested_by == self.env.user
+    def _reset_to_draft_states(self):
+        return super()._reset_to_draft_states() + ["to_verify_budget"]
 
     def _inverse_activity_analytic(self):
         """Update distribution when activity changes"""
@@ -658,7 +651,9 @@ class PurchaseRequest(models.Model):
                 if record._release_commitment_on_draft():
                     try:
                         name = record.budget_commitment_id.name
-                        record._cancel_budget_commitment()
+                        # ดึงกลับ is the requester's button, and the requester
+                        # holds no ACL on budget.commitment (as in reserve).
+                        record.sudo()._cancel_budget_commitment()
                         record.message_post(
                             body=_("Budget commitment %s has been cancelled") % name
                         )

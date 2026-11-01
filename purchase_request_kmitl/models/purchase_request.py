@@ -263,18 +263,21 @@ class PurchaseRequest(models.Model):
         self.write({"verified_by": False, "date_verified": False})
         return super().button_draft()
 
-    @api.depends("state", "requested_by")
+    def _reset_to_draft_states(self):
+        """States ดึงกลับ (Reset) is offered in: after draft up to to_approve.
+        Modules adding a state in between extend this."""
+        return ["to_verify", "to_approve"]
+
+    @api.depends("state", "requested_by", "user_id", "create_uid")
     def _compute_can_reset_to_draft(self):
-        is_manager = self.env.user.has_group(
-            "purchase_request.group_purchase_request_manager"
-        )
+        """ดึงกลับ belongs to the request's owners only: Responsible,
+        Requested by, or its creator."""
+        user = self.env.user
+        states = self._reset_to_draft_states()
         for rec in self:
-            if rec.state == "to_approve":
-                rec.can_reset_to_draft = is_manager
-            elif rec.state == "to_verify":
-                rec.can_reset_to_draft = is_manager or rec.requested_by == self.env.user
-            else:
-                rec.can_reset_to_draft = False
+            rec.can_reset_to_draft = rec.state in states and user in (
+                rec.user_id | rec.requested_by | rec.create_uid
+            )
 
     @api.depends("state")
     def _hide_create_po_button(self):
