@@ -21,7 +21,7 @@ class PurchaseRequest(models.Model):
         cancelled earlier) is reused, keeping its ถัว rows."""
         self.ensure_one()
         vals = self.sudo()._prepare_commitment_vals(
-            sum(self.line_ids.mapped("estimated_cost")),
+            self.amount_total,
             self.activity_analytic_id.id,
             self.fund_analytic_id.id,
             self.department_analytic_id.id,
