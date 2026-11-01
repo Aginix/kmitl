@@ -201,3 +201,14 @@ class TestClearing(TransactionCase):
         loan.write({"state": "done"})
         request.action_cancel()
         self.assertEqual(loan.state, "done")
+
+    def test_any_consume_path_clears(self):
+        """The rector's approval consumes without the consume act: whatever
+        writes the consumed amount clears the loan."""
+        loan = self._loan(amount=300.0)
+        request = self._request(loan, 100.0)
+        request.budget_consumed_amount = 100.0
+        self.assertEqual(loan.amount_remaining, 200.0)
+        over = self._request(loan, 250.0)
+        with self.assertRaises(UserError):
+            over.budget_consumed_amount = 250.0

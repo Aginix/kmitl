@@ -1,6 +1,6 @@
 from odoo import Command, _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
-from odoo.tools import float_compare
+from odoo.tools import float_compare, format_amount
 
 
 class DisbursementRequest(models.Model):
@@ -97,9 +97,8 @@ class DisbursementRequest(models.Model):
                 )
         return super().action_submit()
 
-    def _check_advance_payment_clearable(self):
-        """The loan must still be owed (ค้างชำระ) and owe at least this
-        request's amount."""
+    def _check_advance_payment_clearable(self, amount):
+        """The loan must still be owed (ค้างชำระ) and owe at least ``amount``."""
         self.ensure_one()
         loan = self.advance_payment_id.sudo()
         if loan.state != "in_progress":
@@ -111,9 +110,7 @@ class DisbursementRequest(models.Model):
             )
         if (
             float_compare(
-                self.amount_total,
-                loan.amount_remaining,
-                precision_rounding=self.currency_id.rounding,
+                amount, loan.amount_remaining, precision_rounding=self.currency_id.rounding
             )
             > 0
         ):
@@ -121,31 +118,24 @@ class DisbursementRequest(models.Model):
                 _(
                     "The request amount %(amount)s exceeds what loan %(loan)s "
                     "still owes (%(remaining)s).",
-                    amount=self.amount_total,
+                    amount=format_amount(self.env, amount, self.currency_id),
                     loan=loan.contract_number or loan.name,
-                    remaining=loan.amount_remaining,
+                    remaining=format_amount(self.env, loan.amount_remaining, self.currency_id),
                 )
             )
 
-    def action_consume_budget(self):
-        """ตัดงบ clears the loan by the consumed amount. Wrapped here rather
-        than in ``_action_approve_budget`` so every consume path (a direct
-        claim's too) is covered whatever the module order."""
-        for rec in self:
-            if (
-                rec.advance_payment_id
-                and rec.consumes_budget
-                and not rec.budget_consumed_amount
+    def write(self, vals):
+        """ตัดงบ clears the loan. Every consume path (the consume act, the
+        rector's approval, a direct claim) and a cancel end by writing
+        ``budget_consumed_amount``."""
+        if "budget_consumed_amount" not in vals:
+            return super().write(vals)
+        if vals["budget_consumed_amount"]:
+            for rec in self.filtered(
+                lambda r: r.advance_payment_id and not r.budget_consumed_amount
             ):
-                rec._check_advance_payment_clearable()
-        res = super().action_consume_budget()
+                rec._check_advance_payment_clearable(vals["budget_consumed_amount"])
+        res = super().write(vals)
         for rec in self.filtered("advance_payment_id"):
             rec.advance_payment_id.sudo()._sync_cleared_amount(rec)
         return res
-
-    def _on_cancel(self):
-        """A cancelled request gives back what it cleared (core resets its
-        consumed amount)."""
-        super()._on_cancel()
-        for rec in self.filtered("advance_payment_id"):
-            rec.advance_payment_id.sudo()._sync_cleared_amount(rec)

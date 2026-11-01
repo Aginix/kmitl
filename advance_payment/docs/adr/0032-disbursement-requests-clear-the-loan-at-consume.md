@@ -10,9 +10,10 @@ many requests. The picker offers every ค้างชำระ loan of the requ
 searched as sudo — a requester needs no right on loans.
 
 - **Fed at ตัดงบ.** ส่งใช้คืน (`actual_expense_amount`) is the sum of
-  `budget_consumed_amount` over the loan's requests, re-synced after the consume act and
-  after a cancel. Not at submit (still revisable) nor at payment (no money moves). The
-  consume act is refused unless the loan is ค้างชำระ and the request's amount is within
+  `budget_consumed_amount` over the loan's requests, re-synced whenever that amount is
+  written — by any consume path (the consume act, the rector's approval, a direct claim)
+  or by a cancel. Not at submit (still revisable) nor at payment (no money moves).
+  Consuming is refused unless the loan is ค้างชำระ and the request's amount is within
   คงเหลือ.
 - **Borrower-only payees.** Every line pays the loan's borrower; the request pays no
   money out (`disbursement.request.pays_out` is false), so it carries no payment method
