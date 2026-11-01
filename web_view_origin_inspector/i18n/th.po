@@ -1,0 +1,529 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* web_view_origin_inspector
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-01 11:59+0000\n"
+"PO-Revision-Date: 2026-11-01 11:59+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: web_view_origin_inspector
+#. odoo-javascript
+#: code:addons/web_view_origin_inspector/static/src/xml/view_origin_inspector.xml:0
+#: code:addons/web_view_origin_inspector/static/src/xml/view_origin_inspector.xml:0
+#, python-format
+msgid "(primary)"
+msgstr "(primary)"
+
+#. module: web_view_origin_inspector
+#. odoo-javascript
+#: code:addons/web_view_origin_inspector/static/src/xml/view_origin_inspector.xml:0
+#: code:addons/web_view_origin_inspector/static/src/xml/view_origin_inspector.xml:0
+#, python-format
+msgid "A module overriding it should depend on:"
+msgstr "โมดูลที่จะแก้ไของค์ประกอบนี้ควร depends:"
+
+#. module: web_view_origin_inspector
+#. odoo-javascript
+#: code:addons/web_view_origin_inspector/static/src/js/view_origin_inspector.esm.js:0
+#: code:addons/web_view_origin_inspector/static/src/js/view_origin_inspector.esm.js:0
+#, python-format
+msgid "Added"
+msgstr "เพิ่มเข้ามา"
+
+#. module: web_view_origin_inspector
+#. odoo-python
+#: code:addons/web_view_origin_inspector/models/ir_ui_view_change_log.py:0
+#: code:addons/web_view_origin_inspector/models/ir_ui_view_change_log.py:0
+#, python-format
+msgid "After"
+msgstr "หลังแก้ไข"
+
+#. module: web_view_origin_inspector
+#: model:ir.model.fields,field_description:web_view_origin_inspector.field_ir_ui_view_change_log__arch_after
+msgid "Arch After"
+msgstr "Arch หลังแก้ไข"
+
+#. module: web_view_origin_inspector
+#: model:ir.model.fields,field_description:web_view_origin_inspector.field_ir_ui_view_change_log__arch_before
+msgid "Arch Before"
+msgstr "Arch ก่อนแก้ไข"
+
+#. module: web_view_origin_inspector
+#: model:ir.model.fields,field_description:web_view_origin_inspector.field_ir_ui_view_change_log__arch_diff
+msgid "Arch Diff"
+msgstr "ส่วนที่เปลี่ยน"
+
+#. module: web_view_origin_inspector
+#. odoo-javascript
+#: code:addons/web_view_origin_inspector/static/src/js/view_origin_inspector.esm.js:0
+#: code:addons/web_view_origin_inspector/static/src/js/view_origin_inspector.esm.js:0
+#, python-format
+msgid "Attributes changed"
+msgstr "แก้ attribute"
+
+#. module: web_view_origin_inspector
+#: model_terms:ir.ui.view,arch_db:web_view_origin_inspector.ir_ui_view_change_log_view_form
+msgid "Back to To Port"
+msgstr "กลับเป็นรอย้ายลงโค้ด"
+
+#. module: web_view_origin_inspector
+#. odoo-python
+#: code:addons/web_view_origin_inspector/models/ir_ui_view_change_log.py:0
+#: code:addons/web_view_origin_inspector/models/ir_ui_view_change_log.py:0
+#, python-format
+msgid "Before"
+msgstr "ก่อนแก้ไข"
+
+#. module: web_view_origin_inspector
+#: model_terms:ir.ui.view,arch_db:web_view_origin_inspector.ir_ui_view_change_log_view_form
+msgid "Before / After"
+msgstr "ก่อน / หลัง"
+
+#. module: web_view_origin_inspector
+#: model_terms:ir.ui.view,arch_db:web_view_origin_inspector.ir_ui_view_change_log_view_form
+#: model_terms:ir.ui.view,arch_db:web_view_origin_inspector.ir_ui_view_change_log_view_search
+#: model_terms:ir.ui.view,arch_db:web_view_origin_inspector.ir_ui_view_change_log_view_tree
+msgid "By"
+msgstr "โดย"
+
+#. module: web_view_origin_inspector
+#. odoo-javascript
+#: code:addons/web_view_origin_inspector/static/src/js/view_origin_inspector.esm.js:0
+#: code:addons/web_view_origin_inspector/static/src/js/view_origin_inspector.esm.js:0
+#, python-format
+msgid "Click a button or a field to see where it comes from. Esc to cancel."
+msgstr "คลิกปุ่มหรือฟิลด์เพื่อดูว่ามาจาก View ไหน กด Esc เพื่อยกเลิก"
+
+#. module: web_view_origin_inspector
+#. odoo-javascript
+#: code:addons/web_view_origin_inspector/static/src/xml/view_origin_inspector.xml:0
+#: code:addons/web_view_origin_inspector/static/src/xml/view_origin_inspector.xml:0
+#, python-format
+msgid "Clicked"
+msgstr "ที่คลิก"
+
+#. module: web_view_origin_inspector
+#. odoo-javascript
+#: code:addons/web_view_origin_inspector/static/src/xml/view_origin_inspector.xml:0
+#: code:addons/web_view_origin_inspector/static/src/xml/view_origin_inspector.xml:0
+#, python-format
+msgid "Close"
+msgstr "ปิด"
+
+#. module: web_view_origin_inspector
+#. odoo-javascript
+#: code:addons/web_view_origin_inspector/static/src/js/view_origin_inspector.esm.js:0
+#: code:addons/web_view_origin_inspector/static/src/js/view_origin_inspector.esm.js:0
+#, python-format
+msgid "Copied to clipboard"
+msgstr "คัดลอกแล้ว"
+
+#. module: web_view_origin_inspector
+#. odoo-javascript
+#: code:addons/web_view_origin_inspector/static/src/xml/view_origin_inspector.xml:0
+#: code:addons/web_view_origin_inspector/static/src/xml/view_origin_inspector.xml:0
+#, python-format
+msgid "Copy Hide XML"
+msgstr "คัดลอก XML ซ่อน"
+
+#. module: web_view_origin_inspector
+#. odoo-javascript
+#: code:addons/web_view_origin_inspector/static/src/xml/view_origin_inspector.xml:0
+#: code:addons/web_view_origin_inspector/static/src/xml/view_origin_inspector.xml:0
+#, python-format
+msgid "Copy XPath"
+msgstr "คัดลอก XPath"
+
+#. module: web_view_origin_inspector
+#. odoo-javascript
+#: code:addons/web_view_origin_inspector/static/src/js/view_origin_inspector.esm.js:0
+#: code:addons/web_view_origin_inspector/static/src/js/view_origin_inspector.esm.js:0
+#, python-format
+msgid ""
+"Create an extension view hiding this element now? It is recorded in View "
+"Change Log so it can be ported to code."
+msgstr "สร้าง View เพื่อซ่อนองค์ประกอบนี้ทันทีหรือไม่? การแก้ไขจะถูกบันทึกในบันทึกการแก้ไข View เพื่อนำไปย้ายลงโค้ดภายหลัง"
+
+#. module: web_view_origin_inspector
+#: model:ir.model.fields.selection,name:web_view_origin_inspector.selection__ir_ui_view_change_log__operation__create
+msgid "Created"
+msgstr "สร้าง"
+
+#. module: web_view_origin_inspector
+#: model:ir.model.fields,field_description:web_view_origin_inspector.field_ir_ui_view_change_log__create_uid
+msgid "Created by"
+msgstr "สร้างโดย"
+
+#. module: web_view_origin_inspector
+#: model:ir.model.fields,field_description:web_view_origin_inspector.field_ir_ui_view_change_log__create_date
+msgid "Created on"
+msgstr "สร้างเมื่อ"
+
+#. module: web_view_origin_inspector
+#: model_terms:ir.ui.view,arch_db:web_view_origin_inspector.ir_ui_view_change_log_view_form
+#: model_terms:ir.ui.view,arch_db:web_view_origin_inspector.ir_ui_view_change_log_view_search
+#: model_terms:ir.ui.view,arch_db:web_view_origin_inspector.ir_ui_view_change_log_view_tree
+msgid "Date"
+msgstr "วันที่"
+
+#. module: web_view_origin_inspector
+#. odoo-javascript
+#: code:addons/web_view_origin_inspector/static/src/js/view_origin_inspector.esm.js:0
+#: code:addons/web_view_origin_inspector/static/src/js/view_origin_inspector.esm.js:0
+#, python-format
+msgid "Declared"
+msgstr "ประกาศไว้"
+
+#. module: web_view_origin_inspector
+#: model_terms:ir.ui.view,arch_db:web_view_origin_inspector.ir_ui_view_change_log_view_form
+msgid "Delete the view created by the inspector?"
+msgstr "ลบ View ที่ Inspector สร้างไว้หรือไม่?"
+
+#. module: web_view_origin_inspector
+#: model:ir.model.fields.selection,name:web_view_origin_inspector.selection__ir_ui_view_change_log__operation__unlink
+msgid "Deleted"
+msgstr "ลบ"
+
+#. module: web_view_origin_inspector
+#: model_terms:ir.ui.view,arch_db:web_view_origin_inspector.ir_ui_view_change_log_view_form
+msgid "Diff"
+msgstr "ส่วนที่เปลี่ยน"
+
+#. module: web_view_origin_inspector
+#: model:ir.model.fields,field_description:web_view_origin_inspector.field_ir_ui_view_change_log__display_name
+msgid "Display Name"
+msgstr "ชื่อที่แสดง"
+
+#. module: web_view_origin_inspector
+#: model:ir.model.fields,field_description:web_view_origin_inspector.field_ir_ui_view_change_log__element
+msgid "Element"
+msgstr "องค์ประกอบ"
+
+#. module: web_view_origin_inspector
+#: model:ir.model.fields,help:web_view_origin_inspector.field_ir_ui_view_change_log__element
+msgid "Element hidden from the inspector"
+msgstr "องค์ประกอบที่ถูกซ่อนจาก Inspector"
+
+#. module: web_view_origin_inspector
+#: model:ir.model.fields,field_description:web_view_origin_inspector.field_ir_ui_view_change_log__view_xmlid
+msgid "External ID"
+msgstr "External ID"
+
+#. module: web_view_origin_inspector
+#: model_terms:ir.ui.view,arch_db:web_view_origin_inspector.ir_ui_view_change_log_view_search
+msgid "Group By"
+msgstr "จัดกลุ่มตาม"
+
+#. module: web_view_origin_inspector
+#: model:ir.model.fields.selection,name:web_view_origin_inspector.selection__ir_ui_view_change_log__operation__hide
+msgid "Hidden by Inspector"
+msgstr "ซ่อนด้วย Inspector"
+
+#. module: web_view_origin_inspector
+#. odoo-javascript
+#: code:addons/web_view_origin_inspector/static/src/xml/view_origin_inspector.xml:0
+#: code:addons/web_view_origin_inspector/static/src/xml/view_origin_inspector.xml:0
+#, python-format
+msgid "Hide Now"
+msgstr "ซ่อนทันที"
+
+#. module: web_view_origin_inspector
+#: model:ir.model.fields,field_description:web_view_origin_inspector.field_ir_ui_view_change_log__id
+msgid "ID"
+msgstr "ID"
+
+#. module: web_view_origin_inspector
+#: model_terms:ir.ui.view,arch_db:web_view_origin_inspector.ir_ui_view_change_log_view_form
+msgid "Ignore"
+msgstr "ไม่ต้องย้าย"
+
+#. module: web_view_origin_inspector
+#: model:ir.model.fields.selection,name:web_view_origin_inspector.selection__ir_ui_view_change_log__state__ignored
+msgid "Ignored"
+msgstr "ไม่ต้องย้าย"
+
+#. module: web_view_origin_inspector
+#: model:ir.model.fields,field_description:web_view_origin_inspector.field_ir_ui_view_change_log__parent_xmlid
+msgid "Inherited View"
+msgstr "View ที่สืบทอด"
+
+#. module: web_view_origin_inspector
+#. odoo-javascript
+#: code:addons/web_view_origin_inspector/static/src/js/view_origin_inspector.esm.js:0
+#: code:addons/web_view_origin_inspector/static/src/js/view_origin_inspector.esm.js:0
+#, python-format
+msgid "Inspect View Element"
+msgstr "ตรวจหาที่มาของปุ่ม/ฟิลด์"
+
+#. module: web_view_origin_inspector
+#: model:ir.model.fields,field_description:web_view_origin_inspector.field_ir_ui_view_change_log____last_update
+msgid "Last Modified on"
+msgstr "แก้ไขล่าสุดเมื่อ"
+
+#. module: web_view_origin_inspector
+#: model:ir.model.fields,field_description:web_view_origin_inspector.field_ir_ui_view_change_log__write_uid
+msgid "Last Updated by"
+msgstr "อัปเดตล่าสุดโดย"
+
+#. module: web_view_origin_inspector
+#: model:ir.model.fields,field_description:web_view_origin_inspector.field_ir_ui_view_change_log__write_date
+msgid "Last Updated on"
+msgstr "อัปเดตล่าสุดเมื่อ"
+
+#. module: web_view_origin_inspector
+#: model_terms:ir.ui.view,arch_db:web_view_origin_inspector.ir_ui_view_change_log_view_form
+msgid "Mark Ported to Code"
+msgstr "ย้ายลงโค้ดแล้ว"
+
+#. module: web_view_origin_inspector
+#. odoo-javascript
+#: code:addons/web_view_origin_inspector/static/src/xml/view_origin_inspector.xml:0
+#: code:addons/web_view_origin_inspector/static/src/xml/view_origin_inspector.xml:0
+#: model:ir.model.fields,field_description:web_view_origin_inspector.field_ir_ui_view_change_log__model
+#: model_terms:ir.ui.view,arch_db:web_view_origin_inspector.ir_ui_view_change_log_view_search
+#, python-format
+msgid "Model"
+msgstr "โมเดล"
+
+#. module: web_view_origin_inspector
+#: model:ir.model.fields.selection,name:web_view_origin_inspector.selection__ir_ui_view_change_log__operation__write
+msgid "Modified"
+msgstr "แก้ไข"
+
+#. module: web_view_origin_inspector
+#. odoo-javascript
+#: code:addons/web_view_origin_inspector/static/src/xml/view_origin_inspector.xml:0
+#: code:addons/web_view_origin_inspector/static/src/xml/view_origin_inspector.xml:0
+#, python-format
+msgid "Module"
+msgstr "โมดูล"
+
+#. module: web_view_origin_inspector
+#. odoo-javascript
+#: code:addons/web_view_origin_inspector/static/src/js/view_origin_inspector.esm.js:0
+#: code:addons/web_view_origin_inspector/static/src/js/view_origin_inspector.esm.js:0
+#, python-format
+msgid "Moved"
+msgstr "ย้ายตำแหน่ง"
+
+#. module: web_view_origin_inspector
+#. odoo-javascript
+#: code:addons/web_view_origin_inspector/static/src/xml/view_origin_inspector.xml:0
+#: code:addons/web_view_origin_inspector/static/src/xml/view_origin_inspector.xml:0
+#, python-format
+msgid "No longer in the view"
+msgstr "ไม่อยู่ใน View แล้ว"
+
+#. module: web_view_origin_inspector
+#: model_terms:ir.actions.act_window,help:web_view_origin_inspector.ir_ui_view_change_log_action
+msgid "No manual view change yet"
+msgstr "ยังไม่มีการแก้ไข View ด้วยมือ"
+
+#. module: web_view_origin_inspector
+#. odoo-javascript
+#: code:addons/web_view_origin_inspector/static/src/xml/view_origin_inspector.xml:0
+#: code:addons/web_view_origin_inspector/static/src/xml/view_origin_inspector.xml:0
+#, python-format
+msgid ""
+"Not found in this view. It may come from a separate sub-view\n"
+"                (e.g. a list view loaded for a one2many) or be rendered by JavaScript."
+msgstr "ไม่พบใน View นี้ อาจมาจาก sub-view ที่โหลดแยก (เช่น list view ของ one2many) หรือถูกสร้างด้วย JavaScript"
+
+#. module: web_view_origin_inspector
+#: model:ir.model.fields,field_description:web_view_origin_inspector.field_ir_ui_view_change_log__note
+#: model_terms:ir.ui.view,arch_db:web_view_origin_inspector.ir_ui_view_change_log_view_form
+msgid "Note"
+msgstr "หมายเหตุ"
+
+#. module: web_view_origin_inspector
+#. odoo-python
+#: code:addons/web_view_origin_inspector/models/ir_ui_view.py:0
+#: code:addons/web_view_origin_inspector/models/ir_ui_view.py:0
+#, python-format
+msgid "Nothing to hide."
+msgstr "ไม่มีองค์ประกอบให้ซ่อน"
+
+#. module: web_view_origin_inspector
+#. odoo-python
+#: code:addons/web_view_origin_inspector/models/ir_ui_view.py:0
+#: code:addons/web_view_origin_inspector/models/ir_ui_view.py:0
+#, python-format
+msgid "Nothing to inspect."
+msgstr "ไม่มีองค์ประกอบให้ตรวจ"
+
+#. module: web_view_origin_inspector
+#: model:ir.model.fields,field_description:web_view_origin_inspector.field_ir_ui_view_change_log__operation
+#: model_terms:ir.ui.view,arch_db:web_view_origin_inspector.ir_ui_view_change_log_view_search
+msgid "Operation"
+msgstr "การกระทำ"
+
+#. module: web_view_origin_inspector
+#: model_terms:ir.ui.view,arch_db:web_view_origin_inspector.ir_ui_view_change_log_view_search
+msgid "Overwritten on Upgrade"
+msgstr "ถูกทับเมื่ออัปเกรด"
+
+#. module: web_view_origin_inspector
+#: model:ir.model.fields.selection,name:web_view_origin_inspector.selection__ir_ui_view_change_log__state__done
+msgid "Ported to Code"
+msgstr "ย้ายลงโค้ดแล้ว"
+
+#. module: web_view_origin_inspector
+#. odoo-javascript
+#: code:addons/web_view_origin_inspector/static/src/xml/view_origin_inspector.xml:0
+#: code:addons/web_view_origin_inspector/static/src/xml/view_origin_inspector.xml:0
+#, python-format
+msgid "Priority"
+msgstr "ลำดับความสำคัญ"
+
+#. module: web_view_origin_inspector
+#: model:ir.model.fields,help:web_view_origin_inspector.field_ir_ui_view_change_log__xml_snippet
+msgid "Record to paste in a module data file"
+msgstr "Record สำหรับวางในไฟล์ข้อมูลของโมดูล"
+
+#. module: web_view_origin_inspector
+#. odoo-javascript
+#: code:addons/web_view_origin_inspector/static/src/js/view_origin_inspector.esm.js:0
+#: code:addons/web_view_origin_inspector/static/src/js/view_origin_inspector.esm.js:0
+#, python-format
+msgid "Removed"
+msgstr "ลบออก"
+
+#. module: web_view_origin_inspector
+#: model:ir.model.fields,field_description:web_view_origin_inspector.field_ir_ui_view_change_log__reset_on_upgrade
+msgid "Reset On Upgrade"
+msgstr "ถูกทับเมื่ออัปเกรด"
+
+#. module: web_view_origin_inspector
+#. odoo-javascript
+#: code:addons/web_view_origin_inspector/static/src/xml/view_origin_inspector.xml:0
+#: code:addons/web_view_origin_inspector/static/src/xml/view_origin_inspector.xml:0
+#, python-format
+msgid "Result:"
+msgstr "ผลลัพธ์:"
+
+#. module: web_view_origin_inspector
+#: model_terms:ir.ui.view,arch_db:web_view_origin_inspector.ir_ui_view_change_log_view_form
+msgid "Revert (show again)"
+msgstr "ย้อนกลับ (แสดงอีกครั้ง)"
+
+#. module: web_view_origin_inspector
+#: model:ir.model.fields.selection,name:web_view_origin_inspector.selection__ir_ui_view_change_log__state__reverted
+msgid "Reverted"
+msgstr "ย้อนกลับแล้ว"
+
+#. module: web_view_origin_inspector
+#: model:ir.model.fields,field_description:web_view_origin_inspector.field_ir_ui_view_change_log__arch_fs
+msgid "Source File"
+msgstr "ไฟล์ต้นทาง"
+
+#. module: web_view_origin_inspector
+#. odoo-javascript
+#: code:addons/web_view_origin_inspector/static/src/xml/view_origin_inspector.xml:0
+#, python-format
+msgid "Source View"
+msgstr "View ต้นทาง"
+
+#. module: web_view_origin_inspector
+#: model:ir.model.fields,field_description:web_view_origin_inspector.field_ir_ui_view_change_log__state
+msgid "State"
+msgstr "สถานะ"
+
+#. module: web_view_origin_inspector
+#: model_terms:ir.ui.view,arch_db:web_view_origin_inspector.ir_ui_view_change_log_view_search
+msgid "Status"
+msgstr "สถานะ"
+
+#. module: web_view_origin_inspector
+#: model:ir.model.fields,help:web_view_origin_inspector.field_ir_ui_view_change_log__reset_on_upgrade
+msgid ""
+"The view comes from a module file without noupdate: the next upgrade of that"
+" module overwrites this change."
+msgstr "View นี้มาจากไฟล์ของโมดูลและไม่ได้ตั้ง noupdate: การอัปเกรดโมดูลครั้งถัดไปจะทับการแก้ไขนี้"
+
+#. module: web_view_origin_inspector
+#: model_terms:ir.ui.view,arch_db:web_view_origin_inspector.ir_ui_view_change_log_view_form
+msgid ""
+"This view comes from a module file: the next upgrade of\n"
+"                        that module overwrites this change. Port it to code first."
+msgstr "View นี้มาจากไฟล์ของโมดูล: การอัปเกรดโมดูลครั้งถัดไปจะทับการแก้ไขนี้ กรุณาย้ายลงโค้ดก่อน"
+
+#. module: web_view_origin_inspector
+#: model:ir.model.fields.selection,name:web_view_origin_inspector.selection__ir_ui_view_change_log__state__pending
+#: model_terms:ir.ui.view,arch_db:web_view_origin_inspector.ir_ui_view_change_log_view_search
+msgid "To Port"
+msgstr "รอย้ายลงโค้ด"
+
+#. module: web_view_origin_inspector
+#. odoo-javascript
+#: code:addons/web_view_origin_inspector/static/src/xml/view_origin_inspector.xml:0
+#: code:addons/web_view_origin_inspector/static/src/xml/view_origin_inspector.xml:0
+#: model:ir.model,name:web_view_origin_inspector.model_ir_ui_view
+#: model:ir.model.fields,field_description:web_view_origin_inspector.field_ir_ui_view_change_log__view_id
+#: model_terms:ir.ui.view,arch_db:web_view_origin_inspector.ir_ui_view_change_log_view_form
+#, python-format
+msgid "View"
+msgstr "View"
+
+#. module: web_view_origin_inspector
+#: model:ir.actions.act_window,name:web_view_origin_inspector.ir_ui_view_change_log_action
+#: model:ir.model,name:web_view_origin_inspector.model_ir_ui_view_change_log
+#: model:ir.ui.menu,name:web_view_origin_inspector.ir_ui_view_change_log_menu
+msgid "View Change Log"
+msgstr "บันทึกการแก้ไข View"
+
+#. module: web_view_origin_inspector
+#: model:ir.model.fields,field_description:web_view_origin_inspector.field_ir_ui_view_change_log__view_name
+msgid "View Name"
+msgstr "ชื่อ View"
+
+#. module: web_view_origin_inspector
+#. odoo-javascript
+#: code:addons/web_view_origin_inspector/static/src/js/view_origin_inspector.esm.js:0
+#: code:addons/web_view_origin_inspector/static/src/js/view_origin_inspector.esm.js:0
+#, python-format
+msgid "View Origin: "
+msgstr "ที่มาของ: "
+
+#. module: web_view_origin_inspector
+#: model_terms:ir.actions.act_window,help:web_view_origin_inspector.ir_ui_view_change_log_action
+msgid ""
+"Views created, edited or deleted from the database (Edit View,\n"
+"                View Origin Inspector...) are listed here so they can be ported\n"
+"                to code before the next deploy."
+msgstr "View ที่สร้าง แก้ไข หรือลบจากหน้าเว็บ (Edit View, View Origin Inspector...) จะแสดงที่นี่ เพื่อนำไปย้ายลงโค้ดก่อน deploy ครั้งถัดไป"
+
+#. module: web_view_origin_inspector
+#. odoo-javascript
+#: code:addons/web_view_origin_inspector/static/src/xml/view_origin_inspector.xml:0
+#: code:addons/web_view_origin_inspector/static/src/xml/view_origin_inspector.xml:0
+#, python-format
+msgid "What it did"
+msgstr "สิ่งที่ทำ"
+
+#. module: web_view_origin_inspector
+#: model:ir.model.fields,field_description:web_view_origin_inspector.field_ir_ui_view_change_log__xml_snippet
+#: model_terms:ir.ui.view,arch_db:web_view_origin_inspector.ir_ui_view_change_log_view_form
+msgid "XML to Port"
+msgstr "XML สำหรับย้ายลงโค้ด"
+
+#. module: web_view_origin_inspector
+#: model:ir.model.fields,field_description:web_view_origin_inspector.field_ir_ui_view_change_log__target_xpath
+msgid "XPath"
+msgstr "XPath"
+
+#. module: web_view_origin_inspector
+#. odoo-javascript
+#: code:addons/web_view_origin_inspector/static/src/xml/view_origin_inspector.xml:0
+#: code:addons/web_view_origin_inspector/static/src/xml/view_origin_inspector.xml:0
+#, python-format
+msgid "· View"
+msgstr "· View"

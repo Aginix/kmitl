@@ -1,0 +1,20 @@
+body.o_view_origin_inspecting .o_action_manager {
+    cursor: crosshair;
+}
+
+.o_view_origin_hover {
+    outline: 2px dashed $primary !important;
+    outline-offset: 2px;
+    background-color: rgba($primary, 0.08) !important;
+}
+
+// Odoo forces a gray text on badges: unreadable on dark backgrounds
+.o_view_origin_dialog .badge {
+    font-size: 1rem;
+    &.bg-primary,
+    &.bg-success,
+    &.bg-danger,
+    &.bg-secondary {
+        color: $white;
+    }
+}
