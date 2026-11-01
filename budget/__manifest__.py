@@ -14,7 +14,7 @@
     ],
     "data": [
         "data/budget_journal.xml",
-        "data/budget.account.csv",
+        "data/budget_account_data.xml",
         "data/budget_account_rules.xml",
         "data/budget_sequence.xml",
         "security/security.xml",
