@@ -272,6 +272,8 @@
                         <t t-set="idx" t-value="idx + 1" />
                         <li><t t-esc="idx" />. <t
                                 t-esc="committee.name"
+                            /> <span
+                                t-esc="committee._fields['approve_role'].convert_to_export(committee.approve_role, committee)"
                             /></li>
                     </t>
                 </ul>
@@ -309,6 +311,9 @@
         <li> ขออนุมัติแต่งตั้งคณะกรรมการตรวจรับพัสดุ ดังต่อไปนี้ <ol>
                 <li t-foreach="o.work_acceptance_committee_ids" t-as="committee">
                     <span t-field="committee.employee_id" />
+                    <span
+                        t-esc="committee._fields['approve_role'].convert_to_export(committee.approve_role, committee)"
+                    />
                 </li>
             </ol>
         </li>
