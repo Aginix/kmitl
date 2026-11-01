@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_disbursement_request_tree" model="ir.ui.view">
+        <field name="name">disbursement.request.tree (disbursement_apportionment)</field>
+        <field name="model">disbursement.request</field>
+        <field name="inherit_id" ref="disbursement.view_disbursement_request_tree" />
+        <field name="arch" type="xml">
+            <field name="amount_total" position="after">
+                <field name="is_apportioned" optional="hide" />
+                <field name="apportionment_amount" optional="hide" sum="Total" />
+            </field>
+        </field>
+    </record>
+
+    <record id="view_disbursement_request_form" model="ir.ui.view">
+        <field name="name">disbursement.request.form (disbursement_apportionment)</field>
+        <field name="model">disbursement.request</field>
+        <field name="inherit_id" ref="disbursement_budget.view_disbursement_request_form" />
+        <field name="arch" type="xml">
+            <div name="button_box" position="inside">
+                <button
+                    name="action_view_apportionment_transfer"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-exchange"
+                    string="ใบโอนปันส่วน"
+                    attrs="{'invisible': [('apportionment_transfer_id', '=', False)]}"
+                    groups="budget.group_budget_user"
+                />
+            </div>
+            <!-- ปันส่วน (disbursement ADR-0009): consumed directly, never
+                 through a reservation. -->
+            <field name="consumes_budget" position="after">
+                <field
+                    name="is_apportioned"
+                    groups="disbursement_apportionment.group_disbursement_apportionment"
+                    attrs="{'readonly': [('can_edit_budget', '=', False)]}"
+                />
+                <!-- Shown, not settable, without the right. -->
+                <field
+                    name="is_apportioned"
+                    readonly="1"
+                    groups="!disbursement_apportionment.group_disbursement_apportionment"
+                />
+                <field name="apportionment_transfer_id" attrs="{'invisible': [('apportionment_transfer_id', '=', False)]}" />
+            </field>
+            <field name="budget_commitment_id" position="attributes">
+                <attribute name="attrs">{'readonly': [('can_edit_budget', '=', False)], 'invisible': [('is_apportioned', '=', True), ('budget_commitment_id', '=', False)]}</attribute>
+            </field>
+            <xpath expr="//notebook/page[@name='lines']" position="after">
+                <page
+                    string="ปันส่วน"
+                    name="apportionment"
+                    attrs="{'invisible': [('is_apportioned', '=', False)]}"
+                >
+                    <field
+                        name="apportionment_line_ids"
+                        attrs="{'readonly': [('can_edit_lines', '=', False)]}"
+                    >
+                        <tree editable="bottom">
+                            <field name="sequence" widget="handle" />
+                            <field name="name" />
+                            <field name="budget_account_id" options="{'no_create': True, 'no_open': True}" />
+                            <field name="source_analytic_id" optional="hide" />
+                            <field name="department_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" />
+                            <field name="fund_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" />
+                            <field name="activity_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" />
+                            <field name="amount" sum="Total" />
+                            <field name="analytic_distribution" invisible="1" />
+                            <field name="currency_id" invisible="1" />
+                        </tree>
+                    </field>
+                    <group class="oe_subtotal_footer oe_right">
+                        <field name="amount_total" string="ยอดเบิก (จ่ายผู้รับเงิน)" />
+                        <field name="apportionment_amount" string="ยอดปันส่วน" />
+                        <field name="budget_total_amount" string="ยอดตัดงบรวม" class="oe_subtotal_footer_separator" />
+                    </group>
+                    <div class="oe_clear" />
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_disbursement_request_search" model="ir.ui.view">
+        <field name="name">disbursement.request.search (disbursement_apportionment)</field>
+        <field name="model">disbursement.request</field>
+        <field name="inherit_id" ref="disbursement.view_disbursement_request_search" />
+        <field name="arch" type="xml">
+            <filter name="tofix" position="before">
+                <filter
+                    string="Apportioned"
+                    name="apportioned"
+                    domain="[('is_apportioned', '=', True)]"
+                />
+                <separator />
+            </filter>
+        </field>
+    </record>
+</odoo>

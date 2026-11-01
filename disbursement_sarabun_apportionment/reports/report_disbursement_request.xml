@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ปันส่วน (disbursement ADR-0009): the head signs the apportionment along
+         with the payees, so the หนังสือ shows where it goes. -->
+    <template id="report_disbursement_request_body" inherit_id="disbursement_sarabun.report_disbursement_request_body">
+        <xpath expr="//t[@t-foreach='partners']" position="after">
+            <t t-if="o.is_apportioned and o.apportionment_line_ids">
+                <div class="row mt-3 mb-2">
+                    <div class="col">
+                        <strong>ปันส่วน (โอนงบประมาณ ไม่จ่ายเงิน)</strong>
+                    </div>
+                </div>
+                <table border="0" class="table table-bordered table-sm">
+                    <thead>
+                        <tr>
+                            <th class="text-center" style="width: 8%">ลำดับ</th>
+                            <th class="text-center">รหัสงบประมาณ</th>
+                            <th class="text-center">ส่วนงาน</th>
+                            <th class="text-center">กองทุน</th>
+                            <th class="text-center">ด้าน/แผนงาน/กิจกรรม</th>
+                            <th class="text-end" style="width: 18%">จำนวนเงิน</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="o.apportionment_line_ids" t-as="line">
+                            <td class="text-center" t-out="line_index + 1"/>
+                            <!-- Code and own name only: the full hierarchy wraps a narrow column. -->
+                            <td t-foreach="(line.budget_account_id, line.department_analytic_id, line.fund_analytic_id, line.activity_analytic_id)" t-as="dim" t-out="'[%s] %s' % (dim.code, dim.name) if dim else ''"/>
+                            <td class="text-end" t-out="'{0:,.2f} ฿'.format(line.amount)"/>
+                        </tr>
+                        <tr>
+                            <td class="text-center" colspan="5">รวมปันส่วน</td>
+                            <td class="text-end" t-out="'{0:,.2f} ฿'.format(o.apportionment_amount)"/>
+                        </tr>
+                        <tr>
+                            <td class="text-center" colspan="5">
+                                ยอดตัดงบรวม
+                                <t t-out="'(%s)' % o.currency_id.with_context({'lang': 'th_TH'}).amount_to_text(o.budget_total_amount)"/>
+                            </td>
+                            <td class="text-end" t-out="'{0:,.2f} ฿'.format(o.budget_total_amount)"/>
+                        </tr>
+                    </tbody>
+                </table>
+            </t>
+        </xpath>
+    </template>
+</odoo>
