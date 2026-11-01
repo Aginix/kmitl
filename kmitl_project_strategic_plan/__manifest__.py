@@ -9,7 +9,7 @@
     "license": "LGPL-3",
     "depends": ["kmitl_project"],
     "data": [
-        "data/project.strategic.plan.csv",
+        "data/project_strategic_plan_data.xml",
         "views/kmitl_project_views.xml",
         "views/portal_templates.xml",
         "report/report_kmitl_project.xml",

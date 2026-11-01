@@ -1,0 +1,517 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+
+    <!-- แผนบริหารสถาบัน -->
+    <record id="KA00" model="project.strategic.plan">
+        <field name="code">KA00</field>
+        <field name="name">แผนบริหารสถาบัน</field>
+        <field name="level">4</field>
+    </record>
+    <record id="KA01" model="project.strategic.plan">
+        <field name="code">KA01</field>
+        <field
+            name="name"
+        >บัณฑิตที่มีงานทำหรือประกอบอาชีพอิสระ ภายใน 1 ปี (ร้อยละ)</field>
+        <field name="level">4</field>
+        <field name="parent_id" ref="KA00" />
+    </record>
+    <record id="KA02" model="project.strategic.plan">
+        <field name="code">KA02</field>
+        <field name="name">ความพึงพอใจผู้ใช้บัณฑิต (ร้อยละ)</field>
+        <field name="level">4</field>
+        <field name="parent_id" ref="KA00" />
+    </record>
+    <record id="KA03" model="project.strategic.plan">
+        <field name="code">KA03</field>
+        <field name="name">จำนวนนักศึกษา Inbound-Outbound (คน)</field>
+        <field name="level">4</field>
+        <field name="parent_id" ref="KA00" />
+    </record>
+    <record id="KA04" model="project.strategic.plan">
+        <field name="code">KA04</field>
+        <field name="name">จำนวนผู้อบรมหลักสูตรระยะสั้น Re-skill/Up-skill (คน)</field>
+        <field name="level">4</field>
+        <field name="parent_id" ref="KA00" />
+    </record>
+    <record id="KA05" model="project.strategic.plan">
+        <field name="code">KA05</field>
+        <field
+            name="name"
+        >หลักสูตรที่ผ่านการประเมินความสอดคล้องกับ Skill Map ของสาขาวิชา (ร้อยละ)</field>
+        <field name="level">4</field>
+        <field name="parent_id" ref="KA00" />
+    </record>
+    <record id="KA06" model="project.strategic.plan">
+        <field name="code">KA06</field>
+        <field
+            name="name"
+        >ร้อยละของนักศึกษาที่มีทักษะทางด้านเทคโนโลยี และด้าน AI ในระดับที่ใช้งานได้ (Competency) (ร้อยละ)</field>
+        <field name="level">4</field>
+        <field name="parent_id" ref="KA00" />
+    </record>
+    <record id="KA07" model="project.strategic.plan">
+        <field name="code">KA07</field>
+        <field name="name">จำนวนเงินทุนวิจัย (ล้านบาท)</field>
+        <field name="level">4</field>
+        <field name="parent_id" ref="KA00" />
+    </record>
+    <record id="KA08" model="project.strategic.plan">
+        <field name="code">KA08</field>
+        <field name="name">จำนวนเงินรายได้จากการให้บริการทางวิชาการ (ล้านบาท)</field>
+        <field name="level">4</field>
+        <field name="parent_id" ref="KA00" />
+    </record>
+    <record id="KA09" model="project.strategic.plan">
+        <field name="code">KA09</field>
+        <field
+            name="name"
+        >สัดส่วนเงินรายได้ที่ได้จากการให้บริการวิชาการจากภาคเอกชน (ร้อยละ)</field>
+        <field name="level">4</field>
+        <field name="parent_id" ref="KA00" />
+    </record>
+    <record id="KA10" model="project.strategic.plan">
+        <field name="code">KA10</field>
+        <field
+            name="name"
+        >จำนวนผลงานวิจัยที่มีคุณภาพและบทความในระดับ Q1, Q2 (เรื่อง)</field>
+        <field name="level">4</field>
+        <field name="parent_id" ref="KA00" />
+    </record>
+    <record id="KA11" model="project.strategic.plan">
+        <field name="code">KA11</field>
+        <field
+            name="name"
+        >ผลงานวิจัยและนวัตกรรม/ทรัพย์สินทางปัญญาที่นำไปใช้ประโยชน์ (ชิ้น / โครงการ)</field>
+        <field name="level">4</field>
+        <field name="parent_id" ref="KA00" />
+    </record>
+    <record id="KA12" model="project.strategic.plan">
+        <field name="code">KA12</field>
+        <field
+            name="name"
+        >จำนวนและผลลัพธ์ผลงานวิจัยและนวัตกรรมเพื่อแก้ปัญหาพื้นที่ (เรื่อง / ผลลัพธ์)</field>
+        <field name="level">4</field>
+        <field name="parent_id" ref="KA00" />
+    </record>
+    <record id="KA13" model="project.strategic.plan">
+        <field name="code">KA13</field>
+        <field
+            name="name"
+        >ผลงานวิจัยที่เผยแพร่ในวารสารที่มีความร่วมมือกับนักวิจัยต่างชาติ (ร้อยละ)</field>
+        <field name="level">4</field>
+        <field name="parent_id" ref="KA00" />
+    </record>
+    <record id="KA14" model="project.strategic.plan">
+        <field name="code">KA14</field>
+        <field
+            name="name"
+        >การอ้างอิงของผลงานวิจัยที่ตีพิมพ์มาแล้ว 5 ปี (สัดส่วน)</field>
+        <field name="level">4</field>
+        <field name="parent_id" ref="KA00" />
+    </record>
+    <record id="KA15" model="project.strategic.plan">
+        <field name="code">KA15</field>
+        <field
+            name="name"
+        >จำนวน Startup และ Spin-off ที่ดำเนินธุรกิจแล้ว (บริษัท)</field>
+        <field name="level">4</field>
+        <field name="parent_id" ref="KA00" />
+    </record>
+    <record id="KA16" model="project.strategic.plan">
+        <field name="code">KA16</field>
+        <field
+            name="name"
+        >รายได้จากลูกค้าภายนอกของบริษัทในพอร์ต (Holding Company) เทียบกับแผน (ร้อยละ)</field>
+        <field name="level">4</field>
+        <field name="parent_id" ref="KA00" />
+    </record>
+    <record id="KA17" model="project.strategic.plan">
+        <field name="code">KA17</field>
+        <field
+            name="name"
+        >บริษัทในพอร์ต (Holding Company) ที่ผลการประเมินตามข้อตกลงผลการดำเนินงานผ่านเกณฑ์ (ร้อยละ)</field>
+        <field name="level">4</field>
+        <field name="parent_id" ref="KA00" />
+    </record>
+    <record id="KA18" model="project.strategic.plan">
+        <field name="code">KA18</field>
+        <field
+            name="name"
+        >จำนวนเทคโนโลยีหรือทรัพย์สินทางปัญญาของสถาบันที่ใช้ประโยชน์เชิงพาณิชย์จริงผ่านบริษัทในพอร์ต (Holding Company) (เทคโนโลยี)</field>
+        <field name="level">4</field>
+        <field name="parent_id" ref="KA00" />
+    </record>
+    <record id="KA19" model="project.strategic.plan">
+        <field name="code">KA19</field>
+        <field
+            name="name"
+        >ข้อมูลเกณฑ์ รายชื่อผู้ทรงคุณวุฒิ และผลจัดสรรทุน ที่เปิดเผยต่อสาธารณะ ผ่านระบบออนไลน์ (ร้อยละ)</field>
+        <field name="level">4</field>
+        <field name="parent_id" ref="KA00" />
+    </record>
+    <record id="KA20" model="project.strategic.plan">
+        <field name="code">KA20</field>
+        <field
+            name="name"
+        >ความพึงพอใจของอาจารย์และนักวิจัยต่อระบบบริหารจัดการ (ร้อยละ)</field>
+        <field name="level">4</field>
+        <field name="parent_id" ref="KA00" />
+    </record>
+    <record id="KA21" model="project.strategic.plan">
+        <field name="code">KA21</field>
+        <field name="name">จำนวนนวัตกรรมทางการแพทย์ (ชิ้น/เรื่อง)</field>
+        <field name="level">4</field>
+        <field name="parent_id" ref="KA00" />
+    </record>
+    <record id="KA22" model="project.strategic.plan">
+        <field name="code">KA22</field>
+        <field
+            name="name"
+        >สถาบันอยู่ในอันดับ 1 ใน 10 ของประเทศไทยจาก THE WUP/QS (อันดับ)</field>
+        <field name="level">4</field>
+        <field name="parent_id" ref="KA00" />
+    </record>
+    <record id="KA23" model="project.strategic.plan">
+        <field name="code">KA23</field>
+        <field
+            name="name"
+        >มูลค่าผลกระทบจากโครงการหรือผลงานวิจัยที่นำไปใช้ประโยชน์ให้สถาบันหรือประเทศชาติ (ล้านบาท)</field>
+        <field name="level">4</field>
+        <field name="parent_id" ref="KA00" />
+    </record>
+    <record id="KA24" model="project.strategic.plan">
+        <field name="code">KA24</field>
+        <field
+            name="name"
+        >จำนวนความร่วมมือกับหน่วยงานภายนอกที่มีกิจกรรมจริงในรอบปี (ราย)</field>
+        <field name="level">4</field>
+        <field name="parent_id" ref="KA00" />
+    </record>
+    <record id="KA25" model="project.strategic.plan">
+        <field name="code">KA25</field>
+        <field
+            name="name"
+        >ระดับความสำเร็จของการจัดทำฐานข้อมูลและพัฒนาชุมชน/กลุ่มวิสาหกิจในพื้นที่วิทยาเขต (ร้อยละ)</field>
+        <field name="level">4</field>
+        <field name="parent_id" ref="KA00" />
+    </record>
+    <record id="KA26" model="project.strategic.plan">
+        <field name="code">KA26</field>
+        <field
+            name="name"
+        >ฐานข้อมูลพันธุ์พืชจากการสำรวจพื้นที่ จำนวน 40-60 ชนิด (เล่ม)</field>
+        <field name="level">4</field>
+        <field name="parent_id" ref="KA00" />
+    </record>
+    <record id="KA27" model="project.strategic.plan">
+        <field name="code">KA27</field>
+        <field
+            name="name"
+        >จำนวนผู้รับบริการวิชาการความรู้ด้านการบริหารจัดการและการอนุรักษ์ (คน)</field>
+        <field name="level">4</field>
+        <field name="parent_id" ref="KA00" />
+    </record>
+    <record id="KA28" model="project.strategic.plan">
+        <field name="code">KA28</field>
+        <field
+            name="name"
+        >ความพึงพอใจของผู้รับบริการวิชาการความรู้ด้านการบริหารจัดการและอนุรักษ์ (ร้อยละ)</field>
+        <field name="level">4</field>
+        <field name="parent_id" ref="KA00" />
+    </record>
+    <record id="KA29" model="project.strategic.plan">
+        <field name="code">KA29</field>
+        <field
+            name="name"
+        >จำนวนรายวิชา/หลักสูตรฝึกอบรมเพื่อสะสมหน่วยกิต (Credit bank) สำหรับ Biodiversity (รายวิชา)</field>
+        <field name="level">4</field>
+        <field name="parent_id" ref="KA00" />
+    </record>
+    <record id="KA30" model="project.strategic.plan">
+        <field name="code">KA30</field>
+        <field
+            name="name"
+        >จำนวนผู้ลงทะเบียนรายวิชา/หลักสูตรฝึกอบรมเพื่อสะสมหน่วยกิต (Credit bank) สำหรับ Biodiversity (คน)</field>
+        <field name="level">4</field>
+        <field name="parent_id" ref="KA00" />
+    </record>
+    <record id="KA31" model="project.strategic.plan">
+        <field name="code">KA31</field>
+        <field name="name">การลดการปล่อยคาร์บอนจากกิจกรรมภายในสถาบัน (ร้อยละ)</field>
+        <field name="level">4</field>
+        <field name="parent_id" ref="KA00" />
+    </record>
+    <record id="KA32" model="project.strategic.plan">
+        <field name="code">KA32</field>
+        <field
+            name="name"
+        >ความพึงพอใจต่อสภาพแวดล้อม ความสะอาด และความปลอดภัย (ระดับคะแนน)</field>
+        <field name="level">4</field>
+        <field name="parent_id" ref="KA00" />
+    </record>
+    <record id="KA33" model="project.strategic.plan">
+        <field name="code">KA33</field>
+        <field name="name">การใช้พลังงานที่ลดลง (ร้อยละ)</field>
+        <field name="level">4</field>
+        <field name="parent_id" ref="KA00" />
+    </record>
+    <record id="KA34" model="project.strategic.plan">
+        <field name="code">KA34</field>
+        <field
+            name="name"
+        >ระดับความสำเร็จของการพัฒนาแพลตฟอร์มดิจิทัลเมืองอัจฉริยะ (City Data Platform/IOC Dashboard) (ระบบ)</field>
+        <field name="level">4</field>
+        <field name="parent_id" ref="KA00" />
+    </record>
+    <record id="KA35" model="project.strategic.plan">
+        <field name="code">KA35</field>
+        <field
+            name="name"
+        >บุคลากรสายวิชาการที่ดำรงตำแหน่งทางวิชาการที่สูงขึ้นต่อจำนวนอาจารย์ที่มีตำแหน่งทางวิชาการ (ร้อยละ)</field>
+        <field name="level">4</field>
+        <field name="parent_id" ref="KA00" />
+    </record>
+    <record id="KA36" model="project.strategic.plan">
+        <field name="code">KA36</field>
+        <field name="name">สายสนับสนุนวิชาการที่ดำรงตำแหน่งสูงขึ้น (คน)</field>
+        <field name="level">4</field>
+        <field name="parent_id" ref="KA00" />
+    </record>
+    <record id="KA37" model="project.strategic.plan">
+        <field name="code">KA37</field>
+        <field name="name">ดัชนีความสุขในการทำงาน (ร้อยละ)</field>
+        <field name="level">4</field>
+        <field name="parent_id" ref="KA00" />
+    </record>
+    <record id="KA38" model="project.strategic.plan">
+        <field name="code">KA38</field>
+        <field name="name">ความมั่นคงของสถานะการเงินเพิ่มขึ้น (ร้อยละ)</field>
+        <field name="level">4</field>
+        <field name="parent_id" ref="KA00" />
+    </record>
+    <record id="KA39" model="project.strategic.plan">
+        <field name="code">KA39</field>
+        <field
+            name="name"
+        >จำนวนบริการที่เปิดให้บริการของโรงพยาบาลพระจอมเกล้าฯ (รายการ)</field>
+        <field name="level">4</field>
+        <field name="parent_id" ref="KA00" />
+    </record>
+    <record id="KA40" model="project.strategic.plan">
+        <field name="code">KA40</field>
+        <field name="name">จำนวนผู้รับบริการของโรงพยาบาลพระจอมเกล้าฯ (คน)</field>
+        <field name="level">4</field>
+        <field name="parent_id" ref="KA00" />
+    </record>
+    <record id="KA41" model="project.strategic.plan">
+        <field name="code">KA41</field>
+        <field
+            name="name"
+        >ความพึงพอใจของผู้รับบริการโรงพยาบาลพระจอมเกล้าฯ (ร้อยละ)</field>
+        <field name="level">4</field>
+        <field name="parent_id" ref="KA00" />
+    </record>
+    <record id="KA42" model="project.strategic.plan">
+        <field name="code">KA42</field>
+        <field
+            name="name"
+        >หลักสูตร/รายวิชาที่จัดการเรียนการสอนร่วมกับคณะพยาบาลศาสตร์และคณะแพทยศาสตร์ (รายวิชา/หลักสูตร)</field>
+        <field name="level">4</field>
+        <field name="parent_id" ref="KA00" />
+    </record>
+    <record id="KA43" model="project.strategic.plan">
+        <field name="code">KA43</field>
+        <field
+            name="name"
+        >คณาจารย์และพยาบาลที่ให้บริการตรวจรักษาหรือบริการสุขภาพร่วมกับคณะพยาบาลศาสตร์และคณะแพทยศาสตร์ (คน)</field>
+        <field name="level">4</field>
+        <field name="parent_id" ref="KA00" />
+    </record>
+    <record id="KA44" model="project.strategic.plan">
+        <field name="code">KA44</field>
+        <field
+            name="name"
+        >การจัดอบรมหรือประชุมวิชาการร่วมกับคณะพยาบาลศาสตร์และคณะแพทยศาสตร์ (โครงการ)</field>
+        <field name="level">4</field>
+        <field name="parent_id" ref="KA00" />
+    </record>
+    <record id="KA45" model="project.strategic.plan">
+        <field name="code">KA45</field>
+        <field
+            name="name"
+        >ผลงานวิจัยและนวัตกรรมที่พัฒนาร่วมกับคณะพยาบาลศาสตร์และคณะแพทยศาสตร์ (ผลงาน)</field>
+        <field name="level">4</field>
+        <field name="parent_id" ref="KA00" />
+    </record>
+    <record id="KA46" model="project.strategic.plan">
+        <field name="code">KA46</field>
+        <field name="name">ความสมบูรณ์ของการใช้งานระบบ ERP (ร้อยละ)</field>
+        <field name="level">4</field>
+        <field name="parent_id" ref="KA00" />
+    </record>
+    <record id="KA47" model="project.strategic.plan">
+        <field name="code">KA47</field>
+        <field
+            name="name"
+        >หลักสูตรที่แสดงต้นทุนต่อหน่วยนักศึกษาจากข้อมูลในระบบ ERP ได้ (ร้อยละ)</field>
+        <field name="level">4</field>
+        <field name="parent_id" ref="KA00" />
+    </record>
+
+    <!-- ข้อตกลงการปฏิบัติงาน -->
+    <record id="KB00" model="project.strategic.plan">
+        <field name="code">KB00</field>
+        <field name="name">ข้อตกลงการปฏิบัติงาน</field>
+        <field name="level">5</field>
+    </record>
+    <record id="KB01" model="project.strategic.plan">
+        <field name="code">KB01</field>
+        <field name="name">จำนวนนักศึกษาต่างชาติ (International Student) (คน)</field>
+        <field name="level">5</field>
+        <field name="parent_id" ref="KB00" />
+    </record>
+    <record id="KB02" model="project.strategic.plan">
+        <field name="code">KB02</field>
+        <field name="name">จำนวนนักศึกษา Inbound – Outbound (คน)</field>
+        <field name="level">5</field>
+        <field name="parent_id" ref="KB00" />
+    </record>
+    <record id="KB03" model="project.strategic.plan">
+        <field name="code">KB03</field>
+        <field
+            name="name"
+        >จำนวนผลงานวิจัยที่มีคุณภาพ และบทความในระดับ Q1, Q2 (เรื่อง)</field>
+        <field name="level">5</field>
+        <field name="parent_id" ref="KB00" />
+    </record>
+    <record id="KB04" model="project.strategic.plan">
+        <field name="code">KB04</field>
+        <field
+            name="name"
+        >ผลงานวิจัยที่เผยแพร่ในวารสารที่มีความร่วมมือกับนักวิจัยต่างชาติ (ร้อยละ)</field>
+        <field name="level">5</field>
+        <field name="parent_id" ref="KB00" />
+    </record>
+    <record id="KB05" model="project.strategic.plan">
+        <field name="code">KB05</field>
+        <field
+            name="name"
+        >จำนวนเงินรายได้ที่ได้จากการให้บริการทางวิชาการ (ล้านบาท)</field>
+        <field name="level">5</field>
+        <field name="parent_id" ref="KB00" />
+    </record>
+    <record id="KB06" model="project.strategic.plan">
+        <field name="code">KB06</field>
+        <field name="name">จำนวนเงินทุนวิจัย (ล้านบาท)</field>
+        <field name="level">5</field>
+        <field name="parent_id" ref="KB00" />
+    </record>
+    <record id="KB07" model="project.strategic.plan">
+        <field name="code">KB07</field>
+        <field
+            name="name"
+        >จำนวนผลงานวิจัยและนวัตกรรม ทรัพย์สินทางปัญญาที่ถูกนำไปใช้ประโยชน์ในเชิงพาณิชย์หรือสาธารณะ (ชิ้น/โครงการ)</field>
+        <field name="level">5</field>
+        <field name="parent_id" ref="KB00" />
+    </record>
+    <record id="KB08" model="project.strategic.plan">
+        <field name="code">KB08</field>
+        <field
+            name="name"
+        >มูลค่าผลกระทบจากโครงการหรือผลงานวิจัยที่นำไปใช้ประโยชน์ให้สถาบันหรือประเทศชาติ (ล้านบาท)</field>
+        <field name="level">5</field>
+        <field name="parent_id" ref="KB00" />
+    </record>
+    <record id="KB09" model="project.strategic.plan">
+        <field name="code">KB09</field>
+        <field
+            name="name"
+        >จำนวนและผลลัพธ์ผลงานวิจัยและนวัตกรรมเพื่อแก้ปัญหา / ตอบโจทย์การพัฒนาพื้นที่ (เรื่อง / ผลลัพธ์)</field>
+        <field name="level">5</field>
+        <field name="parent_id" ref="KB00" />
+    </record>
+    <record id="KB10" model="project.strategic.plan">
+        <field name="code">KB10</field>
+        <field name="name">บัณฑิตได้งานทำ / ประกอบอาชีพอิสระ ภายใน 1 ปี (ร้อยละ)</field>
+        <field name="level">5</field>
+        <field name="parent_id" ref="KB00" />
+    </record>
+    <record id="KB11" model="project.strategic.plan">
+        <field name="code">KB11</field>
+        <field
+            name="name"
+        >สัดส่วนเงินรายได้ที่ได้จากการให้บริการวิชาการจากภาคเอกชน (ร้อยละ)</field>
+        <field name="level">5</field>
+        <field name="parent_id" ref="KB00" />
+    </record>
+    <record id="KB12" model="project.strategic.plan">
+        <field name="code">KB12</field>
+        <field
+            name="name"
+        >ผลตอบแทนจากการลงทุนที่คิดรวมถึงประโยชน์ที่เกิดกับสังคมอย่างเป็นรูปธรรม มีผู้ได้รับประโยชน์อย่างแท้จริง (Social Return on Investment; SROI) (เท่า)</field>
+        <field name="level">5</field>
+        <field name="parent_id" ref="KB00" />
+    </record>
+    <record id="KB13" model="project.strategic.plan">
+        <field name="code">KB13</field>
+        <field
+            name="name"
+        >จำนวนงานวิจัย หรือสิ่งประดิษฐ์ หรือผลงานนวัตกรรม หรือแบบผลิตภัณฑ์ หรืองานสร้างสรรค์ที่ยื่นขอหรือได้รับการจดทะเบียน จดแจ้ง ขึ้นทะเบียน ทรัพย์สินทางปัญญา (ผลงาน/เรื่อง)</field>
+        <field name="level">5</field>
+        <field name="parent_id" ref="KB00" />
+    </record>
+    <record id="KB14" model="project.strategic.plan">
+        <field name="code">KB14</field>
+        <field
+            name="name"
+        >จำนวนงานวิจัย หรืองานออกแบบ หรืองานสร้างสรรค์ หรือสิ่งประดิษฐ์ของอาจารย์และนักศึกษา ที่ได้รับรางวัลระดับชาติหรือระดับนานาชาติ (เรื่อง)</field>
+        <field name="level">5</field>
+        <field name="parent_id" ref="KB00" />
+    </record>
+    <record id="KB15" model="project.strategic.plan">
+        <field name="code">KB15</field>
+        <field
+            name="name"
+        >ความพึงพอใจคุณลักณะของบัณฑิตที่พึงประสงค์ตามความต้องการของผู้ใช้บัณฑิต (ร้อยละ)</field>
+        <field name="level">5</field>
+        <field name="parent_id" ref="KB00" />
+    </record>
+    <record id="KB16" model="project.strategic.plan">
+        <field name="code">KB16</field>
+        <field
+            name="name"
+        >จำนวนอาจารย์และนักวิจัยต่างชาติ (International Staff) (คน)</field>
+        <field name="level">5</field>
+        <field name="parent_id" ref="KB00" />
+    </record>
+    <record id="KB17" model="project.strategic.plan">
+        <field name="code">KB17</field>
+        <field name="name">จำนวนหลักสูตร degree / non-degree (หลักสูตร)</field>
+        <field name="level">5</field>
+        <field name="parent_id" ref="KB00" />
+    </record>
+    <record id="KB18" model="project.strategic.plan">
+        <field name="code">KB18</field>
+        <field
+            name="name"
+        >โครงการ/นวัตกรรมที่ตอบโจทย์การพัฒนาพื้นที่ (โครงการ/นวัตกรรม)</field>
+        <field name="level">5</field>
+        <field name="parent_id" ref="KB00" />
+    </record>
+    <record id="KB19" model="project.strategic.plan">
+        <field name="code">KB19</field>
+        <field
+            name="name"
+        >นักศึกษาแลกเปลี่ยนเรียนรู้ระหว่างวิทยาเขตชุมพรกับสจล.กรุงเทพ (คน)</field>
+        <field name="level">5</field>
+        <field name="parent_id" ref="KB00" />
+    </record>
+    <record id="KB20" model="project.strategic.plan">
+        <field name="code">KB20</field>
+        <field
+            name="name"
+        >จำนวน startup / Spin-Off ที่ดำเนินการประกอบธุรกิจแล้ว (บริษัท)</field>
+        <field name="level">5</field>
+        <field name="parent_id" ref="KB00" />
+    </record>
+</odoo>
