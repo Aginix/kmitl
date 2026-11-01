@@ -1,0 +1,8 @@
+// รายการจองงบประมาณ: a budget code's name is long ("[code] งบดำเนินงาน / … /
+// leaf"); wrap it in the grid instead of cutting it to "[code] งบดำ…".
+.o_list_renderer .o_data_row:not(.o_selected_row) > .o_data_cell.o_budget_split_wrap {
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    overflow-wrap: anywhere;
+}
