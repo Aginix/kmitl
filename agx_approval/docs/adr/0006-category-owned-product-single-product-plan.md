@@ -2,6 +2,8 @@
 
 ## Status
 
+**Superseded by [ADR-0010](0010-approval-ends-at-approval-disbursed-per-expense.md) — categories own Expense Items, not a product.**
+
 Accepted
 
 ## Context

@@ -20,7 +20,13 @@ class TestDisbursementDashboardCard(TransactionCase):
         card = cards.get("disbursement_awaiting_bill")
         self.assertIsNotNone(card, "disbursement card missing")
         self.assertEqual(card["res_model"], "disbursement.request")
-        self.assertEqual(card["domain"], [("state", "=", "approved")])
+        self.assertEqual(
+            card["domain"],
+            [
+                ("state", "in", ("signed", "in_progress", "done")),
+                ("settlement_stage", "=", "none"),
+            ],
+        )
         self.assertNotIn("amount", card)  # count-only card
         self.assertEqual(
             card["count"],

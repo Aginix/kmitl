@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="0">
+
+    <!-- One Todo per responsible user when a document arrives at a station.
+         'execution' clears only by acting on the document: the engine closes
+         it when the document leaves. Generic (no res_model) so any document
+         type can raise it. -->
+    <record id="mail_activity_station_arrival" model="mail.activity.type">
+        <field name="name">Arrived at your station</field>
+        <field name="todo_category">execution</field>
+        <field name="icon">fa-inbox</field>
+        <field name="delay_count">0</field>
+    </record>
+
+</odoo>

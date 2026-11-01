@@ -2,9 +2,35 @@ import logging
 from contextlib import ExitStack
 
 from odoo import _, api, fields, models
-from odoo.exceptions import ValidationError
+from odoo.exceptions import UserError, ValidationError
+from odoo.tools import float_compare
 
 _logger = logging.getLogger(__name__)
+
+# A posted ledger line of a commitment event is the figure itself: its amount,
+# budget code and coordinate may not change afterwards — undo the event instead.
+_LEDGER_LOCKED_FIELDS = frozenset(
+    {
+        "balance",
+        "debit",
+        "credit",
+        "account_id",
+        "analytic_distribution",
+        "activity_analytic_id",
+        "department_analytic_id",
+        "fund_analytic_id",
+        "kmitl_project_analytic_id",
+        "procurement_plan_analytic_id",
+        "source_analytic_id",
+        "move_type",
+        "commitment_id",
+        "commitment_line_id",
+        "is_liquidation",
+        "is_return",
+        "move_id",
+    }
+)
+
 
 
 class BudgetMoveLine(models.Model):
@@ -125,7 +151,44 @@ class BudgetMoveLine(models.Model):
     )
     account_fiscal_year_id = fields.Many2one(related="move_id.account_fiscal_year_id", store=True)
     parent_state = fields.Selection(related="move_id.state", store=True)
-    move_type = fields.Selection(related="move_id.move_type", store=True)
+    # The bucket a line moves (ADR-0017, Q4): defaults to the move's type, but
+    # a liquidation line inside an obligate/consume move — or a reservation
+    # top-up inside a transfer move — names its own bucket.
+    move_type = fields.Selection(
+        selection="_selection_move_type",
+        compute="_compute_move_type",
+        store=True,
+        readonly=False,
+        index=True,
+    )
+    commitment_id = fields.Many2one(
+        comodel_name="budget.commitment",
+        string="ใบจองงบประมาณ",
+        index=True,
+        readonly=True,
+        copy=False,
+        ondelete="restrict",
+    )
+    commitment_line_id = fields.Many2one(
+        comodel_name="budget.commitment.line",
+        string="เหตุการณ์ใบจอง",
+        index=True,
+        readonly=True,
+        copy=False,
+        ondelete="set null",
+    )
+    is_liquidation = fields.Boolean(
+        string="ปลดจอง",
+        readonly=True,
+        copy=False,
+        help="Moves money out of the previous bucket as a reservation advances "
+        "(reserve → obligate → consume).",
+    )
+    is_return = fields.Boolean(
+        string="ส่งคืนเงินเหลือจ่าย",
+        readonly=True,
+        copy=False,
+    )
     appropriation_type = fields.Selection(
         related="move_id.appropriation_type", store=True
     )
@@ -302,7 +365,159 @@ class BudgetMoveLine(models.Model):
             )
             container["records"] = lines
 
+        lines._check_no_orphan_usage_on_posted()
         return lines
+
+    @api.model
+    def _selection_move_type(self):
+        return self.env["budget.move"]._fields["move_type"]._description_selection(
+            self.env
+        )
+
+    @api.depends("move_id.move_type")
+    def _compute_move_type(self):
+        for line in self:
+            line.move_type = line.move_id.move_type
+
+    # ------------------------------------------------------------------
+    # Direct consumption (ตัดงบตรง, ADR-0019)
+    # ------------------------------------------------------------------
+    _DIRECT_CONSUME_REQUIRED_DIMS = (
+        "department_analytic_id",
+        "source_analytic_id",
+        "fund_analytic_id",
+        "activity_analytic_id",
+    )
+
+    def _ledger_coordinate(self):
+        """{analytic id: 100} of this line's dimensions, read from the stored
+        columns the availability engine matches on."""
+        self.ensure_one()
+        columns = self.env["budget.controller"]._DIM_COLUMNS.values()
+        return {str(self[col].id): 100.0 for col in columns if self[col]}
+
+    def _check_direct_consume(self):
+        """A consume without a reservation draws the pool directly, so it must
+        name its full coordinate and fit the control node's Available — the
+        reservation check it skips (ADR-0019). Lines are summed per control
+        node, like a reservation's codes."""
+        if self.filtered(lambda l: l.budget_type != "expense"):
+            raise UserError(_("A direct consumption is posted on expense budget only."))
+        missing = self.filtered(
+            lambda l: not all(l[f] for f in self._DIRECT_CONSUME_REQUIRED_DIMS)
+        )
+        if missing:
+            raise UserError(
+                _(
+                    "A direct consumption must carry ส่วนงาน, แหล่งเงิน, กองทุน "
+                    "and กิจกรรม: %s"
+                )
+                % ", ".join(missing.mapped("account_id.display_name"))
+            )
+        if (
+            self.env["ir.config_parameter"]
+            .sudo()
+            .get_param("budget.allow_negative", False)
+        ):
+            return
+        # The engine reads every unit's draw on the pool as sudo itself.
+        controller = self.env["budget.controller"]
+        rounding = self.env.company.currency_id.rounding or 0.01
+        pools = {}  # summed per pool, like a reservation's codes (ADR-0016, H2)
+        for line in self:
+            detail = controller.get_available_detail(
+                line.account_id,
+                line._ledger_coordinate(),
+                line.move_id.account_fiscal_year_id.id,
+                line.company_id.id or self.env.company.id,
+            )
+            pool = detail["pool"]
+            if pool:
+                key = (
+                    pool["account"]["id"],
+                    *sorted(info["id"] for info in pool["dims"].values()),
+                )
+            else:
+                key = ("uncovered", line.id)
+            entry = pools.setdefault(
+                key,
+                {
+                    "amount": 0.0,
+                    "available": detail["available"],
+                    "accounts": line.account_id.browse(),
+                },
+            )
+            entry["amount"] -= line.balance
+            entry["accounts"] |= line.account_id
+        for entry in pools.values():
+            if (
+                float_compare(
+                    entry["available"], entry["amount"], precision_rounding=rounding
+                )
+                < 0
+            ):
+                raise UserError(
+                    _(
+                        "Insufficient budget for a direct consumption of "
+                        "%(amount).2f on %(code)s: only %(available).2f available "
+                        "at the control node."
+                    )
+                    % {
+                        "amount": entry["amount"],
+                        "code": ", ".join(entry["accounts"].mapped("display_name")),
+                        "available": entry["available"],
+                    }
+                )
+
+    def _check_direct_consume_lines_locked(self):
+        """The lines of a posted direct consumption are the figure itself, like
+        a reservation's ledger lines: they are not edited or deleted in place.
+        A Budget Manager resets the move instead, which re-runs every check
+        when it is posted again (ADR-0019)."""
+        if self.env.context.get("budget_ledger_posting"):
+            return
+        if self.filtered(
+            lambda l: l.parent_state == "posted"
+            and l.move_type == "consume"
+            and not l.commitment_id
+        ):
+            raise UserError(
+                _(
+                    "Cannot change a posted direct consumption (ตัดงบตรง) line. "
+                    "Reset the budget move to draft first."
+                )
+            )
+
+    def _check_no_orphan_usage_on_posted(self):
+        """No reserve/obligate/consume line without a reservation may appear on
+        an already-posted move — by adding a line or re-typing one — which
+        would skip the posting checks (ADR-0017/0018)."""
+        if self.env.context.get("budget_ledger_posting"):
+            return
+        if self.filtered(
+            lambda l: l.parent_state == "posted"
+            and l.move_type in ("reserve", "obligate", "consume")
+            and not l.commitment_id
+        ):
+            raise UserError(
+                _(
+                    "Reservation, obligation and consumption lines cannot be "
+                    "added to a posted budget move. Reset it to draft first."
+                )
+            )
+
+    def unlink(self):
+        self._check_direct_consume_lines_locked()
+        if not self.env.context.get("budget_ledger_posting") and self.filtered(
+            lambda l: l.commitment_id and l.parent_state == "posted"
+        ):
+            raise UserError(
+                _(
+                    "Cannot delete a posted budget ledger line of a commitment. "
+                    "Cancel the commitment event instead."
+                )
+            )
+        return super().unlink()
 
     def write(self, vals):
         """
@@ -310,6 +525,18 @@ class BudgetMoveLine(models.Model):
         """
         if not vals:
             return True
+        if _LEDGER_LOCKED_FIELDS & set(vals):
+            self._check_direct_consume_lines_locked()
+        if _LEDGER_LOCKED_FIELDS & set(vals) and not self.env.context.get(
+            "budget_ledger_posting"
+        ):
+            if self.filtered(lambda l: l.commitment_id and l.parent_state == "posted"):
+                raise UserError(
+                    _(
+                        "Cannot edit a posted budget ledger line of a commitment. "
+                        "Cancel the commitment event instead."
+                    )
+                )
         vals = self._sanitize_vals(vals)
 
         # Handle tracking
@@ -333,6 +560,8 @@ class BudgetMoveLine(models.Model):
 
         # Normal write process
         result = super().write(vals)
+        if {"move_type", "move_id", "commitment_id"} & set(vals):
+            self._check_no_orphan_usage_on_posted()
 
         # Process tracking after write
         if not self.env.context.get("tracking_disable", False) and move_initial_values:

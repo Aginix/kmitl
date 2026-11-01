@@ -1,5 +1,10 @@
 # 0007 — A request crosses the Hand-over when its last voucher is paid, not when someone presses
 
+> **Superseded in part (station model).** The request's ขั้นการชำระ now walks back
+> with the voucher: a bounced cheque takes its payee's voucher back to `confirmed` and the
+> stage drops from `settled` to `billed` by itself; the request's state is untouched, and
+> whoever last forwarded it is sent a Todo (disbursement_wc).
+
 - Status: **accepted**
 - Date: 2026-08-19
 - Refines: ADR-0005 (the Hand-over stays exactly where it was; what changes is who moves

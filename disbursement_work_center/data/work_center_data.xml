@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="area_disbursement" model="work.center.area">
+        <field name="name">Disbursement</field>
+        <field name="code">disbursement</field>
+        <field name="sequence">20</field>
+        <field
+            name="model_ids"
+            eval="[(4, ref('disbursement.model_disbursement_request'))]"
+        />
+    </record>
+
+    <!-- Administrator data, so not overwritten on upgrade. The stations are
+         central (no operating unit) and start with neither acts nor members:
+         an administrator seats them, and that is what makes a station valid. -->
+    <data noupdate="1">
+        <record id="station_check" model="work.center">
+            <field name="name">Check</field>
+            <field name="area_id" ref="area_disbursement" />
+            <field name="sequence">10</field>
+        </record>
+        <record id="station_director" model="work.center">
+            <field name="name">Finance Director</field>
+            <field name="area_id" ref="area_disbursement" />
+            <field name="sequence">20</field>
+        </record>
+        <record id="station_rector" model="work.center">
+            <field name="name">Rector Delegate</field>
+            <field name="area_id" ref="area_disbursement" />
+            <field name="sequence">30</field>
+        </record>
+        <record id="station_bill" model="work.center">
+            <field name="name">Billing</field>
+            <field name="area_id" ref="area_disbursement" />
+            <field name="sequence">40</field>
+        </record>
+        <record id="station_audit" model="work.center">
+            <field name="name">Payment Audit</field>
+            <field name="area_id" ref="area_disbursement" />
+            <field name="sequence">50</field>
+        </record>
+        <record id="station_authorize" model="work.center">
+            <field name="name">Payment Authorization</field>
+            <field name="area_id" ref="area_disbursement" />
+            <field name="sequence">60</field>
+        </record>
+
+        <record id="route_disbursement" model="work.center.route">
+            <field name="name">Disbursement Route</field>
+            <field name="area_id" ref="area_disbursement" />
+            <field name="model_id" ref="disbursement.model_disbursement_request" />
+        </record>
+        <record id="route_line_check" model="work.center.route.line">
+            <field name="route_id" ref="route_disbursement" />
+            <field name="sequence">10</field>
+            <field name="name">Check</field>
+            <field name="work_center_ids" eval="[(6, 0, [ref('station_check')])]" />
+        </record>
+        <record id="route_line_director" model="work.center.route.line">
+            <field name="route_id" ref="route_disbursement" />
+            <field name="sequence">20</field>
+            <field name="name">Finance Director</field>
+            <field name="work_center_ids" eval="[(6, 0, [ref('station_director')])]" />
+        </record>
+        <record id="route_line_rector" model="work.center.route.line">
+            <field name="route_id" ref="route_disbursement" />
+            <field name="sequence">30</field>
+            <field name="name">Rector Delegate</field>
+            <field name="work_center_ids" eval="[(6, 0, [ref('station_rector')])]" />
+        </record>
+        <record id="route_line_bill" model="work.center.route.line">
+            <field name="route_id" ref="route_disbursement" />
+            <field name="sequence">40</field>
+            <field name="name">Billing</field>
+            <field name="work_center_ids" eval="[(6, 0, [ref('station_bill')])]" />
+        </record>
+        <record id="route_line_audit" model="work.center.route.line">
+            <field name="route_id" ref="route_disbursement" />
+            <field name="sequence">50</field>
+            <field name="name">Payment Audit</field>
+            <field name="work_center_ids" eval="[(6, 0, [ref('station_audit')])]" />
+        </record>
+        <record id="route_line_authorize" model="work.center.route.line">
+            <field name="route_id" ref="route_disbursement" />
+            <field name="sequence">60</field>
+            <field name="name">Payment Authorization</field>
+            <field name="work_center_ids" eval="[(6, 0, [ref('station_authorize')])]" />
+        </record>
+
+        <record id="counter_waiting" model="work.center.counter">
+            <field name="name">Waiting here</field>
+            <field name="area_id" ref="area_disbursement" />
+            <field name="model_id" ref="disbursement.model_disbursement_request" />
+            <field name="domain">[('state', '=', 'in_progress')]</field>
+            <field name="sequence">10</field>
+        </record>
+    </data>
+
+</odoo>

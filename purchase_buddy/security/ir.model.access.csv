@@ -1,0 +1,4 @@
+id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
+access_purchase_buddy_manager,purchase_buddy_manager,model_purchase_buddy,purchase_request.group_purchase_request_manager,1,1,1,1
+access_purchase_buddy_user,purchase_buddy_user,model_purchase_buddy,purchase_request.group_purchase_request_user,1,0,0,0
+access_purchase_buddy_purchase_manager,purchase_buddy_purchase_manager,model_purchase_buddy,purchase.group_purchase_manager,1,1,1,1

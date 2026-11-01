@@ -1,0 +1,20 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* advance_payment_disbursement
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: advance_payment_disbursement
+#: model:ir.model.fields,field_description:advance_payment_disbursement.field_advance_payment_usage_line__disbursement_state
+msgid "Disbursement Settlement Stage"
+msgstr "ขั้นการชำระของใบขอเบิก"

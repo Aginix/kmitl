@@ -50,9 +50,9 @@ class TestBudgetPoolGuard(TransactionCase):
         Plan = env["account.analytic.plan"]
         AA = env["account.analytic.account"]
         cls.has_tree = "parent_id" in AA._fields
-        act_plan = Plan.search(
-            [("code", "=", "activities")], limit=1
-        ) or Plan.create({"name": "Activities", "code": "activities"})
+        act_plan = Plan.search([("code", "=", "activities")], limit=1) or Plan.create(
+            {"name": "Activities", "code": "activities"}
+        )
         fund_plan = Plan.search([("code", "=", "funds")], limit=1) or Plan.create(
             {"name": "Funds", "code": "funds"}
         )
@@ -78,7 +78,7 @@ class TestBudgetPoolGuard(TransactionCase):
             "move_type": move_type,
             "budget_type": budget_type,
             "account_fiscal_year_id": self.fy.id,
-            "line_ids": [Command.create(l) for l in lines],
+            "line_ids": [Command.create(vals) for vals in lines],
         }
         if move_type == "appropriation":
             vals["appropriation_type"] = "initial"
@@ -98,7 +98,7 @@ class TestBudgetPoolGuard(TransactionCase):
     def test_nested_account_axis_raises(self):
         """A pool at a parent account and one at its child (same dims) nest."""
         self._post([{"account_id": self.root.id, "balance": 100_000}])
-        with self.assertRaises(ValidationError):
+        with self.assertRaisesRegex(ValidationError, "ทับซ้อนกับรหัสที่มีงบ"):
             self._post([{"account_id": self.child.id, "balance": 50_000}])
 
     def test_nested_activity_axis_raises(self):
@@ -189,6 +189,9 @@ class TestBudgetPoolGuard(TransactionCase):
         move = self._move(
             [{"account_id": self.child.id, "balance": 20_000}], move_type="consume"
         )
+        # posted as a ledger event: a bare manual consume is a Budget Manager's
+        # direct consumption with its own checks (ADR-0019), not this test's point
+        move = move.with_context(budget_ledger_posting=True)
         move.action_review()
         move.action_post()  # must not raise
         self.assertEqual(move.state, "posted")

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- The registry is written by the code, never by hand: the list is
+         read-only, and a row without a role is flagged because nobody is
+         offered such an act. -->
+    <record id="work_center_act_view_tree" model="ir.ui.view">
+        <field name="name">work.center.act.tree</field>
+        <field name="model">work.center.act</field>
+        <field name="arch" type="xml">
+            <tree
+                create="0"
+                edit="0"
+                delete="0"
+                decoration-warning="not group_id"
+                decoration-muted="not active"
+            >
+                <field name="sequence" widget="handle" />
+                <field name="code" />
+                <field name="name" />
+                <field name="kind" />
+                <field name="model_id" />
+                <field name="group_id" />
+                <field name="module" />
+                <field name="active" invisible="1" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="work_center_act_view_search" model="ir.ui.view">
+        <field name="name">work.center.act.search</field>
+        <field name="model">work.center.act</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="code" />
+                <field name="name" />
+                <field name="module" />
+                <filter name="acts" string="Acts" domain="[('kind', '=', 'act')]" />
+                <filter
+                    name="edits"
+                    string="Editable Parts"
+                    domain="[('kind', '=', 'edit')]"
+                />
+                <separator />
+                <filter
+                    name="archived"
+                    string="Archived"
+                    domain="[('active', '=', False)]"
+                />
+                <group expand="0" string="Group By">
+                    <filter
+                        name="group_module"
+                        string="Module"
+                        context="{'group_by': 'module'}"
+                    />
+                    <filter
+                        name="group_model"
+                        string="Document Model"
+                        context="{'group_by': 'model_name'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="work_center_act_action" model="ir.actions.act_window">
+        <field name="name">Acts</field>
+        <field name="res_model">work.center.act</field>
+        <field name="view_mode">tree</field>
+        <field name="context">{'search_default_group_module': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No act is declared yet</p>
+            <p>
+                Acts are declared by the modules that implement them and appear
+                here after the module is installed or upgraded.
+            </p>
+        </field>
+    </record>
+
+    <!-- The same reflection the module upgrade runs. -->
+    <record id="work_center_act_sync_server_action" model="ir.actions.server">
+        <field name="name">Sync acts</field>
+        <field name="model_id" ref="model_work_center_act" />
+        <field name="binding_model_id" ref="model_work_center_act" />
+        <field name="binding_view_types">list</field>
+        <field name="groups_id" eval="[(4, ref('group_work_center_manager'))]" />
+        <field name="state">code</field>
+        <field name="code">action = model.action_sync_acts()</field>
+    </record>
+
+</odoo>

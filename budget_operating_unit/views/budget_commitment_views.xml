@@ -9,7 +9,9 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='user_id']" position="after">
                 <field name="operating_unit_id" widget="selection" groups="operating_unit.group_multi_operating_unit" />
-                <field name="beneficiary_operating_unit_id" widget="selection" groups="operating_unit.group_multi_operating_unit" />
+                <!-- Names only: the editable tags (budget_operating_unit_access_all)
+                     need to read every unit, which a unit user cannot. -->
+                <field name="beneficiary_operating_unit_names" groups="operating_unit.group_multi_operating_unit" />
             </xpath>
         </field>
     </record>

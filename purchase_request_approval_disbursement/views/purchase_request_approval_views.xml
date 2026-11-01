@@ -24,6 +24,7 @@
                     string="Create Bill"
                     type="object"
                     class="oe_highlight"
+                    groups="purchase.group_purchase_user"
                     attrs="{'invisible': ['|', '|', ('use_purchase_order', '=', True), ('disbursement_request_count', '&gt;', 0), ('state', 'not in', ['approved'])]}"
                 />
             </xpath>
@@ -46,6 +47,7 @@
                     type="object"
                     icon="fa-exchange"
                     class="oe_highlight"
+                    groups="purchase.group_purchase_user"
                     attrs="{'invisible': [('disbursement_request_count', '=', 0)]}"
                 >
                     <field

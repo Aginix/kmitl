@@ -120,6 +120,18 @@ lives here, not in `budget_transfer`:
   via `ir.actions.report.sudo()._render_qweb_pdf` into an `ir.attachment`
   (`res_model=sarabun.document`) linked through `enclosure_attachment_ids`
   (สิ่งที่ส่งมาด้วย). The pre-filled `content` remains editable by ธุรการ before send.
+  - **Re-send after ตีกลับ/ดึงกลับ re-renders the enclosure, not the wording.** A
+    `returned` transfer is editable, so on re-send (`_on_sarabun_circulating` from
+    `returned`, after `_validate_transfer_data`) งปม.303 is re-rendered and
+    **overwritten in place** on the same attachment, tracked by
+    `sarabun_enclosure_attachment_id` (a new หนังสือ after ยกเลิกการส่ง gets a fresh
+    file). Overwrite, not archive — a deliberate exception to agx_sarabun ADR-0006's
+    archive-not-overwrite: the enclosure is a derived print of the transfer, the
+    transfer's own chatter is the audit trail, and a second "old" งปม.303 beside the
+    letter would invite signing against the wrong figures. A render failure blocks
+    the send rather than letting a stale form go out. `subject`/`content` are **not**
+    regenerated — seeded once, owned by ธุรการ, who must revise them by hand if the
+    amount/reason changed.
   - subject: `ขออนุมัติโอน เปลี่ยนแปลง {source complete_name} ประจำปีงบประมาณ พ.ศ. {fiscal year} {department complete_name}`
   - body: `ด้วย{department} มีความประสงค์ขออนุมัติโอน เปลี่ยนแปลง {source} ประจำปีงบประมาณ พ.ศ. {fy} จำนวนเงิน {amount} บาท รายละเอียดตามเอกสารแนบ แบบ งปม. 303 เลขที่ {BTR}`
 - **`_get_sarabun_report_action → False`** — the letter uses the default e-Saraban

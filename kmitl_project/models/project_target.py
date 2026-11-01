@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
 import logging
 
 from odoo import models, fields, api, _
-from odoo.exceptions import UserError, ValidationError
+from odoo.exceptions import ValidationError
 
 _logger = logging.getLogger(__name__)
 
@@ -20,7 +19,9 @@ class ProjectTarget(models.Model):
         ],
         required=True,
     )
-    project_id = fields.Many2one(comodel_name="kmitl.project", required=True)
+    project_id = fields.Many2one(
+        comodel_name="kmitl.project", required=True, ondelete="cascade"
+    )
     amount = fields.Integer(required=True)
 
     @api.constrains("amount")

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+    <t t-name="procurement_plan_budget_overview.Summary" owl="1">
+        <div class="o_ppbo">
+            <div class="o_ppbo_kpis">
+                <div class="o_ppbo_kpi">
+                    <div class="o_ppbo_label">ได้รับจัดสรร</div>
+                    <div class="o_ppbo_value" t-esc="money(data.budget_amount)" />
+                    <div t-if="data.total_price" class="o_ppbo_sub">
+                        วงเงินตามแผน <t t-esc="money(data.total_price)" /> (<t
+                            t-esc="planPct"
+                        />%)
+                    </div>
+                    <div t-else="" class="o_ppbo_sub">ยังไม่ได้ระบุวงเงินตามแผน</div>
+                </div>
+                <div class="o_ppbo_op">−</div>
+                <div class="o_ppbo_kpi">
+                    <div class="o_ppbo_label">เบิกจ่ายแล้ว</div>
+                    <div class="o_ppbo_value" t-esc="money(data.budget_consumed)" />
+                    <div class="o_ppbo_sub">ตัดงบที่ผ่านแล้ว</div>
+                </div>
+                <div class="o_ppbo_op">=</div>
+                <div
+                    class="o_ppbo_kpi o_ppbo_hero"
+                    t-att-class="{'o_ppbo_negative': data.budget_remaining &lt; 0}"
+                >
+                    <div class="o_ppbo_label">คงเหลือ</div>
+                    <div class="o_ppbo_value" t-esc="money(data.budget_remaining)" />
+                    <div class="o_ppbo_sub">ได้รับ − เบิกจ่าย</div>
+                </div>
+            </div>
+            <t t-set="b" t-value="bar" />
+            <t t-if="b.show">
+                <div class="o_ppbo_bar">
+                    <div
+                        class="o_ppbo_seg_consumed"
+                        t-att-style="'width: ' + b.consumed + '%'"
+                    />
+                    <div
+                        class="o_ppbo_seg_remaining"
+                        t-att-style="'width: ' + b.remaining + '%'"
+                    />
+                    <div
+                        class="o_ppbo_seg_unreserved"
+                        t-att-style="'width: ' + b.unreserved + '%'"
+                    />
+                </div>
+                <div class="o_ppbo_legend">
+                    <span t-if="b.consumed"><i
+                            class="o_ppbo_seg_consumed"
+                        />เบิกจ่ายแล้ว</span>
+                    <span t-if="b.remaining"><i
+                            class="o_ppbo_seg_remaining"
+                        />คงเหลือ</span>
+                    <span t-if="b.unreserved"><i
+                            class="o_ppbo_seg_unreserved"
+                        />คงเหลือ (ยังไม่ได้จอง)</span>
+                    <span t-if="b.notReceived"><i
+                            class="o_ppbo_seg_empty"
+                        />ยังไม่ได้รับ (เทียบกับวงเงินตามแผน)</span>
+                </div>
+            </t>
+        </div>
+    </t>
+
+</templates>

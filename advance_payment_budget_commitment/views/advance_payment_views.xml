@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_advance_payment_form_budget_commitment" model="ir.ui.view">
+        <field name="name">advance.payment.form.budget.commitment</field>
+        <field name="model">advance.payment</field>
+        <field name="inherit_id" ref="advance_payment.view_advance_payment_form" />
+        <field name="arch" type="xml">
+            <!-- no_open: the borrower usually cannot read the commitment. -->
+            <field name="reference_unit" position="after">
+                <field
+                    name="budget_commitment_id"
+                    options="{'no_open': True}"
+                    attrs="{'invisible': [('budget_commitment_id', '=', False)]}"
+                />
+                <field
+                    name="borrowing_headroom"
+                    attrs="{'invisible': [('budget_commitment_id', '=', False)]}"
+                />
+            </field>
+        </field>
+    </record>
+</odoo>

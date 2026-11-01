@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- use_date_range: a separate subsequence per fiscal year, mirroring
+             budget.transfer's BTR sequence (budget_transfer/data). The
+             effective date is the fiscal year's date_to (see
+             budget.support.request._compute_name). -->
+        <record id="seq_budget_support_request" model="ir.sequence">
+            <field name="name">Budget Support Request</field>
+            <field name="code">budget.support.request</field>
+            <field name="prefix">BSR/%(year_be)s/</field>
+            <field name="suffix"></field>
+            <field name="use_date_range" eval="True"/>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="padding">4</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+    </data>
+</odoo>

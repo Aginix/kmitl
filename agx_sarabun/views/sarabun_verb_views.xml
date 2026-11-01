@@ -23,6 +23,16 @@
         <field name="arch" type="xml">
             <form>
                 <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_activity_type" type="object"
+                                class="oe_stat_button" icon="fa-bell"
+                                attrs="{'invisible': [('activity_type_id', '=', False)]}">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Activity Type</span>
+                            </div>
+                        </button>
+                        <field name="activity_type_id" invisible="1"/>
+                    </div>
                     <div class="oe_title">
                         <h1><field name="name" placeholder="เช่น เห็นชอบ (Endorse)"/></h1>
                     </div>
@@ -49,6 +59,10 @@
                         number)</strong> gives the หนังสือ its official number when the
                         step is completed. The built-in verbs are referenced by the
                         engine via their XML id — relabel freely, but don't delete them.
+                        Each verb owns an <strong>Activity Type</strong> named after it
+                        (the to-do its holder sees); its name and archive state follow
+                        the verb, while icon and other settings can be changed on the
+                        type itself.
                     </div>
                 </sheet>
             </form>

@@ -332,6 +332,17 @@ msgid "Circulating"
 msgstr "กำลังดำเนินการ"
 
 #. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__note
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_step_act_wizard__note
+msgid "Comment / Reason"
+msgstr "ความเห็นในการลงนาม"
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_step_act_wizard_form
+msgid "Comment..."
+msgstr "ความเห็น/ข้อเสนอแนะ/คำสั่ง/คำสั่งการ/เกษียน..."
+
+#. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__company_id
 msgid "Company"
 msgstr ""
@@ -3000,21 +3011,6 @@ msgstr ""
 #. module: agx_sarabun
 #: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_form
 msgid "อ้างถึง — ในระบบ (prior หนังสือ)"
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__note
-msgid "เกษียน (Note)"
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_step_act_wizard__note
-msgid "เกษียน / Comment"
-msgstr ""
-
-#. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_step_act_wizard_form
-msgid "เกษียน / comment..."
 msgstr ""
 
 #. module: agx_sarabun

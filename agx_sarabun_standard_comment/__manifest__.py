@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
 {
     "name": "e-Sarabun: Standard Comments",
     "summary": "Reusable ข้อความมาตรฐาน (canned เกษียน text) for the Act-on-step wizard",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.0.1",
     "category": "KMITL/Correspondence",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",

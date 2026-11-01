@@ -319,6 +319,13 @@ class SarabunDocumentMixin(models.AbstractModel):
         """
         self._on_sarabun_returned(document, step=self.env["sarabun.routing.step"])
 
+    def _on_sarabun_numbered(self, document):
+        """Called the moment the Document is registered (ลงทะเบียน) and gets its
+        official number (``document.name``) — at the number-issuing sign
+        (ADR-0017). Fires once per number: a re-sign after ตีกลับ/ดึงกลับ reuses
+        it, and ยกเลิกการส่ง voids it (see :meth:`_on_sarabun_cancelled`)."""
+        pass
+
     def _on_sarabun_step(self, step, disposition):
         """Generic per-step callback for every disposition (fired last).
 

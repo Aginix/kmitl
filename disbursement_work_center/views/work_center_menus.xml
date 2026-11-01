@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="action_disbursement_stations" model="ir.actions.act_window">
+        <field name="name">Stations</field>
+        <field name="res_model">work.center</field>
+        <field name="view_mode">kanban,form</field>
+        <field name="view_id" ref="work_center.work_center_view_kanban" />
+        <field name="domain" eval="[('area_id', '=', ref('area_disbursement'))]" />
+        <field
+            name="context"
+            eval="{'default_area_id': ref('area_disbursement'), 'search_default_my_work_centers': 1}"
+        />
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No station yet</p>
+            <p>
+                A station is a desk a disbursement request passes through. Remove
+                the "My Stations" filter to see them all.
+            </p>
+        </field>
+    </record>
+
+    <menuitem
+        id="menu_disbursement_stations"
+        name="Stations"
+        parent="disbursement.menu_disbursement_root"
+        action="action_disbursement_stations"
+        sequence="15"
+        groups="disbursement.group_disbursement_user"
+    />
+
+</odoo>

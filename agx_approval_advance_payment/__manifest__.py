@@ -1,11 +1,11 @@
 {
     "name": "Approval - Advance Payment Bridge",
-    "version": "16.0.1.0.1",
+    "version": "16.0.1.1.0",
     "author": "KMITL",
     "category": "KMITL",
     "depends": [
         "advance_payment",
-        "advance_payment_budget",
+        "advance_payment_exception",
         "agx_approval_disbursement",
     ],
     "data": [

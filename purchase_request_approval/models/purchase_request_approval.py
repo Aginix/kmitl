@@ -695,12 +695,6 @@ class PurchaseRequestApproval(models.Model):
     def _get_sarabun_subject(self):
         return self.title or self.name
 
-    def _sarabun_submit_guard(self):
-        self.ensure_one()
-        if not self.partner_id:
-            raise UserError(_("กรุณาระบุผู้ขาย (Vendor) ก่อนส่งเข้าสารบรรณ"))
-        return super()._sarabun_submit_guard()
-
     def _get_sarabun_sender_department(self):
         return (
             self.requested_by.employee_id.department_id

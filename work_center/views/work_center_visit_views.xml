@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- The default tree is also the one embedded in a document's form: it
+         answers "who held this, when, and who moved it where" without
+         developer mode. -->
+    <record id="work_center_visit_view_tree" model="ir.ui.view">
+        <field name="name">work.center.visit.tree</field>
+        <field name="model">work.center.visit</field>
+        <field name="arch" type="xml">
+            <tree create="0" edit="0" delete="0">
+                <field name="work_center_id" />
+                <field name="arrival_date" />
+                <field name="arrival_act" />
+                <field name="arrived_by_id" widget="many2one_avatar_user" />
+                <field name="departure_date" />
+                <field name="departure_act" />
+                <field name="departed_by_id" widget="many2one_avatar_user" />
+                <field name="departure_reason" />
+                <field name="skipped_act_ids" widget="many2many_tags" />
+                <field name="not_applicable_act_ids" widget="many2many_tags" />
+                <field
+                    name="responsible_user_ids"
+                    widget="many2many_tags_avatar"
+                    optional="show"
+                />
+            </tree>
+        </field>
+    </record>
+
+    <record id="work_center_visit_view_form" model="ir.ui.view">
+        <field name="name">work.center.visit.form</field>
+        <field name="model">work.center.visit</field>
+        <field name="arch" type="xml">
+            <form create="0" edit="0" delete="0">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="document_display" />
+                            <field name="work_center_id" />
+                            <field name="area_id" />
+                        </group>
+                        <group>
+                            <field name="responsible_source" />
+                            <field
+                                name="responsible_user_ids"
+                                widget="many2many_tags"
+                            />
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Arrival">
+                            <field name="arrival_date" />
+                            <field name="arrival_act" />
+                            <field name="arrived_by_id" />
+                        </group>
+                        <group string="Departure">
+                            <field name="departure_date" />
+                            <field name="departure_act" />
+                            <field name="departed_by_id" />
+                        </group>
+                    </group>
+                    <group>
+                        <field name="departure_reason" />
+                        <field name="done_act_ids" widget="many2many_tags" />
+                        <field name="skipped_act_ids" widget="many2many_tags" />
+                        <field name="not_applicable_act_ids" widget="many2many_tags" />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="work_center_visit_view_search" model="ir.ui.view">
+        <field name="name">work.center.visit.search</field>
+        <field name="model">work.center.visit</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="work_center_id" />
+                <field name="res_model" />
+                <field name="arrived_by_id" />
+                <field name="departed_by_id" />
+                <filter
+                    name="open"
+                    string="Still Here"
+                    domain="[('departure_date', '=', False)]"
+                />
+                <filter
+                    name="skipped"
+                    string="Skipped Acts"
+                    domain="[('skipped_act_ids', '!=', False)]"
+                />
+                <filter
+                    name="diverted"
+                    string="Diverted"
+                    domain="[('departure_act', '=', 'divert')]"
+                />
+                <filter
+                    name="sent_back"
+                    string="Sent Back"
+                    domain="[('departure_act', '=', 'send_back')]"
+                />
+                <group expand="0" string="Group By">
+                    <filter
+                        name="group_station"
+                        string="Station"
+                        context="{'group_by': 'work_center_id'}"
+                    />
+                    <filter
+                        name="group_model"
+                        string="Document Model"
+                        context="{'group_by': 'res_model'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="work_center_visit_action" model="ir.actions.act_window">
+        <field name="name">Visit Log</field>
+        <field name="res_model">work.center.visit</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'search_default_group_station': 1}</field>
+    </record>
+
+</odoo>

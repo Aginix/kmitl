@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+    <!-- List the Todos themselves (like the Discuss Todo page) instead of
+         source-app groups: one click on a row opens its source record. -->
+    <t
+        t-name="mail_activity_todo_discuss.TodoSystray"
+        t-inherit="mail_activity_todo.TodoSystray"
+        t-inherit-mode="extension"
+        owl="1"
+    >
+        <xpath expr="//t[@t-if='state.groups.length === 0']" position="attributes">
+            <attribute name="t-if">state.todos.length === 0</attribute>
+        </xpath>
+        <xpath
+            expr="//div[hasclass('o_mail_activity_todo_systray_items')]"
+            position="replace"
+        >
+            <div
+                class="o_mail_activity_todo_systray_items"
+                style="max-height: 420px; overflow-y: auto;"
+            >
+                <t t-foreach="state.todos" t-as="todo" t-key="todo.id">
+                    <t t-set="deadline" t-value="deadlineInfo(todo)" />
+                    <DropdownItem
+                        onSelected="() => this.onTodoClick(todo)"
+                        class="'o_mail_activity_todo_systray_item px-3 py-2'"
+                    >
+                        <div
+                            class="d-flex align-items-start"
+                            t-att-title="todo.summary"
+                        >
+                            <img
+                                t-if="todo.icon"
+                                t-att-src="todo.icon"
+                                class="o_mail_activity_todo_group_icon me-2 mt-1"
+                                alt=""
+                            />
+                            <i t-else="" class="fa fa-fw fa-check-square-o me-2 mt-1" />
+                            <div class="o_mail_activity_todo_systray_text flex-grow-1">
+                                <div class="d-flex align-items-center small">
+                                    <span
+                                        class="text-truncate flex-grow-1"
+                                        t-esc="todo.activity_type"
+                                    />
+                                    <span
+                                        t-if="deadline"
+                                        class="ms-2 text-nowrap"
+                                        t-att-class="deadline.className"
+                                        t-att-title="deadline.exact"
+                                    >
+                                        <i
+                                            class="fa fa-fw me-1"
+                                            t-att-class="deadline.icon"
+                                        /><t t-esc="deadline.label" />
+                                    </span>
+                                </div>
+                                <div
+                                    class="fw-semibold text-truncate"
+                                    t-esc="todo.summary"
+                                />
+                                <div class="small text-muted text-truncate">
+                                    <span t-if="todo.app" t-esc="todo.app" />
+                                    <t t-if="todo.res_name"> · <t
+                                            t-esc="todo.res_name"
+                                        /></t>
+                                </div>
+                                <div
+                                    t-if="todo.create_date"
+                                    class="small text-muted text-truncate"
+                                >
+                                    <i class="fa fa-clock-o me-1" />created <t
+                                        t-esc="createdAgo(todo)"
+                                    />
+                                    <t t-if="todo.create_uid"> by <t
+                                            t-esc="todo.create_uid"
+                                        /></t>
+                                </div>
+                            </div>
+                        </div>
+                    </DropdownItem>
+                </t>
+            </div>
+        </xpath>
+        <xpath expr="//a[@t-on-click.prevent='onViewAllClick']" position="before">
+            <div
+                t-if="state.totalCount > state.todos.length"
+                class="small text-muted mb-1"
+            >
+                Showing <t t-esc="state.todos.length" /> of <t
+                    t-esc="state.totalCount"
+                />
+            </div>
+        </xpath>
+    </t>
+
+</templates>

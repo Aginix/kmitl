@@ -61,14 +61,13 @@
                         string="Duplicate to New Draft"
                         attrs="{'invisible': [('state', '!=', 'rejected')]}"
                     />
-                    <!-- A draft has no inline preview → this button opens the preview
-                         dialog. Once sent, the preview is embedded inline (below the
-                         header) and Print opens the raw PDF in a new tab. -->
+                    <!-- Preview dialog in every state (user feedback) — an editable
+                         (draft / returned) หนังสือ has no inline preview, and even a sent
+                         one is easier to check in the dialog than via the PDF download. -->
                     <button
                         name="action_open_pdf_preview"
                         type="object"
                         string="ดูตัวอย่างเอกสาร"
-                        attrs="{'invisible': [('state', '!=', 'draft')]}"
                     />
                     <button
                         name="action_print_report"
@@ -110,7 +109,7 @@
                          hidden once approved (completed) so the inline PDF is the focus. -->
                     <group
                         name="classification"
-                        attrs="{'invisible': [('state', '=', 'completed')]}"
+                        attrs="{'invisible': ['|', ('state', '=', 'completed'), ('is_editable', '=', False)]}"
                     >
                       <group>
                         <!-- Locked once set to an origin-only type: such a หนังสือ is
@@ -132,7 +131,7 @@
                          small register field like on the real document. -->
                     <group
                         name="registry_block"
-                        attrs="{'invisible': [('state', '=', 'completed')]}"
+                        attrs="{'invisible': ['|', ('state', '=', 'completed'), ('is_editable', '=', False)]}"
                     >
                         <!-- readonly is set per-field: a `readonly` attrs on the <group>
                              is NOT propagated to child fields by Odoo 16 (each node's

@@ -3,22 +3,23 @@
 import logging
 
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError, ValidationError
-from odoo.osv import expression
+from odoo.tools import is_html_empty
+from odoo.exceptions import AccessError, UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
 
-# Two-approver step on the DR: the Finance Division Director (ผอ.กองคลัง)
-# approves first, then the Rector-delegated approver (ผู้ได้รับมอบอำนาจอธิการบดี).
-# The budget is obligated/consumed only on the second (Rector) approval.
-FINANCE_DIRECTOR_GROUP = "disbursement.group_disbursement_finance_director"
-RECTOR_DELEGATE_GROUP = "disbursement.group_disbursement_rector_delegate"
-# Execution Todos pushed to each approver group so the approval surfaces in the
-# unified Todo notification center; cleared by acting on the DR, not "Mark read".
-DR_APPROVE_FINANCE_ACTIVITY = "disbursement.mail_activity_dr_approve_finance"
-DR_APPROVE_RECTOR_ACTIVITY = "disbursement.mail_activity_dr_approve_rector"
-# Pushed to the requester when an approver rejects the request.
-DR_REJECTED_ACTIVITY = "disbursement.mail_activity_dr_rejected"
+# Before it enters the circuit a request may still be reset to draft or
+# cancelled by its requester, and its description edited. Inside the circuit
+# (in progress) only the people at the station holding it may pull it out, and
+# once the circuit is done only the finance officers may cancel it.
+PRE_APPROVAL_STATES = ("draft", "submitted", "signed")
+
+# What a request's settlement stage (ขั้นการชำระ) is worth, to tell a walk back
+# (the money un-did a step) from progress.
+_SETTLEMENT_RANK = {"none": 0, "billed": 1, "settled": 2, "booked": 3}
+
+# The parts of the document a station may let its people edit (``can_edit_*``).
+_EDIT_KINDS = ("header", "lines", "attachments", "dimensions", "budget")
 
 
 class DisbursementRequest(models.Model):
@@ -28,31 +29,11 @@ class DisbursementRequest(models.Model):
         "analytic.mixin",
         "mail.thread",
         "mail.activity.mixin",
-        "portal.mixin",
-        "budget.commitment.mixin",
         "base.exception",
         # Thai signature date formatting on the printed signature block.
         "thai.date.mixin",
     ]
     _order = "main_exception_id asc, date desc, id desc"
-
-    _commitment_id_field = "budget_commitment_id"
-    _commitment_account_id_field = "budget_account_id"
-
-    READONLY_STATES = {
-        "submitted": [("readonly", True)],
-        "signed": [("readonly", True)],
-        "verified": [("readonly", True)],
-        "approved": [("readonly", True)],
-        "bills_posted": [("readonly", True)],
-        # Post-bill payment-execution phase (disbursement_finance_kmitl):
-        # the request is fully locked once it enters this phase.
-        "payment_audited": [("readonly", True)],
-        "payment_authorized": [("readonly", True)],
-        "paid": [("readonly", True)],
-        "cleared": [("readonly", True)],
-        "cancel": [("readonly", True)],
-    }
 
     name = fields.Char(
         string="Number",
@@ -68,66 +49,28 @@ class DisbursementRequest(models.Model):
         string="Responsible",
         default=lambda self: self.env.user,
         tracking=True,
-        states=READONLY_STATES,
     )
 
-    reference = fields.Reference(
-        selection=[],
-        string="Reference Document",
-        states=READONLY_STATES,
-    )
-
-    reference_model = fields.Char(
-        string="Reference Model",
-        compute="_compute_reference_fields",
-        store=True,
-    )
-    reference_model_name = fields.Char(
-        string="Reference Document Type",
-        compute="_compute_reference_fields",
-        store=True,
-    )
-
-    partner_type = fields.Selection(
-        selection=[
-            ("single", "Single Partner"),
-            ("multi", "Multiple Partners"),
-        ],
-        string="Partner Type",
-        default="multi",
+    # Every payee on the lines must be of this type (ประเภทผู้รับเงิน); the
+    # payees themselves live on the lines only.
+    partner_type_id = fields.Many2one(
+        comodel_name="res.partner.type",
+        string="Payee Type",
         required=True,
         tracking=True,
-        states=READONLY_STATES,
-    )
-
-    partner_id = fields.Many2one(
-        comodel_name="res.partner",
-        string="Partner",
-        required=False,
-        compute="_compute_partner_id",
-        store=True,
-        readonly=False,
-        tracking=True,
         index=True,
-        states=READONLY_STATES,
+        ondelete="restrict",
     )
 
-    is_company = fields.Boolean(
-        related="partner_id.is_company",
-        string="Is Company",
-        readonly=True,
+    # Loaded on the form so มีภาษี can be locked for a company payee type.
+    partner_type_company_type = fields.Selection(
+        related="partner_type_id.company_type",
+        string="Payee Company Type",
     )
 
-    partner_bank_id = fields.Many2one(
-        comodel_name="res.partner.bank",
-        string="Recipient Bank",
-        compute="_compute_partner_bank_id",
-        store=True,
-        readonly=False,
-        tracking=True,
-        states=READONLY_STATES,
-        check_company=True,
-        domain="[('partner_id', '=', partner_id)]",
+    payee_display = fields.Char(
+        string="Payees",
+        compute="_compute_payee_display",
     )
 
     date = fields.Date(
@@ -135,13 +78,6 @@ class DisbursementRequest(models.Model):
         required=True,
         default=fields.Date.context_today,
         tracking=True,
-        states=READONLY_STATES,
-    )
-
-    ref = fields.Char(
-        string="Reference",
-        tracking=True,
-        states=READONLY_STATES,
     )
 
     payment_type = fields.Selection(
@@ -153,13 +89,36 @@ class DisbursementRequest(models.Model):
         string="Payment Type",
         default="direct",
         tracking=True,
-        states=READONLY_STATES,
     )
 
-    note = fields.Text(
-        string="Note",
-        states=READONLY_STATES,
+    # เลขที่หนังสือ: stamped by disbursement_sarabun when e-Saraban issues the
+    # หนังสือ's number; typed from the memo on a direct claim
+    # (disbursement_direct_claim).
+    memo_number = fields.Char(
+        string="Memo Number",
+        tracking=True,
+        copy=False,
+        index=True,
     )
+
+    # วันที่หน่วยงานลงนาม: stamped when the request turns ``signed`` (the head's
+    # e-Saraban signature) unless already set — a direct claim types the date
+    # of its external memo (disbursement_direct_claim).
+    sign_date = fields.Date(
+        string="Head Signed On",
+        tracking=True,
+        copy=False,
+    )
+
+    # มีภาษี: off clears VAT and WHT from every line and hides the tax columns.
+    has_tax = fields.Boolean(
+        string="Taxable",
+        default=True,
+        tracking=True,
+    )
+
+    # Still editable before the request enters the circuit (see the form).
+    note = fields.Html(string="Description")
 
     company_id = fields.Many2one(
         comodel_name="res.company",
@@ -167,7 +126,6 @@ class DisbursementRequest(models.Model):
         required=True,
         default=lambda self: self.env.company,
         tracking=True,
-        states=READONLY_STATES,
     )
 
     currency_id = fields.Many2one(
@@ -176,7 +134,6 @@ class DisbursementRequest(models.Model):
         required=True,
         default=lambda self: self.env.company.currency_id,
         tracking=True,
-        states=READONLY_STATES,
     )
 
     line_ids = fields.One2many(
@@ -184,7 +141,6 @@ class DisbursementRequest(models.Model):
         inverse_name="request_id",
         string="Request Lines",
         copy=True,
-        states=READONLY_STATES,
     )
 
     wht_line_ids = fields.One2many(
@@ -200,7 +156,6 @@ class DisbursementRequest(models.Model):
         "res_id",
         string="Document Attachments",
         domain=[("res_model", "=", "disbursement.request")],
-        states=READONLY_STATES,
     )
 
     amount_untaxed = fields.Monetary(
@@ -246,13 +201,16 @@ class DisbursementRequest(models.Model):
         exportable=False,
     )
 
+    # Progress around the circuit (วงจร). Where the request is inside it, and
+    # who holds it, is the station's business (disbursement_wc); where the
+    # money has got is ``settlement_stage``.
     state = fields.Selection(
         selection=[
             ("draft", "Draft"),
             ("submitted", "Submitted"),
             ("signed", "Signed"),
-            ("verified", "Verified"),
-            ("approved", "Approved"),
+            ("in_progress", "In Progress"),
+            ("done", "Done"),
             ("cancel", "Cancelled"),
         ],
         string="Status",
@@ -264,83 +222,35 @@ class DisbursementRequest(models.Model):
         default="draft",
     )
 
-    pipeline_status = fields.Selection(
+    # ขั้นการชำระ: how far the money has got, derived from the bills and the
+    # vouchers that exist and never written by anyone, so it walks back by
+    # itself when a bill is reset or a cheque bounces. The bridges that own the
+    # bills (disbursement_accounting_kmitl) and the vouchers
+    # (disbursement_finance_kmitl) each contribute their leg.
+    settlement_stage = fields.Selection(
         selection=[
-            ("pre_approval", "Pre-approval"),
-            ("approved", "Approved"),
+            ("none", "Not Billed"),
+            ("billed", "Billed"),
+            ("settled", "Settled"),
+            ("booked", "Booked"),
         ],
-        string="Pipeline Status",
-        compute="_compute_pipeline_status",
+        string="Settlement Stage",
+        compute="_compute_settlement_stage",
         store=True,
         readonly=True,
         copy=False,
         index=True,
-        default="pre_approval",
-    )
-
-    display_status = fields.Selection(
-        selection=[
-            ("draft", "Draft"),
-            ("submitted", "Submitted"),
-            ("signed", "Signed"),
-            ("verified", "Verified"),
-            ("approved", "Approved"),
-            ("cancel", "Cancelled"),
-        ],
-        string="Status",
-        compute="_compute_display_status",
-        store=True,
-        readonly=True,
-        copy=False,
-        index=True,
-        default="draft",
-    )
-
-    # Two-approver sub-workflow, tracked in parallel with ``state`` (which stays
-    # ``verified`` for both approval steps). Kept separate so the accounting /
-    # finance bridges and the return flow, which key off ``state``, are untouched.
-    approval_state = fields.Selection(
-        selection=[
-            ("none", "None"),
-            ("pending_finance", "Pending Finance Director"),
-            ("pending_rector", "Pending Rector-delegated Approver"),
-            ("approved", "Approved"),
-            ("rejected", "Rejected"),
-        ],
-        string="Approval",
-        default="none",
-        required=True,
-        readonly=True,
-        copy=False,
         tracking=True,
-        index=True,
     )
 
-    # Who actually pressed Validate. Distinct from ``assigned_to``
-    # (disbursement_assignment_kmitl), which records who was *assigned* the
-    # verification and may be a different person once takeover is allowed.
-    verifier_id = fields.Many2one(
-        "res.users", string="Verified By", copy=False, readonly=True
-    )
-    verify_date = fields.Datetime(
-        string="Verified On", copy=False, readonly=True
-    )
-
-    finance_approver_id = fields.Many2one(
-        "res.users", string="Finance Director", copy=False, readonly=True
-    )
-    finance_approve_date = fields.Datetime(
-        string="Finance Approved On", copy=False, readonly=True
-    )
-    rector_approver_id = fields.Many2one(
-        "res.users", string="Rector-delegated Approver", copy=False, readonly=True
-    )
-    rector_approve_date = fields.Datetime(
-        string="Rector Approved On", copy=False, readonly=True
-    )
-    approval_reject_reason = fields.Text(
-        string="Approval Reject Reason", copy=False, readonly=True
-    )
+    # UI-only locks (the one enforced lock is the payee banking guard of
+    # disbursement_finance_kmitl): a part of the request is editable while the
+    # station holding it allows that part and the money has not started.
+    can_edit_header = fields.Boolean(compute="_compute_can_edit")
+    can_edit_lines = fields.Boolean(compute="_compute_can_edit")
+    can_edit_attachments = fields.Boolean(compute="_compute_can_edit")
+    can_edit_dimensions = fields.Boolean(compute="_compute_can_edit")
+    can_edit_budget = fields.Boolean(compute="_compute_can_edit")
 
     # Frozen signature snapshots, one per workflow step taken — the source of the
     # signature block on the printed ใบขอเบิก (ADR-0002).
@@ -356,61 +266,6 @@ class DisbursementRequest(models.Model):
         copy=False,
     )
 
-    # Budget fields
-    budget_commitment_id = fields.Many2one(
-        "budget.commitment",
-        string="Budget Commitment",
-        domain=[("state", "not in", ["draft", "done", "cancel"])],
-        tracking=True,
-        copy=False,
-        index=True,
-        ondelete="restrict",
-        states=READONLY_STATES,
-    )
-
-    budget_account_id = fields.Many2one(
-        "budget.account",
-        string="Budget Account",
-        domain=[("budgetable", "=", True), ("budget_type", "=", "expense")],
-        tracking=True,
-        copy=False,
-        index=True,
-        ondelete="restrict",
-        states=READONLY_STATES,
-    )
-
-    # True when the budget code drives the line product itself (see
-    # ``_budget_account_line_product``): the product column is then hidden and
-    # stamped automatically. False for ordinary disbursements, where the user
-    # picks a product per line. Bridges that own such budget codes contribute to
-    # this single flag so the line list has one condition to key on.
-    is_budget_account_product_expense = fields.Boolean(
-        string="Product Derived From Budget Account",
-        compute="_compute_is_budget_account_product_expense",
-    )
-
-    budget_consumed_amount = fields.Monetary(
-        string="Budget Consumed",
-        currency_field="currency_id",
-        copy=False,
-        readonly=True,
-        tracking=True,
-    )
-
-    budget_consumed_date = fields.Datetime(
-        string="Budget Consumed At",
-        copy=False,
-        readonly=True,
-    )
-
-    # Leftover reserved budget still on the linked commitment (reserved −
-    # obligated). Drives the "ส่งคืนเงินเหลือจ่าย" button visibility.
-    budget_available_to_obligate = fields.Monetary(
-        related="budget_commitment_id.available_to_obligate",
-        string="งบจองคงเหลือ",
-        currency_field="currency_id",
-    )
-
     # Analytic dimension fields
     activity_analytic_id = fields.Many2one(
         "account.analytic.account",
@@ -421,7 +276,6 @@ class DisbursementRequest(models.Model):
         store=False,
         compute_sudo=True,
         tracking=True,
-        states=READONLY_STATES,
     )
 
     department_analytic_id = fields.Many2one(
@@ -434,7 +288,6 @@ class DisbursementRequest(models.Model):
         compute_sudo=True,
         tracking=True,
         index=True,
-        states=READONLY_STATES,
     )
 
     fund_analytic_id = fields.Many2one(
@@ -446,7 +299,6 @@ class DisbursementRequest(models.Model):
         store=False,
         compute_sudo=True,
         tracking=True,
-        states=READONLY_STATES,
     )
 
     # Stored, like department_analytic_id: the finance office groups its lists by
@@ -461,7 +313,6 @@ class DisbursementRequest(models.Model):
         compute_sudo=True,
         tracking=True,
         index=True,
-        states=READONLY_STATES,
     )
 
     _analytic_keys = {
@@ -471,27 +322,14 @@ class DisbursementRequest(models.Model):
         "sources": "source_analytic_id",
     }
 
-    # Fiscal year field
+    # Chosen freely (a stand-alone request may book to any year); defaults to
+    # the year of ``date`` and drives the DR/<yy>/ number.
     account_fiscal_year_id = fields.Many2one(
         comodel_name="account.fiscal.year",
         string="Fiscal Year",
         tracking=True,
-        store=True,
         index=True,
-        compute="_compute_date_range_fy",
-        search="_search_date_range_fy",
     )
-
-    # -------------------------------------------------------------------------
-    # Budget commitment methods
-    # -------------------------------------------------------------------------
-    @api.onchange("budget_commitment_id")
-    def _onchange_budget_commitment_id(self):
-        for rec in self:
-            if rec.budget_commitment_id:
-                budget = rec.budget_commitment_id
-                rec.budget_account_id = budget.account_id
-                rec.analytic_distribution = budget.analytic_distribution
 
     @api.constrains("analytic_distribution", "state")
     def _check_analytic_distribution_complete(self):
@@ -511,21 +349,30 @@ class DisbursementRequest(models.Model):
                     % ", ".join(sorted(missing))
                 )
 
+    # Also onchange handlers (as in receipt_kmitl): the form sends the hidden
+    # analytic_distribution with the dimensions on save, so it must already
+    # hold them — else its stale value wins over these inverses and the
+    # dimensions typed by hand are lost. One field per handler: reassigning
+    # the distribution recomputes every dimension field.
+    @api.onchange("activity_analytic_id")
     def _inverse_activity_analytic(self):
         """Update distribution when activity changes"""
         for line in self:
             line._update_analytic_distribution("activities")
 
+    @api.onchange("department_analytic_id")
     def _inverse_department_analytic(self):
         """Update distribution when department changes"""
         for line in self:
             line._update_analytic_distribution("departments")
 
+    @api.onchange("fund_analytic_id")
     def _inverse_fund_analytic(self):
         """Update distribution when fund changes"""
         for line in self:
             line._update_analytic_distribution("funds")
 
+    @api.onchange("source_analytic_id")
     def _inverse_source_analytic(self):
         """Update distribution when source changes"""
         for line in self:
@@ -543,63 +390,22 @@ class DisbursementRequest(models.Model):
                 rec[field_name] = False
         return super()._compute_analytic_id()
 
-    def _log_budget_commitment_linked(self):
-        self.ensure_one()
-        link = f"/web#id={self.id}&model={self._name}&view_type=form"
-        self.budget_commitment_id.message_post(
-            body=_(
-                'The disbursement request <a href="%(link)s" target="_blank">\'%(name)s\'</a> has been linked to this record.'
-            )
-            % {"name": self.name, "link": link},
-            subtype_xmlid="mail.mt_comment",
-        )
-
-    def _log_budget_commitment_unlinked(self):
-        self.ensure_one()
-        link = f"/web#id={self.id}&model={self._name}&view_type=form"
-        self.budget_commitment_id.message_post(
-            body=_("The disbursement request '%(name)s' has been unlinked.")
-            % {"name": self.name},
-            subtype_xmlid="mail.mt_comment",
-        )
-
     # -------------------------------------------------------------------------
     # Fiscal year methods
     # -------------------------------------------------------------------------
-    @api.depends("date", "company_id")
-    def _compute_date_range_fy(self):
-        for rec in self:
-            date = fields.Date.to_date(rec.date)
-            company = rec.company_id
-            rec.account_fiscal_year_id = (
-                company and company.find_daterange_fy(date) or False
-            )
-
     @api.model
-    def _search_date_range_fy(self, operator, value):
-        if operator in ("=", "!=", "in", "not in"):
-            date_range_domain = [("id", operator, value)]
-        else:
-            date_range_domain = [("name", operator, value)]
+    def _default_fiscal_year(self, date, company):
+        return company.find_daterange_fy(date) if company else False
 
-        date_ranges = self.env["account.fiscal.year"].search(date_range_domain)
-
-        domain = [("id", "=", -1)]
-        for date_range in date_ranges:
-            domain = expression.OR(
-                [
-                    domain,
-                    [
-                        "&",
-                        ("date", ">=", date_range.date_from),
-                        ("date", "<=", date_range.date_to),
-                        "|",
-                        ("company_id", "=", False),
-                        ("company_id", "=", date_range.company_id.id),
-                    ],
-                ]
+    @api.onchange("date", "company_id")
+    def _onchange_date_fiscal_year(self):
+        """Default the year from the date. The year leads once set (it drives
+        the number and, under budget control, the commitment), so a later
+        date edit never moves it."""
+        for rec in self.filtered(lambda r: not r.account_fiscal_year_id):
+            rec.account_fiscal_year_id = rec._default_fiscal_year(
+                fields.Date.to_date(rec.date), rec.company_id
             )
-        return domain
 
     # -------------------------------------------------------------------------
     # Exception methods
@@ -627,196 +433,184 @@ class DisbursementRequest(models.Model):
 
     @api.model
     def _get_popup_action(self):
-        action = self.env.ref(
-            "disbursement.action_disbursement_exception_confirm"
-        )
+        action = self.env.ref("disbursement.action_disbursement_exception_confirm")
         return action
 
     # -------------------------------------------------------------------------
-    # Reference fields compute
+    # Payees and source document
     # -------------------------------------------------------------------------
-    @api.depends("reference")
-    def _compute_reference_fields(self):
+    @api.depends("line_ids.partner_id")
+    def _compute_payee_display(self):
+        """First payee, plus how many others: "A +2"."""
         for rec in self:
-            if rec.reference:
-                rec.reference_model = rec.reference._name
-                ir_model = self.env["ir.model"].sudo().search(
-                    [("model", "=", rec.reference._name)], limit=1
-                )
-                rec.reference_model_name = ir_model.name if ir_model else rec.reference._name
-            else:
-                rec.reference_model = False
-                rec.reference_model_name = False
+            partners = rec.line_ids.partner_id
+            rec.payee_display = partners[:1].display_name or ""
+            if len(partners) > 1:
+                rec.payee_display += " +%d" % (len(partners) - 1)
 
-    @api.depends("reference")
-    def _compute_partner_id(self):
-        for rec in self:
-            if rec.reference and hasattr(rec.reference, "partner_id"):
-                rec.partner_id = rec.reference.partner_id
-        self._compute_analytic()
+    @api.onchange("partner_type_id")
+    def _onchange_partner_type_id(self):
+        mismatched = self.line_ids.partner_id.filtered(
+            lambda p: p.partner_type_id != self.partner_type_id
+        )
+        if self.partner_type_id and mismatched:
+            return {
+                "warning": {
+                    "title": _("Payee type changed"),
+                    "message": _(
+                        "These payees are not of type %(type)s and must be "
+                        "changed before submitting: %(names)s"
+                    )
+                    % {
+                        "type": self.partner_type_id.display_name,
+                        "names": ", ".join(mismatched.mapped("display_name")),
+                    },
+                }
+            }
 
-    def _compute_analytic(self):
-        """Hook for extension modules to merge analytics from reference document."""
+    # -------------------------------------------------------------------------
+    # Taxable (มีภาษี)
+    # -------------------------------------------------------------------------
+    @api.onchange("payment_type", "partner_type_id")
+    def _onchange_has_tax_default(self):
+        """A company starts out taxed; an advance or a prepayment starts out
+        untaxed (the user may tick it back)."""
+        if self.partner_type_id.company_type == "company":
+            self.has_tax = True
+        elif self.payment_type in ("advance", "prepaid"):
+            self.has_tax = False
+
+    @api.onchange("has_tax")
+    def _onchange_has_tax(self):
+        if not self.has_tax:
+            self.line_ids.update({"tax_ids": [(5, 0, 0)], "wht_tax_id": False})
+
+    def _clear_untaxed_lines(self):
+        """Keep programmatic creates/writes consistent with ``has_tax``."""
+        lines = self.filtered(lambda r: not r.has_tax).line_ids.filtered(
+            lambda l: l.tax_ids or l.wht_tax_id
+        )
+        if lines:
+            lines.write({"tax_ids": [(5, 0, 0)], "wht_tax_id": False})
+
+    @api.model
+    def _get_payee_type(self, partner):
+        """The type a request paying ``partner`` must carry — for bridges that
+        raise a request from a single-vendor document."""
+        if not partner.partner_type_id:
+            raise UserError(
+                _("Set a payee type on %s before raising a disbursement request.")
+                % partner.display_name
+            )
+        return partner.partner_type_id
+
+    def _get_source_document(self):
+        """The document this request was raised from (PO, PA, AR …), or an
+        empty value for a stand-alone request. Each source bridge overrides it;
+        it feeds the bill reference and the printed อ้างอิง line."""
+        self.ensure_one()
+        return False
 
     # -------------------------------------------------------------------------
     # Computed fields
     # -------------------------------------------------------------------------
     @api.depends("state")
-    def _compute_pipeline_status(self):
-        """Pipeline status reflects downstream document progress.
-
-        Core only knows pre_approval / approved. Bridge modules
-        (disbursement_accounting_kmitl, disbursement_finance_kmitl) extend
-        the selection and override this compute to add bill_*/payment_*/done.
-        """
+    def _compute_settlement_stage(self):
+        """Nothing is billed until a bridge says so: each of them overrides
+        this compute and declares only the dependencies it adds. ``state`` is
+        the dependency that makes Odoo compute the stage when a request is
+        created: a stored compute with no dependency at all is never marked
+        for computation, and would stay empty."""
         for rec in self:
-            rec.pipeline_status = (
-                "approved" if rec.state == "approved" else "pre_approval"
-            )
+            rec.settlement_stage = "none"
 
-    @api.depends("state", "pipeline_status")
-    def _compute_display_status(self):
-        """Unify state + pipeline_status into one user-visible value.
-
-        Used by the form statusbar so the user sees a single progressive
-        bar from draft → ... → approved → bill_* → payment_* → done. The
-        two-approver sub-workflow is shown separately by its own
-        ``approval_state`` status bar, not merged in here. The underlying
-        state and pipeline_status fields still drive button visibility,
-        security, and search filters.
-        """
+    @api.depends("state")
+    @api.depends_context("uid")
+    def _compute_can_edit(self):
+        """Whether the current user's screen lets the part be edited: the state
+        or the station opens it (``_can_edit_open``) and nothing blocks it
+        (``_can_edit_blocked``). Bridges extend those two, never this compute,
+        and declare only the ``@api.depends`` they add."""
         for rec in self:
-            if rec.state == "cancel":
-                rec.display_status = "cancel"
-            elif rec.state != "approved":
-                rec.display_status = rec.state
-            elif rec.pipeline_status in (False, "pre_approval", "approved"):
-                rec.display_status = "approved"
-            else:
-                rec.display_status = rec.pipeline_status
+            for kind in _EDIT_KINDS:
+                rec["can_edit_" + kind] = rec._can_edit_open(
+                    kind
+                ) and not rec._can_edit_blocked(kind)
 
-    @api.depends("partner_id", "company_id")
-    def _compute_partner_bank_id(self):
-        for request in self:
-            bank_ids = request.partner_id.bank_ids.filtered(
-                lambda bank: not bank.company_id or bank.company_id == request.company_id
-            )
-            request.partner_bank_id = bank_ids[0] if bank_ids else False
+    def _can_edit_open(self, kind):
+        """The state (or, with stations, the station) lets ``kind`` be edited."""
+        self.ensure_one()
+        return self.state == "draft"
+
+    def _can_edit_blocked(self, kind):
+        """Something blocks ``kind`` whatever the state allows (a bill, a budget
+        commitment …)."""
+        self.ensure_one()
+        return False
 
     @api.model_create_multi
     def create(self, vals_list):
-        """Override create to generate sequence number and log budget commitment.
-
-        The DR name follows the pattern DR/<fy>/<padding> (e.g. DR/69/0001),
-        mirroring the per-fiscal-year scheme that purchase_request_sequence_kmitl
-        uses. A dedicated ir.sequence is created on first use per fiscal year.
-        """
-        Sequence = self.env["ir.sequence"].sudo()
+        """Default the fiscal year. The number is not drawn here but on submit
+        (``_assign_number``): a draft stays "/" so abandoned drafts leave no
+        gaps in the DR/<fy>/ sequence."""
         Company = self.env["res.company"]
         for vals in vals_list:
-            if vals.get("name") and vals["name"] != "/":
-                continue
-
             date = fields.Date.to_date(
                 vals.get("date") or fields.Date.context_today(self)
             )
-            company = Company.browse(
-                vals.get("company_id") or self.env.company.id
-            )
-            fy = company.find_daterange_fy(date) if company else False
-            fy_year = fy.name[-2:] if fy else date.strftime("%y")
-
-            seq_code = f"disbursement.request.{fy_year}"
-            if not Sequence.search([("code", "=", seq_code)], limit=1):
-                Sequence.create({
-                    "name": f"Disbursement Request {fy_year}",
-                    "code": seq_code,
-                    "prefix": f"DR/{fy_year}/",
-                    "padding": 4,
-                    "number_increment": 1,
-                })
-
-            vals["name"] = Sequence.next_by_code(seq_code) or "/"
+            company = Company.browse(vals.get("company_id") or self.env.company.id)
+            if not vals.get("account_fiscal_year_id"):
+                fy = self._default_fiscal_year(date, company)
+                vals["account_fiscal_year_id"] = fy.id if fy else False
 
         records = super().create(vals_list)
-        for rec in records:
-            if rec.budget_commitment_id:
-                rec._log_budget_commitment_linked()
-        records._fill_budget_account_product_on_lines()
+        records._clear_untaxed_lines()
         return records
 
-    def write(self, values):
-        # Log unlinking if budget_commitment_id is being changed
-        if "budget_commitment_id" in values:
-            for rec in self:
-                # Only log if there's currently a budget commitment and it's being changed
-                if (
-                    rec.budget_commitment_id
-                    and values.get("budget_commitment_id") != rec.budget_commitment_id.id
-                ):
-                    rec._log_budget_commitment_unlinked()
-
-        res = super().write(values)
-
-        # Log linking if budget_commitment_id is set to a value
-        if "budget_commitment_id" in values and values.get("budget_commitment_id"):
-            for rec in self:
-                rec._log_budget_commitment_linked()
-
-        if "budget_account_id" in values or "line_ids" in values:
-            self._fill_budget_account_product_on_lines()
-
+    def write(self, vals):
+        res = super().write(vals)
+        if "has_tax" in vals or "line_ids" in vals:
+            self._clear_untaxed_lines()
+        if vals.get("account_fiscal_year_id"):
+            # The number follows the year: a draft moved to another year gets
+            # that year's next number.
+            for rec in self.filtered(lambda r: r.state == "draft"):
+                prefix = rec._number_prefix(rec.account_fiscal_year_id, rec.date)
+                if rec.name.startswith("DR/") and not rec.name.startswith(prefix):
+                    rec.name = rec._next_number(rec.account_fiscal_year_id, rec.date)
         return res
 
-    # -------------------------------------------------------------------------
-    # Budget-account driven line product
-    # -------------------------------------------------------------------------
-    # Some budget codes carry their own product (budget_product): the line
-    # product is then a mapping of the budget code, not a purchased item, so the
-    # user must not pick it by hand. A bridge that owns such codes raises
-    # ``is_budget_account_product_expense`` and returns the product from
-    # ``_budget_account_line_product``; the stamping itself lives here and runs
-    # at ORM level, so it also lands on requests created programmatically and on
-    # fields the interactive onchange cannot reach (the product column is hidden).
-    # A bridge overriding the compute declares the dependency it actually reads
-    # (its own budget-code flag); Odoo merges ``@api.depends`` across every class
-    # in the MRO that defines the method, so the base dependency below always
-    # holds on top of it.
-    @api.depends("budget_account_id")
-    def _compute_is_budget_account_product_expense(self):
-        for rec in self:
-            rec.is_budget_account_product_expense = False
+    def _assign_number(self):
+        """Draw the DR/<fy>/<nnnn> number on first submit, mirroring the
+        per-fiscal-year scheme of purchase_request_sequence_kmitl. A request
+        reset to draft keeps its number."""
+        for rec in self.filtered(lambda r: not r.name or r.name == "/"):
+            rec.name = rec._next_number(rec.account_fiscal_year_id, rec.date)
 
-    def _budget_account_line_product(self):
-        """Product every line must carry, or an empty recordset when the user
-        picks the product by hand. Overridden per budget-code type."""
-        self.ensure_one()
-        return self.env["product.product"]
+    @api.model
+    def _number_prefix(self, fiscal_year, date):
+        """DR/<yy>/ of the chosen fiscal year (the date's year without one)."""
+        fy_year = fiscal_year.name[-2:] if fiscal_year else date.strftime("%y")
+        return f"DR/{fy_year}/"
 
-    def _fill_budget_account_product_on_lines(self):
-        for rec in self:
-            product = rec._budget_account_line_product()
-            if not product:
-                continue
-            account = (
-                product.property_account_expense_id
-                or product.categ_id.property_account_expense_categ_id
+    @api.model
+    def _next_number(self, fiscal_year, date):
+        """Next DR/<yy>/<nnnn>, from a per-year ir.sequence created on first use."""
+        Sequence = self.env["ir.sequence"].sudo()
+        prefix = self._number_prefix(fiscal_year, date)
+        fy_year = prefix.split("/")[1]
+        seq_code = f"disbursement.request.{fy_year}"
+        if not Sequence.search([("code", "=", seq_code)], limit=1):
+            Sequence.create(
+                {
+                    "name": f"Disbursement Request {fy_year}",
+                    "code": seq_code,
+                    "prefix": prefix,
+                    "padding": 4,
+                    "number_increment": 1,
+                }
             )
-            for line in rec.line_ids.filtered(lambda l: l.product_id != product):
-                line.product_id = product
-                if not line.name:
-                    line.name = product.display_name
-                # The account follows the product unconditionally, blank
-                # included: budget_product binds the budget code's own GL account
-                # to its product, and the product column is hidden for these
-                # codes — so keeping the previous code's account would silently
-                # book the expense against the wrong account with no way for the
-                # user to correct it. An empty account is visible and fixable.
-                line.account_id = account
-
-    @api.onchange("budget_account_id", "line_ids")
-    def _onchange_fill_budget_account_product(self):
-        self._fill_budget_account_product_on_lines()
+        return Sequence.next_by_code(seq_code) or "/"
 
     @api.depends(
         "line_ids.price_subtotal",
@@ -830,16 +624,10 @@ class DisbursementRequest(models.Model):
             request_lines = request.line_ids
 
             # Check company rounding method
-            if (
-                request.company_id.tax_calculation_rounding_method
-                == "round_globally"
-            ):
+            if request.company_id.tax_calculation_rounding_method == "round_globally":
                 # More accurate: compute all lines together
                 tax_results = self.env["account.tax"]._compute_taxes(
-                    [
-                        line._convert_to_tax_base_line_dict()
-                        for line in request_lines
-                    ]
+                    [line._convert_to_tax_base_line_dict() for line in request_lines]
                 )
                 totals = tax_results["totals"].get(request.currency_id, {})
                 amount_untaxed = totals.get("amount_untaxed", 0.0)
@@ -877,16 +665,15 @@ class DisbursementRequest(models.Model):
     def _onchange_analytic_distribution(self):
         """When change analytic_distribution set analytic distribution on all request lines"""
         if self.analytic_distribution:
-            self.line_ids.update(
-                {"analytic_distribution": self.analytic_distribution}
-            )
+            self.line_ids.update({"analytic_distribution": self.analytic_distribution})
 
     def _inverse_analytic_distribution(self):
         """When set analytic_distribution set analytic distribution on all request lines"""
         for request in self:
             if request.analytic_distribution:
                 request.line_ids.write(
-                    {"analytic_distribution": request.analytic_distribution})
+                    {"analytic_distribution": request.analytic_distribution}
+                )
 
     def action_submit(self):
         """Submit request for approval"""
@@ -895,210 +682,124 @@ class DisbursementRequest(models.Model):
                 raise UserError(_("Only draft requests can be submitted."))
             if not record.line_ids:
                 raise UserError(
-                    _("Cannot submit a disbursement request with no lines. "
-                      "Please add at least one line.")
+                    _(
+                        "Cannot submit a disbursement request with no lines. "
+                        "Please add at least one line."
+                    )
                 )
             if record.detect_exceptions() and not record.ignore_exception:
                 return record._popup_exceptions()
+            record._assign_number()
             record.state = "submitted"
         return True
 
     def action_sign(self):
-        """Head of department signs and sends to inspector"""
+        """Head of department signs; the request enters the circuit
+        (``_on_signed``)."""
         for record in self:
             if record.state != "submitted":
                 raise UserError(_("Only submitted requests can be signed."))
             record.state = "signed"
+            if not record.sign_date:
+                record.sign_date = fields.Date.context_today(record)
+            record._on_signed()
         return True
 
-    def action_validate(self):
-        """Inspector validates the request and opens the two-approver step.
+    # -------------------------------------------------------------------------
+    # Acts and the circuit. The acts themselves (validate, approve, bill,
+    # audit, authorize, consume the budget …) belong to the modules that
+    # implement them: they declare themselves here and call the seams below.
+    # -------------------------------------------------------------------------
+    @api.model
+    def _disbursement_acts(self):
+        """The acts the capability modules contribute, as dicts ``{code, name
+        (lazy), kind, group (xmlid), states, sequence, module}``. ``states`` are
+        the states the act may be done in (default: signed, in progress).
+        Extend with ``super()``."""
+        return []
 
-        The verified request now needs two approvals in sequence: the Finance
-        Division Director (ผอ.กองคลัง) then the Rector-delegated approver
-        (ผู้ได้รับมอบอำนาจอธิการบดี). Entering ``verified`` starts the sub-workflow
-        at ``pending_finance`` and pushes a Todo to the Finance Director group.
-        """
-        for record in self:
-            if record.state != "signed":
-                raise UserError(_("Only signed requests can be validated."))
-            record.state = "verified"
-            record.verifier_id = self.env.user
-            record.verify_date = fields.Datetime.now()
-            record._stamp_signature("verify")
-            record.approval_state = "pending_finance"
-            record._schedule_approval_todo(
-                FINANCE_DIRECTOR_GROUP, DR_APPROVE_FINANCE_ACTIVITY
-            )
+    @api.model
+    def _disbursement_act(self, code):
+        return next((act for act in self._disbursement_acts() if act["code"] == code), {})
+
+    def _disbursement_act_states(self, code):
+        return self._disbursement_act(code).get("states", ("signed", "in_progress"))
+
+    def _disbursement_act_applicable(self, code):
+        """Whether the act concerns this request at all (a request that draws no
+        budget has nothing to consume)."""
         return True
 
-    def action_approve_finance(self):
-        """First approval: the Finance Division Director (ผอ.กองคลัง).
+    def _disbursement_act_offered(self, code):
+        """Whether the current user may do the act on this request now: the state
+        allows it and the user holds the act's role."""
+        self.ensure_one()
+        act = self._disbursement_act(code)
+        return bool(
+            act
+            and self.state in self._disbursement_act_states(code)
+            and self.env.user.has_group(act["group"])
+        )
 
-        Records the sign-off and hands over to the Rector-delegated approver.
-        No budget is touched yet — that happens only on the second approval.
-        """
+    def _disbursement_check_act(self, code):
+        """Guard every act method with this first. The state check is integrity —
+        an act is only done on a request in the circuit, whoever asks, su
+        included — the role check is bypassed under su."""
+        act = self._disbursement_act(code)
         for record in self:
-            if record.state != "verified" or record.approval_state != "pending_finance":
+            if record.state not in record._disbursement_act_states(code):
                 raise UserError(
-                    _("Only a verified request awaiting the Finance Director "
-                      "can be approved at this step.")
+                    _("This act cannot be done on a request that is %s.")
+                    % dict(record._fields["state"]._description_selection(self.env))[
+                        record.state
+                    ]
                 )
-            record.finance_approver_id = self.env.user
-            record.finance_approve_date = fields.Datetime.now()
-            record._stamp_signature("finance_approve")
-            record.activity_feedback([DR_APPROVE_FINANCE_ACTIVITY])
-            record.approval_state = "pending_rector"
-            record._schedule_approval_todo(
-                RECTOR_DELEGATE_GROUP, DR_APPROVE_RECTOR_ACTIVITY
+            if not self.env.su and not self.env.user.has_group(act["group"]):
+                raise AccessError(_("You do not hold the role this act requires."))
+
+    def _disbursement_act_done(self, code):
+        """Call at the end of an act: records it where the request is routed
+        (disbursement_wc) and lets bridges react (disbursement_validation_assignment)."""
+
+    def _on_signed(self):
+        """The request has just been signed (or, with the context key
+        ``disbursement_resubmit``, resubmitted after a correction): it enters the
+        circuit. Nothing routes it without disbursement_wc."""
+
+    def _disbursement_check_send_back(self):
+        """Whether the current user may take a request in the circuit out of it
+        (reset to draft, cancel, send back)."""
+        if not self.env.su and not self.env.user.has_group(
+            "disbursement.group_disbursement_officer"
+        ):
+            raise AccessError(
+                _("Only a disbursement officer can take a request out of the circuit.")
             )
-        return True
 
-    def action_approve(self):
-        """Final approval: the Rector-delegated approver commits the budget.
+    def _settlement_snapshot(self):
+        """{request id: settlement stage}, to compare around an operation that
+        may walk the money back."""
+        return {rec.id: rec.settlement_stage for rec in self}
 
-        Only reachable once the Finance Director has approved
-        (``approval_state == 'pending_rector'``). This is the single point where
-        the budget is obligated and consumed.
-        """
-        for record in self:
-            if record.state != "verified" or record.approval_state != "pending_rector":
-                raise UserError(
-                    _("Only a request awaiting the Rector-delegated approval "
-                      "can be approved.")
-                )
-            record._action_approve_budget()
-            record.state = "approved"
-            record.approval_state = "approved"
-            record.rector_approver_id = self.env.user
-            record.rector_approve_date = fields.Datetime.now()
-            record._stamp_signature("rector_approve")
-            record.activity_feedback([DR_APPROVE_RECTOR_ACTIVITY])
-        return True
+    def _settlement_check(self, before):
+        """After an operation that may walk the money back: call
+        ``_on_settlement_walked_back`` for every request whose stage dropped."""
+        self.flush_recordset(["settlement_stage"])
+        for rec in self:
+            previous = before.get(rec.id)
+            if previous and _SETTLEMENT_RANK[rec.settlement_stage] < _SETTLEMENT_RANK[previous]:
+                rec._on_settlement_walked_back(previous)
 
-    def action_approve_batch(self):
-        """Approve many requests at once from the approver queue.
-
-        Each request is approved in its own savepoint so one that fails (e.g.
-        insufficient budget on the Rector step) does not roll back the rest.
-        Dispatches by ``approval_state`` so it serves both approver queues, and
-        returns a summary notification.
-        """
-        approved = self.env["disbursement.request"]
-        failures = []
-        for record in self:
-            try:
-                with self.env.cr.savepoint():
-                    if record.approval_state == "pending_finance":
-                        record.action_approve_finance()
-                    elif record.approval_state == "pending_rector":
-                        record.action_approve()
-                    else:
-                        continue
-                approved |= record
-            except (UserError, ValidationError) as error:
-                self.env.invalidate_all()
-                failures.append(
-                    (record.display_name, error.args and error.args[0] or _("error"))
-                )
-            except Exception as error:  # noqa: BLE001 - isolate per-record failures
-                self.env.invalidate_all()
-                failures.append((record.display_name, str(error)))
-
-        message = _("%s request(s) approved.") % len(approved)
-        if failures:
-            message += "\n" + _("Could not approve:") + "\n"
-            message += "\n".join(
-                "• %s — %s" % (name, reason) for name, reason in failures
-            )
-        if failures and not approved:
-            notification_type = "danger"
-        elif failures:
-            notification_type = "warning"
-        else:
-            notification_type = "success"
-        return {
-            "type": "ir.actions.client",
-            "tag": "display_notification",
-            "params": {
-                "title": _("Approval"),
-                "message": message,
-                "type": notification_type,
-                "sticky": bool(failures),
-            },
-        }
-
-    def action_open_reject_wizard(self):
-        """Open the wizard that captures the rejection reason (either approver)."""
-        self.ensure_one()
-        return {
-            "type": "ir.actions.act_window",
-            "name": _("Reject Approval"),
-            "res_model": "disbursement.reject.wizard",
-            "view_mode": "form",
-            "views": [(False, "form")],
-            "target": "new",
-            "context": {"default_request_id": self.id},
-        }
-
-    def _action_reject(self, reason):
-        """Reject the pending approval and notify the requester.
-
-        Keeps the request at ``verified`` (``state`` untouched) and marks the
-        sub-workflow ``rejected``; a Todo goes back to the requester and the
-        request can be re-sent for approval via ``action_request_approval``.
-        """
-        self.ensure_one()
-        if self.approval_state not in ("pending_finance", "pending_rector"):
-            raise UserError(
-                _("Only a request awaiting approval can be rejected.")
-            )
-        self.activity_unlink(
-            [DR_APPROVE_FINANCE_ACTIVITY, DR_APPROVE_RECTOR_ACTIVITY]
-        )
-        self.approval_state = "rejected"
-        self.approval_reject_reason = reason
-        if self.user_id:
-            self.activity_schedule(
-                DR_REJECTED_ACTIVITY,
-                user_id=self.user_id.id,
-                note=reason or "",
-            )
-        self.message_post(
-            body=_(
-                "<p><b>Approval rejected</b></p><p>Reason: <b>%s</b></p>"
-            ) % (reason or _("no reason given")),
-            subtype_xmlid="mail.mt_comment",
-        )
-        return True
-
-    def action_request_approval(self):
-        """Re-send a rejected request for approval, restarting at the Finance
-        Director step."""
-        self.ensure_one()
-        if self.approval_state != "rejected":
-            raise UserError(
-                _("Only a rejected request can be re-sent for approval.")
-            )
-        self.activity_feedback([DR_REJECTED_ACTIVITY])
-        self._archive_signatures(["finance_approve", "rector_approve"])
-        self.write({
-            "finance_approver_id": False,
-            "finance_approve_date": False,
-            "rector_approver_id": False,
-            "rector_approve_date": False,
-            "approval_reject_reason": False,
-            "approval_state": "pending_finance",
-        })
-        self._schedule_approval_todo(
-            FINANCE_DIRECTOR_GROUP, DR_APPROVE_FINANCE_ACTIVITY
-        )
-        return True
+    def _on_settlement_walked_back(self, previous_stage):
+        """The money went back a step (a bill reset, a voucher cancelled, a cheque
+        bounced); ``previous_stage`` is where it was."""
 
     def _stamp_signature(self, step):
         """Freeze the acting user's rendered identity as the signature for ``step``.
 
-        Mirrors ``sarabun.routing.step._signature_snapshot_vals`` (ADR-0009):
+        A re-stamp supersedes the previous row of the same step, so the block
+        keeps one active row per step. Mirrors
+        ``sarabun.routing.step._signature_snapshot_vals`` (ADR-0009):
         ชื่อ / ตำแหน่ง / ลายเซ็น are captured now so a later HR edit never rewrites an
         already-signed ใบขอเบิก. The source is read under ``sudo`` — capturing the
         official-record identity must not depend on the actor's hr.employee read
@@ -1106,17 +807,24 @@ class DisbursementRequest(models.Model):
         signature model is read-only to every group.
         """
         self.ensure_one()
+        self._archive_signatures([step])
         user = self.env.user
         employee = user.sudo().employee_id
-        return self.env["disbursement.request.signature"].sudo().create({
-            "request_id": self.id,
-            "step": step,
-            "signed_by_id": user.id,
-            "signed_date": fields.Datetime.now(),
-            "signed_name": employee.name or user.name,
-            "signed_position_name": employee.job_title or "",
-            "signed_signature": employee.signature or False,
-        })
+        return (
+            self.env["disbursement.request.signature"]
+            .sudo()
+            .create(
+                {
+                    "request_id": self.id,
+                    "step": step,
+                    "signed_by_id": user.id,
+                    "signed_date": fields.Datetime.now(),
+                    "signed_name": employee.name or user.name,
+                    "signed_position_name": employee.job_title or "",
+                    "signed_signature": employee.signature or False,
+                }
+            )
+        )
 
     def _archive_signatures(self, steps):
         """Archive the signature rows for ``steps`` on these requests.
@@ -1124,267 +832,119 @@ class DisbursementRequest(models.Model):
         Called wherever the workflow clears the matching who-did-it stamp, so a
         superseded round stops printing while its history survives (ADR-0002).
         """
-        self.env["disbursement.request.signature"].sudo().search([
-            ("request_id", "in", self.ids),
-            ("step", "in", steps),
-        ]).write({"active": False})
+        self.env["disbursement.request.signature"].sudo().search(
+            [
+                ("request_id", "in", self.ids),
+                ("step", "in", steps),
+            ]
+        ).write({"active": False})
 
-    def _schedule_approval_todo(self, group_xmlid, act_type_xmlid):
-        """Push an execution Todo to every member of ``group_xmlid`` so the
-        pending approval surfaces in their Todo inbox (mirrors the
-        accounting_kmitl_workflow fan-out)."""
-        group = self.env.ref(group_xmlid)
-        for record in self:
-            for approver in group.users:
-                record.activity_schedule(
-                    act_type_xmlid,
-                    user_id=approver.id,
-                    note=record.name or "",
-                )
-
-    def _reset_verification(self):
-        """Drop the Validate stamp and archive its signature.
-
-        Called wherever the request falls back to a state at or before ``signed``,
-        from which the officer must verify again.
-        """
-        to_reset = self.filtered("verifier_id")
-        if not to_reset:
-            return
-        to_reset._archive_signatures(["verify"])
-        to_reset.write({"verifier_id": False, "verify_date": False})
-
-    def _reset_approval(self):
-        """Reset the two-approver sub-workflow and drop its pending Todos.
-
-        Called when a request leaves the approval window (cancel / draft /
-        return-to-verification) so the next time it reaches ``verified`` the
-        cycle starts fresh."""
-        to_reset = self.filtered(lambda r: r.approval_state != "none")
-        if not to_reset:
-            return
-        to_reset.activity_unlink([
-            DR_APPROVE_FINANCE_ACTIVITY,
-            DR_APPROVE_RECTOR_ACTIVITY,
-            DR_REJECTED_ACTIVITY,
-        ])
-        to_reset._archive_signatures(["finance_approve", "rector_approve"])
-        to_reset.write({
-            "approval_state": "none",
-            "finance_approver_id": False,
-            "finance_approve_date": False,
-            "rector_approver_id": False,
-            "rector_approve_date": False,
-            "approval_reject_reason": False,
-        })
-
-    def _action_approve_budget(self):
-        """Obligate and consume from the pre-linked budget commitment.
-
-        The BC is expected to be set from an upstream process (PR/PO/PA);
-        this method does NOT create a new BC. It posts an obligate and a
-        consume line for the DR amount, leaving the BC open for other DRs.
-        """
+    # -------------------------------------------------------------------------
+    # Workflow hooks (overridden by disbursement_budget)
+    # -------------------------------------------------------------------------
+    def _on_cancel(self):
+        """Called per request by ``action_cancel``, before it turns ``cancel``."""
         self.ensure_one()
-        # Idempotent: a request returned to verification (approved -> signed)
-        # keeps its obligation, so re-approving must not double-cut the budget.
-        if self._has_own_budget_obligation():
-            return
-        commitment = self._check_commitment_obligable()
-        first_reserve = self._get_commitment_reserve_line(commitment)
-        self.env["budget.commitment.line"].create(
-            self._prepare_budget_obligate_lines(commitment, first_reserve)
-        )
-        self.budget_consumed_amount = self.amount_total
-        self.budget_consumed_date = fields.Datetime.now()
-        self.message_post(
-            body=_("Budget obligated and consumed: %(amount)s on commitment %(name)s")
-            % {"amount": self.amount_total, "name": commitment.name},
-            subtype_xmlid="mail.mt_note",
-        )
-
-    def action_return_leftover_budget(self):
-        """Shortcut from the DR to the leftover-return (คืนจอง) confirmation.
-
-        Opens the same ``budget.commitment.return.wizard`` the commitment uses,
-        scoped to this DR's linked commitment, and stamps this DR as the source
-        document on the posted return line. The wizard works on the whole
-        commitment (which may be shared across งวด), returning its full
-        unconsumed remainder — consistent with the manual, no-guard policy.
-        """
-        self.ensure_one()
-        commitment = self.budget_commitment_id
-        if not commitment:
-            raise UserError(_("No budget commitment linked to this request."))
-        return commitment._action_return_leftover_wizard(
-            res_model="disbursement.request", res_id=self.id
-        )
-
-    def _check_commitment_obligable(self):
-        """Validate the linked commitment can absorb this DR's amount."""
-        self.ensure_one()
-        if not self.budget_commitment_id:
-            raise UserError(
-                _("Budget commitment is required before approval. "
-                  "Please link one from the upstream document.")
-            )
-        commitment = self.budget_commitment_id
-        if commitment.state not in ("reserved", "partial"):
-            raise UserError(
-                _("Cannot obligate: commitment %(name)s is in state '%(state)s' "
-                  "(must be 'reserved' or 'partial').")
-                % {"name": commitment.name, "state": commitment.state}
-            )
-        if commitment.available_to_obligate < self.amount_total:
-            raise UserError(
-                _("Insufficient available to obligate on commitment %(name)s. "
-                  "Available: %(available)s, Required: %(required)s")
-                % {
-                    "name": commitment.name,
-                    "available": commitment.available_to_obligate,
-                    "required": self.amount_total,
-                }
-            )
-        return commitment
-
-    def _get_commitment_reserve_line(self, commitment):
-        """Return the first active reserve line on the commitment."""
-        first_reserve = commitment.line_ids.filtered(
-            lambda l: l.move_type == "reserve" and l.state == "posted"
-        )[:1]
-        if not first_reserve:
-            raise UserError(
-                _("No active reserve line on commitment %s.") % commitment.name
-            )
-        return first_reserve
-
-    def _prepare_budget_obligate_lines(self, commitment, reserve_line):
-        """Build the obligate + consume commitment lines for this DR."""
-        self.ensure_one()
-        common = {
-            "commitment_id": commitment.id,
-            "account_id": reserve_line.account_id.id,
-            "analytic_distribution": reserve_line.analytic_distribution,
-            "amount": self.amount_total,
-            "res_model": "disbursement.request",
-            "res_id": self.id,
-        }
-        return [
-            dict(common, move_type="obligate",
-                 name=_("Obligation: %s") % self.name),
-            dict(common, move_type="consume",
-                 name=_("Consumption: %s") % self.name),
-        ]
-
-    def _reverse_own_commitment_lines(self, commitment):
-        """Cancel only the obligate/consume lines THIS request created on a
-        shared commitment, leaving the reservation open for other requests."""
-        self.ensure_one()
-        own = commitment.line_ids.filtered(
-            lambda l: l.state == "posted"
-            and l.move_type in ("obligate", "consume")
-            and l.res_model == "disbursement.request"
-            and l.res_id == self.id
-        )
-        own.action_cancel()
-        return True
-
-    def _has_own_budget_obligation(self):
-        """Whether this request already has a posted obligate line on its
-        commitment (used to keep _action_approve_budget idempotent across a
-        return-to-verification round trip)."""
-        self.ensure_one()
-        commitment = self.budget_commitment_id
-        return bool(commitment) and bool(
-            commitment.line_ids.filtered(
-                lambda l: l.state == "posted"
-                and l.move_type == "obligate"
-                and l.res_model == "disbursement.request"
-                and l.res_id == self.id
-            )
-        )
 
     def action_cancel(self):
         """Cancel the request.
 
-        Bridge modules override this to add bill/payment-specific guards
-        and cleanup (cancel draft bills, block on posted bills/payments).
+        Before the circuit its requester may; inside it only the people holding
+        it at their station may (``_disbursement_check_send_back``); once the
+        circuit is done only a disbursement officer may. Bridge modules override
+        this to add bill/payment-specific guards and cleanup (cancel draft
+        bills, block on posted bills/payments).
         """
+        officer = self.env.su or self.env.user.has_group(
+            "disbursement.group_disbursement_officer"
+        )
         for record in self:
             if record.state == "cancel":
+                raise UserError(_("Cannot cancel an already cancelled request."))
+            if record.state == "in_progress":
+                record._disbursement_check_send_back()
+            elif record.state not in PRE_APPROVAL_STATES and not officer:
                 raise UserError(
-                    _("Cannot cancel an already cancelled request.")
+                    _(
+                        "Only a disbursement officer can cancel a request once it "
+                        "has gone through the circuit."
+                    )
                 )
-            commitment = record.budget_commitment_id
-            if commitment:
-                try:
-                    plan_owned = (
-                        "procurement_plan_id" in commitment._fields
-                        and commitment.procurement_plan_id
-                    )
-                    is_shared = (
-                        plan_owned
-                        or len(commitment.disbursement_request_ids) > 1
-                    )
-                    if is_shared:
-                        record._reverse_own_commitment_lines(commitment)
-                        record.message_post(
-                            body=_(
-                                "Reversed this request's lines on shared "
-                                "commitment %s."
-                            )
-                            % commitment.name,
-                            subtype_xmlid="mail.mt_note",
-                        )
-                    else:
-                        record._cancel_budget_commitment()
-                        record.message_post(
-                            body=_("Budget commitment %s cancelled.")
-                            % commitment.name,
-                            subtype_xmlid="mail.mt_note",
-                        )
-                except UserError as e:
-                    record.message_post(
-                        body=_("Warning: %s") % str(e),
-                        subtype_xmlid="mail.mt_note",
-                    )
+            record._on_cancel()
             record.state = "cancel"
-            # A cancelled request no longer has budget obligated/consumed on
-            # its behalf (the lines above already reversed or cancelled the
-            # commitment side); clearing these keeps every reader that
-            # branches on "did this request commit budget" correct without
-            # having to also check state, and hides the leftover-return
-            # button, which depends on budget_consumed_amount.
-            record.budget_consumed_amount = 0.0
-            record.budget_consumed_date = False
-        self._reset_approval()
         return True
 
     def action_draft(self):
-        """Reset to draft"""
+        """Reset to draft. A request in the circuit leaves it (the stations are
+        disbursement_wc's business); every active signature is archived, and the
+        modules that stamp who acted (validate, approve) clear their stamp."""
         for record in self:
-            if record.state not in ("submitted", "signed", "cancel"):
+            if record.state not in ("submitted", "signed", "in_progress", "cancel"):
                 raise UserError(
-                    _("Only submitted, sent, or cancelled requests can be reset to draft.")
+                    _(
+                        "Only submitted, signed, in progress or cancelled requests "
+                        "can be reset to draft."
+                    )
+                )
+            if record.state == "in_progress":
+                record._disbursement_check_send_back()
+            if record.settlement_stage != "none":
+                raise UserError(
+                    _(
+                        "The money of this request has started (a bill is "
+                        "posted): it can no longer be reset or sent back."
+                    )
                 )
             record.state = "draft"
+            # Signed again on the next round.
+            if not record._keep_sign_date_on_draft():
+                record.sign_date = False
             record.exception_ids = False
             record.main_exception_id = False
             record.ignore_exception = False
-        self._reset_verification()
-        self._reset_approval()
+        self.signature_ids.sudo().write({"active": False})
         return True
 
-    def _compute_access_url(self):
-        """Compute the portal URL for the disbursement request."""
-        super()._compute_access_url()
-        for request in self:
-            request.access_url = f"/my/disbursement/{request.id}"
-
-    def _get_report_base_filename(self):
-        """Return the base filename for the report."""
+    def _keep_sign_date_on_draft(self):
+        """A request returned for correction keeps the head's signature: it is
+        resubmitted straight to verification (``action_resubmit_verification``)."""
         self.ensure_one()
-        return f"Disbursement Request-{self.name}"
+        return self.returned_for_edit
+
+    def unlink(self):
+        if self.filtered(lambda r: r.state != "cancel"):
+            raise UserError(_("Only cancelled requests can be deleted."))
+        # Its budget moves and bills refer to it: keep it for the audit trail.
+        # The final approval's signature row survives a cancel (archived).
+        if (
+            self.env["disbursement.request.signature"]
+            .sudo()
+            .with_context(active_test=False)
+            .search_count(
+                [("request_id", "in", self.ids), ("step", "=", "rector_approve")]
+            )
+        ):
+            raise UserError(
+                _("A request that was approved cannot be deleted, even once cancelled.")
+            )
+        return super().unlink()
+
+    def _has_description(self):
+        """Whether รายละเอียด holds content: a cleared Html editor leaves
+        ``<p><br></p>`` behind (for templates rendered without is_html_empty)."""
+        self.ensure_one()
+        return not is_html_empty(self.note)
+
+    def name_get(self):
+        # A draft has no number until its first submit (``_assign_number``).
+        # A plain loop: _() finds the language from this frame's ``self``.
+        result = []
+        for rec in self:
+            name = rec.name
+            if not name or name == "/":
+                name = _("Draft Request #%s") % (rec._origin.id or "")
+            result.append((rec.id, name))
+        return result
 
     @api.model
     def _get_masked_acc_number(self, acc_number):
@@ -1395,15 +955,5 @@ class DisbursementRequest(models.Model):
             return acc
         keep = set(digit_positions[:3]) | set(digit_positions[-4:])
         return "".join(
-            c if (not c.isdigit() or i in keep) else "X"
-            for i, c in enumerate(acc)
+            c if (not c.isdigit() or i in keep) else "X" for i, c in enumerate(acc)
         )
-
-    def open_preview(self):
-        """Open preview in portal."""
-        self.ensure_one()
-        return {
-            "type": "ir.actions.act_url",
-            "target": "new",
-            "url": self.get_portal_url(),
-        }

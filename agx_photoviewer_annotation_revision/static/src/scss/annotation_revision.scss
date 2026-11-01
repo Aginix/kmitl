@@ -1,0 +1,22 @@
+.o_agx_annotation_revisions {
+    width: auto;
+}
+
+// A superseded revision, kept by the chatter message it was posted with.
+.o_agx_revision_superseded {
+    display: inline-block;
+    padding: 0 6px;
+    font-size: 11px;
+    color: #fff;
+    white-space: nowrap;
+    background: #6c757d;
+    border-radius: 8px;
+
+    &.o_agx_revision_superseded_image {
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        z-index: 1;
+        pointer-events: none;
+    }
+}

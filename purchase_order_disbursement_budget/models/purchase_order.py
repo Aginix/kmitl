@@ -8,8 +8,9 @@ class PurchaseOrder(models.Model):
 
     def _prepare_disbursement_request_vals(self):
         vals = super()._prepare_disbursement_request_vals()
+        # The PO lines' dimensions (set by purchase_order_disbursement) win.
+        vals.setdefault("analytic_distribution", self.analytic_distribution)
         vals.update({
-            "analytic_distribution": self.analytic_distribution,
             "budget_account_id": self.budget_account_id.id,
             "account_fiscal_year_id": self.account_fiscal_year_id.id,
             "budget_commitment_id": self.budget_commitment_id.id,

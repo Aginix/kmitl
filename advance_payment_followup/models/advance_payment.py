@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import logging
 
 from odoo import _, api, fields, models
@@ -8,12 +7,11 @@ _logger = logging.getLogger(__name__)
 # States in which a loan is a live debt the borrower still holds — the debt
 # starts at effective_date (approved is pre-debt, done/cancel are
 # closed). Countdown, followup list and digest all key off this set.
-DEBTOR_STATES = ("in_progress", "reported", "to_reconcile")
+DEBTOR_STATES = ("in_progress",)
 
-# Generic "To Do" activity type — matched together with its summary so a
-# weekly re-run of the digest cron never piles up duplicate reminders on the
-# same loan (same idiom as advance.payment._workflow_activities, ADR-0013).
-FOLLOWUP_ACTIVITY_XMLID = "mail.mail_activity_data_todo"
+# The followup reminder's own activity type — one per loan, matched by type
+# alone so a weekly re-run of the digest cron never piles up duplicates.
+FOLLOWUP_ACTIVITY_XMLID = "advance_payment_followup.mail_activity_type_followup"
 
 
 class AdvancePayment(models.Model):
@@ -44,9 +42,16 @@ class AdvancePayment(models.Model):
         store=True,
     )
 
-    is_overdue = fields.Boolean(
-        string="เกินกำหนดคืน",
-        compute="_compute_is_overdue",
+    # Read literally by the calendar day — ครบกำหนด is the due date itself,
+    # not the reminder window (CONTEXT: Return due status).
+    return_due_status = fields.Selection(
+        [
+            ("not_due", "ยังไม่ถึงกำหนด"),
+            ("due", "ครบกำหนด"),
+            ("overdue", "เกินกำหนด"),
+        ],
+        string="สถานะวันครบกำหนด",
+        compute="_compute_return_due_status",
         store=True,
     )
 
@@ -92,15 +97,16 @@ class AdvancePayment(models.Model):
                 rec.return_range = "30+"
 
     @api.depends("days_to_return", "return_due_date", "state")
-    def _compute_is_overdue(self):
-        """Convenience boolean for tree decoration/search — past due and
-        still an open debt."""
+    def _compute_return_due_status(self):
         for rec in self:
-            rec.is_overdue = (
-                rec.state in DEBTOR_STATES
-                and bool(rec.return_due_date)
-                and rec.days_to_return < 0
-            )
+            if rec.state not in DEBTOR_STATES or not rec.return_due_date:
+                rec.return_due_status = False
+            elif rec.days_to_return < 0:
+                rec.return_due_status = "overdue"
+            elif rec.days_to_return == 0:
+                rec.return_due_status = "due"
+            else:
+                rec.return_due_status = "not_due"
 
     @api.model
     def _cron_recompute_return_days(self):
@@ -113,7 +119,7 @@ class AdvancePayment(models.Model):
         )
         records._compute_days_to_return()
         records._compute_return_range()
-        records._compute_is_overdue()
+        records._compute_return_due_status()
 
     @api.model
     def _followup_notify_before_days(self):
@@ -178,10 +184,10 @@ class AdvancePayment(models.Model):
         return _("ติดตามลูกหนี้เงินยืม %s", self.name)
 
     def _schedule_followup_activities(self):
-        """Raise one To-Do per loan on its loan officer, deduped by
-        (activity type, summary). A match is refreshed in place — assignee
-        and due date included — so reassigning the loan officer or editing
-        `return_due_date` doesn't leave a stale To-Do behind."""
+        """Raise one To-Do per loan on its loan officer, deduped by activity
+        type. A match is refreshed in place — assignee and due date included —
+        so reassigning the loan officer or editing `return_due_date` doesn't
+        leave a stale To-Do behind."""
         activity_type = self.env.ref(FOLLOWUP_ACTIVITY_XMLID)
         for rec in self:
             if not rec.loan_verifier_id:
@@ -189,7 +195,6 @@ class AdvancePayment(models.Model):
             summary = rec._followup_activity_summary()
             existing = rec.activity_ids.filtered(
                 lambda a: a.activity_type_id == activity_type
-                and a.summary == summary
             )
             if existing:
                 existing.sudo().write(
@@ -213,18 +218,19 @@ class AdvancePayment(models.Model):
         window) — otherwise it sits on the officer's desk forever pointing
         at a loan the tracker no longer considers a debtor."""
         activity_type = self.env.ref(FOLLOWUP_ACTIVITY_XMLID)
-        stale = self.env["mail.activity"].sudo().search(
-            [
-                ("activity_type_id", "=", activity_type.id),
-                ("res_model", "=", self._name),
-                ("res_id", "not in", eligible_loans.ids),
-                ("summary", "like", "ติดตามลูกหนี้เงินยืม%"),
-            ]
+        stale = (
+            self.env["mail.activity"]
+            .sudo()
+            .search(
+                [
+                    ("activity_type_id", "=", activity_type.id),
+                    ("res_model", "=", self._name),
+                    ("res_id", "not in", eligible_loans.ids),
+                ]
+            )
         )
         if stale:
-            stale.action_feedback(
-                feedback=_("ปิดอัตโนมัติ: ไม่อยู่ในเกณฑ์ติดตามลูกหนี้แล้ว")
-            )
+            stale.action_feedback(feedback=_("ปิดอัตโนมัติ: ไม่อยู่ในเกณฑ์ติดตามลูกหนี้แล้ว"))
 
     @api.model
     def _cron_send_followup_digest(self):

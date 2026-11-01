@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_advance_payment_form_exception" model="ir.ui.view">
+        <field name="name">advance.payment.form.exception</field>
+        <field name="model">advance.payment</field>
+        <field name="inherit_id" ref="advance_payment.view_advance_payment_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//form/header" position="before">
+                <div
+                    class="alert alert-danger"
+                    role="alert"
+                    style="margin-bottom:0px;"
+                    attrs="{'invisible': [('exceptions_summary','=',False)]}"
+                >
+                    <p>
+                        <strong>มีข้อผิดพลาดที่ต้องแก้ไข:</strong>
+                    </p>
+                    <field name="exceptions_summary" />
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_advance_payment_list_exception" model="ir.ui.view">
+        <field name="name">advance.payment.list.exception</field>
+        <field name="model">advance.payment</field>
+        <field name="inherit_id" ref="advance_payment.view_advance_payment_list" />
+        <field name="arch" type="xml">
+            <field name="loan_reason" position="before">
+                <field name="main_exception_id" optional="hide" />
+            </field>
+        </field>
+    </record>
+
+    <record id="view_advance_payment_search_exception" model="ir.ui.view">
+        <field name="name">advance.payment.search.exception</field>
+        <field name="model">advance.payment</field>
+        <field name="inherit_id" ref="advance_payment.view_advance_payment_search" />
+        <field name="arch" type="xml">
+            <filter name="draft" position="before">
+                <filter
+                    icon="fa-exclamation-circle"
+                    name="tofix"
+                    string="Exceptions"
+                    domain="[('main_exception_id','!=',False)]"
+                />
+                <separator />
+            </filter>
+        </field>
+    </record>
+</odoo>

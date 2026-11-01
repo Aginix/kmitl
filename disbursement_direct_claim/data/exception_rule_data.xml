@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- ตั้งเบิกตรง (disbursement ADR-0005): the external memo's number, date
+         and scan are checked on Submit, not as required fields, so the draft
+         can be saved before the memo is ready. -->
+    <record id="excep_disbursement_direct_claim_memo_number" model="exception.rule">
+        <field name="name">ใบขอเบิกตั้งเบิกตรงยังไม่ระบุเลขที่หนังสือ</field>
+        <field name="description">ใบขอเบิกแบบตั้งเบิกตรงต้องระบุเลขที่หนังสือบันทึกข้อความที่ทำจากภายนอก</field>
+        <field name="sequence">20</field>
+        <field name="model">disbursement.request</field>
+        <field name="exception_type">by_py_code</field>
+        <field name="code">
+if self.is_direct_claim and not self.memo_number:
+    failed = True
+        </field>
+        <field name="is_blocking" eval="True" />
+        <field name="active" eval="True" />
+    </record>
+    <record id="excep_disbursement_direct_claim_sign_date" model="exception.rule">
+        <field name="name">ใบขอเบิกตั้งเบิกตรงยังไม่ระบุวันที่หน่วยงานลงนาม</field>
+        <field name="description">ใบขอเบิกแบบตั้งเบิกตรงต้องระบุวันที่ที่หน่วยงานลงนามในหนังสือบันทึกข้อความ</field>
+        <field name="sequence">21</field>
+        <field name="model">disbursement.request</field>
+        <field name="exception_type">by_py_code</field>
+        <field name="code">
+if self.is_direct_claim and not self.sign_date:
+    failed = True
+        </field>
+        <field name="is_blocking" eval="True" />
+        <field name="active" eval="True" />
+    </record>
+    <record id="excep_disbursement_direct_claim_attachment" model="exception.rule">
+        <field name="name">ใบขอเบิกตั้งเบิกตรงยังไม่แนบไฟล์หนังสือ</field>
+        <field name="description">ใบขอเบิกแบบตั้งเบิกตรงต้องแนบไฟล์หนังสือบันทึกข้อความ</field>
+        <field name="sequence">22</field>
+        <field name="model">disbursement.request</field>
+        <field name="exception_type">by_py_code</field>
+        <field name="code">
+if self.is_direct_claim and not self.attachment_ids:
+    failed = True
+        </field>
+        <field name="is_blocking" eval="True" />
+        <field name="active" eval="True" />
+    </record>
+</odoo>

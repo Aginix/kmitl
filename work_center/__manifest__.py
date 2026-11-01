@@ -1,0 +1,33 @@
+{
+    "name": "Work Center",
+    "version": "16.0.1.1.0",
+    "author": "Aginix Technologies",
+    "website": "https://github.com/aginix/kmitl",
+    "category": "Productivity",
+    "summary": "Stations a document passes through: routes, visit log, acts, "
+    "per-area overview",
+    "depends": [
+        "mail",
+        "operating_unit",
+        "mail_activity_todo",
+    ],
+    "data": [
+        "security/work_center_security.xml",
+        "security/ir.model.access.csv",
+        "data/mail_activity_type_data.xml",
+        "views/work_center_act_views.xml",
+        "views/work_center_route_views.xml",
+        "views/work_center_visit_views.xml",
+        "wizards/work_center_move_wizard_views.xml",
+        "wizards/work_center_assign_wizard_views.xml",
+        "views/work_center_views.xml",
+        "views/work_center_rule_views.xml",
+        "views/work_center_assignment_rule_views.xml",
+        "views/work_center_counter_views.xml",
+        "views/work_center_area_views.xml",
+        "views/work_center_menus.xml",
+        "views/work_center_templates.xml",
+    ],
+    "installable": True,
+    "license": "LGPL-3",
+}

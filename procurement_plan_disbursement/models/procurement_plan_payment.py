@@ -30,16 +30,16 @@ class ProcurementPlanPayment(models.Model):
         compute="_compute_amount_actual",
         store=True,
         currency_field="currency_id",
-        help="งบที่ตัดจริงของงวดนี้ = ยอด consumed ของใบขอเบิกเมื่ออนุมัติแล้ว "
-        "(ใบขอเบิกที่ยังไม่อนุมัติถือเป็น 'กำลังดำเนินการ' ไม่นับ)",
+        help="งบที่ตัดจริงของงวดนี้ = ยอด consumed ของใบขอเบิกเมื่อตัดงบประมาณแล้ว "
+        "(ใบขอเบิกที่ยังไม่ตัดงบประมาณถือเป็น 'กำลังดำเนินการ' ไม่นับ)",
     )
 
     @api.depends("disbursement_request_id.budget_consumed_amount")
     def _compute_amount_actual(self):
         for rec in self:
             dr = rec.disbursement_request_id
-            # budget_consumed_amount is only set once a DR obligates+consumes
-            # the plan's budget (at approval) and is cleared again if the DR
+            # budget_consumed_amount is only set once a DR consumes the plan's
+            # budget (when its consume act runs) and is cleared again if the DR
             # is later cancelled, so it can be read directly without also
             # checking state — see disbursement.request.action_cancel.
             rec.amount_actual = dr.budget_consumed_amount if dr else 0.0

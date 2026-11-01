@@ -217,7 +217,7 @@
                             <field name="procurement_mode" widget="radio" readonly="1"/>
                             <field
                                 name="partner_id"
-                                attrs="{'readonly': [('is_editable', '=', False)]}"
+                                attrs="{'readonly': [('is_editable', '=', False)], 'invisible': [('payment_type', '!=', 'direct')]}"
                                 options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"
                             />
                             <field
@@ -476,7 +476,7 @@
         name="Purchase Request Approvals"
         parent="purchase.menu_purchase_root"
         groups="purchase.group_purchase_user"
-        sequence="4"
+        sequence="20"
     />
     <menuitem
         id="purchase_request_approval_menu_my"

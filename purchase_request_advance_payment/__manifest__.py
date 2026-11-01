@@ -5,12 +5,14 @@
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
     "depends": [
+        "purchase_request",
         "purchase_request_kmitl",
-        "purchase_request_budget",
         "advance_payment",
-        "advance_payment_budget",
+        "advance_payment_exception",
     ],
     "data": [
+        "data/advance_payment_loan_type_data.xml",
+        "data/exception_rule_data.xml",
         "views/purchase_request_views.xml",
         "views/advance_payment_views.xml",
     ],

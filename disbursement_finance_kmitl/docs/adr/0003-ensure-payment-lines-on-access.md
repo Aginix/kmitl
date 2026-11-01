@@ -1,5 +1,9 @@
 # Payment lines are ensured at every door, not only at the state transition
 
+> **Superseded in part (station model).** There is no `bills_posted` transition any
+> more: the first door is the `_on_bills_posted` seam the accounting bridge calls once every
+> active bill is posted. The doors that remain are unchanged.
+
 Payment lines could have been created once, when the request enters `bills_posted`.
 Instead `_ensure_payment_lines()` is idempotent — keyed on the bill, it makes rows for
 posted bills that have none — and is called from entering `bills_posted`, from the audit

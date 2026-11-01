@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_purchase_request_form" model="ir.ui.view">
+        <field name="name">purchase.request.form (Budget Verifier)</field>
+        <field name="model">purchase.request</field>
+        <field name="inherit_id" ref="purchase_request_kmitl.view_purchase_request_form" />
+        <field name="arch" type="xml">
+            <!-- ผู้ยืนยันงบประมาณ (ADR-0012): under ผู้ยืนยันตรวจสอบ, editable until
+                 the request ends; required once the พ.1 waits for the budget step -->
+            <field name="assigned_to" position="after">
+                <field name="budget_verifier_candidate_ids" invisible="1" />
+                <field
+                    name="budget_verifier_id"
+                    options="{'no_create': True, 'no_open': True}"
+                    attrs="{'readonly': [('state', 'in', ('done', 'rejected', 'cancelled'))], 'required': [('state', '=', 'to_verify_budget')]}"
+                />
+            </field>
+        </field>
+    </record>
+
+    <record id="view_purchase_request_search" model="ir.ui.view">
+        <field name="name">purchase.request.list.select (Budget Verifier)</field>
+        <field name="model">purchase.request</field>
+        <field name="inherit_id" ref="purchase_request.view_purchase_request_search" />
+        <field name="arch" type="xml">
+            <filter name="assigned_to_me" position="after">
+                <filter
+                    name="budget_verifier_me"
+                    string="รอฉันยืนยันงบประมาณ"
+                    domain="[('budget_verifier_id', '=', uid), ('state', '=', 'to_verify_budget')]"
+                />
+            </filter>
+        </field>
+    </record>
+</odoo>

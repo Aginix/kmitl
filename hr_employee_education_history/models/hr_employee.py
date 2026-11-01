@@ -24,7 +24,7 @@ class HrEmployee(models.Model):
             return False
         return max(education_levels, key=lambda x: x.education_level_id.level)
 
-    @api.depends("education_history_ids")
+    @api.depends("education_history_ids.education_level_id")
     def _compute_highest_education_id(self):
         for record in self:
             highest_level = record._get_highest_education()

@@ -1,0 +1,267 @@
+<odoo>
+    <!--
+        สัญญาการยืมเงิน (แบบ สค.001) — page 1 of the paper loan contract, signed
+        by hand. Page 2 (the blank รายการส่งใช้เงินยืม ledger) is a static PDF
+        appended in ir.actions.report._render_qweb_pdf_prepare_streams.
+        Values not known yet print as dotted lines, so any state can print.
+        Each signature block carries its signer's signature image once the
+        signer has acted (advance.payment._contract_signatures), else room to
+        sign by hand.
+    -->
+    <template id="report_advance_payment_contract">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.basic_layout">
+                    <t t-set="o" t-value="o.with_context(lang='th_TH')" />
+                    <!-- The loan officer may print another person's loan;
+                         non-public employee fields need sudo. -->
+                    <t t-set="emp" t-value="o.employee_id.sudo()" />
+                    <t t-set="dots" t-value="'.' * 40" />
+                    <t t-set="long_dots" t-value="'.' * 60" />
+                    <t
+                        t-set="org"
+                        t-value="'สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง'"
+                    />
+                    <!-- hr.employee.name already carries the prefix / academic title -->
+                    <t t-set="emp_name" t-value="emp.name" />
+                    <t
+                        t-set="emp_position"
+                        t-value="emp.academic_standing_id.name or emp.job_id.name or emp.job_title"
+                    />
+                    <t
+                        t-set="emp_department"
+                        t-value="(emp.department_id.complete_name or '').replace(' / ', '')"
+                    />
+                    <t t-set="sigs" t-value="o._contract_signatures()" />
+                    <t t-set="amount_str" t-value="'{:,.2f}'.format(o.loan_amount)" />
+                    <t
+                        t-set="amount_words"
+                        t-value="o.currency_id.amount_to_text(o.loan_amount)"
+                    />
+                    <style>
+                        * { font-family: "THSarabunNew", Arial, sans-serif; }
+                        .page { color: #000; font-size: 15pt; line-height: 1.3; }
+                        .top { width: 100%; border-collapse: collapse; }
+                        .top td { border: none; padding: 0; font-size: 15pt; }
+                        table.form { width: 100%; table-layout: fixed; border-collapse: collapse; border: 1px solid #000; }
+                        table.form td { border: 1px solid #000; padding: 4pt 6pt; vertical-align: top; font-size: 15pt; }
+                        .emblem { height: 44pt; float: left; margin-right: 6pt; }
+                        .title { text-align: center; font-weight: bold; font-size: 17pt; }
+                        .section { text-align: center; font-weight: bold; font-size: 16pt; }
+                        .indent { text-indent: 36pt; }
+                        .justify { text-align: justify; }
+                        /* Thai distributed justify (_contract_thai_distribute):
+                           the negative word-spacing cancels the inserted
+                           word-boundary spaces (THSarabunNew space = 0.216em);
+                           real spaces sit in .rs and keep their width. */
+                        .distribute { text-align: justify; word-spacing: -0.216em; }
+                        .distribute .rs { word-spacing: normal; }
+                        .right { text-align: right; }
+                        .center { text-align: center; }
+                        table.sign { width: 100%; border-collapse: collapse; }
+                        table.sign td { border: none; padding: 0; font-size: 15pt; vertical-align: top; }
+                        /* wkhtmltopdf draws Bootstrap's solid 0-width tbody/tr borders as a gray box */
+                        table.top tbody, table.top tr, table.sign tbody, table.sign tr { border-style: none; }
+                        .sig-img { height: 34pt; text-align: center; }
+                        /* sits just above the dotted line — overlapping it, an
+                           opaque signature scan blanks out part of the line */
+                        .sig-img img { max-height: 34pt; max-width: 130pt; }
+                        table.sign td.sig-fit { width: 1%; white-space: nowrap; vertical-align: bottom; }
+                        table.sign td.sig-filler { width: 100%; }
+                        /* fixed width so วันที่ lines up across the blocks */
+                        table.sign td.sig-date { width: 200pt; min-width: 200pt; white-space: nowrap; vertical-align: bottom; }
+                        table.sign td.sig-name { white-space: nowrap; }
+                    </style>
+
+                    <div class="page">
+                        <table class="top">
+                            <tr>
+                                <td
+                                ><!-- "New" / its Thai translation until the first submit -->
+                                    <t
+                                        t-if="o.name and o.name not in ('New', 'ใหม่')"
+                                    >(<t t-out="o.name" />)</t></td>
+                                <td class="right">แบบ สค.001</td>
+                            </tr>
+                        </table>
+
+                        <table class="form">
+                            <!-- 1. Header -->
+                            <tr>
+                                <td style="width: 70%; border-right: 1px solid #000;">
+                                    <img
+                                        class="emblem"
+                                        src="/advance_payment_contract_pdf/static/src/img/kmitl_emblem.png"
+                                    />
+                                    <div class="title">สัญญาการยืมเงิน</div>
+                                    <div style="clear: both; padding-top: 4pt;">
+                                        ยื่นต่อ &#160;&#160;&#160;อธิการบดี <t
+                                            t-out="org"
+                                        />
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>เลขที่ <t
+                                            t-out="o.contract_number or dots"
+                                        /></div>
+                                    <div class="center">วันครบกำหนด</div>
+                                    <div class="center"><t
+                                            t-out="o._contract_date_th(o.return_due_date) or dots"
+                                        /></div>
+                                </td>
+                            </tr>
+                            <!-- 2. Borrower + purpose -->
+                            <tr>
+                                <td colspan="2">
+                                    <div
+                                        class="distribute"
+                                        t-out="o._contract_thai_distribute('ข้าพเจ้า %s \u00a0ตำแหน่ง %s สังกัด %s จังหวัด กรุงเทพมหานคร มีความประสงค์ขอยืมเงินจาก %s' % (emp_name or dots, emp_position or dots, emp_department or dots, org))"
+                                    />
+                                    <div
+                                        class="distribute"
+                                        t-out="o._contract_thai_distribute('เพื่อเป็นค่าใช้จ่ายในการ %s ดังรายละเอียดแนบท้าย' % ((o.loan_reason and o.loan_reason.striptags()) or dots))"
+                                    />
+                                </td>
+                            </tr>
+                            <!-- 3. Amount -->
+                            <tr>
+                                <td colspan="2">
+                                    จำนวนเงิน <t t-out="amount_str" /> บาท (<t
+                                        t-out="amount_words"
+                                    />)
+                                </td>
+                            </tr>
+                            <!-- 4. Contract terms + borrower signature -->
+                            <tr>
+                                <td colspan="2">
+                                    <div
+                                        class="indent justify"
+                                    >ข้าพเจ้าสัญญาว่าจะปฏิบัติตามหลักเกณฑ์ของสถาบันทุกประการ และจะนำหลักฐานการจ่ายเงินที่ถูกต้องพร้อมทั้งเงินเหลือจ่าย (ถ้ามี) ส่งคืนภายในระยะเวลาที่กำหนดไว้คือ ภายใน 15 วัน นับแต่วันที่ดำเนินการตามที่ขออนุมัติยืมเงินเสร็จเรียบร้อย (แต่หากมีเหตุความจำเป็นไม่สามารถส่งคืนได้ ให้ผู้ยืมชี้แจงเหตุผลความจำเป็นเพื่อขอขยายเวลาการคืนเงินยืมได้แต่ต้องไม่เกิน 30 วัน นับแต่วันที่ดำเนินการตามที่ขออนุมัติยืมเงินเสร็จเรียบร้อย) ถ้าข้าพเจ้าไม่ส่งคืนภายในกำหนด ข้าพเจ้ายินยอมให้หักเงินเดือน ค่าจ้าง บำเหน็จ บำนาญ หรือเงินอื่นใดที่ข้าพเจ้าพึงได้รับจากสถาบัน ชดใช้จำนวนเงินที่ยืมไปจนครบถ้วนได้ทันที และในระหว่างชดใช้เงินยืมจะไม่ได้รับอนุมัติในการยืมครั้งต่อไป</div>
+                                    <t
+                                        t-call="advance_payment_contract_pdf.contract_signature_row"
+                                    >
+                                        <t t-set="sig" t-value="sigs['borrower']" />
+                                        <t t-set="label">ลายมือชื่อ</t>
+                                        <t t-set="suffix">ผู้ยืม</t>
+                                    </t>
+                                </td>
+                            </tr>
+                            <!-- 5. Proposal (signed by the supervisor at เห็นชอบ) -->
+                            <tr>
+                                <td colspan="2">
+                                    <div>เสนอ &#160;อธิการบดี<t t-out="org" /></div>
+                                    <div
+                                        class="indent"
+                                    >ได้ตรวจสอบแล้ว เห็นสมควรอนุมัติให้ยืมตามใบยืมฉบับนี้ได้ จำนวน <t
+                                            t-out="amount_str"
+                                        /> บาท (<t t-out="amount_words" />)</div>
+                                    <t
+                                        t-call="advance_payment_contract_pdf.contract_signature_row"
+                                    >
+                                        <t t-set="sig" t-value="sigs['endorser']" />
+                                        <t t-set="label">ลงชื่อ</t>
+                                        <!-- Fixed by _contract_signatures; the Office
+                                             route drops it for the director's title -->
+                                        <t
+                                            t-set="position"
+                                            t-value="sigs['endorser'].get('position')"
+                                        />
+                                        <t t-set="show_position" t-value="True" />
+                                    </t>
+                                </td>
+                            </tr>
+                            <!-- 6. Approval -->
+                            <tr>
+                                <td colspan="2">
+                                    <div class="section">คำอนุมัติ</div>
+                                    <div
+                                        class="indent"
+                                    >อนุมัติให้ยืมตามเงื่อนไขข้างต้นได้ เป็นเงิน <t
+                                            t-out="amount_str"
+                                        /> บาท (<t t-out="amount_words" />)</div>
+                                    <t
+                                        t-call="advance_payment_contract_pdf.contract_signature_row"
+                                    >
+                                        <t t-set="sig" t-value="sigs['approver']" />
+                                        <t t-set="label">ลงชื่อผู้อนุมัติ</t>
+                                        <!-- Fixed by the delegation of authority, not
+                                             the approver's own job title -->
+                                        <t
+                                            t-set="position"
+                                        >รองอธิการบดีฝ่ายการเงินและนิติการ ปฏิบัติการแทนอธิการบดี</t>
+                                    </t>
+                                </td>
+                            </tr>
+                            <!-- 7. Receipt (signed by the borrower) -->
+                            <tr>
+                                <td colspan="2">
+                                    <div class="section">ใบรับเงิน</div>
+                                    <div class="indent">ได้รับเงินยืมจำนวน <t
+                                            t-out="amount_str"
+                                        /> บาท (<t t-out="amount_words" />)</div>
+                                    <div>ไปเป็นการถูกต้องแล้ว</div>
+                                    <t
+                                        t-call="advance_payment_contract_pdf.contract_signature_row"
+                                    >
+                                        <t t-set="sig" t-value="sigs['receiver']" />
+                                        <t t-set="label">ลงชื่อ</t>
+                                        <t t-set="suffix"> ผู้รับเงิน</t>
+                                    </t>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    โอนเงินวันที่ <t
+                                        t-out="o._contract_date_th(o.effective_date) or long_dots"
+                                    />
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <!--
+        One signature row: the signature image (or blank room to sign by hand)
+        over the dotted line and the date, then the signer's name and, with
+        show_position, their job title (or a fixed `position`). Params: sig (a
+        _contract_signatures entry), label, suffix, show_position, position.
+    -->
+    <template id="contract_signature_row">
+        <!-- label | dotted line | suffix | filler | date, one table level:
+             the signature and the name centre on the dotted line's column,
+             which shrinks to fit it (wkhtmltopdf mis-paginates a nested
+             table here) -->
+        <table class="sign">
+            <tr>
+                <td class="sig-fit"><t t-out="label" /></td>
+                <td class="sig-fit center">
+                    <div class="sig-img"><img
+                            t-if="sig['signature']"
+                            t-att-src="image_data_uri(sig['signature'])"
+                        /></div>
+                    <t t-out="long_dots" />
+                </td>
+                <td class="sig-fit"><t t-out="suffix" /></td>
+                <td class="sig-filler" />
+                <td class="sig-date">วันที่ <t t-out="sig['date'] or dots" /></td>
+            </tr>
+            <tr t-if="sig['employee']">
+                <td />
+                <td class="center sig-name">
+                    <div>(<t t-out="sig['employee'].name" />)</div>
+                    <div t-if="position" t-out="position" />
+                    <div
+                        t-elif="show_position and sig['employee'].job_title"
+                        t-out="sig['employee'].job_title"
+                    />
+                </td>
+                <td />
+                <td />
+                <td />
+            </tr>
+        </table>
+    </template>
+</odoo>

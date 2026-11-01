@@ -1,0 +1,109 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* agx_photoviewer_annotation_history
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: agx_photoviewer_annotation_history
+#: model:ir.model.fields.selection,name:agx_photoviewer_annotation_history.selection__ir_attachment_annotation_event__operation__add
+msgid "Added"
+msgstr "เพิ่ม"
+
+#. module: agx_photoviewer_annotation_history
+#. odoo-javascript
+#: code:addons/agx_photoviewer_annotation_history/static/src/js/annotation_history.js:0
+msgid "Added %s"
+msgstr "เพิ่ม %s"
+
+#. module: agx_photoviewer_annotation_history
+#: model:ir.model.fields,field_description:agx_photoviewer_annotation_history.field_ir_attachment_annotation_event__after
+msgid "After"
+msgstr "หลังเปลี่ยน"
+
+#. module: agx_photoviewer_annotation_history
+#: model:ir.model.fields,field_description:agx_photoviewer_annotation_history.field_ir_attachment_annotation_event__annotation_id
+msgid "Annotation"
+msgstr "รายการขีดเขียน"
+
+#. module: agx_photoviewer_annotation_history
+#: model:ir.model.fields,field_description:agx_photoviewer_annotation_history.field_ir_attachment_annotation_event__attachment_id
+msgid "Attachment"
+msgstr "ไฟล์แนบ"
+
+#. module: agx_photoviewer_annotation_history
+#: model:ir.model,name:agx_photoviewer_annotation_history.model_ir_attachment_annotation_event
+msgid "Attachment Annotation Event"
+msgstr "เหตุการณ์การขีดเขียนบนไฟล์แนบ"
+
+#. module: agx_photoviewer_annotation_history
+#: model:ir.model.fields,field_description:agx_photoviewer_annotation_history.field_ir_attachment_annotation_event__before
+msgid "Before"
+msgstr "ก่อนเปลี่ยน"
+
+#. module: agx_photoviewer_annotation_history
+#: model:ir.model.fields.selection,name:agx_photoviewer_annotation_history.selection__ir_attachment_annotation_event__operation__change
+msgid "Changed"
+msgstr "แก้ไข"
+
+#. module: agx_photoviewer_annotation_history
+#. odoo-javascript
+#: code:addons/agx_photoviewer_annotation_history/static/src/js/annotation_history.js:0
+msgid "Changed %s"
+msgstr "แก้ไข %s"
+
+#. module: agx_photoviewer_annotation_history
+#. odoo-javascript
+#: code:addons/agx_photoviewer_annotation_history/static/src/js/annotation_history.js:0
+msgid "Current"
+msgstr "ปัจจุบัน"
+
+#. module: agx_photoviewer_annotation_history
+#: model:ir.model.fields,field_description:agx_photoviewer_annotation_history.field_ir_attachment_annotation_event__date
+msgid "Date"
+msgstr "วันที่"
+
+#. module: agx_photoviewer_annotation_history
+#. odoo-javascript
+#: code:addons/agx_photoviewer_annotation_history/static/src/js/annotation_history.js:0
+msgid "History"
+msgstr "ประวัติการแก้ไข"
+
+#. module: agx_photoviewer_annotation_history
+#. odoo-javascript
+#: code:addons/agx_photoviewer_annotation_history/static/src/js/annotation_history.js:0
+msgid "No changes recorded yet."
+msgstr "ยังไม่มีประวัติการแก้ไข"
+
+#. module: agx_photoviewer_annotation_history
+#: model:ir.model.fields,field_description:agx_photoviewer_annotation_history.field_ir_attachment_annotation_event__operation
+msgid "Operation"
+msgstr "การกระทำ"
+
+#. module: agx_photoviewer_annotation_history
+#: model:ir.model.fields.selection,name:agx_photoviewer_annotation_history.selection__ir_attachment_annotation_event__operation__remove
+msgid "Removed"
+msgstr "ลบ"
+
+#. module: agx_photoviewer_annotation_history
+#. odoo-javascript
+#: code:addons/agx_photoviewer_annotation_history/static/src/js/annotation_history.js:0
+msgid "Removed %s"
+msgstr "ลบ %s"
+
+#. module: agx_photoviewer_annotation_history
+#: model:ir.model.fields,field_description:agx_photoviewer_annotation_history.field_ir_attachment_annotation_event__session_key
+msgid "Session Key"
+msgstr ""
+
+#. module: agx_photoviewer_annotation_history
+#: model:ir.model.fields,field_description:agx_photoviewer_annotation_history.field_ir_attachment_annotation_event__user_id
+msgid "User"
+msgstr "ผู้ใช้"

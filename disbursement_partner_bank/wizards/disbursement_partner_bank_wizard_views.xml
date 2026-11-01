@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="disbursement_partner_bank_wizard_form" model="ir.ui.view">
+        <field name="name">disbursement.partner.bank.wizard.form</field>
+        <field name="model">disbursement.partner.bank.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Payee Bank Accounts">
+                <field name="request_id" invisible="1" />
+                <field name="payee_ids" invisible="1" />
+                <p class="text-muted">Correct an account in place or add a new one; accounts are never deleted here.</p>
+                <!-- A new row is for the payee the wizard was opened from. -->
+                <field
+                    name="line_ids"
+                    nolabel="1"
+                    context="{'default_partner_id': context.get('default_partner_id')}"
+                >
+                    <tree editable="bottom" delete="0">
+                        <field name="bank_account_id" invisible="1" />
+                        <field
+                            name="partner_id"
+                            domain="[('id', 'in', parent.payee_ids)]"
+                            options="{'no_create': True, 'no_open': True}"
+                            attrs="{'readonly': [('bank_account_id', '!=', False)]}"
+                            force_save="1"
+                        />
+                        <field
+                            name="bank_id"
+                            options="{'no_create': True, 'no_open': True}"
+                            attrs="{'required': [('bank_account_id', '=', False)]}"
+                        />
+                        <field name="acc_number" />
+                        <field name="acc_holder_name" />
+                    </tree>
+                </field>
+                <footer>
+                    <button name="action_apply" type="object" string="Save" class="btn-primary" />
+                    <button string="Cancel" class="btn-secondary" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

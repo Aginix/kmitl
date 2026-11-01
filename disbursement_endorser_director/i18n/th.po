@@ -1,0 +1,45 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* disbursement_endorser_director
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-27 10:00+0000\n"
+"PO-Revision-Date: 2026-10-27 10:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: disbursement_endorser_director
+#: model:ir.model.fields,field_description:disbursement_endorser_director.field_disbursement_request__can_endorse_director
+msgid "Can Endorse (Finance Director)"
+msgstr "เห็นชอบ (ผอ.กองคลัง) ได้"
+
+#. module: disbursement_endorser_director
+#: model:ir.model,name:disbursement_endorser_director.model_disbursement_request
+msgid "Disbursement Request"
+msgstr "ใบขอเบิก"
+
+#. module: disbursement_endorser_director
+#: model:ir.model.fields,field_description:disbursement_endorser_director.field_disbursement_request__finance_endorser_id
+msgid "Endorsed by Finance Director"
+msgstr "ผอ.กองคลังผู้เห็นชอบ"
+
+#. module: disbursement_endorser_director
+#. odoo-python
+#: code:addons/disbursement_endorser_director/models/disbursement_request.py:0
+#: model_terms:ir.ui.view,arch_db:disbursement_endorser_director.view_disbursement_request_form
+#, python-format
+msgid "Endorse (Finance Director)"
+msgstr "เห็นชอบ (ผอ.กองคลัง)"
+
+#. module: disbursement_endorser_director
+#: model:ir.model.fields,field_description:disbursement_endorser_director.field_disbursement_request__finance_endorse_date
+msgid "Finance Endorsed On"
+msgstr "ผอ.กองคลังเห็นชอบเมื่อ"

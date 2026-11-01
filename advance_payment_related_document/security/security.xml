@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Rows follow their loan's visibility (advance_payment security.xml):
+         own-only sees the rows of its own loans, the named endorser reads
+         those of the loans it endorses, and the User tier sees all. Who may
+         change a row is checked in Python (ADR-0029). -->
+    <record id="advance_payment_related_document_own_rule" model="ir.rule">
+        <field name="name">Related Document: own loans</field>
+        <field name="model_id" ref="model_advance_payment_related_document" />
+        <field
+            name="groups"
+            eval="[(4, ref('advance_payment.group_advance_payment_own_only'))]"
+        />
+        <field
+            name="domain_force"
+        >['|', ('advance_payment_id.employee_id.user_id', '=', user.id), ('advance_payment_id.user_id', '=', user.id)]</field>
+    </record>
+
+    <record id="advance_payment_related_document_endorser_rule" model="ir.rule">
+        <field name="name">Related Document: loans I endorse</field>
+        <field name="model_id" ref="model_advance_payment_related_document" />
+        <field name="groups" eval="[(4, ref('base.group_user'))]" />
+        <field
+            name="domain_force"
+        >[('advance_payment_id.endorser_id', '=', user.id), ('advance_payment_id.state', '!=', 'draft')]</field>
+        <field name="perm_read" eval="True" />
+        <field name="perm_write" eval="False" />
+        <field name="perm_create" eval="False" />
+        <field name="perm_unlink" eval="False" />
+    </record>
+
+    <record id="advance_payment_related_document_user_rule" model="ir.rule">
+        <field name="name">Related Document: User sees all</field>
+        <field name="model_id" ref="model_advance_payment_related_document" />
+        <field
+            name="groups"
+            eval="[(4, ref('advance_payment.group_advance_payment_user'))]"
+        />
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+</odoo>

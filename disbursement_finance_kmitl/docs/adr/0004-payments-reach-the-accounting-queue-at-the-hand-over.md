@@ -1,5 +1,9 @@
 # 0004 — A payment reaches the accounting queue only at the Hand-over (จ่ายครบ)
 
+> **Superseded in part (station model).** The accounting queue lists the requests
+> whose ขั้นการชำระ is `settled` (the Hand-over Todo is the idempotence key), not the requests
+> "at `paid`".
+
 - Status: **superseded by ADR-0005**
 - Date: 2026-08-12
 - Refines: ADR-0001 (its last consequence no longer holds)

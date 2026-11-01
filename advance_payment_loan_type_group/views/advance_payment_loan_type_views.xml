@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_advance_payment_loan_type_list_group" model="ir.ui.view">
+        <field name="name">advance.payment.loan.type.list.group</field>
+        <field name="model">advance.payment.loan.type</field>
+        <field
+            name="inherit_id"
+            ref="advance_payment.view_advance_payment_loan_type_list"
+        />
+        <field name="arch" type="xml">
+            <field name="reference_model" position="after">
+                <field name="group_ids" widget="many2many_tags" />
+            </field>
+        </field>
+    </record>
+
+    <record id="view_advance_payment_loan_type_form_group" model="ir.ui.view">
+        <field name="name">advance.payment.loan.type.form.group</field>
+        <field name="model">advance.payment.loan.type</field>
+        <field
+            name="inherit_id"
+            ref="advance_payment.view_advance_payment_loan_type_form"
+        />
+        <field name="arch" type="xml">
+            <field name="active" position="before">
+                <field name="group_ids" widget="many2many_tags" />
+            </field>
+        </field>
+    </record>
+</odoo>

@@ -1,5 +1,5 @@
-# -*- coding: utf-8 -*-
 """P1 — core data model: kind/type split, position holders, references, enclosures."""
+
 from odoo.exceptions import ValidationError
 from odoo.tests.common import tagged
 
@@ -10,7 +10,9 @@ from odoo.addons.agx_sarabun.tests.common import SarabunCommon
 class TestP1DataModel(SarabunCommon):
     def test_kind_and_type_are_separate_fields(self):
         """kind (behaviour axis) is distinct from the config type record."""
-        origin = self.Origin.create({"name": "ต้นทางทดสอบ", "test_department_id": self.dept.id})
+        origin = self.Origin.create(
+            {"name": "ต้นทางทดสอบ", "test_department_id": self.dept.id}
+        )
         doc = self._make_doc(doc_type=self.doc_type_from_record, origin=origin)
         self.assertEqual(doc.kind, "from_record")
         self.assertEqual(doc.kind, doc.type_id.kind)
@@ -47,10 +49,20 @@ class TestP1DataModel(SarabunCommon):
     def test_enclosure_attachments(self):
         """สิ่งที่ส่งมาด้วย = plain files attached to the หนังสือ (ir.attachment)."""
         doc = self._make_doc()
-        atts = self.env["ir.attachment"].create([
-            {"name": "ภาคผนวก-ก.pdf", "res_model": "sarabun.document", "res_id": doc.id},
-            {"name": "ภาคผนวก-ข.pdf", "res_model": "sarabun.document", "res_id": doc.id},
-        ])
+        atts = self.env["ir.attachment"].create(
+            [
+                {
+                    "name": "ภาคผนวก-ก.pdf",
+                    "res_model": "sarabun.document",
+                    "res_id": doc.id,
+                },
+                {
+                    "name": "ภาคผนวก-ข.pdf",
+                    "res_model": "sarabun.document",
+                    "res_id": doc.id,
+                },
+            ]
+        )
         doc.enclosure_attachment_ids = [(6, 0, atts.ids)]
         self.assertEqual(doc.enclosure_attachment_ids, atts)
         self.assertEqual(
@@ -58,9 +70,46 @@ class TestP1DataModel(SarabunCommon):
             ["ภาคผนวก-ก.pdf", "ภาคผนวก-ข.pdf"],
         )
 
+    def test_enclosure_uploaded_before_save_is_adopted(self):
+        """A file uploaded while the หนังสือ is unsaved (res_id=0) is stamped on save,
+        so recipients can read it; one owned by another record is replaced by a copy
+        the หนังสือ owns, and the original owner keeps its file."""
+        orphan = self.env["ir.attachment"].create(
+            {"name": "ก่อนบันทึก.pdf", "res_model": "sarabun.document", "res_id": 0}
+        )
+        other = self._make_doc(subject="เจ้าของเดิม")
+        owned = self.env["ir.attachment"].create(
+            {"name": "ของเดิม.pdf", "res_model": "sarabun.document", "res_id": other.id}
+        )
+        doc = self._make_doc()
+        doc.enclosure_attachment_ids = [(6, 0, (orphan | owned).ids)]
+        self.assertEqual(orphan.res_id, doc.id)
+        self.assertEqual(owned.res_id, other.id)
+        self.assertNotIn(owned, doc.enclosure_attachment_ids)
+        self.assertEqual(
+            sorted(doc.enclosure_attachment_ids.mapped("name")),
+            ["ก่อนบันทึก.pdf", "ของเดิม.pdf"],
+        )
+        self.assertEqual(set(doc.enclosure_attachment_ids.mapped("res_id")), {doc.id})
+
+    def test_duplicated_document_owns_its_enclosures(self):
+        """A duplicate (e.g. ส่งใหม่ after rejection) gets its own enclosure copies,
+        so its new recipients don't depend on rights to the original หนังสือ."""
+        doc = self._make_doc()
+        att = self.env["ir.attachment"].create(
+            {"name": "แนบ.pdf", "res_model": "sarabun.document", "res_id": doc.id}
+        )
+        doc.enclosure_attachment_ids = [(6, 0, att.ids)]
+        new_doc = doc.copy()
+        self.assertEqual(doc.enclosure_attachment_ids, att)
+        self.assertEqual(new_doc.enclosure_attachment_ids.mapped("name"), ["แนบ.pdf"])
+        self.assertEqual(new_doc.enclosure_attachment_ids.res_id, new_doc.id)
+
     def test_from_record_numbering_must_be_auto(self):
         """from_record documents register automatically — non-auto modes are rejected."""
-        origin = self.Origin.create({"name": "ต้นทางทดสอบ", "test_department_id": self.dept.id})
+        origin = self.Origin.create(
+            {"name": "ต้นทางทดสอบ", "test_department_id": self.dept.id}
+        )
         doc = self._make_doc(doc_type=self.doc_type_from_record, origin=origin)
         self.assertEqual(doc.numbering_mode, "auto")
         with self.assertRaises(ValidationError):
@@ -106,15 +155,19 @@ class TestP1DataModel(SarabunCommon):
     def test_from_record_without_origin_raises_validation_error(self):
         """Creating a from_record document with no origin_model violates the constraint."""
         with self.assertRaises(ValidationError):
-            self.Doc.create({
-                "subject": "หนังสือไม่มีต้นทาง",
-                "type_id": self.doc_type_from_record.id,
-                "sender_department_id": self.dept.id,
-            })
+            self.Doc.create(
+                {
+                    "subject": "หนังสือไม่มีต้นทาง",
+                    "type_id": self.doc_type_from_record.id,
+                    "sender_department_id": self.dept.id,
+                }
+            )
 
     def test_from_record_with_origin_passes_constraint(self):
         """A from_record document that carries an origin_model satisfies the constraint."""
-        origin = self.Origin.create({"name": "ต้นทางถูกต้อง", "test_department_id": self.dept.id})
+        origin = self.Origin.create(
+            {"name": "ต้นทางถูกต้อง", "test_department_id": self.dept.id}
+        )
         doc = self._make_doc(doc_type=self.doc_type_from_record, origin=origin)
         self.assertEqual(doc.origin_model, origin._name)
         self.assertEqual(doc.kind, "from_record")
@@ -122,7 +175,9 @@ class TestP1DataModel(SarabunCommon):
     def test_type_allow_manual_mirrors_the_type(self):
         """type_allow_manual backs the form's readonly attrs, locking ประเภทเอกสาร on a
         หนังสือ spawned with an origin-only type."""
-        origin = self.Origin.create({"name": "ต้นทางล็อกประเภท", "test_department_id": self.dept.id})
+        origin = self.Origin.create(
+            {"name": "ต้นทางล็อกประเภท", "test_department_id": self.dept.id}
+        )
         locked = self._make_doc(doc_type=self.doc_type_from_record, origin=origin)
         self.assertFalse(locked.type_allow_manual)
         self.assertTrue(self._make_doc().type_allow_manual)

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="work_center_move_wizard_view_form" model="ir.ui.view">
+        <field name="name">work.center.move.wizard.form</field>
+        <field name="model">work.center.move.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <field name="res_model" invisible="1" />
+                <field name="res_id" invisible="1" />
+                <field name="mode" invisible="1" />
+                <field name="expected_station_id" invisible="1" />
+                <field name="allowed_target_ids" invisible="1" />
+                <field name="needs_reason" invisible="1" />
+                <group>
+                    <field
+                        name="target_id"
+                        options="{'no_create': True, 'no_open': True}"
+                        attrs="{'invisible': [('mode', '!=', 'divert')], 'required': [('mode', '=', 'divert')]}"
+                    />
+                    <field
+                        name="missing_act_ids"
+                        widget="many2many_tags"
+                        attrs="{'invisible': ['|', ('mode', '!=', 'forward'), ('missing_act_ids', '=', False)]}"
+                    />
+                    <field
+                        name="reason"
+                        attrs="{'required': [('needs_reason', '=', True)]}"
+                    />
+                </group>
+                <footer>
+                    <button
+                        name="action_confirm"
+                        string="Confirm"
+                        type="object"
+                        class="btn-primary"
+                        data-hotkey="q"
+                    />
+                    <button
+                        string="Cancel"
+                        class="btn-secondary"
+                        special="cancel"
+                        data-hotkey="z"
+                    />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

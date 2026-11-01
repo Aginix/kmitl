@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- DR action for accountant queue (default filter: state=approved) -->
+    <!-- DR action for accountant queue (default filter: awaiting a bill) -->
     <record id="action_disbursement_request_accounting" model="ir.actions.act_window">
         <field name="name">Disbursement Requests</field>
         <field name="res_model">disbursement.request</field>
         <field name="view_mode">tree,form</field>
-        <field name="context">{"search_default_approved": 1}</field>
+        <field name="context">{"search_default_awaiting_bill": 1}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-                ไม่มีใบขอเบิกที่รออนุมัติเบิก
+                ไม่มีใบขอเบิกที่รอตั้งหนี้
             </p>
             <p>
-                ใบขอเบิกที่ผู้อนุมัติอนุมัติแล้ว รอเจ้าหน้าที่บัญชีตั้งหนี้
+                ใบขอเบิกที่อยู่ในวงจรและยังไม่มีใบตั้งหนี้ รอเจ้าหน้าที่บัญชีตั้งหนี้
             </p>
         </field>
     </record>
@@ -33,26 +33,16 @@
         <field name="model">disbursement.request</field>
         <field name="inherit_id" ref="disbursement.view_disbursement_request_form"/>
         <field name="arch" type="xml">
-            <!-- Statusbar: add bills_posted -->
-            <xpath expr="//field[@name='display_status']" position="attributes">
-                <attribute name="statusbar_visible">draft,submitted,signed,verified,approved,bills_posted</attribute>
-            </xpath>
-
-            <!-- Create Bill button placed after Approve. Bills are posted
-                 through the account.move approval (Approve = post), not from
-                 the request, so there is no "Post Bills" button here. -->
-            <xpath expr="//button[@name='action_approve']" position="after">
+            <!-- Create Bill (an act of the accounting desk) before Reset to
+                 draft, which is the stable anchor of the header. Bills are
+                 posted through the account.move approval (Approve = post),
+                 not from the request, so there is no "Post Bills" button. -->
+            <xpath expr="//button[@name='action_draft']" position="before">
                 <button name="action_create_bill"
                         string="Create Bill"
                         type="object"
                         class="oe_highlight"
-                        attrs="{'invisible': ['|', ('state', '!=', 'approved'), ('bill_count', '>', 0)]}"
-                        groups="accounting_kmitl.group_accounting_kmitl_user"/>
-                <button name="action_return_verification_open_wizard"
-                        string="Return to Verification"
-                        type="object"
-                        class="btn-warning"
-                        attrs="{'invisible': ['|', ('state', '!=', 'approved'), ('bill_count', '>', 0)]}"
+                        attrs="{'invisible': ['|', ('can_create_bill', '=', False), ('bill_count', '>', 0)]}"
                         groups="accounting_kmitl.group_accounting_kmitl_user"/>
             </xpath>
 
@@ -69,9 +59,24 @@
                         <span class="o_stat_text">รายการบันทึกบัญชี <field name="related_move_count" nolabel="1" /></span>
                     </div>
                 </button>
-                <!-- Referenced by Create Bill / Return to Verification attrs
-                     above, invisible so it does not render as a button. -->
+                <!-- Referenced by the Create Bill attrs above, invisible so
+                     they do not render as buttons. -->
                 <field name="bill_count" invisible="1" />
+                <field name="can_create_bill" invisible="1" />
+            </xpath>
+        </field>
+    </record>
+
+    <!-- The accountant's queue: in the circuit or finished, and not billed yet. -->
+    <record id="view_disbursement_request_search_inherit_accounting" model="ir.ui.view">
+        <field name="name">disbursement.request.search.inherit.accounting_kmitl</field>
+        <field name="model">disbursement.request</field>
+        <field name="inherit_id" ref="disbursement.view_disbursement_request_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='in_progress']" position="after">
+                <filter name="awaiting_bill"
+                        string="Awaiting Billing"
+                        domain="[('state', 'in', ('signed', 'in_progress', 'done')), ('settlement_stage', '=', 'none')]"/>
             </xpath>
         </field>
     </record>

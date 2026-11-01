@@ -4,6 +4,17 @@ Glossary for the **post-bill payment-execution workflow** on `disbursement.reque
 (DR). This module owns the phase that runs **after** the accounting office posts the
 vendor bills.
 
+> **Superseded in part (station model).** The request's `state` no longer walks through
+> `bills_posted → payment_audited → payment_authorized → paid → cleared`. The audit and the
+> authorization are **acts** (`disbursement.audit_payment`, `disbursement.authorize_payment`)
+> that the stations of `disbursement_wc` list, in whatever order the route says; the money's
+> progress is the request's **ขั้นการชำระ** (`settlement_stage`: `none → billed → settled →
+> booked`), derived from the bills and the vouchers that exist and walking back by itself.
+> Read `bills_posted` as stage `billed`, `paid` as `settled` and `cleared` as `booked`;
+> `payment_audited` / `payment_authorized` survive only as the stamps of the two acts.
+> See `disbursement/docs/adr/0008-*` and `disbursement_wc/CONTEXT.md`. The vocabulary below
+> is otherwise unchanged.
+
 ## The two approval rounds (do not conflate)
 
 The word "ตรวจสอบ / verify" and "อนุมัติ / approve" appear in **two different rounds**.
@@ -81,7 +92,8 @@ overwrite the account the person just picked.
   apart by document weight: a payment line is a **รายการ**จ่ายเงิน (a row), the
   `account.payment` it becomes is an **ใบ**จ่ายเงิน (a document). Never call a payment
   "รายการจ่ายเงิน".
-- **Payment Audit** (`action_audit`, `bills_posted → payment_audited`): the auditor
+- **Payment Audit** (`action_audit`, `bills_posted → payment_audited`; its own module,
+  `disbursement_payment_audit`): the auditor
   checks the disbursement documents after the bills are posted, and sets the
   เรื่องที่จ่าย that gives every payee its paying account. It is the **only** checkpoint
   on the banking coordinates — the finance office has none of its own, so a coordinate

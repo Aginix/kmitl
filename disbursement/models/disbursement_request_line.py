@@ -23,27 +23,18 @@ class DisbursementRequestLine(models.Model):
         default=10,
     )
 
-    product_id = fields.Many2one(
-        comodel_name="product.product",
-        string="Product",
-        required=True,
-        domain=["|", ("company_id", "=", False), ("company_id", "=", "company_id")],
-    )
-
+    # Not required: filled from the account when left blank.
     name = fields.Text(
         string="Description",
-        required=True,
     )
 
-    quantity = fields.Float(
-        string="Quantity",
-        default=1.0,
-        digits="Product Unit of Measure",
+    note = fields.Text(
+        string="Note",
     )
 
-    price_unit = fields.Float(
-        string="Unit Price",
-        digits="Product Price",
+    amount = fields.Monetary(
+        string="Amount",
+        currency_field="currency_id",
     )
 
     price_subtotal = fields.Monetary(
@@ -78,10 +69,8 @@ class DisbursementRequestLine(models.Model):
     account_id = fields.Many2one(
         comodel_name="account.account",
         string="Account",
-        domain=[
-            ("company_id", "=", "company_id"),
-            ("deprecated", "=", False),
-        ],
+        required=True,
+        domain="[('company_id', '=', company_id), ('deprecated', '=', False)]",
     )
 
     company_id = fields.Many2one(
@@ -99,10 +88,13 @@ class DisbursementRequestLine(models.Model):
         store=True,
     )
 
+    # Only payees of the request's type are offered; a mismatch (e.g. the
+    # header type changed afterwards) is caught by an exception rule on submit.
     partner_id = fields.Many2one(
         comodel_name="res.partner",
         string="Partner",
         ondelete="restrict",
+        domain="[('partner_type_id', '=', parent.partner_type_id)]",
     )
 
     partner_bank_id = fields.Many2one(
@@ -152,7 +144,7 @@ class DisbursementRequestLine(models.Model):
             else:
                 line.amount_wht = 0.0
 
-    @api.depends("quantity", "price_unit", "tax_ids")
+    @api.depends("amount", "tax_ids")
     def _compute_amount(self):
         """Compute line amounts with tax calculation (mirrors PO logic)"""
         for line in self:
@@ -176,65 +168,68 @@ class DisbursementRequestLine(models.Model):
         self.ensure_one()
         return self.env["account.tax"]._convert_to_tax_base_line_dict(
             self,
-            partner=self.partner_id or self.request_id.partner_id,
+            partner=self.partner_id,
             currency=self.request_id.currency_id,
-            product=self.product_id,
             taxes=self.tax_ids,
-            price_unit=self.price_unit,
-            quantity=self.quantity,
+            price_unit=self.amount,
+            quantity=1.0,
             account=self.account_id,
             analytic_distribution=self.analytic_distribution,
         )
 
-    @api.onchange("product_id")
-    def _onchange_product_id(self):
-        """Update description, price, and account when product changes"""
-        if self.product_id:
-            self.name = self.product_id.display_name
-            self.price_unit = self.product_id.standard_price
-            # Set account: first from product, then from product category
-            account = (
-                self.product_id.property_account_expense_id
-                or self.product_id.categ_id.property_account_expense_categ_id
-            )
-            if account:
-                self.account_id = account
+    @api.onchange("account_id")
+    def _onchange_account_id(self):
+        if self.account_id:
+            self.name = self.account_id.name
 
     # -------------------------------------------------------------------------
     # Partner compute methods
     # -------------------------------------------------------------------------
-    @api.depends("partner_id", "request_id.company_id")
+    # bank_ids too: a user who adds the missing account on the partner gets it
+    # filled in here without re-picking the partner.
+    @api.depends("partner_id", "partner_id.bank_ids", "request_id.company_id")
     def _compute_line_partner_bank_id(self):
         for line in self:
-            if line.partner_id:
+            # Only a line that can still be edited (a draft, or a station that
+            # opens the lines) follows the partner's accounts: a submitted or
+            # paid line keeps the account it was checked and paid against even
+            # if the partner's accounts are archived or replaced later.
+            request = line.request_id
+            if request.state not in (False, "draft") and not request.can_edit_lines:
+                line.partner_bank_id = line.partner_bank_id
+            elif line.partner_id:
                 banks = line.partner_id.bank_ids.filtered(
-                    lambda b: not b.company_id
-                    or b.company_id == line.request_id.company_id
+                    lambda b: (
+                        not b.company_id or b.company_id == line.request_id.company_id
+                    )
                 )
-                line.partner_bank_id = banks[0] if banks else False
+                # Keep a still-valid choice: a new account on the partner must
+                # not re-point lines that already have one.
+                current = line.partner_bank_id
+                line.partner_bank_id = current if current in banks else banks[:1]
             else:
                 line.partner_bank_id = False
+
+    def _requires_partner_bank(self):
+        """Whether this payee is paid into a bank account (hook: e.g. a
+        cheque payee needs none)."""
+        self.ensure_one()
+        return True
 
     @api.constrains("partner_id")
     def _check_line_partner_required(self):
         for line in self:
             if not line.partner_id:
-                raise ValidationError(
-                    _("Partner is required on each line.")
-                )
+                raise ValidationError(_("Partner is required on each line."))
 
     # -------------------------------------------------------------------------
     # WHT methods
     # -------------------------------------------------------------------------
-    @api.depends(
-        "partner_id.partner_type_id.wht_tax_id",
-        "request_id.partner_id.partner_type_id.wht_tax_id",
-    )
+    @api.depends("partner_id.partner_type_id.wht_tax_id", "request_id.has_tax")
     def _compute_wht_tax_id(self):
         for line in self:
-            partner = line.partner_id or line.request_id.partner_id
             line.wht_tax_id = (
-                partner.partner_type_id.wht_tax_id if partner else False
+                line.request_id.has_tax and line.partner_id.partner_type_id.wht_tax_id
             )
 
     # -------------------------------------------------------------------------

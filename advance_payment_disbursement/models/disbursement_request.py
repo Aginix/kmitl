@@ -4,10 +4,9 @@ from odoo import fields, models
 class DisbursementRequest(models.Model):
     _inherit = "disbursement.request"
 
-    # Link kept for reference only. The old DR-based clearing (auto-creating
-    # advance.payment.usage.line per disbursement and driving the loan balance)
-    # is dropped — the redesigned advance payment is cleared by the borrower's
-    # actual_expense_amount, not by disbursement requests.
+    # Nothing fills this in any more: the purchase request no longer copies
+    # its loan onto a ใบเบิก, and which loan a ใบเบิก clears is decided with
+    # the clearing link (advance_payment ADR-0028/0029).
     advance_payment_id = fields.Many2one(
         "advance.payment",
         string="Advance Payment",

@@ -23,6 +23,10 @@
                         name="rank_nobility_id"
                         attrs="{'invisible': [('role', '!=', 'academic')]}"
                     />
+                    <field
+                        name="title_dr"
+                        attrs="{'invisible': [('role', '!=', 'academic')]}"
+                    />
                     <field name="academic_standing_title" />
                     <field
                         name="academic_standing_title_abbreviation"

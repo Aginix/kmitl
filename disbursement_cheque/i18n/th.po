@@ -1,0 +1,33 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* disbursement_cheque
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: disbursement_cheque
+#: model:ir.model.fields.selection,name:disbursement_cheque.selection__disbursement_request_line__payment_method__transfer
+msgid "Bank Transfer"
+msgstr "โอนเงิน"
+
+#. module: disbursement_cheque
+#: model:ir.model.fields.selection,name:disbursement_cheque.selection__disbursement_request_line__payment_method__cheque
+msgid "Cheque"
+msgstr "จ่ายเช็ค"
+
+#. module: disbursement_cheque
+#: model:ir.model,name:disbursement_cheque.model_disbursement_request_line
+msgid "Disbursement Request Line"
+msgstr ""
+
+#. module: disbursement_cheque
+#: model:ir.model.fields,field_description:disbursement_cheque.field_disbursement_request_line__payment_method
+msgid "Payment Method"
+msgstr "วิธีจ่าย"

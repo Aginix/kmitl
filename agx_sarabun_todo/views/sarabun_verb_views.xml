@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_sarabun_verb_tree" model="ir.ui.view">
+        <field name="name">sarabun.verb.tree.todo</field>
+        <field name="model">sarabun.verb</field>
+        <field name="inherit_id" ref="agx_sarabun.view_sarabun_verb_tree"/>
+        <field name="arch" type="xml">
+            <field name="issues_number" position="after">
+                <field name="todo_category"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="view_sarabun_verb_form" model="ir.ui.view">
+        <field name="name">sarabun.verb.form.todo</field>
+        <field name="model">sarabun.verb</field>
+        <field name="inherit_id" ref="agx_sarabun.view_sarabun_verb_form"/>
+        <field name="arch" type="xml">
+            <field name="issues_number" position="after">
+                <field name="todo_category"/>
+            </field>
+        </field>
+    </record>
+</odoo>

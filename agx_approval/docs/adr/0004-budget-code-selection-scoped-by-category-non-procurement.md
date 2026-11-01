@@ -14,3 +14,12 @@ The baseline itself is corrected here: approval requests select **non-procuremen
 - Dimensions (ส่วนงาน/แหล่งเงิน/กองทุน/กิจกรรม) are **not** locked by the category in this round — they remain adjustable defaults. Locking them would require changes to the JS reservation picker; a server-side check that reserved dimensions match category-pinned ones can be added later without touching the picker.
 - Draw-down reservation **visibility** now equals drawability (filtered by budget code only, consistent with dimensions being unlocked), narrowing the dropdown to non-procurement codes even when the category is blank.
 - Single pinned code only; expanding a category to a *set* of allowed codes (mirroring `allowed_product_ids`) is deferred until a real multi-code need appears.
+
+## Amendment (2569-10-23): approval-eligibility is an explicit flag
+
+The non-procurement baseline (`purchase_ok = False`) is replaced by an explicit, per-code flag `budget.account.approval_ok` (ใช้ในคำขออนุมัติ): approval requests — the picker, write-back, draw-down, and the category's pinned code — select `budgetable`, `budget_type = expense`, `approval_ok = True`, and no longer consult `purchase_ok`. Some codes genuinely serve both a ใบขอซื้อ and a ใบขออนุมัติ, which the old rule made impossible.
+
+- **Double reservation is accepted for flagged codes.** Both apps reserve against the same code's pool, so the availability check still holds; what the system cannot stop — the same expense requested from both apps — is left to process control. The rejection of "any `purchase_ok`" above still stands for *unflagged* procurement codes: dual use is opt-in per code, never the default.
+- **The flag is the sole gate, not an override of `purchase_ok`.** A code with neither flag is reservable from neither app; the two flags are independent.
+- **Existing behaviour preserved.** On install and upgrade every code with `purchase_ok` not set is marked `approval_ok`; new codes default to `False` and must be opted in explicitly, mirroring `purchase_ok`.
+- The flag lives in `agx_approval` itself (not a separate bridge module), so there is exactly one rule regardless of which modules are installed.

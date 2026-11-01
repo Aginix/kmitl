@@ -95,14 +95,6 @@ class PurchaseOrder(models.Model):
         states=READONLY_STATES,
     )
 
-    _sql_constraints = [
-        (
-            "unique_contract_number",
-            "unique(contract_number)",
-            "The contract_number must be unique!",
-        ),
-    ]
-
     @api.onchange("contract_number")
     def _onchange_contract_number_normalize(self):
         if self.contract_number:

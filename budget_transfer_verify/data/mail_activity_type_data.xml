@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <!-- Matched by activity_type_id (language-independent) so the verify step
+         closes exactly its own To-Do and never another one on the transfer. -->
+    <record id="mail_activity_budget_transfer_verify" model="mail.activity.type">
+        <field name="name">ตรวจสอบการโอนงบประมาณ</field>
+        <field name="res_model">budget.transfer</field>
+        <field name="icon">fa-check-square-o</field>
+    </record>
+    <record id="mail_activity_budget_transfer_correct" model="mail.activity.type">
+        <field name="name">แก้ไขการโอนงบประมาณตามที่ Buddy ส่งกลับ</field>
+        <field name="res_model">budget.transfer</field>
+        <field name="icon">fa-pencil</field>
+    </record>
+</odoo>

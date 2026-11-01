@@ -4,11 +4,10 @@
         <field name="name">disbursement.return.request.wizard.form</field>
         <field name="model">disbursement.return.request.wizard</field>
         <field name="arch" type="xml">
-            <form string="Return for Correction">
+            <form string="Send Back for Correction">
                 <field name="request_id" invisible="1" />
-                <field name="mode" invisible="1" />
                 <group>
-                    <field name="reason" placeholder="Reason for returning this request…" />
+                    <field name="reason" placeholder="Reason for sending this request back…" />
                 </group>
                 <footer>
                     <button name="action_return" type="object" string="Return" class="btn-primary" />

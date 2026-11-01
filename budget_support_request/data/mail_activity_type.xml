@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo noupdate="1">
+    <!-- to_verify -> Buddy: check the request the unit just confirmed.
+         Execution, so it cannot be dismissed with Mark as Read — it clears
+         only by ยืนยันตรวจสอบ or ส่งกลับแก้ไข. -->
+    <record id="mail_activity_support_verify" model="mail.activity.type">
+        <field name="name">ตรวจสอบคำขอรับการสนับสนุน</field>
+        <field
+            name="summary"
+        >Check the submitted budget support request before it goes out for approval</field>
+        <field name="todo_category">execution</field>
+        <field name="res_model">budget.support.request</field>
+        <field name="icon">fa-search</field>
+        <field name="delay_count">0</field>
+    </record>
+
+    <!-- to_verify -> requester: the Buddy sent it back with a reason -->
+    <record id="mail_activity_support_correct" model="mail.activity.type">
+        <field name="name">แก้ไขคำขอรับการสนับสนุนตามที่ Buddy ส่งกลับ</field>
+        <field
+            name="summary"
+        >Correct the budget support request the Buddy returned, then confirm it again</field>
+        <field name="todo_category">execution</field>
+        <field name="res_model">budget.support.request</field>
+        <field name="icon">fa-pencil</field>
+        <field name="delay_count">0</field>
+    </record>
+
+    <!-- approved -> officer: fulfil (โอน/จอง) the approved request -->
+    <record id="mail_activity_support_fulfil" model="mail.activity.type">
+        <field name="name">ดำเนินการจัดสรรงบประมาณ</field>
+        <field
+            name="summary"
+        >Fulfil the approved budget support request by transfer (โอน) or reservation (จอง)</field>
+        <field name="todo_category">execution</field>
+        <field name="res_model">budget.support.request</field>
+        <field name="icon">fa-share-square-o</field>
+        <field name="delay_count">0</field>
+    </record>
+
+    <!-- done -> requester: acknowledge the allocation made -->
+    <record id="mail_activity_support_ack" model="mail.activity.type">
+        <field name="name">รับทราบผลการจัดสรร</field>
+        <field
+            name="summary"
+        >Acknowledge the allocation central has made for your budget support request</field>
+        <field name="todo_category">acknowledgement</field>
+        <field name="res_model">budget.support.request</field>
+        <field name="icon">fa-check-square-o</field>
+        <field name="delay_count">0</field>
+    </record>
+</odoo>

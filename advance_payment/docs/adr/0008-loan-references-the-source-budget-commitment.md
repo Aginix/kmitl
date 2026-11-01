@@ -1,6 +1,6 @@
 # A loan references the source document's budget commitment, it never reserves its own
 
-Status: superseded by ADR-0019 (2026-09) — the read-only-snapshot decision no longer holds; the rest of this ADR's reasoning is still current
+Status: superseded by ADR-0019 (2026-09) and ADR-0025 (2026-10, the loan no longer carries a commitment) — the read-only-snapshot decision no longer holds; the rest of this ADR's reasoning is still current
 
 ## Context & Decision
 

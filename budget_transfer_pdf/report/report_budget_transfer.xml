@@ -32,8 +32,9 @@
                         .logo { position: absolute; top: 0; left: 0; max-height: 60pt; max-width: 160pt; }
                         .form-code { text-align: right; font-size: 15pt; }
                         .doc-title { text-align: center; font-weight: bold; font-size: 17pt; margin: 6pt 0 12pt 0; line-height: 1.4; }
-                        table.meta { width: 100%; border-collapse: collapse; margin-bottom: 8pt; border: none; }
-                        table.meta td { padding: 1pt 4pt; font-size: 15pt; vertical-align: top; border: none; }
+                        table.meta, table.meta tr, table.meta td { border-style: hidden !important; border-width: 0 !important; }
+                        table.meta { width: 100%; border-collapse: collapse; margin-bottom: 8pt; }
+                        table.meta td { padding: 1pt 4pt; font-size: 15pt; vertical-align: top; }
                         table.meta td.k { width: 70pt; color: #333; }
                         .reason { white-space: pre-wrap; }
                         table.detail { width: 100%; border-collapse: collapse; margin-bottom: 8pt; }
