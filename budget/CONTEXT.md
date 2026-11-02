@@ -97,6 +97,10 @@ _Avoid_: reallocation, virement (that is cross-charge / ถัวจ่าย �
 **แบบ งปม. 303 (แบบประกอบการขออนุมัติโอน/เปลี่ยนแปลง/ปรับเพิ่ม-ลด)**:
 The printable supporting form for a Budget Transfer (`budget_transfer_pdf`): a งปม. 303-styled document listing the FROM (ปรับลด) and TO (ปรับเพิ่ม) lines with their dimensions, amounts, and reason. It is the *attachment* (สิ่งที่ส่งมาด้วย) that accompanies the หนังสือขออนุมัติโอนงบประมาณ so a signer sees exactly which buckets move; it is not itself the letter of approval. The enclosed form always reflects the transfer **as last sent** — a transfer revised after ตีกลับ/ดึงกลับ re-sends with a refreshed form — whereas the letter's own wording is written once and does not follow later edits.
 
+**เอกสารแนบ งปม.303 (เอกสารแนบท้าย — แผนจัดซื้อจัดจ้าง / โครงการ-กิจกรรม)**:
+Extra pages printed after the แบบ งปม. 303 when a transfer line (**either side**, ปรับลด or ปรับเพิ่ม) carries a procurement-plan or project Pool Tag: one enclosure for plans and one for projects, each split by side, one entry per plan/project with its transferred amounts summed. A plan entry names the plan and its quantity; a project entry adds the project's expense plan grouped by ประเภทงบ. Shows only the amount transferred on this form — never the Plan Amount (วงเงินตามแผน) or a reconciliation with the project's Project Budget Plan. A transfer with no tagged line has no enclosure. It travels inside the same PDF, so the posted copy and the e-Saraban enclosure carry it too.
+_Avoid_: ภาคผนวก (use เอกสารแนบ, matching สิ่งที่ส่งมาด้วย)
+
 **หนังสือขออนุมัติโอนงบประมาณ (e-Saraban document for a transfer)**:
 The official correspondence (`sarabun.document`) issued from a confirmed Budget Transfer to obtain approval. Its body is plain text ("ด้วย … มีความประสงค์ขออนุมัติโอน เปลี่ยนแปลง …") referencing the attached แบบ งปม. 303; its signature is the transfer's approval. Signing it auto-posts the transfer (ADR-0014). Distinct from the transfer's own **BTR** number: the letter carries its own e-Saraban register number, assigned when signed.
 
