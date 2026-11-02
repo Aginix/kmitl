@@ -52,4 +52,15 @@
         </field>
     </record>
 
+    <record id="view_disbursement_request_tree_sarabun" model="ir.ui.view">
+        <field name="name">disbursement.request.tree.sarabun</field>
+        <field name="model">disbursement.request</field>
+        <field name="inherit_id" ref="disbursement.view_disbursement_request_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="active_sarabun_document_id" string="Document Number" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+
 </odoo>
