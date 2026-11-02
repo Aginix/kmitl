@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+    OCA tracking_manager on kmitl.project: log the One2many lines (a line
+    create/write/unlink is summarised on the project chatter) and the Many2many
+    fields, which native Odoo 16 tracking silently skips. Child models are
+    scoped to a curated field list so the note stays readable. noupdate so
+    admins can re-tune from Settings > Technical > Models.
+-->
+<odoo noupdate="1">
+    <record id="kmitl_project.model_kmitl_project" model="ir.model">
+        <field name="active_custom_tracking" eval="True" />
+    </record>
+    <record
+        id="kmitl_project.field_kmitl_project__methodology_ids"
+        model="ir.model.fields"
+    >
+        <field name="custom_tracking" eval="True" />
+    </record>
+    <record
+        id="kmitl_project.field_kmitl_project__evaluation_ids"
+        model="ir.model.fields"
+    >
+        <field name="custom_tracking" eval="True" />
+    </record>
+    <record id="kmitl_project.field_kmitl_project__target_ids" model="ir.model.fields">
+        <field name="custom_tracking" eval="True" />
+    </record>
+    <record
+        id="kmitl_project.field_kmitl_project__participant_ids"
+        model="ir.model.fields"
+    >
+        <field name="custom_tracking" eval="True" />
+    </record>
+    <record
+        id="kmitl_project.field_kmitl_project__organizer_ids"
+        model="ir.model.fields"
+    >
+        <field name="custom_tracking" eval="True" />
+    </record>
+    <record id="kmitl_project.field_kmitl_project__output_ids" model="ir.model.fields">
+        <field name="custom_tracking" eval="True" />
+    </record>
+    <record id="kmitl_project.field_kmitl_project__outcome_ids" model="ir.model.fields">
+        <field name="custom_tracking" eval="True" />
+    </record>
+    <record id="kmitl_project.field_kmitl_project__plan_ids" model="ir.model.fields">
+        <field name="custom_tracking" eval="True" />
+    </record>
+    <record
+        id="kmitl_project.field_kmitl_project__income_line_ids"
+        model="ir.model.fields"
+    >
+        <field name="custom_tracking" eval="True" />
+    </record>
+    <record
+        id="kmitl_project.field_kmitl_project__expense_line_ids"
+        model="ir.model.fields"
+    >
+        <field name="custom_tracking" eval="True" />
+    </record>
+    <record
+        id="kmitl_project.field_kmitl_project__expected_outcome_ids"
+        model="ir.model.fields"
+    >
+        <field name="custom_tracking" eval="True" />
+    </record>
+
+    <record id="kmitl_project.model_project_target" model="ir.model">
+        <field name="active_custom_tracking" eval="True" />
+    </record>
+    <record id="kmitl_project.field_project_target__name" model="ir.model.fields">
+        <field name="custom_tracking" eval="True" />
+    </record>
+    <record id="kmitl_project.field_project_target__amount" model="ir.model.fields">
+        <field name="custom_tracking" eval="True" />
+    </record>
+
+    <record id="kmitl_project.model_project_output" model="ir.model">
+        <field name="active_custom_tracking" eval="True" />
+    </record>
+    <record id="kmitl_project.field_project_output__name" model="ir.model.fields">
+        <field name="custom_tracking" eval="True" />
+    </record>
+    <record id="kmitl_project.field_project_output__unit" model="ir.model.fields">
+        <field name="custom_tracking" eval="True" />
+    </record>
+    <record id="kmitl_project.field_project_output__target" model="ir.model.fields">
+        <field name="custom_tracking" eval="True" />
+    </record>
+
+    <record id="kmitl_project.model_project_plan" model="ir.model">
+        <field name="active_custom_tracking" eval="True" />
+    </record>
+    <record id="kmitl_project.field_project_plan__name" model="ir.model.fields">
+        <field name="custom_tracking" eval="True" />
+    </record>
+    <record id="kmitl_project.field_project_plan__amount" model="ir.model.fields">
+        <field name="custom_tracking" eval="True" />
+    </record>
+    <record id="kmitl_project.field_project_plan__percentage" model="ir.model.fields">
+        <field name="custom_tracking" eval="True" />
+    </record>
+    <record id="kmitl_project.field_project_plan__m1" model="ir.model.fields">
+        <field name="custom_tracking" eval="True" />
+    </record>
+    <record id="kmitl_project.field_project_plan__m2" model="ir.model.fields">
+        <field name="custom_tracking" eval="True" />
+    </record>
+    <record id="kmitl_project.field_project_plan__m3" model="ir.model.fields">
+        <field name="custom_tracking" eval="True" />
+    </record>
+    <record id="kmitl_project.field_project_plan__m4" model="ir.model.fields">
+        <field name="custom_tracking" eval="True" />
+    </record>
+    <record id="kmitl_project.field_project_plan__m5" model="ir.model.fields">
+        <field name="custom_tracking" eval="True" />
+    </record>
+    <record id="kmitl_project.field_project_plan__m6" model="ir.model.fields">
+        <field name="custom_tracking" eval="True" />
+    </record>
+    <record id="kmitl_project.field_project_plan__m7" model="ir.model.fields">
+        <field name="custom_tracking" eval="True" />
+    </record>
+    <record id="kmitl_project.field_project_plan__m8" model="ir.model.fields">
+        <field name="custom_tracking" eval="True" />
+    </record>
+    <record id="kmitl_project.field_project_plan__m9" model="ir.model.fields">
+        <field name="custom_tracking" eval="True" />
+    </record>
+    <record id="kmitl_project.field_project_plan__m10" model="ir.model.fields">
+        <field name="custom_tracking" eval="True" />
+    </record>
+    <record id="kmitl_project.field_project_plan__m11" model="ir.model.fields">
+        <field name="custom_tracking" eval="True" />
+    </record>
+    <record id="kmitl_project.field_project_plan__m12" model="ir.model.fields">
+        <field name="custom_tracking" eval="True" />
+    </record>
+
+    <record id="kmitl_project.model_project_budget_line" model="ir.model">
+        <field name="active_custom_tracking" eval="True" />
+    </record>
+    <record id="kmitl_project.field_project_budget_line__name" model="ir.model.fields">
+        <field name="custom_tracking" eval="True" />
+    </record>
+    <record
+        id="kmitl_project.field_project_budget_line__category_id"
+        model="ir.model.fields"
+    >
+        <field name="custom_tracking" eval="True" />
+    </record>
+    <record
+        id="kmitl_project.field_project_budget_line__budget_item_id"
+        model="ir.model.fields"
+    >
+        <field name="custom_tracking" eval="True" />
+    </record>
+    <record
+        id="kmitl_project.field_project_budget_line__description"
+        model="ir.model.fields"
+    >
+        <field name="custom_tracking" eval="True" />
+    </record>
+    <record
+        id="kmitl_project.field_project_budget_line__amount"
+        model="ir.model.fields"
+    >
+        <field name="custom_tracking" eval="True" />
+    </record>
+
+    <record id="kmitl_project.model_project_expected_outcome" model="ir.model">
+        <field name="active_custom_tracking" eval="True" />
+    </record>
+    <record
+        id="kmitl_project.field_project_expected_outcome__name"
+        model="ir.model.fields"
+    >
+        <field name="custom_tracking" eval="True" />
+    </record>
+
+</odoo>
