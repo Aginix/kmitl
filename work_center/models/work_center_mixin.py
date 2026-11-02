@@ -548,6 +548,7 @@ class WorkCenterMixin(models.AbstractModel):
         skipped=None,
         not_applicable=None,
         expected_station=None,
+        assignee=None,
     ):
         """Close the open visit, move the pointer and open the next visit.
 
@@ -617,7 +618,7 @@ class WorkCenterMixin(models.AbstractModel):
                 )
             )
             # 6. One Todo: the assignee's, else one per responsible user.
-            assignee = record._work_center_pick_assignee(placed)
+            assignee = assignee or record._work_center_pick_assignee(placed)
             if assignee:
                 record.with_context(work_center_moving=True).write(
                     {"work_center_assignee_id": assignee.id}
@@ -784,9 +785,12 @@ class WorkCenterMixin(models.AbstractModel):
         )
         return self._work_center_ou_compatible(stations)
 
-    def _work_center_divert(self, station, reason=None, expected_station=None):
+    def _work_center_divert(
+        self, station, reason=None, expected_station=None, assignee=None
+    ):
         """Hand the document to any other station of the same area, ignoring
-        the required acts. A reason is mandatory."""
+        the required acts, optionally to a chosen responsible person. A reason
+        is mandatory."""
         self.ensure_one()
         if not self._work_center_holding_station():
             raise UserError(_("This document is not at a station."))
@@ -799,12 +803,19 @@ class WorkCenterMixin(models.AbstractModel):
                 _("A document can only be diverted to another station of its own "
                   "work area.")
             )
+        if assignee and assignee not in station.sudo()._responsible_users()[0]:
+            raise UserError(
+                _("%s is not responsible at the station the document is "
+                  "diverted to.")
+                % assignee.display_name
+            )
         self._work_center_move(
             station.sudo(),
             arrival_act="divert",
             departure_act="divert",
             reason=reason,
             expected_station=expected_station,
+            assignee=assignee,
         )
 
     def _work_center_leave(self, act, reason=None, expected_station=None):

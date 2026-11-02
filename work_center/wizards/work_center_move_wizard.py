@@ -32,6 +32,17 @@ class WorkCenterMoveWizard(models.TransientModel):
         string="Divert To",
         domain="[('id', 'in', allowed_target_ids)]",
     )
+    allowed_assignee_ids = fields.Many2many(
+        comodel_name="res.users",
+        compute="_compute_allowed_assignee_ids",
+        string="Responsible People",
+    )
+    assignee_id = fields.Many2one(
+        comodel_name="res.users",
+        string="Assign To",
+        domain="[('id', 'in', allowed_assignee_ids)]",
+        help="Leave empty to let the assignment rules of the station decide.",
+    )
     missing_act_ids = fields.Many2many(
         comodel_name="work.center.act",
         compute="_compute_missing_act_ids",
@@ -56,6 +67,20 @@ class WorkCenterMoveWizard(models.TransientModel):
                 if document._work_center_holding_station():
                     targets = document._work_center_divert_targets()
             wizard.allowed_target_ids = targets
+
+    @api.depends("target_id")
+    def _compute_allowed_assignee_ids(self):
+        for wizard in self:
+            wizard.allowed_assignee_ids = (
+                wizard.target_id._responsible_users()[0]
+                if wizard.target_id
+                else self.env["res.users"]
+            )
+
+    @api.onchange("target_id")
+    def _onchange_target_id(self):
+        if self.assignee_id not in self.allowed_assignee_ids:
+            self.assignee_id = False
 
     @api.depends("res_model", "res_id", "mode")
     def _compute_missing_act_ids(self):
@@ -87,7 +112,9 @@ class WorkCenterMoveWizard(models.TransientModel):
         elif self.mode == "divert":
             if not self.target_id:
                 raise UserError(_("Choose the station to divert the document to."))
-            document._work_center_divert(self.target_id, reason, expected)
+            document._work_center_divert(
+                self.target_id, reason, expected, assignee=self.assignee_id
+            )
         else:
             document._work_center_send_back(reason, expected)
         return {"type": "ir.actions.act_window_close"}

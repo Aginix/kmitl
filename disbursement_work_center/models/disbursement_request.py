@@ -141,9 +141,13 @@ class DisbursementRequest(models.Model):
         self._disbursement_check_not_returned()
         return super()._work_center_forward(reason, expected_station)
 
-    def _work_center_divert(self, station, reason=None, expected_station=None):
+    def _work_center_divert(
+        self, station, reason=None, expected_station=None, assignee=None
+    ):
         self._disbursement_check_not_returned()
-        return super()._work_center_divert(station, reason, expected_station)
+        return super()._work_center_divert(
+            station, reason, expected_station, assignee
+        )
 
     # A DR is sent back only through its own Return wizard: a request whose
     # source can be corrected stays at its station, which the engine's
