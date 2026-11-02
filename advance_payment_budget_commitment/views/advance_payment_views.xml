@@ -20,7 +20,7 @@
             <group name="amount_summary" position="before">
                 <group
                     name="voucher_budget"
-                    string="มิติทางบัญชี / รหัสงบประมาณ (ใบสำคัญจ่าย)"
+                    string="มิติทางบัญชี / รหัสงบประมาณ"
                     attrs="{'invisible': ['|', ('state', '!=', 'approved'), ('budget_commitment_id', '=', False)]}"
                 >
                     <field
