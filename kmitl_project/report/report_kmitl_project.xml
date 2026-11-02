@@ -99,7 +99,7 @@
                         .bold { font-weight: bold; }
                         .cat-total { color: #444; font-size: 13pt; }
                         .month-cell { text-align: center; width: 22pt; padding: 2pt 1pt; }
-                        .month-on { background-color: #000; }
+                        .month-on { background-color: #d0d0d0; }
                         /* Ticked box before each chosen วิธีดำเนินการ/วิธีการประเมินผล */
                         .choice-box { font-size: 14pt; margin-right: 4pt; }
                     </style>
@@ -126,7 +126,9 @@
                                 class="text-center fw-bolder"
                                 style="line-height: 1.575"
                             >
-                                แบบเสนอ<span t-field="o.project_type" /> ประจำปีงบประมาณ พ.ศ. <span
+                                แบบเสนอ<span
+                                    t-field="o.project_type"
+                                /> ประจำปีงบประมาณ พ.ศ. <span
                                     t-field="o.account_fiscal_year_id"
                                 /> <br />
                                 <span
@@ -166,9 +168,7 @@
                           <!--    </div>-->
                           <!--</div>-->
                           <div class="section">
-                            <div
-                                    class="item-title"
-                                >3. ความสอดคล้องกับนโยบายสถาบัน</div>
+                            <div class="item-title">3. ความสอดคล้องกับนโยบายสถาบัน</div>
                             <div class="item-content">
                               <div>Impact : <span
                                             t-out="o.impact_id.name or '-'"
@@ -243,7 +243,10 @@
                             <div class="item-title">9. วิธีดำเนินการ</div>
                             <div class="item-content">
                               <div t-foreach="o.methodology_ids" t-as="method">
-                                <i class="fa fa-check-square-o choice-box" title="เลือก" />
+                                <i
+                                            class="fa fa-check-square-o choice-box"
+                                            title="เลือก"
+                                        />
                                 <t t-out="method.name" />
                               </div>
                               <!-- อื่น ๆ is listed above; its detail follows -->
@@ -493,7 +496,10 @@
                                 >15. วิธีการ/เครื่องมือติดตามและประเมินผล</div>
                             <div class="item-content">
                               <div t-foreach="o.evaluation_ids" t-as="line">
-                                <i class="fa fa-check-square-o choice-box" title="เลือก" />
+                                <i
+                                            class="fa fa-check-square-o choice-box"
+                                            title="เลือก"
+                                        />
                                 <t t-out="line.name" />
                               </div>
                               <!-- อื่น ๆ is listed above; its detail follows -->
