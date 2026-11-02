@@ -1,0 +1,27 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* disbursement_partner_bank_hr_kmitl
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: disbursement_partner_bank_hr_kmitl
+#: model:ir.model.fields,field_description:disbursement_partner_bank_hr_kmitl.field_disbursement_request_line__partner_is_internal
+msgid "Partner Is Internal Staff"
+msgstr "ผู้รับเงินเป็นบุคลากร"
+
+#. module: disbursement_partner_bank_hr_kmitl
+#: code:addons/disbursement_partner_bank_hr_kmitl/wizards/disbursement_partner_bank_wizard.py:0
+msgid ""
+"Staff bank accounts cannot be edited. To add or change one, please contact "
+"the Human Resources Office."
+msgstr ""
+"บัญชีธนาคารของบุคลากรไม่สามารถแก้ไขได้ "
+"หากต้องการเพิ่ม/แก้ไขให้ติดต่อสำนักงานทรัพยากรบุคคล"

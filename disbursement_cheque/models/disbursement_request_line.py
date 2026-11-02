@@ -1,17 +1,34 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 
 class DisbursementRequestLine(models.Model):
     _inherit = "disbursement.request.line"
 
-    # Requester-side only: finance still picks หัวจ่าย at audit.
+    # Requester-side only: finance still picks หัวจ่าย at audit. Blank on a
+    # request that pays no money out (an advance).
     payment_method = fields.Selection(
         [("transfer", "Bank Transfer"), ("cheque", "Cheque")],
-        default="transfer",
-        required=True,
+        compute="_compute_payment_method",
+        store=True,
+        readonly=False,
     )
+
+    @api.depends("request_id.pays_out")
+    def _compute_payment_method(self):
+        for line in self:
+            if not line.request_id.pays_out:
+                line.payment_method = False
+            elif not line.payment_method:
+                line.payment_method = "transfer"
+
+    @api.constrains("payment_method", "request_id")
+    def _check_payment_method(self):
+        for line in self:
+            if line.request_id.pays_out and not line.payment_method:
+                raise ValidationError(_("Payment method is required on each line."))
 
     @api.depends("payment_method")
     def _compute_line_partner_bank_id(self):

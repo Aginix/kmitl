@@ -1,6 +1,6 @@
 {
     "name": "KMITL Budget Support Request — Operating Unit",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.1.0",
     "summary": """ Scope budget support requests to Operating Units """,
     "category": "KMITL/Budgeting",
     "author": "Aginix Technologies",

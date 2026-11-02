@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Followers (the Responsible included) are told of every status change. -->
+    <record id="mt_plan_state" model="mail.message.subtype">
+        <field name="name">สถานะแผน</field>
+        <field name="res_model">procurement.plan</field>
+        <field name="default" eval="True" />
+        <field name="description">สถานะแผนจัดซื้อจัดจ้างเปลี่ยน</field>
+    </record>
+</odoo>

@@ -8,10 +8,10 @@
     >
         <xpath expr="//div[hasclass('o_attachment_wrap')]" position="inside">
             <span
-                t-if="file.outstanding_request_count"
+                t-if="requestCount(file)"
                 class="o_agx_annotation_request_badge"
                 title="Outstanding change requests"
-            >! <t t-esc="file.outstanding_request_count" /></span>
+            >! <t t-esc="requestCount(file)" /></span>
         </xpath>
     </t>
 

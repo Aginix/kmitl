@@ -33,8 +33,8 @@ export function formatDate(value) {
 }
 
 /**
- * Show the steps just posted on a record's chatter and the activities just
- * scheduled.
+ * Show the steps just posted on a record's chatter, the activities just
+ * scheduled and its files' badges.
  */
 export async function refreshChatter(env, resModel, resId) {
     if (!env.services.messaging) {
@@ -46,7 +46,7 @@ export async function refreshChatter(env, resModel, resId) {
         model: resModel,
     });
     if (thread) {
-        thread.fetchData(["activities", "messages"]);
+        thread.fetchData(["activities", "attachments", "messages"]);
     }
 }
 

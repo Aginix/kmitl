@@ -187,7 +187,12 @@ class DisbursementRequestLine(models.Model):
     # -------------------------------------------------------------------------
     # bank_ids too: a user who adds the missing account on the partner gets it
     # filled in here without re-picking the partner.
-    @api.depends("partner_id", "partner_id.bank_ids", "request_id.company_id")
+    @api.depends(
+        "partner_id",
+        "partner_id.bank_ids",
+        "request_id.company_id",
+        "request_id.pays_out",
+    )
     def _compute_line_partner_bank_id(self):
         for line in self:
             # Only a line that can still be edited (a draft, or a station that
@@ -197,7 +202,7 @@ class DisbursementRequestLine(models.Model):
             request = line.request_id
             if request.state not in (False, "draft") and not request.can_edit_lines:
                 line.partner_bank_id = line.partner_bank_id
-            elif line.partner_id:
+            elif line.partner_id and request.pays_out:
                 banks = line.partner_id.bank_ids.filtered(
                     lambda b: (
                         not b.company_id or b.company_id == line.request_id.company_id
@@ -212,9 +217,9 @@ class DisbursementRequestLine(models.Model):
 
     def _requires_partner_bank(self):
         """Whether this payee is paid into a bank account (hook: e.g. a
-        cheque payee needs none)."""
+        cheque payee needs none). A request that pays no money out needs none."""
         self.ensure_one()
-        return True
+        return self.request_id.pays_out
 
     @api.constrains("partner_id")
     def _check_line_partner_required(self):

@@ -25,5 +25,5 @@ class BudgetSupportRequest(models.Model):
         (CONTEXT.md: on Reserve the commitment's own department is
         central's) — only the Beneficiary Unit is the requester's."""
         vals = super()._prepare_commitment_vals()
-        vals["beneficiary_operating_unit_id"] = self.operating_unit_id.id
+        vals["beneficiary_operating_unit_ids"] = [(6, 0, self.operating_unit_id.ids)]
         return vals

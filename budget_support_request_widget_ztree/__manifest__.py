@@ -1,7 +1,7 @@
 {
     "name": "KMITL Budget Support Request Widget Ztree",
     "summary": "Ztree picker for the มิติทางบัญชี and รหัสงบประมาณ on budget support requests",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.0.1",
     "category": "KMITL/Budgeting",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",

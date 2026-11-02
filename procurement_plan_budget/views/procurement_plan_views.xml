@@ -19,6 +19,12 @@
                     <strong>ยังไม่ได้รับการจัดสรรงบประมาณ</strong>
                     — โปรดรอให้งานแผนโอนงบเข้าแผน (ปรับเข้าแผน) ก่อนจึงจะจองงบประมาณได้
                 </div>
+                <field name="budget_short" invisible="1" />
+                <div attrs="{'invisible': ['|', ('state', '!=', 'to_verify'), ('budget_short', '=', False)]}"
+                     class="alert alert-warning" role="alert" colspan="2">
+                    <strong>ได้รับงบประมาณยังไม่ครบวงเงินตามแผน</strong>
+                    — จองงบประมาณได้เมื่อได้รับงบครบวงเงินแล้ว
+                </div>
             </field>
             <div name="button_box" position="inside">
                 <field name="budget_commitment_count" invisible="1" />
@@ -59,6 +65,8 @@
             <filter name="current_fy" position="after">
                 <separator/>
                 <filter name="reserved" string="จองงบแล้ว" domain="[('budget_commitment_ids.state', 'not in', ('cancel',))]" />
+                <filter name="held_money" string="มีเงินค้างในมิติแผน" domain="[('has_held_money', '=', True)]" />
+                <filter name="done_held_money" string="ปิดแล้วมีเงินค้าง" domain="[('state', '=', 'done'), ('has_held_money', '=', True)]" />
             </filter>
             <filter name="group_by_state" position="before">
                 <filter string="รหัสงบประมาณ" name="group_by_budget_account" context="{'group_by': 'budget_account_id'}" />

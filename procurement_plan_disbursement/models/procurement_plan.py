@@ -1,5 +1,11 @@
 from odoo import _, api, fields, models
 
+# Not cancelled and not yet settled: still holds the plan open (ค้าง).
+DISBURSEMENT_OPEN_DOMAIN = [
+    ("state", "!=", "cancel"),
+    ("settlement_stage", "not in", ("settled", "booked")),
+]
+
 
 def _is_pending(dr):
     """Not cancelled, and its budget not consumed yet."""
@@ -46,7 +52,7 @@ class ProcurementPlan(models.Model):
         string="เบิกจ่ายจริงรวม",
         compute="_compute_amount_disbursed",
         currency_field="currency_id",
-        help="งบที่ตัดจริงรวมทุกงวด (นับเฉพาะใบขอเบิกที่ตัดงบประมาณแล้ว)",
+        help="งบที่ตัดจริง ณ มิติแผน (รวมการเบิกจ่ายที่ไม่ได้ผูกกับงวด)",
     )
 
     @api.depends("payment_ids.disbursement_request_id")
@@ -64,9 +70,12 @@ class ProcurementPlan(models.Model):
             rec.disbursement_done_amount = sum(done.mapped("amount_total"))
 
     @api.depends("payment_ids.amount_actual")
+    @api.depends("budget_consumed")
     def _compute_amount_disbursed(self):
+        # Consumed at the plan's dimension, also counting consumption not
+        # linked to any งวด (procurement_plan ADR-0006); งวด keep their own.
         for rec in self:
-            rec.amount_disbursed = sum(rec.payment_ids.mapped("amount_actual"))
+            rec.amount_disbursed = rec.budget_consumed
 
     def action_view_pending_disbursement_requests(self):
         self.ensure_one()
@@ -89,3 +98,19 @@ class ProcurementPlan(models.Model):
             "domain": [("id", "in", done.ids)],
             "view_mode": "tree,form",
         }
+
+    def _get_open_downstream_documents(self):
+        """An outstanding (ค้าง) disbursement drawing the plan's reservation
+        keeps the plan from being closed or deleted (procurement_plan ADR-0005)."""
+        res = super()._get_open_downstream_documents()
+        count = (
+            self.env["disbursement.request"]
+            .sudo()
+            .search_count(
+                [("budget_commitment_id.procurement_plan_id", "=", self.id)]
+                + DISBURSEMENT_OPEN_DOMAIN
+            )
+        )
+        if count:
+            res.append(_("ใบขอเบิกที่ค้างดำเนินการอยู่ %s รายการ") % count)
+        return res
