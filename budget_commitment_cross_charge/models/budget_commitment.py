@@ -403,7 +403,11 @@ class BudgetCommitment(models.Model):
             if not vals:
                 continue
             owner.write(vals)
-            if "analytic_distribution" in vals and owner.line_ids:
+            if (
+                "analytic_distribution" in vals
+                and owner.line_ids
+                and "analytic_distribution" in owner.line_ids._fields
+            ):
                 owner.line_ids.write({"analytic_distribution": distribution})
             owner.message_post(
                 body=_("เปลี่ยนรหัสงบประมาณ/มิติตามใบจอง %s") % record.display_name,

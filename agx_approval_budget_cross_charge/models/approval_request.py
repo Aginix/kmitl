@@ -88,7 +88,7 @@ class ApprovalRequest(models.Model):
         splits = self.budget_commitment_id.sudo().split_ids
         if len(splits) < 2:
             return []
-        currency = self.budget_commitment_id.currency_id
+        currency = splits.commitment_id.currency_id
         return [
             {
                 "primary": split.is_primary,
