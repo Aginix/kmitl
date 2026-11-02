@@ -1764,7 +1764,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:l10n_th_account_asset_management.field_account_asset_remove__asset_sub_state_id
 #: model:ir.model.fields,field_description:l10n_th_account_asset_management.field_account_asset_transfer__asset_sub_state_id
 msgid "Sub-Status"
-msgstr "สถานะย่อย"
+msgstr "สถานะครุภัณฑ์/สินทรัพย์"
 
 #. module: account_asset_management
 #. odoo-python
