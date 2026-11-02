@@ -16,7 +16,8 @@ class DisbursementExceptionConfirm(models.TransientModel):
     def action_confirm(self):
         self.ensure_one()
         if self.ignore:
-            self.related_model_id.action_draft()
+            if self.related_model_id.state != "draft":
+                self.related_model_id.action_draft()
             self.related_model_id.ignore_exception = True
             self.related_model_id.action_submit()
         return super().action_confirm()

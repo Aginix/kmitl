@@ -1,0 +1,1 @@
+from . import advance_payment_partner_bank_wizard

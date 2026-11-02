@@ -140,8 +140,8 @@ class SarabunDocumentMixin(models.AbstractModel):
             vals["content"] = content
             vals["include_content"] = True
         # The official number is NOT assigned at create — only the issuing ส่วนงาน
-        # is supplied; ลงทะเบียน happens atomically at completion, when the final
-        # approver signs (ADR-0010). Omit when unresolved so the document's own
+        # is supplied; ลงทะเบียน happens atomically when the number-issuing step
+        # (ลงนามในใบปะหน้า) is signed (ADR-0017). Omit when unresolved so the document's own
         # default applies.
         dept = self._get_sarabun_sender_department()
         if dept:
@@ -318,6 +318,13 @@ class SarabunDocumentMixin(models.AbstractModel):
         returned-handling applies unchanged; override for distinct behaviour/wording.
         """
         self._on_sarabun_returned(document, step=self.env["sarabun.routing.step"])
+
+    def _on_sarabun_numbered(self, document):
+        """Called the moment the Document is registered (ลงทะเบียน) and gets its
+        official number (``document.name``) — at the number-issuing sign
+        (ADR-0017). Fires once per number: a re-sign after ตีกลับ/ดึงกลับ reuses
+        it, and ยกเลิกการส่ง voids it (see :meth:`_on_sarabun_cancelled`)."""
+        pass
 
     def _on_sarabun_step(self, step, disposition):
         """Generic per-step callback for every disposition (fired last).

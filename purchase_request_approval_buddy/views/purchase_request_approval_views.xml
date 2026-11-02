@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="view_purchase_request_approval_form" model="ir.ui.view">
+        <field name="name">view.form(Approval Buddy)</field>
+        <field name="model">purchase.request.approval</field>
+        <field
+            name="inherit_id"
+            ref="purchase_request_approval.view_purchase_request_approval_form"
+        />
+        <field name="arch" type="xml">
+            <xpath
+                expr="//group[@name='main_info']/field[@name='requesting_department_id']"
+                position="after"
+            >
+                <xpath
+                    expr="//page[@name='other_info']//field[@name='assigned_to']"
+                    position="move"
+                />
+            </xpath>
+            <xpath
+                expr="//group[@name='main_info']/field[@name='assigned_to']"
+                position="attributes"
+            >
+                <attribute name="readonly">0</attribute>
+                <attribute name="widget">many2one_avatar_user</attribute>
+                <attribute name="options">{'no_create': True}</attribute>
+                <attribute
+                    name="attrs"
+                >{'readonly': [('is_editable', '=', False)]}</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_purchase_request_approval_tree" model="ir.ui.view">
+        <field name="name">view.tree(Approval Buddy)</field>
+        <field name="model">purchase.request.approval</field>
+        <field
+            name="inherit_id"
+            ref="purchase_request_approval.view_purchase_request_approval_tree"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='requested_by']" position="after">
+                <field
+                    name="assigned_to"
+                    widget="many2one_avatar_user"
+                    optional="show"
+                />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_purchase_request_approval_search" model="ir.ui.view">
+        <field name="name">view.search(Approval Buddy)</field>
+        <field name="model">purchase.request.approval</field>
+        <field
+            name="inherit_id"
+            ref="purchase_request_approval.view_purchase_request_approval_search"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='draft']" position="before">
+                <field name="assigned_to" />
+                <filter
+                    name="my_assigned"
+                    string="ที่ฉันรับผิดชอบ"
+                    domain="[('assigned_to', '=', uid)]"
+                />
+                <separator />
+            </xpath>
+            <xpath expr="//filter[@name='group_by_state']" position="before">
+                <filter
+                    name="group_by_assigned_to"
+                    string="Assigned Officer"
+                    domain="[]"
+                    context="{'group_by': 'assigned_to'}"
+                />
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

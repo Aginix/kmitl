@@ -1,5 +1,9 @@
 # 0006 — Authorising a disbursement is what raises its payment vouchers
 
+> **Superseded in part (station model).** The authorization is an act
+> (`disbursement.authorize_payment`) of its station, not the transition
+> `payment_audited → payment_authorized`. It still stamps, signs and raises the vouchers.
+
 - Status: accepted
 - Date: 2026-08-14
 - Amends: ADR-0005 (points 2 and 4, and its rejection of two dates)

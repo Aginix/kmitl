@@ -1,7 +1,9 @@
 import logging
+from collections import defaultdict
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError, ValidationError
+from odoo.tools import float_is_zero
 
 _logger = logging.getLogger(__name__)
 
@@ -10,21 +12,22 @@ class BudgetController(models.AbstractModel):
     """Unified budget availability engine (set-based, control-node).
 
     Single source of truth for "available budget" (ADR 0005). Availability for a
-    reservation against ``(budget.account × analytic_distribution)`` is:
+    reservation against ``(budget.account × analytic_distribution)`` is the
+    **Σ balance of every posted budget ledger line** (``budget.move.line``),
+    evaluated at the **control node** — the single funded coordinate at or above
+    the reservation on **every** axis at once (account + each controlled
+    dimension) — rolled up over that node's subtree. Usually the control node is
+    the reservation's own coordinate; for coarsely-budgeted lines (งบบุคลากร /
+    งบโครงการ, appropriated at an upper node) or a descendant-code draw it sits
+    above on one or more axes. Direction is one-way: appropriation may sit at or
+    above the reservation, never below; nothing funded at/above it means 0
+    available.
 
-        available = current − used
-
-    evaluated at the **control node** on every hierarchical axis — the nearest
-    budgetable ancestor-or-self that actually carries posted appropriation —
-    with both current and used rolled up over that node's subtree. Usually the
-    control node is the reserved node itself; for coarsely-budgeted lines
-    (งบบุคลากร / งบโครงการ, appropriated at an upper node) it walks up. Direction
-    is one-way: appropriation may sit at or above the reservation, never below.
-
-    - ``current`` = Σ posted ``budget.move.line.balance`` (appropriation + entry).
-    - ``used``    = Σ posted ``reserve`` lines of active commitments
-      (reserved/partial/done). obligate/consume are a waterfall *under* reserve
-      (ADR 0001), so they are not subtracted again here.
+    - Appropriations and transfers post positive lines; every reservation,
+      obligation and consumption is posted as negative lines with liquidation
+      (ADR-0017), so one sum is current − used and nothing is read from
+      ``budget.commitment.line``.
+    - The pool tags are pinned on every bucket alike (ADR-0017, Q3).
     - The result is **not floored**: a negative value means over-committed.
 
     Matching is set-based (``read_group`` + ``child_of``) on stored columns, so
@@ -32,8 +35,9 @@ class BudgetController(models.AbstractModel):
     (decision G1). The public entry point takes ``analytic_distribution`` (JSON),
     so the engine is dimension-agnostic.
 
-    Case A (one funded level per chain per axis) is assumed; Case B
-    (multiple funded levels on one chain) is deferred — see ADR 0005.
+    Pools never nest (ADR-0016): the nesting guard (:meth:`_check_pool_nesting`)
+    forbids two funded coordinates comparable on every axis, so at most one pool
+    covers a reservation.
     """
 
     _name = "budget.controller"
@@ -41,8 +45,6 @@ class BudgetController(models.AbstractModel):
 
     # Posted move types that build the appropriated pool (incl. transfers).
     _APPROPRIATION_MOVE_TYPES = ("appropriation", "entry")
-    # Commitment states whose reserve lines still lock budget.
-    _ACTIVE_COMMITMENT_STATES = ("reserved", "partial", "done")
     # Analytic plan code -> stored column on the budget line models. The only
     # place a dimension is named; add a controlled dimension by adding a stored
     # column + one entry here (ADR 0005, G1).
@@ -54,18 +56,6 @@ class BudgetController(models.AbstractModel):
         "kmitl_project": "kmitl_project_analytic_id",
         "procurement_plan": "procurement_plan_analytic_id",
     }
-    # "Ownership tag" dimensions: they identify the document that owns a
-    # reservation (a project / a procurement plan) and ride on its reserve lines,
-    # but the appropriation pool a project draws from is *untagged* (floating,
-    # ADR-0007). So they are pinned absent on the appropriation (current) side
-    # only; on the usage side a floating check must count every reserve drawing
-    # from the pool whatever its owner, else it ignores other documents' reserves
-    # and overstates what is available — letting projects over-reserve the pool.
-    _POOL_TAG_COLUMNS = (
-        "kmitl_project_analytic_id",
-        "procurement_plan_analytic_id",
-    )
-
     # ------------------------------------------------------------------
     # Public API
     # ------------------------------------------------------------------
@@ -77,20 +67,62 @@ class BudgetController(models.AbstractModel):
 
         ``budget_account`` may be an id or a ``budget.account`` record;
         ``analytic_distribution`` is the ``{analytic_account_id: percentage}``
-        JSON. Returns ``current − used`` at the control node (not floored).
+        JSON. Returns the Σ balance of the posted ledger at the control node
+        (not floored). Thin wrapper over :meth:`get_available_detail`.
+        """
+        return self.get_available_detail(
+            budget_account, analytic_distribution, fiscal_year_id, company_id
+        )["available"]
+
+    @api.model
+    def get_available_detail(
+        self, budget_account, analytic_distribution, fiscal_year_id, company_id=None
+    ):
+        """Available budget plus the resolved pool coordinate.
+
+        Returns ``{"available": float, "pool": {...} | None}``. ``pool`` names the
+        funded control node (account + each controlled dimension) the figure was
+        read at, for the reservation picker's "งบที่จองได้ … (คุมงบที่ …)" line.
+        When no funded coordinate covers the reservation (uncovered), ``pool`` is
+        ``None`` and ``available`` is 0.0 (ADR-0016, fixes the downward leak H1).
         """
         if not company_id:
             company_id = self.env.company.id
         account = self._coerce_account(budget_account)
         if not account or not fiscal_year_id:
-            return 0.0
+            return {"available": 0.0, "pool": None}
         dims = self._parse_dimensions(analytic_distribution)
         controls = self._resolve_control_nodes(
             account, dims, fiscal_year_id, company_id
         )
-        current = self._sum_current(controls, dims, fiscal_year_id, company_id)
-        used = self._sum_used(controls, dims, fiscal_year_id, company_id)
-        return current - used
+        if controls is None:
+            return {"available": 0.0, "pool": None}
+        return {
+            "available": self._sum_available(
+                controls, dims, fiscal_year_id, company_id
+            ),
+            "pool": self._pool_descriptor(controls),
+        }
+
+    def _pool_descriptor(self, controls):
+        """A JSON-safe description of the resolved control node, for the picker."""
+        account = controls["account"]
+        return {
+            "account": {
+                "id": account.id,
+                "code": account.code,
+                "display_name": account.display_name,
+            },
+            "dims": {
+                column: {
+                    "id": acc.id,
+                    "code": acc.code,
+                    "display_name": acc.display_name,
+                }
+                for column, acc in controls["dims"].items()
+                if acc
+            },
+        }
 
     @api.model
     def get_available_budget(self, analytic_data, fiscal_year_id, company_id=None):
@@ -153,7 +185,9 @@ class BudgetController(models.AbstractModel):
         result = {}
         if not analytic_distribution:
             return result
-        analytic = self.env["account.analytic.account"]
+        # Which plan a value belongs to is metadata: a budget user without
+        # accounting rights cannot read account.analytic.plan.
+        analytic = self.env["account.analytic.account"].sudo()
         for raw_id in analytic_distribution:
             account = analytic.browse(int(raw_id)).exists()
             if not account:
@@ -166,9 +200,7 @@ class BudgetController(models.AbstractModel):
     @staticmethod
     def _self_and_ancestor_ids(record):
         """ids along ``parent_path`` (root-first), including the record itself."""
-        ids = [
-            int(x) for x in (record.parent_path or "").strip("/").split("/") if x
-        ]
+        ids = [int(x) for x in (record.parent_path or "").strip("/").split("/") if x]
         return ids or record.ids
 
     def _appropriation_domain(self, fiscal_year_id, company_id):
@@ -179,56 +211,87 @@ class BudgetController(models.AbstractModel):
             ("company_id", "=", company_id),
         ]
 
-    def _resolve_control_nodes(self, account, dims, fiscal_year_id, company_id):
-        """Find the funded control node on each axis (ADR 0005, Case A).
+    def _pool_rounding(self, company_id):
+        """Company-currency rounding used to decide whether a net is a pool."""
+        company = self.env["res.company"].browse(company_id)
+        currency = company.currency_id or self.env.company.currency_id
+        return currency.rounding or 0.01
 
-        For the account and each hierarchical dimension, walk from the
-        reservation value up its ancestors and stop at the nearest level that
-        carries appropriation of its own. Appropriation may sit at or above the
-        reservation on every dimension (the ``covering`` leaves), so a coarse
-        allocation tagged at a parent value still resolves the funded level.
+    def _resolve_control_nodes(self, account, dims, fiscal_year_id, company_id):
+        """Find the single funded control node covering the reservation.
+
+        The control node is the one funded coordinate at or above the reservation
+        on **every** axis at once (account + each controlled dimension), read in a
+        single grouped query (ADR-0016). "Funded" means the net posted
+        appropriation+entry at that coordinate is not zero. Because pools never
+        nest (enforced by :meth:`_check_pool_nesting`), at most one such
+        coordinate covers a reservation.
+
+        Returns ``{"account": budget.account, "dims": {column: analytic}}`` or
+        ``None`` when nothing funds the reservation (uncovered → 0 available;
+        this is the H1 downward-leak fix — a bare reservation node no longer
+        defaults to itself and sweeps in every pool below it).
         """
         base = self._appropriation_domain(fiscal_year_id, company_id)
-        move_line = self.env["budget.move.line"]
-
-        # appropriation may carry each dimension at-or-above the reservation's;
-        # dimensions the reservation does NOT use must be empty, otherwise
-        # appropriation carrying any value there would leak in (cross-dimension).
-        covering = [
-            (column, "in", self._self_and_ancestor_ids(acc))
-            for column, acc in dims.items()
-        ] + self._absent_dim_leaves(dims)
-
-        # account axis: nearest ancestor-or-self with its own appropriation
-        control_account = account
-        for node_id in reversed(self._self_and_ancestor_ids(account)):
-            if move_line.search_count(
-                base + [("account_id", "=", node_id)] + covering
-            ):
-                control_account = self.env["budget.account"].browse(node_id)
-                break
-
-        # each dimension axis, scoped to the resolved account subtree
-        control_dims = {}
+        # account and each used dimension may sit at-or-above the reservation;
+        # dimensions the reservation does NOT use must be empty, else a pool
+        # carrying any value there would leak in (cross-dimension).
+        domain = base + [("account_id", "in", self._self_and_ancestor_ids(account))]
         for column, acc in dims.items():
-            control = acc
-            others = [
-                leaf for leaf in covering if leaf[0] != column
-            ]
-            for node_id in reversed(self._self_and_ancestor_ids(acc)):
-                if move_line.search_count(
-                    base
-                    + [
-                        ("account_id", "child_of", control_account.id),
-                        (column, "=", node_id),
-                    ]
-                    + others
-                ):
-                    control = self.env["account.analytic.account"].browse(node_id)
-                    break
-            control_dims[column] = control
+            domain.append((column, "in", self._self_and_ancestor_ids(acc)))
+        domain += self._absent_dim_leaves(dims)
 
+        groupby = ["account_id"] + list(dims.keys())
+        rounding = self._pool_rounding(company_id)
+        funded = []
+        for grp in self.env["budget.move.line"].read_group(
+            domain, ["balance"], groupby, lazy=False
+        ):
+            acc_id = (grp.get("account_id") or [None])[0]
+            if not acc_id:
+                continue
+            if float_is_zero(grp.get("balance") or 0.0, precision_rounding=rounding):
+                continue
+            coord = {"account": acc_id}
+            for column in dims:
+                coord[column] = (grp.get(column) or [False])[0]
+            funded.append(coord)
+
+        if not funded:
+            return None
+        if len(funded) > 1:
+            # Legacy nested pools (created before the guard). Pick the deepest so
+            # the tighter pool controls, and warn — the scan reports the overlap.
+            funded.sort(key=self._coord_depth, reverse=True)
+            _logger.warning(
+                "budget.controller: %d funded coordinates cover the reservation "
+                "on account %s (nested pools); using the deepest. Run "
+                "scan_pool_overlaps.",
+                len(funded),
+                account.display_name,
+            )
+        coord = funded[0]
+        control_account = self.env["budget.account"].browse(coord["account"])
+        control_dims = {}
+        analytic = self.env["account.analytic.account"]
+        for column in dims:
+            value = coord.get(column)
+            control_dims[column] = analytic.browse(value) if value else analytic
         return {"account": control_account, "dims": control_dims}
+
+    def _coord_depth(self, coord):
+        """Total hierarchy depth of a funded coordinate (deeper = more specific)."""
+        total = len(
+            self._self_and_ancestor_ids(
+                self.env["budget.account"].browse(coord["account"])
+            )
+        )
+        analytic = self.env["account.analytic.account"]
+        for column, value in coord.items():
+            if column == "account" or not value:
+                continue
+            total += len(self._self_and_ancestor_ids(analytic.browse(value)))
+        return total
 
     def _analytic_hier_op(self):
         """``child_of`` when analytic accounts are hierarchical, else ``=``.
@@ -243,77 +306,241 @@ class BudgetController(models.AbstractModel):
             else "="
         )
 
-    def _absent_dim_leaves(self, dims, include_pool_tags=True):
+    def _absent_dim_leaves(self, dims):
         """Require controlled dimensions NOT used by this reservation to be empty.
 
         Without this, a combination that omits a dimension would match
         appropriation/usage carrying *any* value there (cross-dimension leak).
         ``kmitl_project`` and ``procurement_plan`` are mutually exclusive, so the
         unused one is correctly required to be empty.
-
-        ``include_pool_tags=False`` leaves the ownership tags
-        (:attr:`_POOL_TAG_COLUMNS`) unpinned — used on the *usage* side so a
-        floating-pool check counts every reserve drawing from the (untagged)
-        pool whatever document owns it; they stay pinned on the appropriation
-        side. The four real dimensions are pinned either way.
         """
-        skip = () if include_pool_tags else self._POOL_TAG_COLUMNS
         return [
             (column, "=", False)
             for column in self._DIM_COLUMNS.values()
-            if column not in dims and column not in skip
+            if column not in dims
         ]
 
-    def _control_scope(self, controls, dims, include_pool_tags=True):
+    def _control_scope(self, controls, dims):
         """Subtree leaves over the control node on every axis.
 
-        ``child_of`` rolls usage/appropriation up to the control node so sibling
-        draws cannot double-spend a shared pool; flat analytic dimensions fall
-        back to an exact match. Unused dimensions are pinned empty, except the
-        ownership tags when ``include_pool_tags=False`` (see
-        :meth:`_absent_dim_leaves`).
+        ``child_of`` rolls the ledger up to the control node so sibling draws
+        cannot double-spend a shared pool; flat analytic dimensions fall back to
+        an exact match. Unused dimensions are pinned empty.
         """
         dim_op = self._analytic_hier_op()
         leaves = [("account_id", "child_of", controls["account"].id)]
         for column in dims:
             leaves.append((column, dim_op, controls["dims"][column].id))
-        return leaves + self._absent_dim_leaves(
-            dims, include_pool_tags=include_pool_tags
-        )
+        return leaves + self._absent_dim_leaves(dims)
 
-    def _sum_current(self, controls, dims, fiscal_year_id, company_id):
-        """Σ posted appropriation/entry balance over the control-node subtree."""
-        domain = self._appropriation_domain(fiscal_year_id, company_id)
-        domain += self._control_scope(controls, dims)
-        groups = self.env["budget.move.line"].read_group(domain, ["balance"], [])
-        return (groups[0].get("balance") or 0.0) if groups else 0.0
-
-    def _sum_used(self, controls, dims, fiscal_year_id, company_id):
-        """Σ posted reserve amounts of active commitments over the subtree."""
+    def _sum_available(self, controls, dims, fiscal_year_id, company_id):
+        """Σ posted balance of every bucket over the control-node subtree —
+        appropriation and transfers in, every reservation, obligation and
+        consumption out (with liquidation), pool tags pinned on both sides."""
         domain = [
-            ("state", "=", "posted"),
-            ("move_type", "=", "reserve"),
-            ("commitment_id.state", "in", list(self._ACTIVE_COMMITMENT_STATES)),
+            ("parent_state", "=", "posted"),
             ("account_fiscal_year_id", "=", fiscal_year_id),
             ("company_id", "=", company_id),
-        ]
-        # Count every reserve drawing from the pool regardless of which project /
-        # plan owns it: the floating appropriation is untagged, so pinning the
-        # ownership tags here would drop other documents' reserves and overstate
-        # availability (the over-reservation bug).
-        domain += self._control_scope(controls, dims, include_pool_tags=False)
-        groups = self.env["budget.commitment.line"].read_group(
-            domain, ["amount"], []
+        ] + self._control_scope(controls, dims)
+        Line = self.env["budget.move.line"]
+        appropriation = [("move_type", "in", list(self._APPROPRIATION_MOVE_TYPES))]
+        # The pool keeps the caller's operating-unit fence (ADR-0011); the usage
+        # buckets are read as sudo — a shared pool may carry another unit's
+        # draw, which can only *lower* Available (ADR-0016, H3).
+        current = Line.read_group(domain + appropriation, ["balance"], [])
+        usage = Line.sudo().read_group(
+            domain + ["!"] + appropriation, ["balance"], []
         )
-        return (groups[0].get("amount") or 0.0) if groups else 0.0
+        return sum(
+            (groups[0].get("balance") or 0.0) if groups else 0.0
+            for groups in (current, usage)
+        )
+
+    # ------------------------------------------------------------------
+    # Pool-nesting guard (กองงบไม่ซ้อน) — ADR-0016
+    # ------------------------------------------------------------------
+    def _line_coord(self, line):
+        """Pool coordinate of a line: ``(account, *_DIM_COLUMNS values)``."""
+        return (line.account_id.id,) + tuple(
+            line[column].id or False for column in self._DIM_COLUMNS.values()
+        )
+
+    def _lines_to_candidates(self, lines):
+        """budget.move.line recordset -> ``[(coordinate, signed balance delta)]``."""
+        return [(self._line_coord(line), line.balance or 0.0) for line in lines]
+
+    def _posted_pool_state(self, fiscal_year_id, company_id):
+        """{coord tuple: net balance} of posted expense appropriation/entry.
+
+        One sudo ``read_group`` over the 7 pool columns for the whole fiscal year
+        (every operating unit), so the nesting picture is complete.
+        """
+        dim_columns = list(self._DIM_COLUMNS.values())
+        domain = self._appropriation_domain(fiscal_year_id, company_id) + [
+            ("budget_type", "=", "expense")
+        ]
+        state = defaultdict(float)
+        for grp in (
+            self.env["budget.move.line"]
+            .sudo()
+            .read_group(domain, ["balance"], ["account_id"] + dim_columns, lazy=False)
+        ):
+            account = (grp.get("account_id") or [None])[0]
+            if not account:
+                continue
+            coord = (account,) + tuple(
+                (grp.get(column) or [False])[0] for column in dim_columns
+            )
+            state[coord] += grp.get("balance") or 0.0
+        return state
+
+    def _nested_pairs(self, pools, coords):
+        """Yield ``(coord, other)`` for each of ``coords`` and every other pool
+        comparable to it on **every** axis (ADR-0016).
+
+        Comparable = equal, or one an ancestor of the other; ``False`` only
+        equals ``False`` (a tagged and an untagged pool never conflict —
+        ADR-0012). Parent paths are read once, and only pools on the same
+        account chain are compared: ``by_account`` finds those above an
+        account, ``below`` those at or under it.
+        """
+        acc_path = {
+            r.id: set(self._self_and_ancestor_ids(r))
+            for r in self.env["budget.account"].browse({p[0] for p in pools})
+        }
+        ana_path = {
+            r.id: set(self._self_and_ancestor_ids(r))
+            for r in self.env["account.analytic.account"].browse(
+                {value for p in pools for value in p[1:] if value}
+            )
+        }
+        by_account = defaultdict(list)
+        below = defaultdict(list)
+        for pool in pools:
+            by_account[pool[0]].append(pool)
+            for anc in acc_path.get(pool[0], ()):
+                below[anc].append(pool)
+        for coord in coords:
+            chain = set(below[coord[0]])
+            for anc in acc_path.get(coord[0], ()):
+                chain.update(by_account[anc])
+            chain.discard(coord)
+            for other in chain:
+                if all(
+                    x == y or (x and y and (x in ana_path[y] or y in ana_path[x]))
+                    for x, y in zip(coord[1:], other[1:])
+                ):
+                    yield coord, other
+
+    def _check_pool_nesting(self, candidates, fiscal_year_id, company_id):
+        """Raise if posting ``candidates`` would leave two comparable pools.
+
+        ``candidates`` is a list of ``(coordinate, signed balance delta)``
+        (see :meth:`_lines_to_candidates`). The posted state after applying the
+        deltas is computed, then any coordinate that is new or topped up and
+        still non-zero must not be comparable to another non-zero pool
+        (ADR-0016, กองงบไม่ซ้อน). Draining a pool never trips the guard.
+        """
+        if not candidates or not fiscal_year_id:
+            return
+        rounding = self._pool_rounding(company_id)
+        state = self._posted_pool_state(fiscal_year_id, company_id)
+        touched = set()
+        # drawn from a code with no money of its own (FROM at an unfunded code)
+        unfunded = set()
+        for coord, delta in candidates:
+            was_zero = float_is_zero(state[coord], precision_rounding=rounding)
+            state[coord] += delta
+            # new pool (was zero) or topped up (positive delta): worth checking.
+            if delta > 0 or was_zero:
+                touched.add(coord)
+            if delta < 0 and was_zero:
+                unfunded.add(coord)
+        nonzero = {
+            coord
+            for coord, net in state.items()
+            if not float_is_zero(net, precision_rounding=rounding)
+        }
+        # unfunded draws first: their conflict is the one the user has to fix
+        coords = sorted(touched & nonzero, key=lambda coord: coord not in unfunded)
+        for coord, other in self._nested_pairs(nonzero, coords):
+            raise ValidationError(
+                self._pool_nesting_message(coord, other, coord in unfunded)
+            )
+
+    def scan_pool_overlaps(self, fiscal_year_id, company_id=None):
+        """Read-only list of nested (comparable) pool pairs for a fiscal year.
+
+        Used by the upgrade check and before deploy to find legacy overlaps the
+        guard would now reject. Returns a list of ``(coord_a, coord_b)`` tuples.
+        """
+        if not company_id:
+            company_id = self.env.company.id
+        rounding = self._pool_rounding(company_id)
+        state = self._posted_pool_state(fiscal_year_id, company_id)
+        nonzero = [
+            coord
+            for coord, net in state.items()
+            if not float_is_zero(net, precision_rounding=rounding)
+        ]
+        pairs = {tuple(sorted(pair)) for pair in self._nested_pairs(nonzero, nonzero)}
+        return sorted(pairs)
+
+    def _coord_label(self, coord):
+        """Human label ``account [dim=code …]`` for a pool coordinate."""
+        account = self.env["budget.account"].browse(coord[0])
+        parts = [account.display_name or account.code or str(coord[0])]
+        analytic = self.env["account.analytic.account"]
+        for column, value in zip(self._DIM_COLUMNS.values(), coord[1:]):
+            if value:
+                parts.append("%s=%s" % (column, analytic.browse(value).display_name))
+        return " / ".join(parts)
+
+    def _coord_diff_label(self, coord, other):
+        """Short label of ``coord``: the account plus only the dimensions on
+        which it differs from ``other`` (the axes the user has to fix)."""
+        account = self.env["budget.account"].browse(coord[0])
+        parts = ["[%s] %s" % (account.code, account.name)]
+        analytic = self.env["account.analytic.account"]
+        for value, other_value in zip(coord[1:], other[1:]):
+            if value != other_value:
+                dim = analytic.browse(value or other_value)
+                parts.append(
+                    "%s: %s"
+                    % (dim.root_plan_id.name, value and dim.display_name or "-")
+                )
+        return " / ".join(parts)
+
+    def _pool_nesting_message(self, coord, other, unfunded=False):
+        labels = {
+            "a": self._coord_diff_label(coord, other),
+            "b": self._coord_diff_label(other, coord),
+        }
+        if unfunded:
+            return (
+                _(
+                    "โอนออก/ปรับลดงบจากรหัสนี้ไม่ได้ เพราะรหัสนี้ไม่ได้รับจัดสรรงบโดยตรง\n"
+                    "- รหัสที่เลือก: %(a)s\n"
+                    "- งบจัดสรรไว้ที่: %(b)s\n"
+                    "กรุณาเปลี่ยนไปใช้รหัสที่ได้รับจัดสรรงบ"
+                )
+                % labels
+            )
+        return (
+            _(
+                "จัดสรร/โอนงบเข้ารหัสนี้ไม่ได้ เพราะทับซ้อนกับรหัสที่มีงบจัดสรรอยู่แล้ว\n"
+                "- รหัสที่เลือก: %(a)s\n"
+                "- มีงบจัดสรรอยู่แล้วที่: %(b)s\n"
+                "กรุณาจัดสรร/โอนเข้ารหัสที่มีงบอยู่แล้ว หรือเลือกรหัสที่ไม่ทับซ้อนกัน"
+            )
+            % labels
+        )
 
     def _format_budget_shortage_message(
         self, analytic_data, available_amount, requested_amount
     ):
         """Format detailed budget shortage error message"""
-        account = self.env["budget.account"].browse(
-            analytic_data.get("account_id")
-        )
+        account = self.env["budget.account"].browse(analytic_data.get("account_id"))
         activity = self.env["account.analytic.account"].browse(
             analytic_data.get("activity_analytic_id")
         )
@@ -393,33 +620,19 @@ class BudgetController(models.AbstractModel):
 
         if commitment.state not in ["reserved", "partial"]:
             raise UserError(
-                _(
-                    "Budget commitment must be in reserved or partial state to consume."
-                )
+                _("Budget commitment must be in reserved or partial state to consume.")
             )
 
-        # Get first reserve line for analytic info
-        first_reserve = commitment.line_ids.filtered(
-            lambda l: l.move_type == "reserve" and l.state == "posted"
-        )[:1]
-
-        if not first_reserve:
-            raise UserError(_("No active reserve lines found on commitment."))
-
         consume_amount = (
-            amount if amount else commitment.available_to_consume
+            amount if amount else commitment._ledger_default_consume(source_record)
         )
 
-        consume_line = self.env["budget.commitment.line"].create(
-            {
-                "commitment_id": commitment.id,
-                "move_type": "consume",
-                "account_id": first_reserve.account_id.id,
-                "analytic_distribution": first_reserve.analytic_distribution,
-                "amount": consume_amount,
-                "name": _("Service consumption for %s")
-                % (source_record._name if source_record else "system"),
-            }
+        consume_line = commitment._post_budget_event(
+            "consume",
+            consume_amount,
+            source=source_record,
+            name=_("Service consumption for %s")
+            % (source_record._name if source_record else "system"),
         )
 
         _logger.info(

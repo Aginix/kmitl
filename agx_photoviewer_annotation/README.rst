@@ -1,0 +1,34 @@
+==========================
+Photo Viewer - Annotation
+==========================
+
+Lets whoever checks an attachment tick, draw, highlight and comment directly on
+an image or a PDF inside the photo viewer of ``agx_photoviewer``.
+
+* Opening an image or a PDF shows its pages with every annotation on top; the
+  **Annotate** button opens the tools: pen, ✓ / ✗ stamps, highlight,
+  rectangle, comment, eraser (own marks), colours and undo. On a touch screen
+  one finger annotates and two fingers scroll and pinch-zoom the pages; a palm
+  resting on the screen while a stylus draws is ignored.
+* Each mark is saved as soon as it is drawn, in ``ir.attachment.annotation``;
+  the file itself is never modified (``docs/adr/0001``). Everyone who can read
+  the attachment sees all marks and may add some; only the author changes or
+  removes a mark, and drags their own comment pins to move them.
+* The eye button hides every mark to show the file as it was uploaded;
+  annotating is off meanwhile.
+* **Download with annotations** builds a PDF of the file with the marks drawn
+  on it and the comments listed on a last page; nothing is stored. Install
+  ``agx_photoviewer_annotation_l10n_th_fonts`` to write Thai comments there.
+* Leaving an annotated file posts one internal note on the chatter of the
+  record the file belongs to.
+* Attachments with annotations show a ``✎ n`` badge in ``many2many_binary``
+  fields, the chatter and the viewer's thumbnail strip.
+
+See ``agx_photoviewer_annotation_history`` to browse the past changes of a file.
+See ``agx_photoviewer_annotation_revision`` to upload corrected revisions of a
+file, and ``agx_change_request`` (with ``agx_photoviewer_change_request``) to pin
+change requests on it.
+
+PDF pages are drawn with the pdf.js library of ``web`` instead of its viewer
+(``docs/adr/0002``): text search, the sidebar and printing from the viewer are
+not available for PDFs while this module is installed.

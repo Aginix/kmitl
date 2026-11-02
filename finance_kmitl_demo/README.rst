@@ -14,12 +14,12 @@ This module owns three demo stories, all built in its ``post_init_hook``:
    one cohesive module. ``kmitl_demo`` keeps only master data and the purchase
    end-to-end flow.
 #. **Vendor bills** — vendor bills (ตั้งหนี้) created and posted from the
-   disbursement requests, leaving every request at ``bills_posted``. One case
+   disbursement requests, leaving every request billed. One case
    carries withholding tax (WHT).
 #. **Fixed assets and depreciation** — assets created against the KMITL asset
    profiles, validated, and depreciated for a few periods.
 
-The demo stops at ``bills_posted`` on purpose: no ``account.payment`` is created,
+The demo stops once billed on purpose: no ``account.payment`` is created,
 so the finance payment queue (audit -> authorize -> pay) and the bank payment
 export are left to be exercised by hand in the UI.
 

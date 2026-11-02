@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="res_config_settings_view_form_office_route" model="ir.ui.view">
+        <field
+            name="name"
+        >res.config.settings.view.form.inherit.advance_payment_office_route</field>
+        <field name="model">res.config.settings</field>
+        <field
+            name="inherit_id"
+            ref="advance_payment.res_config_settings_view_form_advance_payment"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//div[@data-key='advance_payment']" position="inside">
+                <h2>เส้นทางการอนุมัติ</h2>
+                <div class="row mt16 o_settings_container">
+                    <div class="col-12 col-lg-6 o_setting_box">
+                        <div class="o_setting_right_pane">
+                            <label for="advance_payment_office_ou_ids" />
+                            <div class="text-muted">
+                                คำขอของหน่วยงานเหล่านี้ใช้ flow สำนักงาน: ตรวจสอบ → ผู้อำนวยการพิจารณา → ผู้มีอำนาจอนุมัติ โดยไม่ผ่านผู้บังคับบัญชาเห็นชอบ
+                            </div>
+                            <field
+                                name="advance_payment_office_ou_ids"
+                                widget="many2many_tags"
+                                options="{'no_create': True}"
+                            />
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>

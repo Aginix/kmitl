@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Last row of the budget table, after โครงการ/กิจกรรม when present. -->
+    <template id="report_disbursement_request_body" inherit_id="disbursement_sarabun.report_disbursement_request_body">
+        <xpath expr="//table[hasclass('budget')]/tbody" position="inside">
+            <tr class="o_field_procurement_plan_analytic_id" t-if="o.procurement_plan_analytic_id">
+                <td>แผนจัดซื้อจัดจ้าง</td>
+                <td><span t-field="o.procurement_plan_analytic_id"/></td>
+            </tr>
+        </xpath>
+    </template>
+</odoo>

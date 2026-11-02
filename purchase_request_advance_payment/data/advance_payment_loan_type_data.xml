@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <!-- The procurement loan type stays in core so existing loans keep
+         it; the purchase-request requirement moved here with the
+         model (advance_payment ADR-0023). -->
+    <record
+        id="advance_payment.loan_type_procurement"
+        model="advance.payment.loan.type"
+    >
+        <field name="reference_model">purchase.request</field>
+    </record>
+</odoo>

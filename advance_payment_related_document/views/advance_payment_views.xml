@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_advance_payment_form_related_document" model="ir.ui.view">
+        <field name="name">advance.payment.form.related.document</field>
+        <field name="model">advance.payment</field>
+        <field name="inherit_id" ref="advance_payment.view_advance_payment_form" />
+        <field name="arch" type="xml">
+            <group name="attachments" position="after">
+                <group name="related_documents" string="เอกสารอ้างอิงเพิ่มเติม">
+                    <field
+                        name="related_document_ids"
+                        nolabel="1"
+                        colspan="2"
+                        context="{'tree_view_ref': 'agx_related_document.view_related_document_embedded_tree', 'default_res_model': 'advance.payment'}"
+                        attrs="{'readonly': [('state', 'in', ['done', 'cancel'])]}"
+                    />
+                </group>
+            </group>
+        </field>
+    </record>
+</odoo>

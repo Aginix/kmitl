@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="module_category_work_center" model="ir.module.category">
+        <field name="name">Stations</field>
+        <field name="sequence">90</field>
+    </record>
+
+    <record id="group_work_center_manager" model="res.groups">
+        <field name="name">Station Administrator</field>
+        <field name="category_id" ref="module_category_work_center" />
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]" />
+        <field
+            name="users"
+            eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"
+        />
+        <field
+            name="comment"
+        >Configures stations, routes, acts, routing rules and overview counters.</field>
+    </record>
+
+    <!-- A station card follows the OU visibility of the documents it holds;
+         central stations (no OU) are visible to everyone. The rule is
+         group-based, not global, so the administrator rule below can widen it:
+         a global rule would also lock the administrator out of the units they
+         configure. -->
+    <record id="ir_rule_work_center_operating_unit" model="ir.rule">
+        <field name="name">Work Center: allowed operating units</field>
+        <field name="model_id" ref="model_work_center" />
+        <field
+            name="domain_force"
+        >['|', ('operating_unit_id', '=', False), ('operating_unit_id', 'in', user.operating_unit_ids.ids)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <record id="ir_rule_work_center_manager" model="ir.rule">
+        <field name="name">Work Center: administrator sees every unit</field>
+        <field name="model_id" ref="model_work_center" />
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_work_center_manager'))]" />
+    </record>
+
+    <!-- The Unassigned card of an area carries no company, so it stays visible
+         in every company. -->
+    <record id="ir_rule_work_center_company" model="ir.rule">
+        <field name="name">Work Center: multi-company</field>
+        <field name="model_id" ref="model_work_center" />
+        <field
+            name="domain_force"
+        >['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        <field name="global" eval="True" />
+    </record>
+
+</odoo>

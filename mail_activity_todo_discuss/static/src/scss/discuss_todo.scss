@@ -85,3 +85,21 @@
         background-color: $gray-200;
     }
 }
+
+// Systray dropdown rows (one per Todo, replacing the base app groups).
+.o_mail_activity_todo_systray {
+    .o_mail_activity_todo_systray_item {
+        max-width: 420px;
+        white-space: normal;
+        border-bottom: 1px solid $border-color;
+
+        &:hover {
+            background-color: $dropdown-link-hover-bg;
+        }
+    }
+
+    // Let the text column truncate inside the flex row.
+    .o_mail_activity_todo_systray_text {
+        min-width: 0;
+    }
+}

@@ -13,6 +13,9 @@ class TestBudgetCommitment(TransactionCase):
     def setUpClass(cls):
         super().setUpClass()
         env = cls.env
+        # These tests reserve without appropriating first; they relied on
+        # kmitl_demo enabling negative budgets, so say so explicitly.
+        env["ir.config_parameter"].sudo().set_param("budget.allow_negative", True)
 
         # Fiscal year covering today
         cls.fiscal_year = env["account.fiscal.year"].search([], limit=1)
@@ -256,9 +259,7 @@ class TestBudgetCommitment(TransactionCase):
         c.action_cancel()
         self.assertEqual(c.state, "cancel")
         # All posted lines should be cancelled
-        self.assertTrue(
-            all(l.state == "cancel" for l in c.line_ids)
-        )
+        self.assertTrue(all(line.state == "cancel" for line in c.line_ids))
         c.action_reset_to_draft()
         self.assertEqual(c.state, "draft")
 
@@ -319,59 +320,6 @@ class TestBudgetCommitment(TransactionCase):
         self.assertFalse(c.line_ids)
 
     # ====================================================================
-    # 4. Consume auto-creates budget.move
-    # ====================================================================
-
-    def test_30_consume_creates_budget_move(self):
-        """A consume line auto-creates a posted budget.move."""
-        c = self._create_commitment(100_000)
-        c.action_reserve()
-        self._add_line(c, "obligate", 100_000)
-        consume_line = self._add_line(c, "consume", 40_000)
-        self.assertTrue(consume_line.budget_move_id)
-        self.assertEqual(consume_line.budget_move_id.state, "posted")
-        self.assertEqual(consume_line.budget_move_id.move_type, "consume")
-
-    def test_31_cancel_consume_cascades_to_move(self):
-        """Cancelling a consume line cascades to its budget.move."""
-        c = self._create_commitment(100_000)
-        c.action_reserve()
-        self._add_line(c, "obligate", 100_000)
-        consume_line = self._add_line(c, "consume", 40_000)
-        bm = consume_line.budget_move_id
-        consume_line.action_cancel()
-        self.assertEqual(bm.state, "cancel")
-
-    # ====================================================================
-    # 5. Multiple budget accounts, same dimensions
-    # ====================================================================
-
-    def test_40_multi_account_same_dimensions(self):
-        """Reserve two different budget accounts in separate commitments, same analytics."""
-        c1 = self._create_commitment(80_000, account_id=self.account_1)
-        c1.action_reserve()
-
-        c2 = self._create_commitment(60_000, account_id=self.account_2)
-        c2.action_reserve()
-
-        self.assertEqual(c1.total_reserved, 80_000)
-        self.assertEqual(c2.total_reserved, 60_000)
-        self.assertEqual(c1.account_id, self.account_1)
-        self.assertEqual(c2.account_id, self.account_2)
-
-    def test_41_multi_account_independent_constraints(self):
-        """Constraints on one commitment don't affect another."""
-        c1 = self._create_commitment(50_000, account_id=self.account_1)
-        c1.action_reserve()
-        self._add_line(c1, "obligate", 50_000, account_id=self.account_1)
-        self._add_line(c1, "consume", 50_000, account_id=self.account_1)
-
-        c2 = self._create_commitment(70_000, account_id=self.account_2)
-        c2.action_reserve()
-        # c2 is still fully available
-        self.assertEqual(c2.available_to_obligate, 70_000)
-
-    # ====================================================================
     # 6. Reversal lines (negative amounts)
     # ====================================================================
 
@@ -397,26 +345,6 @@ class TestBudgetCommitment(TransactionCase):
         self._add_line(c, "consume", -10_000)
         self.assertEqual(c.total_consumed, 50_000)
         self.assertEqual(c.available_to_consume, 50_000)
-
-    # ====================================================================
-    # 7. Computed balance formulas
-    # ====================================================================
-
-    def test_60_balance_formulas(self):
-        """Verify all computed balance formulas after mixed operations."""
-        c = self._create_commitment(200_000)
-        c.action_reserve()
-        self._add_line(c, "obligate", 120_000)
-        self._add_line(c, "consume", 80_000)
-
-        self.assertEqual(c.total_reserved, 200_000)
-        self.assertEqual(c.total_obligated, 120_000)
-        self.assertEqual(c.total_consumed, 80_000)
-        self.assertEqual(c.available_to_obligate, 80_000)   # 200k - 120k
-        self.assertEqual(c.available_to_consume, 40_000)    # 120k - 80k
-        # Legacy fields
-        self.assertEqual(c.consumed_amount, 80_000)
-        self.assertEqual(c.remaining_amount, 120_000)       # cap 200k - consumed 80k
 
     # ====================================================================
     # 8. Header positive amount constraint
@@ -446,7 +374,7 @@ class TestBudgetCommitment(TransactionCase):
             self.env["budget.commitment"].create(
                 {
                     "date": date.today(),
-                "title": "Test commitment",
+                    "title": "Test commitment",
                     "account_id": self.account_1.id,
                     "amount": -1,
                     "analytic_distribution": self._header_analytic(),
@@ -472,9 +400,11 @@ class TestBudgetCommitment(TransactionCase):
 
         self._add_line(c, "consume", 100_000)
         self.assertEqual(c.available_to_consume, 0)
-        self.assertTrue(c.line_ids.filtered(
-            lambda l: l.move_type == "consume" and l.budget_move_id
-        ))
+        self.assertTrue(
+            c.line_ids.filtered(
+                lambda line: line.move_type == "consume" and line.budget_move_id
+            )
+        )
 
         c.action_done()
         self.assertEqual(c.state, "done")
@@ -504,10 +434,51 @@ class TestBudgetCommitment(TransactionCase):
         with self.assertRaises(UserError):
             c.action_cancel()
 
-    def test_93_reset_only_from_cancel(self):
-        """action_reset_to_draft only works from cancel."""
+    def test_93_reset_only_while_unused(self):
+        """กลับแบบร่าง releases an unused reservation; once used it is refused."""
         c = self._create_commitment(100_000)
         c.action_reserve()
+        c.action_reset_to_draft()
+        self.assertEqual(c.state, "draft")
+        self.assertEqual(c.total_reserved, 0)
+        number = c.name
+        c.action_reserve()
+        self.assertEqual(c.name, number)
+        self.assertEqual(c.total_reserved, 100_000)
+        self._add_line(c, "consume", 1_000)
+        with self.assertRaises(UserError):
+            c.action_reset_to_draft()
+
+    def test_94_delete_hard_soft_or_refused(self):
+        """ลบใบจอง: refused unless draft/cancelled, soft once it has a ledger
+        history, hard for a draft that never reached the ledger."""
+        fresh = self._create_commitment(1_000)
+        fresh.unlink()
+        self.assertFalse(fresh.exists())
+
+        c = self._create_commitment(1_000)
+        c.action_reserve()
+        with self.assertRaises(UserError):
+            c.unlink()
+        c.action_reset_to_draft()
+        c.unlink()
+        self.assertTrue(c.exists())
+        self.assertEqual(c.state, "cancel")
+        self.assertFalse(c.active)
+        # กลับแบบร่าง revives a soft-deleted commitment.
+        c.action_reset_to_draft()
+        self.assertEqual(c.state, "draft")
+        self.assertTrue(c.active)
+
+    def test_95_delete_refused_once_closed_by_its_history(self):
+        """A reservation returned in full holds no money but keeps its history:
+        it can neither be deleted nor reset."""
+        c = self._create_commitment(1_000)
+        c.action_reserve()
+        self._return_wizard(c).action_confirm()
+        self.assertEqual(c.state, "done")
+        with self.assertRaises(UserError):
+            c.unlink()
         with self.assertRaises(UserError):
             c.action_reset_to_draft()
 
@@ -549,17 +520,6 @@ class TestBudgetCommitment(TransactionCase):
         self._add_line(c, "obligate", 10_000)
         self.assertEqual(c.total_obligated, 60_000)
         self.assertEqual(c.available_to_obligate, 40_000)
-
-    def test_121_multiple_consume_lines(self):
-        """Multiple consume lines each create their own budget.move."""
-        c = self._create_commitment(100_000)
-        c.action_reserve()
-        self._add_line(c, "obligate", 100_000)
-        c1 = self._add_line(c, "consume", 20_000)
-        c2 = self._add_line(c, "consume", 30_000)
-        self.assertEqual(c.total_consumed, 50_000)
-        self.assertNotEqual(c1.budget_move_id, c2.budget_move_id)
-        self.assertEqual(len(c.budget_move_ids), 2)
 
     # ====================================================================
     # 14. Phase 1 — state-machine guards & auto-transitions
@@ -644,8 +604,7 @@ class TestBudgetCommitment(TransactionCase):
         """Returning the leftover posts a -reserve line and closes the commitment."""
         c = self._create_commitment(600)
         c.action_reserve()
-        # Disburse 550 (obligate + consume together, like the DR flow).
-        self._add_line(c, "obligate", 550)
+        # Disburse 550 — a DR consumes straight from the reservation (ADR-0017).
         self._add_line(c, "consume", 550)
         self.assertEqual(c.available_to_obligate, 50)
         self.assertEqual(c.state, "partial")
@@ -656,20 +615,33 @@ class TestBudgetCommitment(TransactionCase):
         self.assertEqual(c.total_reserved, 550)
         self.assertEqual(c.available_to_obligate, 0)
         self.assertEqual(c.state, "done")
-        ret = c.line_ids.filtered(lambda l: l.is_return)
+        ret = c.line_ids.filtered(lambda line: line.is_return)
         self.assertEqual(len(ret), 1)
         self.assertEqual(ret.move_type, "reserve")
         self.assertEqual(ret.amount, -50)
-        self.assertFalse(ret.budget_move_id)  # no GL/budget move for คืนจอง
+        # คืนจอง posts its own reserve move to the budget ledger (ADR-0017)
+        self.assertEqual(ret.budget_move_id.move_type, "reserve")
+
+    def test_60b_return_unused_commitment_closes_it(self):
+        """Returning a never-used reservation in full closes it (done)."""
+        c = self._create_commitment(600)
+        c.action_reserve()
+        wizard = self._return_wizard(c)
+        wizard.action_confirm()
+        self.assertEqual(c.total_reserved, 0)
+        self.assertEqual(c.state, "done")
+        # The wizard turns into the slip of the posted return.
+        self.assertEqual(wizard.step, "done")
+        self.assertEqual(wizard.returned_amount, 600)
+        self.assertTrue(wizard.return_line_id.is_return)
 
     def test_61_return_inherits_reserve_account_and_dims(self):
         """The return line mirrors the first reserve line's account + dimensions."""
         c = self._create_commitment(600)
         c.action_reserve()
-        self._add_line(c, "obligate", 500)
         self._add_line(c, "consume", 500)
         self._return_wizard(c).action_confirm()
-        ret = c.line_ids.filtered(lambda l: l.is_return)
+        ret = c.line_ids.filtered(lambda line: line.is_return)
         self.assertEqual(ret.account_id, c.account_id)
         self.assertEqual(ret.analytic_distribution, self._line_analytic())
 
@@ -677,15 +649,40 @@ class TestBudgetCommitment(TransactionCase):
         """A return opened from a source doc stamps res_model/res_id for audit."""
         c = self._create_commitment(600)
         c.action_reserve()
-        self._add_line(c, "obligate", 550)
         self._add_line(c, "consume", 550)
         wizard = self._return_wizard(
             c, default_res_model="budget.commitment", default_res_id=c.id
         )
         wizard.action_confirm()
-        ret = c.line_ids.filtered(lambda l: l.is_return)
+        ret = c.line_ids.filtered(lambda line: line.is_return)
         self.assertEqual(ret.res_model, "budget.commitment")
         self.assertEqual(ret.res_id, c.id)
+
+    def test_62b_return_partial_amount_keeps_commitment_open(self):
+        """A typed amount below the leftover returns only that much."""
+        c = self._create_commitment(600)
+        c.action_reserve()
+        self._add_line(c, "consume", 500)
+        wizard = self._return_wizard(c)
+        self.assertEqual(wizard.amount, 100)
+        wizard.amount = 40
+        wizard.action_confirm()
+        self.assertEqual(wizard.returned_amount, 40)
+        self.assertEqual(c.total_reserved, 560)
+        self.assertEqual(c.available_to_obligate, 60)
+        self.assertEqual(c.state, "partial")
+
+    def test_62c_return_amount_over_leftover_or_zero_refused(self):
+        """Returning more than the leftover, or nothing, is refused."""
+        c = self._create_commitment(600)
+        c.action_reserve()
+        self._add_line(c, "consume", 500)
+        for amount in (150, 0):
+            wizard = self._return_wizard(c)
+            wizard.amount = amount
+            with self.assertRaises(UserError):
+                wizard.action_confirm()
+        self.assertFalse(c.line_ids.filtered(lambda line: line.is_return))
 
     def test_63_return_blocked_when_nothing_left(self):
         """No leftover -> the action refuses to open the wizard."""

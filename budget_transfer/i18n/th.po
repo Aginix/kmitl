@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-19 07:13+0000\n"
-"PO-Revision-Date: 2026-08-19 07:13+0000\n"
+"POT-Creation-Date: 2026-10-27 00:58+0000\n"
+"PO-Revision-Date: 2026-10-27 00:58+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -192,6 +192,11 @@ msgid "Budget Account / Dimensions"
 msgstr "รหัสงบประมาณ / มิติ"
 
 #. module: budget_transfer
+#: model:ir.model,name:budget_transfer.model_budget_commitment
+msgid "Budget Commitment"
+msgstr "จองงบประมาณ"
+
+#. module: budget_transfer
 #. odoo-python
 #: code:addons/budget_transfer/models/budget_transfer.py:0
 #: model:ir.model,name:budget_transfer.model_budget_move
@@ -296,6 +301,24 @@ msgid "Cannot cancel a posted transfer"
 msgstr "ไม่สามารถยกเลิกการโอนที่ลงรายการแล้วได้"
 
 #. module: budget_transfer
+#. odoo-python
+#: code:addons/budget_transfer/models/budget_transfer.py:0
+#, python-format
+msgid ""
+"Cannot reset transfer %(transfer)s: reservation %(name)s has already "
+"obligated part of the %(amount)s it received from this transfer."
+msgstr ""
+
+#. module: budget_transfer
+#. odoo-python
+#: code:addons/budget_transfer/models/budget_transfer.py:0
+#, python-format
+msgid ""
+"Cannot transfer %(amount)s out of reservation %(name)s: only %(free)s of it "
+"is not yet obligated."
+msgstr ""
+
+#. module: budget_transfer
 #: model:ir.model.fields,field_description:budget_transfer.field_budget_transfer__company_id
 msgid "Company"
 msgstr "บริษัท"
@@ -359,7 +382,7 @@ msgstr "แบบร่าง"
 
 #. module: budget_transfer
 #. odoo-python
-#: code:addons/budget_transfer/models/budget_move_line.py:0
+#: code:addons/budget_transfer/models/budget_transfer.py:0
 #, python-format
 msgid ""
 "Duplicate transfer line found. Each combination of direction, budget account"
@@ -370,7 +393,7 @@ msgstr ""
 
 #. module: budget_transfer
 #. odoo-python
-#: code:addons/budget_transfer/models/budget_move_line.py:0
+#: code:addons/budget_transfer/models/budget_transfer.py:0
 #, python-format
 msgid ""
 "Each line may carry only one supplementary dimension — KMITL Project or "
@@ -583,6 +606,11 @@ msgstr "การโอนของฉัน"
 #, python-format
 msgid "New"
 msgstr "ใหม่"
+
+#. module: budget_transfer
+#: model:ir.model.fields,field_description:budget_transfer.field_budget_transfer__activity_calendar_event_id
+msgid "Next Activity Calendar Event"
+msgstr ""
 
 #. module: budget_transfer
 #: model:ir.model.fields,field_description:budget_transfer.field_budget_transfer__activity_date_deadline
@@ -863,11 +891,11 @@ msgstr "ส่งขออนุมัติ"
 #. module: budget_transfer
 #: model:ir.model.fields.selection,name:budget_transfer.selection__budget_transfer__state__submitted
 msgid "Submitted"
-msgstr "ส่งแล้ว"
+msgstr "ส่่งแล้ว"
 
 #. module: budget_transfer
 #. odoo-python
-#: code:addons/budget_transfer/models/budget_move_line.py:0
+#: code:addons/budget_transfer/models/budget_transfer.py:0
 #, python-format
 msgid ""
 "The Procurement Plan dimension may only be used with procurement-plan-type "
@@ -878,7 +906,7 @@ msgstr ""
 
 #. module: budget_transfer
 #. odoo-python
-#: code:addons/budget_transfer/models/budget_move_line.py:0
+#: code:addons/budget_transfer/models/budget_transfer.py:0
 #, python-format
 msgid ""
 "The Project/Activity dimension may only be used with project-type budget "
@@ -1050,6 +1078,13 @@ msgid "ประเภทการจัดสรร"
 msgstr ""
 
 #. module: budget_transfer
+#. odoo-python
+#: code:addons/budget_transfer/models/budget_commitment.py:0
+#, python-format
+msgid "ปลดจองจากการโอนงบ %s"
+msgstr ""
+
+#. module: budget_transfer
 #: model:ir.model.fields,field_description:budget_transfer.field_budget_transfer__line_ids
 msgid "รายการงบประมาณ"
 msgstr ""
@@ -1057,6 +1092,13 @@ msgstr ""
 #. module: budget_transfer
 #: model:ir.model.fields,field_description:budget_transfer.field_budget_transfer__department_analytic_id
 msgid "ส่วนงาน"
+msgstr ""
+
+#. module: budget_transfer
+#. odoo-python
+#: code:addons/budget_transfer/models/budget_commitment.py:0
+#, python-format
+msgid "เพิ่มจองจากการโอนงบ %s"
 msgstr ""
 
 #. module: budget_transfer

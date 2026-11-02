@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- kmitl.project.budget.move.line mirrors the visibility of its
+         kmitl.project, including kmitl_project_coordinator's owners (ADR-0007):
+         it is a project-level view, never budget's OU rules. -->
+    <record id="kmitl_project_budget_move_line_company_rule" model="ir.rule">
+        <field name="name">Project Budget Movement: Multi-company</field>
+        <field name="model_id" ref="model_kmitl_project_budget_move_line" />
+        <field name="domain_force">[
+            '|', ('company_id', '=', False), ('company_id', 'in', company_ids)
+        ]</field>
+        <field name="global" eval="True" />
+    </record>
+
+    <!-- A project's owners see it from any operating unit. -->
+    <record id="kmitl_project_budget_move_line_operating_unit_rule" model="ir.rule">
+        <field name="name">Project Budget Movement: Operating Unit</field>
+        <field name="model_id" ref="model_kmitl_project_budget_move_line" />
+        <field name="domain_force">[
+            '|', '|', '|', '|',
+            ('project_id.operating_unit_id', '=', False),
+            ('project_id.operating_unit_id', 'in', user.operating_unit_ids.ids),
+            ('project_id.manager_id.user_id', '=', user.id),
+            ('project_id.coordinator_ids', 'in', user.id),
+            ('project_id.creating_user_id', '=', user.id)
+        ]</field>
+        <field name="global" eval="True" />
+    </record>
+
+    <record id="kmitl_project_budget_move_line_user_rule" model="ir.rule">
+        <field name="name">Project Budget Movement: Own Projects</field>
+        <field name="model_id" ref="model_kmitl_project_budget_move_line" />
+        <field
+            name="groups"
+            eval="[(4, ref('kmitl_project.group_kmitl_project_user'))]"
+        />
+        <field name="domain_force">[
+            '|', '|',
+            ('project_id.manager_id.user_id', '=', user.id),
+            ('project_id.coordinator_ids', 'in', user.id),
+            ('project_id.creating_user_id', '=', user.id)
+        ]</field>
+    </record>
+
+    <record id="kmitl_project_budget_move_line_officer_rule" model="ir.rule">
+        <field name="name">Project Budget Movement: Officer Access</field>
+        <field name="model_id" ref="model_kmitl_project_budget_move_line" />
+        <field
+            name="groups"
+            eval="[(4, ref('kmitl_project.group_kmitl_project_user_all'))]"
+        />
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <!-- Budget viewers already read the real ledger; the single button opens
+         this view for them too. -->
+    <record id="kmitl_project_budget_move_line_budget_viewer_rule" model="ir.rule">
+        <field name="name">Project Budget Movement: Budget Viewer Access</field>
+        <field name="model_id" ref="model_kmitl_project_budget_move_line" />
+        <field name="groups" eval="[(4, ref('budget.group_budget_viewer'))]" />
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+</odoo>

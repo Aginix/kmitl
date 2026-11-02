@@ -11,6 +11,7 @@
                 <field name="gating" widget="boolean_toggle"/>
                 <field name="show_signature" widget="boolean_toggle"/>
                 <field name="is_signature" widget="boolean_toggle"/>
+                <field name="issues_number" widget="boolean_toggle"/>
                 <field name="active" widget="boolean_toggle"/>
             </tree>
         </field>
@@ -22,6 +23,16 @@
         <field name="arch" type="xml">
             <form>
                 <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_activity_type" type="object"
+                                class="oe_stat_button" icon="fa-bell"
+                                attrs="{'invisible': [('activity_type_id', '=', False)]}">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Activity Type</span>
+                            </div>
+                        </button>
+                        <field name="activity_type_id" invisible="1"/>
+                    </div>
                     <div class="oe_title">
                         <h1><field name="name" placeholder="เช่น เห็นชอบ (Endorse)"/></h1>
                     </div>
@@ -35,6 +46,7 @@
                             <field name="gating"/>
                             <field name="show_signature"/>
                             <field name="is_signature"/>
+                            <field name="issues_number"/>
                         </group>
                     </group>
                     <div class="text-muted">
@@ -43,8 +55,14 @@
                         signature block on the official document (leave it off for
                         ตรวจสอบ / พิจารณา / ส่งต่อ — name in the Route only);
                         <strong>ลายเซ็นเชิงอำนาจ (Authoritative sign)</strong> also blocks
-                        Recall and always shows. The built-in verbs are referenced by the
+                        Recall and always shows; <strong>ออกเลขที่หนังสือ (Issues
+                        number)</strong> gives the หนังสือ its official number when the
+                        step is completed. The built-in verbs are referenced by the
                         engine via their XML id — relabel freely, but don't delete them.
+                        Each verb owns an <strong>Activity Type</strong> named after it
+                        (the to-do its holder sees); its name and archive state follow
+                        the verb, while icon and other settings can be changed on the
+                        type itself.
                     </div>
                 </sheet>
             </form>

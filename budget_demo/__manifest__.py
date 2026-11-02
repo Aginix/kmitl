@@ -1,6 +1,6 @@
 {
     "name": "KMITL Budgeting demo",
-    "version": "16.0.1.0.1",
+    "version": "16.0.1.0.2",
     "summary": """ KMITL Budgeting""",
     "category": "KMITL/Budgeting",
     "author": "nopparuts, Aginix Technologies",

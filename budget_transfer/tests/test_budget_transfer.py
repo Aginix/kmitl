@@ -194,6 +194,46 @@ class TestBudgetTransfer(TransactionCase):
         self.assertEqual(from_line.available_budget, 100_000)
         self.assertTrue(from_line.budget_sufficient)
 
+    def test_from_descendant_of_pool_rejected_at_submit(self):
+        """A FROM line at a descendant code of a funded pool nests (ADR-0016).
+
+        The pool lives at the parent code; draining from a child code would carve
+        a phantom child pool, so the guard rejects it at submit — before any
+        e-Saraban letter is sent."""
+        BA = self.env["budget.account"]
+        parent = BA.create(
+            {"code": "TR_PAR", "name": "Parent", "budget_type": "expense"}
+        )
+        child = BA.create(
+            {
+                "code": "TR_CHD",
+                "name": "Child",
+                "budget_type": "expense",
+                "parent_id": parent.id,
+            }
+        )
+        self._appropriate(parent, 100_000)
+        transfer = self._transfer(
+            from_lines=[
+                {
+                    "account_id": child.id,
+                    "amount": 1000,
+                    "activity_analytic_id": self.activity.id,
+                    "fund_analytic_id": self.fund.id,
+                }
+            ],
+            to_lines=[
+                {
+                    "account_id": self.dst.id,
+                    "amount": 1000,
+                    "activity_analytic_id": self.activity.id,
+                    "fund_analytic_id": self.fund.id,
+                }
+            ],
+        )
+        with self.assertRaisesRegex(ValidationError, "ไม่ได้รับจัดสรรงบโดยตรง"):
+            transfer.action_submit()
+
     # ------------------------------------------------------------------
     # editability (can_edit drives the form's readonly modifiers)
     # ------------------------------------------------------------------
@@ -310,7 +350,7 @@ class TestBudgetTransfer(TransactionCase):
         # Approval auto-posts — no separate Post step (ADR-0013).
         self.assertEqual(transfer.state, "posted")
 
-    def test_non_admin_cannot_approve_own_transfer(self):
+    def test_manager_can_approve_own_transfer(self):
         self._appropriate(self.src, 100_000)
         mgr = self.env["res.users"].create(
             {
@@ -324,8 +364,51 @@ class TestBudgetTransfer(TransactionCase):
         transfer = self._transfer(**self._balanced())
         transfer.user_id = mgr
         transfer.with_user(mgr).action_submit()
+        transfer.with_user(mgr).action_approve()
+        self.assertEqual(transfer.state, "posted")
+
+    def test_approve_button_hidden_from_plain_user(self):
+        user = self.env["res.users"].create(
+            {
+                "name": "Budget User",
+                "login": "budget_user_tr_btn",
+                "groups_id": [
+                    Command.link(self.env.ref("budget.group_budget_user").id)
+                ],
+            }
+        )
+        self._appropriate(self.src, 100_000)
+        transfer = self._transfer(**self._balanced())
+        transfer.action_submit()
+        self.assertTrue(transfer.show_approve_button)
+        self.assertFalse(transfer.with_user(user).show_approve_button)
+
+    def test_actions_guard_the_state(self):
+        self._appropriate(self.src, 100_000)
+        transfer = self._transfer(**self._balanced())
         with self.assertRaises(UserError):
-            transfer.with_user(mgr).action_approve()
+            transfer.action_approve()  # draft: must be submitted first
+        with self.assertRaises(UserError):
+            transfer.action_post()
+        transfer.action_submit()
+        with self.assertRaises(UserError):
+            transfer.action_submit()  # already submitted
+        transfer.action_approve()
+        with self.assertRaises(UserError):
+            transfer.action_submit()  # posted
+        with self.assertRaises(UserError):
+            transfer.action_approve()  # no double post
+
+    def test_unlink_blocked_once_submitted(self):
+        self._appropriate(self.src, 100_000)
+        transfer = self._transfer(**self._balanced())
+        transfer.action_submit()
+        with self.assertRaises(UserError):
+            transfer.unlink()
+        transfer.action_approve()
+        with self.assertRaises(UserError):
+            transfer.unlink()
+        self.assertEqual(transfer.move_id.state, "posted")
 
     def test_reset_posted_by_manager_unposts_move(self):
         # account.payment pattern: a manager/admin can Reset to Draft a posted

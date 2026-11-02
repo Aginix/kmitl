@@ -87,24 +87,18 @@ class BudgetCommitmentLineWizard(models.TransientModel):
         if self.amount <= 0:
             raise UserError(_("Amount must be positive."))
 
-        commitment = self.commitment_id
-        vals = {
-            "commitment_id": commitment.id,
-            "move_type": self.move_type,
-            "account_id": commitment.account_id.id,
-            "analytic_distribution": commitment.analytic_distribution,
-            "amount": self.amount,
-            "name": self.name,
-            "date": self.date,
-        }
-
         # Pass source document reference from context if provided
         ctx = self.env.context
-        if ctx.get("default_res_model"):
-            vals["res_model"] = ctx["default_res_model"]
-        if ctx.get("default_res_id"):
-            vals["res_id"] = ctx["default_res_id"]
+        source = None
+        if ctx.get("default_res_model") and ctx.get("default_res_id"):
+            source = self.env[ctx["default_res_model"]].browse(ctx["default_res_id"])
 
-        self.env["budget.commitment.line"].create(vals)
+        self.commitment_id._post_budget_event(
+            self.move_type,
+            self.amount,
+            source=source,
+            name=self.name,
+            date=self.date,
+        )
 
         return {"type": "ir.actions.act_window_close"}

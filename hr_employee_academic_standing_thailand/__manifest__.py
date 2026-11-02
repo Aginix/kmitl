@@ -1,13 +1,12 @@
 {
     "name": "HR Employee Academic Standing Thailand",
-    "version": "16.0.1.0.6",
+    "version": "16.0.1.1.0",
     "summary": """ HR Employee Academic Standing Thailand Summary """,
     "author": "nopparuts, Aginix Technologies",
     "website": "https://github.com/aginix/kmitl-odoo",
     "category": "Human Resources",
     "depends": [
         "hr",
-        "hr_employee_education_history",
         "hr_employee_role",
         "hr_employee_position_level",
     ],

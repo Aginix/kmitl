@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="work_center_route_view_tree" model="ir.ui.view">
+        <field name="name">work.center.route.tree</field>
+        <field name="model">work.center.route</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name" />
+                <field name="area_id" />
+                <field name="model_id" />
+                <field name="active" invisible="1" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="work_center_route_view_form" model="ir.ui.view">
+        <field name="name">work.center.route.form</field>
+        <field name="model">work.center.route</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <widget
+                        name="web_ribbon"
+                        title="Archived"
+                        bg_color="bg-danger"
+                        attrs="{'invisible': [('active', '=', True)]}"
+                    />
+                    <group>
+                        <group>
+                            <field name="name" />
+                            <field name="active" invisible="1" />
+                        </group>
+                        <group>
+                            <field name="area_id" options="{'no_create': True}" />
+                            <field name="area_model_ids" invisible="1" />
+                            <field name="model_id" options="{'no_create': True}" />
+                        </group>
+                    </group>
+                    <field name="line_ids" nolabel="1">
+                        <tree editable="bottom">
+                            <field name="sequence" widget="handle" />
+                            <field name="name" />
+                            <field
+                                name="work_center_ids"
+                                widget="many2many_tags"
+                                domain="[('area_id', '=', parent.area_id), ('is_unassigned', '=', False)]"
+                                options="{'no_create': True}"
+                            />
+                        </tree>
+                    </field>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="work_center_route_action" model="ir.actions.act_window">
+        <field name="name">Routes</field>
+        <field name="res_model">work.center.route</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Create a route</p>
+            <p>
+                The route is the chain of stations a document of one model
+                normally passes through. Several candidate stations on one line
+                are chosen between by the routing rules.
+            </p>
+        </field>
+    </record>
+
+</odoo>

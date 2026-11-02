@@ -115,7 +115,11 @@ class SarabunRouteTemplateLine(models.Model):
     template_id = fields.Many2one(
         "sarabun.route.template", required=True, ondelete="cascade"
     )
-    order = fields.Integer(string="Stage", default=1, help="Steps sharing one order run in parallel.")
+    order = fields.Integer(
+        string="Stage", default=1,
+        help="Steps sharing one order run in parallel; the first gating step "
+        "positively completed passes the Stage.",
+    )
     verb = fields.Many2one(
         "sarabun.verb",
         string="Verb",

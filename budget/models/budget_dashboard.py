@@ -1,8 +1,9 @@
+import itertools
 import logging
 from collections import defaultdict
 
 from odoo import api, models
-from odoo.tools import format_date
+from odoo.tools import float_is_zero, format_date
 
 _logger = logging.getLogger(__name__)
 
@@ -22,7 +23,7 @@ class BudgetDashboard(models.AbstractModel):
         adjustment (±)                  current - initial (supplementary + net transfers)
         current    (a) งบปัจจุบัน        posted appropriation + entry move lines (incl. transfers)
         cap        (3) ขอใช้ทั้งหมด      Σ active commitment caps
-        reserved   (b) เงินจอง           Σreserve - Σobligate   (commitment lines)
+        reserved   (b) เงินจอง           Σreserve - Σobligate   (usage, see _usage_read_group)
         obligated  (c) ผูกพัน            Σobligate - Σconsume
         consumed   (d) เบิกจ่าย          Σconsume
         used       (e) รวม              b + c + d  (= Σreserve, net of returns)
@@ -47,6 +48,18 @@ class BudgetDashboard(models.AbstractModel):
         "source_analytic_id": "s",
     }
     _ACTIVE_COMMITMENT_STATES = ("reserved", "partial", "done")
+    # The seven own figures every row is built from (see _value_columns), and
+    # the usage-side subset that is folded onto its covering pool (ADR-0016).
+    _FACT_KEYS = (
+        "initial",
+        "current",
+        "cap",
+        "reserved",
+        "obligated",
+        "consumed",
+        "returned",
+    )
+    _USAGE_KEYS = ("cap", "reserved", "obligated", "consumed", "returned")
     # Fixed display order for the top-level expense budget categories.
     _ROOT_ORDER = ("51000", "52000", "53000", "54000", "55000", "07020")
     # Rows shown per recent-movement table on the overview landing page.
@@ -81,7 +94,11 @@ class BudgetDashboard(models.AbstractModel):
 
     @api.model
     def get_dashboard_data(
-        self, fiscal_year_id, root_account_id=None, filters=None, breakdown=None
+        self,
+        fiscal_year_id,
+        root_account_id=None,
+        filters=None,
+        breakdown=None,
     ):
         """Return ``{"rows": [...], "currency_id": id}`` for the dashboard grid.
 
@@ -91,6 +108,17 @@ class BudgetDashboard(models.AbstractModel):
         nested under those dimensions' hierarchies (outer to inner) — same
         columns, same roll-up — instead of being the sole row axis. See
         :meth:`_breakdown_rows`.
+
+        Figures are read at the **pool** (ADR-0016, amending ADR-0008): usage
+        (cap / reserve / obligate / consume / return) booked at a Descendant
+        Code is folded onto the tuple of the Budget Pool that covers it, so a
+        pool row's คงเหลือ is what can still be reserved there. A hierarchical
+        dimension filter therefore also surfaces the pools *covering* the typed
+        code (its ancestors as well as its ``child_of`` subtree), each with its
+        whole usage; the ancestor chain of each filter value is returned as
+        ``filter_ancestors`` (drill-down + the picker's finer-code pin). Rows
+        whose usage was folded carry ``usage_in`` / ``usage_out`` coordinate
+        pairs so a usage drill-down lists exactly the lines behind the figure.
         """
         filters = filters or {}
         currency_id = self.env.company.currency_id.id
@@ -101,121 +129,68 @@ class BudgetDashboard(models.AbstractModel):
         if not accounts:
             return {"rows": [], "currency_id": currency_id}
         account_ids = accounts.ids
-        analytic = self.env["account.analytic.account"]
-        # Dimension accounts are hierarchical (account_analytic_parent): a chosen
-        # value matches itself + all descendants via child_of. Source is a flat
-        # classification (exact match). Guarded in case the hierarchy is absent.
-        hier_op = "child_of" if "parent_id" in analytic._fields else "="
-        dim_leaves = []
-        for fname in self._DIM_FIELDS:
-            val = filters.get(fname)
-            if not val:
-                continue
-            is_list = isinstance(val, (list, tuple))
-            # source is flat (exact / "in"); the hierarchical dims use child_of
-            # when the analytic tree exists, else exact / "in" for a value list.
-            if fname == "source_analytic_id":
-                op = "in" if is_list else "="
-            elif is_list:
-                op = "child_of" if hier_op == "child_of" else "in"
-            else:
-                op = hier_op
-            dim_leaves.append((fname, op, val))
-
-        # Shared base domains for every column; dim filters apply set-based.
-        move_base = [
-            ("parent_state", "=", "posted"),
-            ("account_fiscal_year_id", "=", fiscal_year_id),
-            ("account_id", "in", account_ids),
-        ] + dim_leaves
-        cl_base = [
-            ("state", "=", "posted"),
-            ("commitment_id.state", "in", self._ACTIVE_COMMITMENT_STATES),
-            ("account_fiscal_year_id", "=", fiscal_year_id),
-            ("account_id", "in", account_ids),
-        ] + dim_leaves
-        # (3) approved cap = Σ active commitment caps. Header analytic dims are
-        # non-stored, so when a dimension filter is set the matching commitments
-        # are resolved through their stored lines.
-        commit_domain = [
-            ("state", "in", self._ACTIVE_COMMITMENT_STATES),
-            ("account_fiscal_year_id", "=", fiscal_year_id),
-            ("account_id", "in", account_ids),
-        ]
-        if dim_leaves:
-            match = (
-                self.env["budget.commitment.line"]
-                .search(cl_base)
-                .mapped("commitment_id")
-            )
-            commit_domain.append(("id", "in", match.ids))
+        (
+            move_base,
+            cl_base,
+            commit_domain,
+            hier_op,
+            scope,
+            filter_ancestors,
+        ) = self._dashboard_domains(fiscal_year_id, account_ids, filters)
 
         # Optional breakdown: nest the budget-account tree under one or more
         # analytic dimensions (ordered, e.g. activities then departments)
-        # instead of using the account tree as the sole row axis.
-        dims = self._normalize_breakdown(breakdown)
+        # instead of using the account tree as the sole row axis. Extensions
+        # may group by extra fields too (see _dashboard_extra_fields).
+        full = list(self._DIM_FIELDS)
+        n = len(full)
+        dims = [d for d in (self._normalize_breakdown(breakdown) or []) if d in full]
+        extra = self._dashboard_extra_fields()
+        # Facts are read on the full dimension tuple (+ extra fields) so usage
+        # can be folded onto its covering pool before any projection.
+        facts = self._dashboard_sources(full + extra, move_base, cl_base, commit_domain)
+        keys = self._FACT_KEYS
+        own = {}
+        for metric, values in facts.items():
+            for key, val in values.items():
+                own.setdefault(key, dict.fromkeys(keys, 0.0))[metric] = val
+        acc_by_id = {acc.id: acc for acc in accounts}
+        rounding = self.env.company.currency_id.rounding or 0.01
+        fold = self._fold_usage_to_pools(own, scope, acc_by_id, rounding)
+        # Extensions read the folded facts on the breakdown tuple + their extra
+        # fields; the core rows see them collapsed onto the full tuple.
+        idx = [full.index(d) for d in dims]
+        ext_facts = {metric: defaultdict(float) for metric in keys}
+        core_own = defaultdict(lambda: dict.fromkeys(keys, 0.0))
+        for (acc_id, tup), vals in fold["own"].items():
+            ext_key = (acc_id, tuple(tup[i] for i in idx) + tup[n:])
+            node = core_own[(acc_id, tup[:n])]
+            for metric in keys:
+                ext_facts[metric][ext_key] += vals[metric]
+                node[metric] += vals[metric]
+        fold["own"] = dict(core_own)
+
         if dims:
-            rows = self._breakdown_rows(
-                dims, accounts, account_ids, move_base, cl_base, commit_domain
-            )
-            return {"rows": rows, "currency_id": currency_id, "hier_op": hier_op}
+            rows = self._breakdown_rows(dims, accounts, account_ids, fold)
+            rows = self._dashboard_extra_rows(rows, ext_facts, dims)
+            return {
+                "rows": rows,
+                "currency_id": currency_id,
+                "hier_op": hier_op,
+                "filter_ancestors": filter_ancestors,
+            }
 
-        # --- (a) current pool and (1) initial, from posted move lines ---
-        current = self._sum_by_account(
-            "budget.move.line",
-            move_base + [("move_type", "in", ("appropriation", "entry"))],
-            "balance",
-        )
-        initial = self._sum_by_account(
-            "budget.move.line",
-            move_base
-            + [
-                ("move_type", "=", "appropriation"),
-                ("appropriation_type", "=", "initial"),
-            ],
-            "balance",
-        )
-
-        # --- b/c/d from posted commitment lines of active commitments ---
-        by_type = self._sum_by_account_and_type(
-            "budget.commitment.line", cl_base, "amount"
-        )
-        reserved = by_type.get("reserve", {})
-        obligated = by_type.get("obligate", {})
-        consumed = by_type.get("consume", {})
-        # (g) ส่งคืนเงินเหลือจ่าย: the คืนจอง lines (negative reserve, is_return),
-        # summed separately as a memo column. The signed reserve bucket above
-        # already nets these in, so b/e/f need no change — they drop/rise on
-        # their own once a return is posted.
-        returned = self._sum_by_account(
-            "budget.commitment.line", cl_base + [("is_return", "=", True)], "amount"
-        )
-
-        cap = self._sum_by_account("budget.commitment", commit_domain, "amount")
-
+        # flat report: collapse the folded tuples onto their account
+        by_account = defaultdict(lambda: dict.fromkeys(keys, 0.0))
+        for (acc_id, _tup), vals in fold["own"].items():
+            node = by_account[acc_id]
+            for k in keys:
+                node[k] += vals[k]
         # --- roll own values up the subtree via parent_path ---
-        keys = (
-            "initial",
-            "current",
-            "cap",
-            "reserved",
-            "obligated",
-            "consumed",
-            "returned",
-        )
-        sources = {
-            "initial": initial,
-            "current": current,
-            "cap": cap,
-            "reserved": reserved,
-            "obligated": obligated,
-            "consumed": consumed,
-            "returned": returned,
-        }
         rolled = {aid: dict.fromkeys(keys, 0.0) for aid in account_ids}
         for acc in accounts:
-            own = {k: sources[k].get(acc.id, 0.0) for k in keys}
-            if not any(own.values()):
+            own = by_account.get(acc.id)
+            if not own or not any(own.values()):
                 continue
             for aid in self._ancestor_ids(acc):
                 node = rolled.get(aid)
@@ -226,7 +201,6 @@ class BudgetDashboard(models.AbstractModel):
         # Emit rows in depth-first pre-order built from parent_id. Ordering by
         # code alone is NOT a valid tree order (a deep child can sort before its
         # parent), which is what made the collapse/indentation render wrong.
-        acc_by_id = {acc.id: acc for acc in accounts}
         children = defaultdict(list)
         roots = []
         for acc in accounts:
@@ -244,15 +218,121 @@ class BudgetDashboard(models.AbstractModel):
             )
         )
 
+        # a flat row's figure is its account subtree: keyed by account id
+        drill = self._usage_drill_index(
+            fold, lambda acc_id, _tup: set(self._ancestor_ids(acc_by_id[acc_id]))
+        )
         rows = []
         stack = [(acc, 0) for acc in reversed(roots)]
         while stack:
             acc, level = stack.pop()
             kids = children.get(acc.id, [])
-            rows.append(self._make_row(acc, rolled[acc.id], level, bool(kids)))
+            row = self._make_row(acc, rolled[acc.id], level, bool(kids))
+            row.update(drill.get(acc.id, {}))
+            rows.append(row)
             for child in reversed(kids):
                 stack.append((child, level + 1))
-        return {"rows": rows, "currency_id": currency_id, "hier_op": hier_op}
+        rows = self._dashboard_extra_rows(rows, ext_facts, dims)
+        return {
+            "rows": rows,
+            "currency_id": currency_id,
+            "hier_op": hier_op,
+            "filter_ancestors": filter_ancestors,
+        }
+
+    def _dashboard_domains(self, fiscal_year_id, account_ids, filters):
+        """Shared base domains for every dashboard column.
+
+        Returns ``(move_base, cl_base, commit_domain, hier_op, scope,
+        filter_ancestors)``: posted budget move lines, posted commitment lines of
+        active commitments, and active commitment headers, all scoped to the
+        fiscal year, ``account_ids`` and the optional dimension ``filters``.
+
+        A hierarchical filter covers (ADR-0016): the appropriation side matches
+        the typed code's subtree *or* its ancestors, and the usage side adds the
+        whole subtree of every pool funded above it (its usage from sibling codes
+        counts against it too). ``scope`` maps each hierarchical filter field to
+        its values (the usage that belongs to the filter); ``filter_ancestors``
+        is each value's ancestor chain.
+        """
+        analytic = self.env["account.analytic.account"]
+        # Dimension accounts are hierarchical (account_analytic_parent): a chosen
+        # value matches itself + all descendants via child_of. Source is a flat
+        # classification (exact match). Guarded in case the hierarchy is absent.
+        hier_op = "child_of" if "parent_id" in analytic._fields else "="
+        full = self._DIM_FIELDS
+        exact_leaves = []  # flat filters: same on the appropriation + usage side
+        cover_leaves = []  # appropriation side: filter subtree OR its ancestors
+        scope = {}  # hierarchical filter field -> values (the usage scope)
+        filter_ancestors = {}
+        for fname in full:
+            val = filters.get(fname)
+            if not val:
+                continue
+            is_list = isinstance(val, (list, tuple))
+            if fname == "source_analytic_id" or hier_op != "child_of":
+                exact_leaves.append((fname, "in" if is_list else "=", val))
+                continue
+            values = list(val) if is_list else [val]
+            ancestors = set()
+            for rec in analytic.browse(values):
+                ancestors.update(self._ancestor_ids(rec))
+            filter_ancestors[fname] = sorted(ancestors)
+            scope[fname] = values
+            cover_leaves += [
+                "|",
+                (fname, "child_of", values),
+                (fname, "in", sorted(ancestors)),
+            ]
+
+        move_base = [
+            ("parent_state", "=", "posted"),
+            ("account_fiscal_year_id", "=", fiscal_year_id),
+            ("account_id", "in", account_ids),
+        ] + exact_leaves + cover_leaves
+
+        rounding = self.env.company.currency_id.rounding or 0.01
+        usage_leaves = []
+        for fname, values in scope.items():
+            strict = sorted(set(filter_ancestors[fname]) - set(values))
+            above = []
+            if strict:
+                i = full.index(fname)
+                funded = self._facts_by_account_dims(
+                    "budget.move.line",
+                    move_base
+                    + [
+                        ("move_type", "in", ("appropriation", "entry")),
+                        (fname, "in", strict),
+                    ],
+                    "balance",
+                    full,
+                )
+                above = sorted(
+                    {
+                        tup[i]
+                        for (_acc, tup), bal in funded.items()
+                        if not float_is_zero(bal, precision_rounding=rounding)
+                    }
+                )
+            usage_leaves.append((fname, "child_of", values + above))
+        # Usage leaves on the ledger lines; the posted/usage-bucket scope is
+        # added by _usage_read_group (budget ADR-0017).
+        cl_base = [
+            ("account_fiscal_year_id", "=", fiscal_year_id),
+            ("account_id", "in", account_ids),
+        ] + exact_leaves + usage_leaves
+        # (3) approved cap = Σ active commitment caps. Header analytic dims are
+        # non-stored, so when a dimension filter is set the matching commitments
+        # are resolved through their stored lines.
+        commit_domain = [
+            ("state", "in", self._ACTIVE_COMMITMENT_STATES),
+            ("account_fiscal_year_id", "=", fiscal_year_id),
+            ("account_id", "in", account_ids),
+        ]
+        if exact_leaves or usage_leaves:
+            commit_domain.append(("id", "in", self._usage_commitment_ids(cl_base)))
+        return move_base, cl_base, commit_domain, hier_op, scope, filter_ancestors
 
     # ------------------------------------------------------------------
     # multi-dimension breakdown (e.g. activities)
@@ -271,9 +351,7 @@ class BudgetDashboard(models.AbstractModel):
         dims = [d for d in breakdown if d]
         return dims or None
 
-    def _breakdown_rows(
-        self, dims, accounts, account_ids, move_base, cl_base, commit_domain
-    ):
+    def _breakdown_rows(self, dims, accounts, account_ids, fold):
         """Rows for an N-dimension breakdown nested over the budget-account tree.
 
         ``dims`` is an ordered list of analytic dimension fields, e.g.
@@ -287,57 +365,29 @@ class BudgetDashboard(models.AbstractModel):
         level reconciles with the flat report. Untagged values at any level fall
         into a per-level "ไม่ระบุ" sentinel (id 0). Keys are path-encoded and
         unique (e.g. ``a5|p12|b9``) so one account can appear under many tuples.
-        """
-        keys = (
-            "initial",
-            "current",
-            "cap",
-            "reserved",
-            "obligated",
-            "consumed",
-            "returned",
-        )
 
-        sources = {
-            "current": self._facts_by_account_dims(
-                "budget.move.line",
-                move_base + [("move_type", "in", ("appropriation", "entry"))],
-                "balance",
-                dims,
-            ),
-            "initial": self._facts_by_account_dims(
-                "budget.move.line",
-                move_base
-                + [
-                    ("move_type", "=", "appropriation"),
-                    ("appropriation_type", "=", "initial"),
-                ],
-                "balance",
-                dims,
-            ),
-            "cap": self._cap_facts_by_account_dims(commit_domain, dims),
-        }
-        by_type = self._facts_by_account_dims_type(
-            "budget.commitment.line", cl_base, "amount", dims
-        )
-        sources["reserved"] = by_type.get("reserve", {})
-        sources["obligated"] = by_type.get("obligate", {})
-        sources["consumed"] = by_type.get("consume", {})
-        # (g) ส่งคืนเงินเหลือจ่าย: คืนจอง lines (negative reserve, is_return).
-        sources["returned"] = self._facts_by_account_dims(
-            "budget.commitment.line",
-            cl_base + [("is_return", "=", True)],
-            "amount",
-            dims,
-        )
+        ``fold`` is :meth:`_fold_usage_to_pools`'s result: facts on the full
+        dimension tuple with usage already folded onto its pool's tuple (the
+        ADR-0016 amendment), projected here onto ``dims``.
+        """
+        keys = self._FACT_KEYS
+        full = self._DIM_FIELDS
+        dims = [d for d in dims if d in full]
+        idx = [full.index(d) for d in dims]
+
+        def project(tup):
+            return tuple(tup[i] for i in idx)
 
         # own[(account_id, dim_tuple)] = {metric: value}; 0 in a tuple = untagged
-        # at that position. Each read_group group maps to exactly one tuple, so
-        # money is never double-counted and Σ over tuples == the flat report.
+        # at that position. Each full-tuple fact projects onto exactly one tuple,
+        # so money is never double-counted and Σ over tuples == the flat report.
         own = {}
-        for metric in keys:
-            for (acc_id, tup), val in sources[metric].items():
-                own.setdefault((acc_id, tup), dict.fromkeys(keys, 0.0))[metric] = val
+        for (acc_id, tup), vals in fold["own"].items():
+            node = own.setdefault((acc_id, project(tup)), dict.fromkeys(keys, 0.0))
+            for metric in keys:
+                node[metric] += vals[metric]
+        ana_path = fold["ana_path"]
+        moved = fold["moved"]
         # Index by full tuple so emit_account_tree need not rescan all facts.
         own_by_tuple = defaultdict(dict)
         for (acc_id, tup), vals in own.items():
@@ -399,6 +449,28 @@ class BudgetDashboard(models.AbstractModel):
             rec = pos[depth]["rec"].get(node_id)
             return (rec.code or "") if rec else ""
 
+        # Usage drill pairs, indexed once (ADR-0016). An account row's figure is
+        # its account subtree at the exact projected tuple; a dimension row's is
+        # the tuple prefix above it with the value at its level in the node's
+        # subtree (untagged → the sentinel node 0).
+        def acc_row_keys(acc_id, tup):
+            proj = project(tup)
+            return {(proj, a) for a in self._ancestor_ids(acc_by_id[acc_id])}
+
+        def dim_row_keys(_acc_id, tup):
+            proj = project(tup)
+            found = set()
+            for depth, value in enumerate(proj):
+                if not value:
+                    found.add((proj[:depth], 0))
+                    continue
+                for node in ana_path.get(value, [value]):
+                    found.add((proj[:depth], node))
+            return found
+
+        acc_drill = self._usage_drill_index(fold, acc_row_keys) if moved else {}
+        dim_drill = self._usage_drill_index(fold, dim_row_keys) if moved else {}
+
         rows = []
 
         def emit_account_tree(prefix, level):
@@ -422,9 +494,15 @@ class BudgetDashboard(models.AbstractModel):
             dpath = dim_key(prefix)
             dims_map = {dims[i]: (prefix[i] or False) for i in range(n)}
 
+            own_here = own_by_tuple.get(prefix, {})
+
             def emit_acc(account, lvl):
                 kids = children.get(account.id, [])
                 pid = account.parent_id.id
+                # own_current = this account's own posted current at the EXACT
+                # tuple (not rolled down from children), so the picker can tell a
+                # real pool row from a pure roll-up node (ADR-0016).
+                own_current = own_here.get(account.id, {}).get("current", 0.0)
                 rows.append(
                     {
                         "id": account.id,
@@ -439,7 +517,9 @@ class BudgetDashboard(models.AbstractModel):
                         "name": account.name,
                         "level": lvl,
                         "has_children": bool(kids),
+                        "own_current": own_current,
                         **self._value_columns(rolled[account.id]),
+                        **acc_drill.get((prefix, account.id), {}),
                     }
                 )
                 for child in kids:
@@ -507,6 +587,7 @@ class BudgetDashboard(models.AbstractModel):
                         "level": lvl,
                         "has_children": bool(child_nodes) or exact_has,
                         **self._value_columns(vals),
+                        **dim_drill.get((prefix, node_id), {}),
                     }
                 )
                 for child in child_nodes:
@@ -523,6 +604,181 @@ class BudgetDashboard(models.AbstractModel):
                 emit_node(0, level, base_parent)
 
         emit_level((), 0, 0)
+        return rows
+
+    def _fold_usage_to_pools(self, own, scope, acc_by_id, rounding):
+        """Fold usage facts onto the tuple of the Budget Pool covering them.
+
+        ``own`` maps ``(account_id, full_tuple)`` (``_DIM_FIELDS`` order, 0 =
+        untagged, then any :meth:`_dashboard_extra_fields` values, which ride
+        along unchanged) to the seven figures. A pool is a coordinate with
+        non-zero own current on the dimension tuple. Usage at ``(account, tuple)`` moves to the tuple of the pool
+        whose account is the usage account or an ancestor and whose every
+        dimension is the usage value or an ancestor (untagged only matches
+        untagged) — the engine's control node read on the dashboard's facts,
+        deepest first for legacy nested pools. The usage keeps its own account,
+        so the account tree under the pool tuple rolls it up to the pool's
+        account. Usage no pool covers stays put (negative คงเหลือ: 0 available)
+        unless it lies outside the filter ``scope``, where it was only fetched
+        as a candidate for a covering pool, and is dropped.
+
+        Returns ``{"own", "moved", "ana_path"}``; ``moved`` lists
+        ``(account_id, source_tuple, target_tuple, source_in_scope)`` for the
+        drill-down pairs.
+        """
+        keys = self._FACT_KEYS
+        full = self._DIM_FIELDS
+        n = len(full)
+        ids = {value for (_acc, tup) in own for value in tup[:n] if value}
+        ana_path = {
+            rec.id: self._ancestor_ids(rec) or [rec.id]
+            for rec in self.env["account.analytic.account"].browse(list(ids))
+        }
+        current = defaultdict(float)
+        for (acc_id, tup), vals in own.items():
+            current[(acc_id, tup[:n])] += vals["current"]
+        pools = {
+            key
+            for key, cur in current.items()
+            if not float_is_zero(cur, precision_rounding=rounding)
+        }
+        positions = [(full.index(f), values) for f, values in scope.items()]
+
+        def in_scope(tup):
+            return all(
+                tup[i] and set(values) & set(ana_path.get(tup[i], [tup[i]]))
+                for i, values in positions
+            )
+
+        folded = {}
+        moved = set()
+        for (acc_id, tup), vals in own.items():
+            node = folded.setdefault((acc_id, tup), dict.fromkeys(keys, 0.0))
+            for metric in keys:
+                if metric not in self._USAGE_KEYS:
+                    node[metric] += vals[metric]
+            if not any(vals[metric] for metric in self._USAGE_KEYS):
+                continue
+            dim_tup, extra = tup[:n], tup[n:]
+            target = self._covering_pool_tuple(
+                acc_id, dim_tup, pools, acc_by_id, ana_path
+            )
+            if target is None:
+                if not in_scope(dim_tup):
+                    continue
+                target = dim_tup
+            node = folded.setdefault(
+                (acc_id, target + extra), dict.fromkeys(keys, 0.0)
+            )
+            for metric in self._USAGE_KEYS:
+                node[metric] += vals[metric]
+            if target != dim_tup:
+                moved.add((acc_id, dim_tup, target, in_scope(dim_tup)))
+        return {
+            "own": {k: v for k, v in folded.items() if any(v.values())},
+            "moved": sorted(moved),
+            "ana_path": ana_path,
+        }
+
+    def _covering_pool_tuple(self, acc_id, tup, pools, acc_by_id, ana_path):
+        """Dimension tuple of the deepest pool covering ``(acc_id, tup)``."""
+        account = acc_by_id.get(acc_id)
+        acc_chain = self._ancestor_ids(account) if account else [acc_id]
+        dim_chains = [
+            list(enumerate(ana_path.get(value, [value]))) if value else [(0, 0)]
+            for value in tup
+        ]
+        best, best_depth = None, -1
+        for acc_depth, acc_node in enumerate(acc_chain):
+            for combo in itertools.product(*dim_chains):
+                candidate = tuple(value for _depth, value in combo)
+                if (acc_node, candidate) not in pools:
+                    continue
+                depth = acc_depth + sum(d for d, _value in combo)
+                if depth > best_depth:
+                    best, best_depth = candidate, depth
+        return best
+
+    def _usage_drill_index(self, fold, row_keys):
+        """Coordinates each row's usage drill-down must add / remove (ADR-0016).
+
+        The client drills a row by its dimensions + the filter; usage folded
+        *into* the row from outside that scope is added (``usage_in``), usage
+        inside the scope folded *out* to another row's pool is excluded
+        (``usage_out``). ``row_keys(account_id, full_tuple)`` returns the keys of
+        the rows whose figure includes that coordinate. Built once per report
+        (O(moved), not O(rows × moved)); returns ``{row key: {"usage_in": [...],
+        "usage_out": [...]}}`` with empty lists omitted to keep the payload small.
+        """
+        full = self._DIM_FIELDS
+        index = defaultdict(dict)
+        for acc_id, src, tgt, src_in_scope in fold["moved"]:
+            src_keys = row_keys(acc_id, src) if src_in_scope else set()
+            tgt_keys = row_keys(acc_id, tgt)
+            if src_keys == tgt_keys:
+                continue
+            pair = {
+                "account_id": acc_id,
+                "dims": {f: (src[i] or False) for i, f in enumerate(full)},
+            }
+            for key in tgt_keys - src_keys:
+                index[key].setdefault("usage_in", []).append(pair)
+            for key in src_keys - tgt_keys:
+                index[key].setdefault("usage_out", []).append(pair)
+        return index
+
+    def _dashboard_sources(self, dims, move_base, cl_base, commit_domain):
+        """{metric: {(account_id, dim_tuple): value}} for every column source.
+
+        ``dims`` may be empty (flat report: every tuple is ``()``).
+        """
+        sources = {
+            "current": self._facts_by_account_dims(
+                "budget.move.line",
+                move_base + [("move_type", "in", ("appropriation", "entry"))],
+                "balance",
+                dims,
+            ),
+            "initial": self._facts_by_account_dims(
+                "budget.move.line",
+                move_base
+                + [
+                    ("move_type", "=", "appropriation"),
+                    ("appropriation_type", "=", "initial"),
+                ],
+                "balance",
+                dims,
+            ),
+            "cap": self._cap_facts_by_account_dims(commit_domain, dims),
+        }
+        # b/c/d and (g) ส่งคืนเงินเหลือจ่าย from the usage buckets of the budget
+        # ledger (budget ADR-0017).
+        for metric in ("reserved", "obligated", "consumed", "returned"):
+            sources[metric] = {}
+        for key, figures in self._usage_read_group(
+            cl_base, ["account_id", *dims]
+        ).items():
+            if not key[0]:
+                continue
+            fact = (key[0], tuple(key[1:]))
+            sources["reserved"][fact] = figures["reserve"]
+            sources["obligated"][fact] = figures["obligate"]
+            sources["consumed"][fact] = figures["consume"]
+            sources["returned"][fact] = figures["returned"]
+        return sources
+
+    def _dashboard_extra_fields(self):
+        """Extra stored fields to group the column sources by (none in core).
+
+        Extensions append fields here and read them back, per (account,
+        breakdown tuple + extra values), in :meth:`_dashboard_extra_rows`; the
+        core rows always see the facts collapsed onto the breakdown tuple.
+        """
+        return []
+
+    def _dashboard_extra_rows(self, rows, facts, dims):
+        """Hook to add rows built from the full ``facts`` (see
+        :meth:`_dashboard_extra_fields`). Core: rows unchanged."""
         return rows
 
     def _facts_by_account_dims(self, model, domain, field, dims):
@@ -542,26 +798,12 @@ class BudgetDashboard(models.AbstractModel):
             out[(account[0], tup)] = grp.get(field) or 0.0
         return out
 
-    def _facts_by_account_dims_type(self, model, domain, field, dims):
-        """{move_type: {(account_id, dim_tuple): Σ field}} for commitment lines."""
-        out = {}
-        for grp in self.env[model].read_group(
-            domain, [field], ["account_id", *dims, "move_type"], lazy=False
-        ):
-            account = grp.get("account_id")
-            move_type = grp.get("move_type")
-            if not (account and move_type):
-                continue
-            tup = tuple((grp.get(d) or [0])[0] for d in dims)
-            out.setdefault(move_type, {})[(account[0], tup)] = grp.get(field) or 0.0
-        return out
-
     def _cap_facts_by_account_dims(self, commit_domain, dims):
         """{(account_id, dim_tuple): Σ cap} per active commitment.
 
         The cap *amount* and *account* come from the commitment header (matching
-        the flat report). The dim *tuple* comes from the commitment's posted
-        ``reserve`` line (stored fields, resolved set-based) so cap co-locates
+        the flat report). The dim *tuple* comes from where the commitment's
+        reservation sits (its usage, resolved set-based) so cap co-locates
         with reserved on the full tuple. A picker-created reservation pins one
         (activity, department, …) tuple; if some externally-created commitment
         ever has reserve lines spanning >1 tuple we log it and keep the last
@@ -572,21 +814,12 @@ class BudgetDashboard(models.AbstractModel):
             return {}
         tup_of = {}
         multi = set()
-        for grp in self.env["budget.commitment.line"].read_group(
-            [
-                ("commitment_id", "in", commitments.ids),
-                ("state", "=", "posted"),
-                ("move_type", "=", "reserve"),
-            ],
-            [],
-            ["commitment_id", *dims],
-            lazy=False,
-        ):
-            commitment = grp.get("commitment_id")
-            if not commitment:
+        for key, figures in self._usage_read_group(
+            [("commitment_id", "in", commitments.ids)], ["commitment_id", *dims]
+        ).items():
+            cid, tup = key[0], tuple(key[1:])
+            if not cid or not figures["reserve"]:
                 continue
-            cid = commitment[0]
-            tup = tuple((grp.get(d) or [0])[0] for d in dims)
             if cid in tup_of:
                 if tup_of[cid] != tup:
                     # Spans >1 tuple (no normal flow does this); pick a stable
@@ -653,9 +886,17 @@ class BudgetDashboard(models.AbstractModel):
             fiscal_year_id, root_account_id, filters or {}, breakdown
         )
         rows = data.get("rows", [])
+        rounding = self.env.company.currency_id.rounding or 0.01
         selectable_ids = None
+        # Account ids that have at least one selectable *strict descendant* — a
+        # coarse pool whose own account is out of the host domain can still be
+        # narrowed down to a pickable child code (ADR-0016).
+        has_sel_desc = set()
         if account_domain:
             selectable_ids = set(self.env["budget.account"].search(account_domain).ids)
+            for acc in self.env["budget.account"].browse(list(selectable_ids)):
+                for anc in self._ancestor_ids(acc)[:-1]:  # strict ancestors
+                    has_sel_desc.add(anc)
         # Only account rows map to a budget.account; activity (breakdown) group
         # rows are display-only and can never be picked.
         accounts = {
@@ -671,11 +912,25 @@ class BudgetDashboard(models.AbstractModel):
             budgetable = bool(account and account.budgetable)
             row["budgetable"] = budgetable
             row["cross_chargeable"] = bool(account and account.cross_chargeable)
-            row["selectable"] = (
-                budgetable
-                if selectable_ids is None
-                else account is not None and row["id"] in selectable_ids
+            # A pool row = an account carrying its own posted appropriation at
+            # this exact dimension tuple.
+            is_pool = account is not None and not float_is_zero(
+                row.get("own_current", 0.0), precision_rounding=rounding
             )
+            in_domain = selectable_ids is not None and row["id"] in selectable_ids
+            narrowable = is_pool and account.id in has_sel_desc
+            # A pool whose own account is outside the host domain can only be used
+            # by narrowing to a pickable descendant code.
+            narrow_required = narrowable and not in_domain
+            row["account_narrowable"] = narrowable
+            row["narrow_required"] = narrow_required
+            if selectable_ids is None:
+                row["selectable"] = budgetable
+            else:
+                # narrow_required rows are kept selectable so the coarse pool is
+                # not pruned away; the client blocks confirm until a descendant
+                # code is chosen.
+                row["selectable"] = in_domain or narrow_required
         # When the host constrains selectable codes (account_domain), show only
         # those codes and the dimension/roll-up rows leading to them — not every
         # code under the category. Domain-less hosts (budget.commitment) keep the
@@ -686,6 +941,7 @@ class BudgetDashboard(models.AbstractModel):
             "rows": rows,
             "currency_id": data.get("currency_id"),
             "hier_op": data.get("hier_op", "="),
+            "filter_ancestors": data.get("filter_ancestors", {}),
         }
 
     @api.model
@@ -842,10 +1098,7 @@ class BudgetDashboard(models.AbstractModel):
         cards.
         """
         cl_dom = [
-            ("state", "=", "posted"),
-            ("commitment_id.state", "in", self._ACTIVE_COMMITMENT_STATES),
             ("account_fiscal_year_id", "=", fiscal_year_id),
-            ("move_type", "in", ("reserve", "consume")),
             (dim_field, "!=", False),
         ]
         if source_id:
@@ -855,15 +1108,13 @@ class BudgetDashboard(models.AbstractModel):
             cl_dom.append(dep)
 
         current, used = defaultdict(float), defaultdict(float)
-        for grp in self.env["budget.commitment.line"].read_group(
-            cl_dom, ["amount"], [dim_field, "move_type"], lazy=False
-        ):
-            rec = grp.get(dim_field)
-            move_type = grp.get("move_type")
-            if not rec or not move_type:
+        for (analytic_id,), figures in self._usage_read_group(
+            cl_dom, [dim_field]
+        ).items():
+            if not analytic_id:
                 continue
-            target = current if move_type == "reserve" else used
-            target[rec[0]] += grp.get("amount") or 0.0
+            current[analytic_id] += figures["reserve"]
+            used[analytic_id] += figures["consume"]
 
         ids = set(current) | set(used)
         if not ids:
@@ -905,7 +1156,7 @@ class BudgetDashboard(models.AbstractModel):
     def _overview_timeseries(self, fiscal_year_id, source_id, department_ids=None):
         """Monthly จอง / ผูกพัน / เบิกจ่าย flow across the fiscal year.
 
-        Raw ``Σ amount`` of posted reserve/obligate/consume commitment lines,
+        Monthly reserve/obligate/consume usage flow (``_usage_read_group``),
         bucketed by month over the whole fiscal-year span (empty months kept so
         the x-axis is continuous). Same source / department scope as the cards.
         """
@@ -926,27 +1177,20 @@ class BudgetDashboard(models.AbstractModel):
         index = {mk: i for i, mk in enumerate(months)}
         series = {mt: [0.0] * len(months) for mt in self._TS_MOVE_TYPES}
 
-        cl_dom = [
-            ("state", "=", "posted"),
-            ("commitment_id.state", "in", self._ACTIVE_COMMITMENT_STATES),
-            ("account_fiscal_year_id", "=", fiscal_year_id),
-        ]
+        cl_dom = [("account_fiscal_year_id", "=", fiscal_year_id)]
         if source_id:
             cl_dom.append(("source_analytic_id", "=", source_id))
         dep = self._department_leaf(department_ids)
         if dep:
             cl_dom.append(dep)
-        for grp in self.env["budget.commitment.line"].read_group(
-            cl_dom, ["amount"], ["date:month", "move_type"], lazy=False
-        ):
-            move_type = grp.get("move_type")
-            rng = (grp.get("__range") or {}).get("date:month") or {}
-            start = rng.get("from")
-            if move_type not in series or not start:
+        for (start,), figures in self._usage_read_group(
+            cl_dom, ["date:month"]
+        ).items():
+            i = index.get((start or "")[:7])
+            if i is None:
                 continue
-            i = index.get(start[:7])
-            if i is not None:
-                series[move_type][i] = grp.get("amount") or 0.0
+            for move_type in self._TS_MOVE_TYPES:
+                series[move_type][i] += figures[move_type]
         # Convert raw monthly flows to cumulative running balances, then net them
         # so ผูกพัน drops to 0 once เบิกจ่าย is posted (even in a later month).
         n = len(months)
@@ -1049,7 +1293,7 @@ class BudgetDashboard(models.AbstractModel):
         """Per-root breakdown over the top-level nodes of one analytic dim.
 
         current comes from posted appropriation/entry move lines; used is the
-        net reservation (``move_type == 'reserve'`` on active commitments).
+        net reservation of active commitments (``_usage_read_group``).
         Both the budget account and the dimension value are rolled up to their
         respective roots (``parent_path[0]``) before accumulation.
         """
@@ -1058,12 +1302,7 @@ class BudgetDashboard(models.AbstractModel):
             ("account_fiscal_year_id", "=", fiscal_year_id),
             ("move_type", "in", ("appropriation", "entry")),
         ]
-        cl_dom = [
-            ("state", "=", "posted"),
-            ("commitment_id.state", "in", self._ACTIVE_COMMITMENT_STATES),
-            ("account_fiscal_year_id", "=", fiscal_year_id),
-            ("move_type", "=", "reserve"),
-        ]
+        cl_dom = [("account_fiscal_year_id", "=", fiscal_year_id)]
         if source_id:
             move_dom.append(("source_analytic_id", "=", source_id))
             cl_dom.append(("source_analytic_id", "=", source_id))
@@ -1075,9 +1314,16 @@ class BudgetDashboard(models.AbstractModel):
         cur_groups = self.env["budget.move.line"].read_group(
             move_dom, ["balance"], ["account_id", dim], lazy=False
         )
-        used_groups = self.env["budget.commitment.line"].read_group(
-            cl_dom, ["amount"], ["account_id", dim], lazy=False
-        )
+        used_groups = [
+            {
+                "account_id": [account_id] if account_id else False,
+                dim: [dim_id] if dim_id else False,
+                "amount": figures["reserve"],
+            }
+            for (account_id, dim_id), figures in self._usage_read_group(
+                cl_dom, ["account_id", dim]
+            ).items()
+        ]
 
         all_groups = cur_groups + used_groups
         root_of = self._root_category_map(
@@ -1155,6 +1401,80 @@ class BudgetDashboard(models.AbstractModel):
         return out
 
     # ------------------------------------------------------------------
+    # usage, read from the budget ledger (ADR-0017)
+    # ------------------------------------------------------------------
+    @staticmethod
+    def _usage_group_key(grp, groupby):
+        """Group values as a hashable tuple: a Many2one becomes its id (0 when
+        empty), a ``date:<interval>`` its range start (``YYYY-MM-DD``)."""
+        key = []
+        for field in groupby:
+            if ":" in field:
+                rng = (grp.get("__range") or {}).get(field) or {}
+                key.append(rng.get("from"))
+            else:
+                value = grp.get(field)
+                key.append(value[0] if isinstance(value, (list, tuple)) else value or 0)
+        return tuple(key)
+
+    def _usage_base_domain(self):
+        # Usage = the reserve/obligate/consume buckets, whether a reservation
+        # posted them or a direct consumption did (ADR-0019).
+        return [
+            ("parent_state", "=", "posted"),
+            ("move_type", "in", list(self._TS_MOVE_TYPES)),
+        ]
+
+    def _usage_read_group(self, domain, groupby):
+        """Usage of the reservations grouped by ``groupby``, read from their
+        ledger lines.
+
+        ``domain`` may only use fields that ledger lines carry (fiscal year,
+        account, the six dimensions, date, commitment). Each band is the
+        negated Σ balance of its bucket (b = reserve, c = obligate,
+        d = consume), folded back into cumulative figures:
+        ``{group_key: {"reserve", "obligate", "consume", "returned"}}`` with
+        reserve (net of returns) ⊇ obligate ⊇ consume, so b = reserve −
+        obligate, c = obligate − consume, d = consume, and ``returned`` is the
+        signed Σ of คืนจอง (negative).
+        """
+        buckets = {}
+        for grp in self.env["budget.move.line"].read_group(
+            self._usage_base_domain() + list(domain),
+            ["balance"],
+            list(groupby) + ["move_type", "is_return"],
+            lazy=False,
+        ):
+            sums = buckets.setdefault(
+                self._usage_group_key(grp, groupby),
+                dict.fromkeys(("reserve", "obligate", "consume", "returned"), 0.0),
+            )
+            balance = grp.get("balance") or 0.0
+            if grp.get("move_type") in ("reserve", "obligate", "consume"):
+                sums[grp["move_type"]] += balance
+            if grp.get("is_return"):
+                sums["returned"] += balance
+        return {
+            key: {
+                "reserve": -(sums["reserve"] + sums["obligate"] + sums["consume"]),
+                "obligate": -(sums["obligate"] + sums["consume"]),
+                "consume": -sums["consume"],
+                # คืนจอง posts reserve +X; the figure stays signed negative.
+                "returned": -sums["returned"],
+            }
+            for key, sums in buckets.items()
+        }
+
+    def _usage_commitment_ids(self, domain):
+        """Ids of the reservations with ledger usage matching ``domain``."""
+        groups = self.env["budget.move.line"].read_group(
+            self._usage_base_domain() + list(domain),
+            ["commitment_id"],
+            ["commitment_id"],
+        )
+        return [grp["commitment_id"][0] for grp in groups if grp.get("commitment_id")]
+
+    # ------------------------------------------------------------------
     # helpers
     # ------------------------------------------------------------------
     @staticmethod
@@ -1210,23 +1530,3 @@ class BudgetDashboard(models.AbstractModel):
     def _ancestor_ids(account):
         """ids along parent_path, root-first, including the account itself."""
         return [int(x) for x in (account.parent_path or "").strip("/").split("/") if x]
-
-    def _sum_by_account(self, model, domain, field):
-        result = {}
-        for grp in self.env[model].read_group(domain, [field], ["account_id"]):
-            account = grp.get("account_id")
-            if account:
-                result[account[0]] = grp.get(field) or 0.0
-        return result
-
-    def _sum_by_account_and_type(self, model, domain, field):
-        out = {}
-        groups = self.env[model].read_group(
-            domain, [field], ["account_id", "move_type"], lazy=False
-        )
-        for grp in groups:
-            account = grp.get("account_id")
-            move_type = grp.get("move_type")
-            if account and move_type:
-                out.setdefault(move_type, {})[account[0]] = grp.get(field) or 0.0
-        return out

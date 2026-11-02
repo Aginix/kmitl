@@ -1,5 +1,5 @@
-# -*- coding: utf-8 -*-
 """P2 — routing engine: stages, dispositions, lifecycle, snapshot immutability."""
+
 from odoo.exceptions import UserError
 from odoo.tests.common import tagged
 
@@ -12,15 +12,20 @@ class TestP2Engine(SarabunCommon):
     def test_acknowledge_step_never_blocks_completion(self):
         """An acknowledge step in a stage doesn't stop the gating step completing it."""
         doc = self._make_doc()
-        self._add_step(doc, order=10, verb="endorse", user=self.user_a)
-        ack = self._add_step(doc, order=10, verb="acknowledge", target_mode="person",
-                             user=self.user_b)
+        self._add_step(doc, order=10, verb="sign_approve", user=self.user_a)
+        ack = self._add_step(
+            doc, order=10, verb="acknowledge", target_mode="person", user=self.user_b
+        )
         doc.action_send()
         self.assertTrue(doc.is_circulating)
-        self.assertEqual(self.env["sarabun.routing.step"].browse(ack.id).state, "active")
-        endorse = doc.routing_step_ids.filtered(lambda s: s.verb == self._verb("endorse"))
+        self.assertEqual(
+            self.env["sarabun.routing.step"].browse(ack.id).state, "active"
+        )
+        sign = doc.routing_step_ids.filtered(
+            lambda s: s.verb == self._verb("sign_approve")
+        )
         with self.mute_pdf():
-            self._act(endorse, "complete", self.user_a)
+            self._act(sign, "complete", self.user_a)
         self.assertTrue(doc.is_completed)  # acknowledge still pending, did not block
 
     def test_sequential_stages_advance_in_order(self):
@@ -40,8 +45,13 @@ class TestP2Engine(SarabunCommon):
     def test_first_to_act_wins_on_multi_holder(self):
         """A multi-holder Position step is settled by the first holder to act."""
         doc = self._make_doc()
-        step = self._add_step(doc, order=10, verb="sign_approve",
-                              target_mode="position", position=self.pos_multi)
+        step = self._add_step(
+            doc,
+            order=10,
+            verb="sign_approve",
+            target_mode="position",
+            position=self.pos_multi,
+        )
         doc.action_send()
         self.assertEqual(step.actor_user_ids, self.user_a | self.user_b)
         with self.mute_pdf():
@@ -51,6 +61,24 @@ class TestP2Engine(SarabunCommon):
         # the other holder can no longer act — the step is settled
         with self.assertRaises(UserError):
             self._act(step, "complete", self.user_b)
+
+    def test_first_to_act_wins_on_parallel_stage(self):
+        """Two gating steps sharing an order: the first to complete passes the Stage,
+        the sibling is skipped and the next Stage activates."""
+        doc = self._make_doc()
+        s1 = self._add_step(doc, order=10, verb="endorse", user=self.user_a)
+        s2 = self._add_step(doc, order=10, verb="endorse", user=self.user_b)
+        s20 = self._add_step(doc, order=20, verb="sign_approve", user=self.user_b)
+        doc.action_send()
+        self._act(s1, "complete", self.user_a)
+        self.assertEqual(s2.state, "skipped")
+        self.assertEqual(s20.state, "active")
+        with self.assertRaises(UserError):
+            self._act(s2, "complete", self.user_b)
+        with self.mute_pdf():
+            self._act(s20, "complete", self.user_b)
+        self.assertTrue(doc.is_completed)
+        self.assertEqual(doc.routing_progress, 100.0)
 
     def test_one_reject_rejects_whole_document(self):
         """One reject in a co-approval stage rejects the document immediately."""
@@ -67,10 +95,18 @@ class TestP2Engine(SarabunCommon):
         """เกษียนสั่งการ completes this step and INSERTS the next one at order+1."""
         doc = self._make_doc()
         step = self._add_step(doc, order=10, verb="endorse", user=self.user_a)
+        self._add_step(doc, order=20, user=self.user_b)  # ออกเลข (ADR-0017)
         doc.action_send()
         before = len(doc.routing_step_ids)
-        self._act(step, "direct", self.user_a, note="มอบ ผอ. ดำเนินการ",
-                  verb=self._verb("sign_approve").id, target_mode="person", employee_id=self.emp_b.id)
+        self._act(
+            step,
+            "direct",
+            self.user_a,
+            note="มอบ ผอ. ดำเนินการ",
+            verb=self._verb("sign_approve").id,
+            target_mode="person",
+            employee_id=self.emp_b.id,
+        )
         self.assertEqual(step.state, "done")
         self.assertEqual(step.disposition, "direct")
         self.assertEqual(len(doc.routing_step_ids), before + 1)
@@ -86,12 +122,21 @@ class TestP2Engine(SarabunCommon):
         """มอบหมาย reassigns THIS step to another actor; the step stays active."""
         doc = self._make_doc()
         step = self._add_step(doc, order=10, verb="endorse", user=self.user_a)
+        self._add_step(doc, order=20, user=self.user_b)  # ออกเลข (ADR-0017)
         doc.action_send()
         before = len(doc.routing_step_ids)
-        self._act(step, "delegate", self.user_a, note="มอบ ก ดำเนินการแทน",
-                  target_mode="person", employee_id=self.emp_b.id)
-        self.assertEqual(len(doc.routing_step_ids), before)  # no new step (unlike direct)
-        self.assertEqual(step.state, "active")               # still active (unlike direct)
+        self._act(
+            step,
+            "delegate",
+            self.user_a,
+            note="มอบ ก ดำเนินการแทน",
+            target_mode="person",
+            employee_id=self.emp_b.id,
+        )
+        self.assertEqual(
+            len(doc.routing_step_ids), before
+        )  # no new step (unlike direct)
+        self.assertEqual(step.state, "active")  # still active (unlike direct)
         self.assertIn(self.user_b, step.actor_user_ids)
         self.assertNotIn(self.user_a, step.actor_user_ids)
 
@@ -99,17 +144,27 @@ class TestP2Engine(SarabunCommon):
         """Delegate ≠ Direct: one reassigns in place, the other inserts a step."""
         doc_d = self._make_doc()
         s_d = self._add_step(doc_d, order=10, verb="endorse", user=self.user_a)
+        self._add_step(doc_d, order=20, user=self.user_b)  # ออกเลข (ADR-0017)
         doc_d.action_send()
         n0 = len(doc_d.routing_step_ids)
-        self._act(s_d, "delegate", self.user_a, target_mode="person", employee_id=self.emp_b.id)
+        self._act(
+            s_d,
+            "delegate",
+            self.user_a,
+            target_mode="person",
+            employee_id=self.emp_b.id,
+        )
         self.assertEqual(len(doc_d.routing_step_ids), n0)
         self.assertEqual(s_d.state, "active")
 
         doc_i = self._make_doc()
         s_i = self._add_step(doc_i, order=10, verb="endorse", user=self.user_a)
+        self._add_step(doc_i, order=20, user=self.user_b)  # ออกเลข (ADR-0017)
         doc_i.action_send()
         m0 = len(doc_i.routing_step_ids)
-        self._act(s_i, "direct", self.user_a, target_mode="person", employee_id=self.emp_b.id)
+        self._act(
+            s_i, "direct", self.user_a, target_mode="person", employee_id=self.emp_b.id
+        )
         self.assertEqual(len(doc_i.routing_step_ids), m0 + 1)
         self.assertEqual(s_i.state, "done")
 
@@ -118,10 +173,12 @@ class TestP2Engine(SarabunCommon):
         """ตีกลับ (sender_restart) sends the doc back and bumps the attempt."""
         doc = self._make_doc()
         step = self._add_step(doc, order=10, verb="endorse", user=self.user_a)
+        self._add_step(doc, order=20, user=self.user_b)  # ออกเลข (ADR-0017)
         doc.action_send()
         self.assertEqual(doc.attempt_seq, 1)
-        self._act(step, "return", self.user_a, note="แก้เนื้อหา",
-                  destination="sender_restart")
+        self._act(
+            step, "return", self.user_a, note="แก้เนื้อหา", destination="sender_restart"
+        )
         self.assertTrue(doc.is_returned)
         self.assertEqual(doc.attempt_seq, 2)
 
@@ -134,8 +191,14 @@ class TestP2Engine(SarabunCommon):
         s20 = self._add_step(doc, order=20, verb="sign_approve", user=self.user_b)
         doc.action_send()
         self._act(s10, "complete", self.user_a)  # s20 now active
-        self._act(s20, "return", self.user_b, note="กลับไปแก้ที่ขั้นแรก",
-                  destination="resume_step", resume_step_id=s10.id)
+        self._act(
+            s20,
+            "return",
+            self.user_b,
+            note="กลับไปแก้ที่ขั้นแรก",
+            destination="resume_step",
+            resume_step_id=s10.id,
+        )
         self.assertTrue(doc.is_returned)
         self.assertEqual(doc.attempt_seq, 2)
         # original step kept as history, never overwritten
@@ -144,7 +207,9 @@ class TestP2Engine(SarabunCommon):
         self.assertIn(s10, doc.archived_step_ids)
         # a fresh waiting chain is recreated from the resume order onward
         self.assertTrue(
-            doc.routing_step_ids.filtered(lambda s: s.order == 10 and s.state == "waiting")
+            doc.routing_step_ids.filtered(
+                lambda s: s.order == 10 and s.state == "waiting"
+            )
         )
 
     def test_rejected_then_duplicate_to_draft(self):
@@ -194,7 +259,7 @@ class TestP2Engine(SarabunCommon):
         doc.action_pull_back(reason="แก้ไขเนื้อหาก่อนส่งใหม่")
         self.assertTrue(doc.is_returned)
         self.assertFalse(doc.register_number_id)  # still unnumbered
-        self.assertEqual(doc.attempt_seq, attempt + 1)              # prior chain archived
+        self.assertEqual(doc.attempt_seq, attempt + 1)  # prior chain archived
         # a fresh waiting chain exists to re-send on the same number
         self.assertTrue(doc.routing_step_ids.filtered(lambda s: s.state == "waiting"))
 
@@ -203,27 +268,46 @@ class TestP2Engine(SarabunCommon):
         NOT re-seed from the route template and wipe runtime edits. A เกษียนสั่งการ
         (direct) insertion made mid-flow survives the pull-back, even though the หนังสือ
         was seeded from a template that never had that step."""
-        template = self.Template.create({
-            "name": "เส้นทางทดสอบ",
-            "line_ids": [(0, 0, {
-                "order": 10, "verb": self._verb("sign_approve").id,
-                "target_mode": "person", "employee_id": self.emp_a.id,
-            })],
-        })
+        template = self.Template.create(
+            {
+                "name": "เส้นทางทดสอบ",
+                "line_ids": [
+                    (
+                        0,
+                        0,
+                        {
+                            "order": 10,
+                            "verb": self._verb("sign_approve").id,
+                            "target_mode": "person",
+                            "employee_id": self.emp_a.id,
+                        },
+                    )
+                ],
+            }
+        )
         doc = self._make_doc(route_template_id=template.id)
         doc.action_send()  # seeds originator + the single template step, activates it
         active = self._active_step(doc)
         # เกษียนสั่งการ: insert a follow-on (gating) step targeting user_b that the
         # template lacks — gating so the หนังสือ keeps circulating (a non-gating stage
         # would pass immediately and complete the doc).
-        self._act(active, "direct", self.user_a, target_mode="person",
-                  employee_id=self.emp_b.id, verb=self._verb("sign_approve").id)
+        self._act(
+            active,
+            "direct",
+            self.user_a,
+            target_mode="person",
+            employee_id=self.emp_b.id,
+            verb=self._verb("sign_approve").id,
+        )
         before = doc.routing_step_ids.sorted("order")
         self.assertEqual(len(before), 3)  # originator + template step + direct
-        self.assertTrue(before.filtered(
-            lambda s: s.created_by_disposition == "direct"
-            and s.employee_id == self.emp_b
-        ))
+        self.assertTrue(
+            before.filtered(
+                lambda s: (
+                    s.created_by_disposition == "direct" and s.employee_id == self.emp_b
+                )
+            )
+        )
 
         doc.action_pull_back(reason="แก้ไขก่อนส่งใหม่")
 
@@ -237,6 +321,56 @@ class TestP2Engine(SarabunCommon):
         self.assertEqual(len(direct), 1)
         self.assertEqual(direct.employee_id, self.emp_b)
         self.assertEqual(direct.verb, self._verb("sign_approve"))
+
+    def test_return_sender_restart_keeps_route_verbatim(self):
+        """ตีกลับ → sender_restart recreates the SAME เส้นทาง (like ดึงกลับ) — it must NOT
+        re-seed from the route template, or the sender has to rebuild the route."""
+        template = self.Template.create(
+            {
+                "name": "เส้นทางทดสอบ",
+                "line_ids": [
+                    (
+                        0,
+                        0,
+                        {
+                            "order": 10,
+                            "verb": self._verb("sign_approve").id,
+                            "target_mode": "person",
+                            "employee_id": self.emp_a.id,
+                        },
+                    )
+                ],
+            }
+        )
+        doc = self._make_doc(route_template_id=template.id)
+        doc.action_send()
+        self._act(
+            self._active_step(doc),
+            "direct",
+            self.user_a,
+            target_mode="person",
+            employee_id=self.emp_b.id,
+            verb=self._verb("sign_approve").id,
+        )
+        before = doc.routing_step_ids
+        self.assertEqual(len(before), 3)  # originator + template step + direct
+
+        self._act(
+            self._active_step(doc),
+            "return",
+            self.user_b,
+            note="แก้เนื้อหา",
+            destination="sender_restart",
+        )
+
+        self.assertTrue(doc.is_returned)
+        self.assertEqual(doc.attempt_seq, 2)
+        self.assertFalse(any(before.mapped("active")))  # prior attempt archived
+        after = doc.routing_step_ids
+        self.assertEqual(len(after), 3)
+        self.assertTrue(all(s.state == "waiting" for s in after))
+        direct = after.filtered(lambda s: s.created_by_disposition == "direct")
+        self.assertEqual(direct.employee_id, self.emp_b)
 
     def test_pull_back_by_the_sender_themselves(self):
         """ดึงกลับ run by the SENDER (not as superuser): archiving the chain must not
@@ -263,8 +397,13 @@ class TestP2Engine(SarabunCommon):
     def test_snapshot_holders_are_immutable(self):
         """Holders snapshotted at activation are not rewritten by later org changes."""
         doc = self._make_doc()
-        step = self._add_step(doc, order=10, verb="sign_approve",
-                              target_mode="position", position=self.pos)
+        step = self._add_step(
+            doc,
+            order=10,
+            verb="sign_approve",
+            target_mode="position",
+            position=self.pos,
+        )
         doc.action_send()
         self.assertEqual(step.actor_user_ids, self.user_a)
         self.pos.holder_ids = [(4, self.emp_b.id)]  # org change after activation
@@ -273,7 +412,8 @@ class TestP2Engine(SarabunCommon):
     def test_send_requires_a_gating_step(self):
         """A document with no gating step cannot be sent."""
         doc = self._make_doc()
-        self._add_step(doc, order=10, verb="acknowledge", target_mode="person",
-                       user=self.user_a)
+        self._add_step(
+            doc, order=10, verb="acknowledge", target_mode="person", user=self.user_a
+        )
         with self.assertRaises(UserError):
             doc.action_send()

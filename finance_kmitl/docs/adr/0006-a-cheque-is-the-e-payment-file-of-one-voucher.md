@@ -1,5 +1,9 @@
 # A cheque is the e-payment file of one voucher
 
+> **Superseded in part (station model).** A disbursement request that stays "`paid`" after a cheque
+> dies is now a request whose settlement stage walks back from `settled` to `billed` with
+> the voucher (`disbursement_finance_kmitl`).
+
 A voucher paid by cheque gets a record of its own — `cheque.register` — sitting between
 **ยืนยันพร้อมส่งธนาคาร** and **ยืนยันจ่ายสำเร็จ**, in the place an **ไฟล์ e-Payment**
 occupies for a transfer. It is bound one-to-one to the voucher and states nothing the

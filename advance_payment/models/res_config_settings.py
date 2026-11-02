@@ -4,13 +4,6 @@ from odoo import fields, models
 class ResConfigSettings(models.TransientModel):
     _inherit = "res.config.settings"
 
-    advance_payment_allow_manual_reference = fields.Boolean(
-        string="Allow Manual Reference",
-        config_parameter="advance_payment.allow_manual_reference",
-        help="เมื่อเปิด ผู้ใช้สามารถระบุเอกสารอ้างอิง (Reference) เองได้ตอนสร้างสัญญา "
-        "หากปิด จะระบุได้เฉพาะจากระบบเท่านั้น (เช่น สร้างจากใบขอซื้อ)",
-    )
-
     advance_payment_strict_own_only = fields.Boolean(
         string="สร้างสัญญาของตนเองเท่านั้น",
         config_parameter="advance_payment.strict_own_only",
@@ -30,13 +23,28 @@ class ResConfigSettings(models.TransientModel):
             (
                 "groups_id",
                 "in",
-                self.env.ref(
-                    "advance_payment.group_advance_payment_loan_officer"
-                ).ids,
+                self.env.ref("advance_payment.group_advance_payment_loan_officer").ids,
             )
         ],
         help="ผู้ที่จะถูกตั้งเป็นเจ้าหน้าที่งานเงินยืมของสัญญาใหม่ทุกฉบับ "
         "หากไม่ระบุ ระบบจะเลือกให้เองเมื่อมีเจ้าหน้าที่เพียงคนเดียว",
+    )
+
+    # The standing director for director_id — one institution-wide director,
+    # defaulted like the approver (ADR-0027).
+    advance_payment_default_director_id = fields.Many2one(
+        comodel_name="res.users",
+        string="ผู้อำนวยการสำนักงานคลัง",
+        config_parameter="advance_payment.default_director_id",
+        domain=lambda self: [
+            (
+                "groups_id",
+                "in",
+                self.env.ref("advance_payment.group_advance_payment_director").ids,
+            )
+        ],
+        help="ผู้ที่จะถูกตั้งเป็นผู้อำนวยการสำนักงานคลังของสัญญาใหม่ทุกฉบับ และได้รับงานให้พิจารณา "
+        "เมื่อเจ้าหน้าที่ตรวจสอบคำขอเรียบร้อยแล้ว หากไม่ระบุ ระบบจะใช้ผู้ดูแลระบบ",
     )
 
     # The standing approver for approver_id. Unlike the loan officer there is
@@ -52,13 +60,11 @@ class ResConfigSettings(models.TransientModel):
             (
                 "groups_id",
                 "in",
-                self.env.ref(
-                    "advance_payment.group_advance_payment_loan_approver"
-                ).ids,
+                self.env.ref("advance_payment.group_advance_payment_loan_approver").ids,
             )
         ],
         help="ผู้ที่จะถูกตั้งเป็นผู้อนุมัติของสัญญาใหม่ทุกฉบับ และได้รับงานให้อนุมัติ "
-        "เมื่อเจ้าหน้าที่ตรวจสอบคำขอเรียบร้อยแล้ว หากไม่ระบุ ระบบจะใช้ผู้ดูแลระบบ",
+        "เมื่อผู้อำนวยการพิจารณาเรียบร้อยแล้ว หากไม่ระบุ ระบบจะใช้ผู้ดูแลระบบ",
     )
 
     # A rich-text Html field cannot use config_parameter= — res.config.settings

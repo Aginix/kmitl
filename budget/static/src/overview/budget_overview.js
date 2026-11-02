@@ -338,7 +338,7 @@ export class BudgetOverview extends Component {
     }
 
     // Drill a dimension-section row (โครงการ/กิจกรรม, แผนจัดซื้อจัดจ้าง, …) into
-    // its commitment lines, scoped to the active filters.
+    // its reservations' budget ledger lines, scoped to the active filters.
     openSectionItem(section, item, ev) {
         if (ev) {
             ev.stopPropagation();
@@ -348,8 +348,8 @@ export class BudgetOverview extends Component {
         }
         const domain = [
             [section.drill_dim, "=", item.id],
-            ["state", "=", "posted"],
-            ["commitment_id.state", "in", ["reserved", "partial", "done"]],
+            ["parent_state", "=", "posted"],
+            ["move_type", "in", ["reserve", "obligate", "consume"]],
             ["account_fiscal_year_id", "=", this.state.fiscalYearId],
         ];
         if (this.state.sourceId) {
@@ -362,7 +362,7 @@ export class BudgetOverview extends Component {
         this.actionService.doAction({
             type: "ir.actions.act_window",
             name: `${item.code || ""} ${item.name || ""}`.trim(),
-            res_model: "budget.commitment.line",
+            res_model: "budget.move.line",
             views: [
                 [false, "list"],
                 [false, "form"],

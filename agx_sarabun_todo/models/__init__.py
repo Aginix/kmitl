@@ -2,3 +2,4 @@ from . import mail_activity
 from . import res_users
 from . import sarabun_document
 from . import sarabun_routing_step
+from . import sarabun_verb

@@ -1,6 +1,6 @@
 # A loan may select its own budget commitment, not only inherit one
 
-Status: accepted (2026-09) — supersedes ADR-0008's read-only-snapshot decision
+Status: superseded by ADR-0025 (2026-10) — the loan no longer carries a commitment; had superseded ADR-0008's read-only-snapshot decision
 
 ## Context & Decision
 

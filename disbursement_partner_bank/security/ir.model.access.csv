@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_disbursement_partner_bank_wizard_user,disbursement.partner.bank.wizard.user,model_disbursement_partner_bank_wizard,disbursement.group_disbursement_user,1,1,1,1
+access_disbursement_partner_bank_wizard_line_user,disbursement.partner.bank.wizard.line.user,model_disbursement_partner_bank_wizard_line,disbursement.group_disbursement_user,1,1,1,1

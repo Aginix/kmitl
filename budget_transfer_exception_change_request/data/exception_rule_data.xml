@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <record
+        id="budget_transfer_excep_outstanding_change_requests"
+        model="exception.rule"
+    >
+        <field name="name">ยังมีข้อแก้ไขที่ค้างอยู่</field>
+        <field
+            name="description"
+        >ยืนยันตรวจสอบได้เมื่อข้อแก้ไขของใบโอนปิดครบแล้ว (ข้อแก้ไขที่ยังเปิดอยู่หรือตอบแล้วถือว่ายังค้างอยู่)</field>
+        <field name="sequence">20</field>
+        <field name="model">budget.transfer</field>
+        <field name="exception_type">by_method</field>
+        <field name="method">budget_transfer_check_outstanding_change_requests</field>
+        <field name="is_blocking" eval="True" />
+        <field name="active" eval="True" />
+    </record>
+</odoo>

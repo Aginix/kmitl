@@ -13,14 +13,15 @@ class DisbursementRequestSignature(models.Model):
     ADR-0002; the field names deliberately mirror ``sarabun.routing.step`` so the
     two signature blocks on the same page speak one vocabulary.
 
-    Rows are written only by the request's ``_stamp_signature`` under ``sudo``,
-    and superseded rows are archived rather than deleted (ADR-0002).
+    Rows are written only by the request's ``_stamp_signature`` under ``sudo``.
+    A re-stamp archives the previous row of its step, so there is one active row
+    per step; superseded rows are archived rather than deleted (ADR-0002).
     """
 
     _name = "disbursement.request.signature"
     _description = "Disbursement Request Signature"
-    # The workflow is forward-only, so chronological order is also the canonical
-    # role order — no sequence field is needed.
+    # Plain chronology; a re-stamp archives the previous row of its step, so no
+    # sequence field is needed.
     _order = "signed_date, id"
 
     request_id = fields.Many2one(
@@ -59,7 +60,7 @@ class DisbursementRequestSignature(models.Model):
         copy=False,
     )
 
-    # Superseded rows (a rejected approval re-run, a return to verification) are
+    # Superseded rows (a step stamped again, a request reset to draft) are
     # archived so the PDF prints only the current round while the history stays.
     active = fields.Boolean(default=True)
 

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- The หนังสือ's LIVE body (agx_sarabun ADR-0015): rendered between the
+         editable เนื้อหา and the endorsement block every time the document is
+         rendered, with the request as ``o``.
+
+         Every authoritative figure lives here and nowhere else. The seeded
+         ``content`` is owned by the drafter from the moment the letter is
+         created, so a request revised after a ตีกลับ and re-sent on the SAME
+         หนังสือ (agx_sarabun action_send accepts draft|returned) would
+         otherwise go out for signature carrying the superseded amount. -->
+    <template id="report_budget_support_request_body">
+        <!-- A borderless หัวข้อ : ค่า list, the way an official บันทึกข้อความ
+             sets out details — no ruled cells for wkhtmltopdf to drop
+             hairlines from. The ส่วนงาน prints its full hierarchy
+             ("[code] complete name"). -->
+        <t t-set="rows" t-value="[
+            ('เลขที่คำขอ', o.name or '-'),
+            ('ส่วนงานผู้ขอรับการสนับสนุน', o.department_analytic_id.display_name or '-'),
+            ('ปีงบประมาณ', o.account_fiscal_year_id.name or '-'),
+        ]"/>
+        <!-- Inline styles, not Bootstrap utilities: the หนังสือ must print the
+             same even where the report asset bundle is not loaded. -->
+        <div style="margin:12px 0 18px 0">
+            <div style="font-weight:bold;margin-bottom:4px">รายละเอียดคำขอ</div>
+            <table style="width:100%;border-collapse:collapse">
+                <tr t-foreach="rows" t-as="row">
+                    <td style="width:38%;vertical-align:top;padding:3px 0"><span t-out="row[0]"/></td>
+                    <td style="width:12px;vertical-align:top;padding:3px 0">:</td>
+                    <td style="vertical-align:top;padding:3px 0"><span t-out="row[1]"/></td>
+                </tr>
+                <tr style="font-weight:bold">
+                    <td style="vertical-align:top;padding:3px 0">จำนวนเงินที่ขอรับการสนับสนุน</td>
+                    <!-- Plain thousands format, not the monetary widget: the
+                         widget prints the ฿ symbol, which reads as a duplicate
+                         next to the Thai คำว่า บาท the official letter uses. -->
+                    <td style="vertical-align:top;padding:3px 0">:</td>
+                    <td style="vertical-align:top;padding:3px 0"><span t-out="'{:,.2f}'.format(o.amount_requested)"/> บาท</td>
+                </tr>
+            </table>
+        </div>
+    </template>
+
+</odoo>

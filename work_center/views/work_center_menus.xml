@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- Configuration lives under Settings: the per-area overview menus belong
+         to the bridge modules, which know where their work area is at home. -->
+    <menuitem
+        id="menu_work_center_root"
+        name="Stations"
+        parent="base.menu_administration"
+        sequence="90"
+        groups="work_center.group_work_center_manager"
+    />
+    <menuitem
+        id="menu_work_center_area"
+        parent="menu_work_center_root"
+        action="work_center_area_action"
+        sequence="10"
+    />
+    <menuitem
+        id="menu_work_center"
+        parent="menu_work_center_root"
+        action="work_center_action"
+        sequence="20"
+    />
+    <menuitem
+        id="menu_work_center_route"
+        parent="menu_work_center_root"
+        action="work_center_route_action"
+        sequence="25"
+    />
+    <menuitem
+        id="menu_work_center_rule"
+        parent="menu_work_center_root"
+        action="work_center_rule_action"
+        sequence="30"
+    />
+    <menuitem
+        id="menu_work_center_counter"
+        parent="menu_work_center_root"
+        action="work_center_counter_action"
+        sequence="40"
+    />
+    <menuitem
+        id="menu_work_center_act"
+        parent="menu_work_center_root"
+        action="work_center_act_action"
+        sequence="50"
+    />
+    <menuitem
+        id="menu_work_center_visit"
+        parent="menu_work_center_root"
+        action="work_center_visit_action"
+        sequence="60"
+    />
+
+</odoo>

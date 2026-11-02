@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="group_all_ou_kmitl_project" model="res.groups">
+        <field name="name">Access all OUs' KMITL project</field>
+        <field name="category_id" ref="operating_unit.module_operating_units" />
+    </record>
+
+    <!-- Keep the owners ORed in, as widened by kmitl_project_coordinator, so
+         owners always reach their own projects from any OU. -->
+    <function model="ir.rule" name="write">
+        <value eval="[ref('kmitl_project.kmitl_project_operating_unit_rule')]" />
+        <value
+            eval="{'domain_force': &quot;['|','|','|','|','|',(1, '=', 1) if user.has_group('kmitl_project_operating_unit_access_all.group_all_ou_kmitl_project') else (0, '=', 1),('operating_unit_id','=',False),('operating_unit_id','in', user.operating_unit_ids.ids),('manager_id.user_id','=',user.id),('coordinator_ids','in',user.id),('creating_user_id','=',user.id)]&quot;}"
+        />
+    </function>
+
+</odoo>

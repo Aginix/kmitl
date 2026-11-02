@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- The fiscal year is chosen freely on the request; under budget control
+         it must still be the year of the commitment it consumes. Blocking,
+         checked on submit. -->
+    <record id="excep_disbursement_fiscal_year_commitment" model="exception.rule">
+        <field name="name">ปีงบประมาณของใบขอเบิกไม่ตรงกับใบจองงบประมาณ</field>
+        <field name="description">ปีงบประมาณที่เลือกบนใบขอเบิกไม่ตรงกับปีงบประมาณของใบจองงบประมาณที่อ้างอิง</field>
+        <field name="sequence">20</field>
+        <field name="model">disbursement.request</field>
+        <field name="exception_type">by_py_code</field>
+        <field name="code">
+commitment = self.budget_commitment_id
+if commitment and commitment.account_fiscal_year_id != self.account_fiscal_year_id:
+    failed = True
+        </field>
+        <field name="is_blocking" eval="True" />
+        <field name="active" eval="True" />
+    </record>
+</odoo>

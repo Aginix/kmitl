@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <!-- Form: return / re-verification buttons -->
+    <!-- Form: send-back / resubmit buttons -->
     <record id="view_disbursement_request_form_return" model="ir.ui.view">
         <field name="name">disbursement.request.form.return</field>
         <field name="model">disbursement.request</field>
@@ -12,8 +12,8 @@
                     type="object"
                     string="Return"
                     class="btn-warning"
-                    groups="disbursement.group_disbursement_officer"
-                    attrs="{'invisible': ['|', ('state', '!=', 'signed'), ('returned_to_source', '=', True)]}"
+                    groups="disbursement.group_disbursement_user"
+                    attrs="{'invisible': ['|', ('state', 'not in', ('signed', 'in_progress')), ('returned_to_source', '=', True)]}"
                 />
                 <button
                     name="action_resubmit_verification"
@@ -21,14 +21,6 @@
                     string="Resubmit to Verification"
                     class="oe_highlight"
                     attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('returned_for_edit', '=', False)]}"
-                />
-                <button
-                    name="action_return_verification_open_wizard"
-                    type="object"
-                    string="Return to Verification"
-                    class="btn-warning"
-                    groups="disbursement.group_disbursement_manager"
-                    attrs="{'invisible': [('state', '!=', 'verified')]}"
                 />
             </xpath>
             <xpath expr="//header/field[@name='state']" position="after">
@@ -42,7 +34,7 @@
         </field>
     </record>
 
-    <!-- Search: returned-to-source / returned-to-verification filters -->
+    <!-- Search: returned-to-source filter -->
     <record id="view_disbursement_request_search_return" model="ir.ui.view">
         <field name="name">disbursement.request.search.return</field>
         <field name="model">disbursement.request</field>
@@ -54,11 +46,6 @@
                     name="returned_to_source"
                     string="Returned to Source"
                     domain="[('returned_to_source', '=', True)]"
-                />
-                <filter
-                    name="returned_to_verification"
-                    string="Returned to Verification"
-                    domain="[('returned_to_verification', '=', True)]"
                 />
             </xpath>
         </field>

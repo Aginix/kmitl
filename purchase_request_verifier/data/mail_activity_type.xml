@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo noupdate="1">
+    <!-- Execution Todo: the Designated Verifier checks the พ.1 while it sits at to_verify -->
+    <record id="mail_activity_pr_verify" model="mail.activity.type">
+        <field name="name">ยืนยันตรวจสอบ แบบขอให้จัดหา (พ.1)</field>
+        <field name="summary">ตรวจสอบแบบขอให้จัดหา (พ.1)</field>
+        <field name="todo_category">execution</field>
+        <field name="res_model">purchase.request</field>
+        <field name="icon">fa-check-square-o</field>
+        <field name="delay_count">0</field>
+    </record>
+
+    <!-- Execution Todo: the requester fixes and resubmits a พ.1 the verifier returned -->
+    <record id="mail_activity_pr_returned" model="mail.activity.type">
+        <field name="name">แก้ไขแบบขอให้จัดหา (พ.1) ที่ถูกตีกลับ</field>
+        <field name="summary">แก้ไขและส่งคำขอ (พ.1) ใหม่</field>
+        <field name="todo_category">execution</field>
+        <field name="res_model">purchase.request</field>
+        <field name="icon">fa-undo</field>
+        <field name="delay_count">0</field>
+    </record>
+</odoo>

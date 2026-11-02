@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Users who can read every operating unit edit the Beneficiary Units as
+         tags; everyone else keeps the read-only names (the tags would make the
+         web client read units the user does not hold → AccessError). -->
+    <record id="view_budget_commitment_form_access_all" model="ir.ui.view">
+        <field name="name">budget.commitment.form.ou.access.all</field>
+        <field name="model">budget.commitment</field>
+        <field name="inherit_id" ref="budget_operating_unit.view_budget_commitment_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='beneficiary_operating_unit_names']" position="replace">
+                <t groups="!operating_unit_access_all.group_all_operating_unit">
+                    <field
+                        name="beneficiary_operating_unit_names"
+                        groups="operating_unit.group_multi_operating_unit"
+                    />
+                </t>
+                <field
+                    name="beneficiary_operating_unit_ids"
+                    widget="many2many_tags"
+                    options="{'no_create': True}"
+                    groups="operating_unit_access_all.group_all_operating_unit"
+                />
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

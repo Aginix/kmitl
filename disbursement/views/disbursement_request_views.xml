@@ -5,25 +5,38 @@
         <field name="name">disbursement.request.tree</field>
         <field name="model">disbursement.request</field>
         <field name="arch" type="xml">
-            <tree string="Disbursement Requests">
-                <field name="name" />
-                <field name="partner_type" optional="hide" />
-                <field name="partner_id" />
-                <field name="user_id" optional="show" />
-                <field name="date" />
-                <field name="account_fiscal_year_id" options="{'no_open': True}" />
-                <field name="ref" />
-                <field name="amount_total" />
-                <field name="display_status" widget="badge"
-                    decoration-info="display_status == 'draft'"
-                    decoration-warning="display_status in ('submitted', 'signed', 'bill_draft', 'payment_draft')"
-                    decoration-primary="display_status in ('verified', 'bill_posted')"
-                    decoration-success="display_status in ('approved', 'payment_posted', 'done')"
-                    decoration-danger="display_status == 'cancel'" />
-                <field name="state" invisible="1" />
-                <field name="pipeline_status" invisible="1" />
-                <field name="main_exception_id" />
-                <field name="budget_commitment_id" optional="hide" />
+            <tree string="Disbursement Requests" decoration-muted="state == 'cancel'">
+                <field name="name" decoration-bf="1" />
+                <field name="memo_number" optional="hide" />
+                <field name="partner_type_id" optional="show" />
+                <field name="payee_display" />
+                <field name="user_id" widget="many2one_avatar_user" optional="show" />
+                <field name="date" optional="hide" />
+                <field name="sign_date" optional="show" />
+                <field
+                    name="account_fiscal_year_id"
+                    options="{'no_open': True}"
+                    optional="show"
+                />
+                <field name="amount_total" sum="Total" />
+                <field
+                    name="state"
+                    widget="badge"
+                    decoration-info="state == 'draft'"
+                    decoration-warning="state in ('submitted', 'signed')"
+                    decoration-primary="state == 'in_progress'"
+                    decoration-success="state == 'done'"
+                    decoration-danger="state == 'cancel'"
+                />
+                <field name="settlement_stage" invisible="1" />
+                <!-- The first of exception_ids: what the requester must fix
+                     before the request can go on. -->
+                <field
+                    name="main_exception_id"
+                    string="Error"
+                    decoration-danger="1"
+                    optional="show"
+                />
                 <field name="department_analytic_id" optional="show" />
                 <field name="source_analytic_id" optional="show" />
             </tree>
@@ -37,169 +50,350 @@
         <field name="arch" type="xml">
             <form string="Disbursement Request">
                 <header>
-                    <button name="action_submit" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}" />
-                    <button name="action_sign" string="Sign" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'submitted')]}" groups="disbursement.group_disbursement_head" />
-                    <button name="action_validate" string="Validate" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'signed')]}" confirm="Are you sure you want to validate this request?" groups="disbursement.group_disbursement_officer" />
-                    <button name="action_approve_finance" string="Approve (Finance Director)" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'verified'), ('approval_state', '!=', 'pending_finance')]}" groups="disbursement.group_disbursement_finance_director" />
-                    <button name="action_approve" string="Approve (Rector Delegate)" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'verified'), ('approval_state', '!=', 'pending_rector')]}" confirm="Are you sure you want to approve? This will obligate and consume the budget." groups="disbursement.group_disbursement_rector_delegate" />
-                    <button name="action_open_reject_wizard" string="Reject" type="object" attrs="{'invisible': [('approval_state', '!=', 'pending_finance')]}" groups="disbursement.group_disbursement_finance_director" />
-                    <button name="action_open_reject_wizard" string="Reject" type="object" attrs="{'invisible': [('approval_state', '!=', 'pending_rector')]}" groups="disbursement.group_disbursement_rector_delegate" />
-                    <button name="action_request_approval" string="Request Approval Again" type="object" class="oe_highlight" attrs="{'invisible': [('approval_state', '!=', 'rejected')]}" groups="disbursement.group_disbursement_officer" />
-                    <button name="action_return_leftover_budget" string="ส่งคืนเงินเหลือจ่าย" type="object" attrs="{'invisible': ['|', ('budget_consumed_amount', '&lt;=', 0), ('budget_available_to_obligate', '&lt;=', 0)]}" groups="disbursement.group_disbursement_manager" />
-                    <field name="budget_available_to_obligate" invisible="1"/>
-                    <button name="action_draft" string="Reset to draft" type="object" class="btn btn-secondary" attrs="{'invisible': [('state', 'not in', ('submitted', 'signed', 'cancel'))]}" groups="disbursement.group_disbursement_manager" />
-                    <button name="action_cancel" string="Cancel" type="object" attrs="{'invisible': ['|', ('state', 'in', ('draft', 'cancel')), ('pipeline_status', 'in', ('bill_posted', 'payment_draft', 'payment_posted', 'done'))]}" groups="disbursement.group_disbursement_officer" />
-                    <field name="state" invisible="1"/>
-                    <field name="pipeline_status" invisible="1"/>
-                    <field name="display_status" widget="statusbar" statusbar_visible="draft,submitted,signed,verified,approved,bill_draft,bill_posted,payment_draft,payment_posted,done"/>
-                    <!-- Two-approver sub-status, shown only during the approval window -->
-                    <field name="approval_state" widget="statusbar" statusbar_visible="pending_finance,pending_rector" attrs="{'invisible': [('state', '!=', 'verified')]}"/>
+                    <button
+                        name="action_submit"
+                        string="Submit"
+                        type="object"
+                        class="oe_highlight"
+                        attrs="{'invisible': [('state', '!=', 'draft')]}"
+                    />
+                    <button
+                        name="action_sign"
+                        string="Sign"
+                        type="object"
+                        class="oe_highlight"
+                        attrs="{'invisible': [('state', '!=', 'submitted')]}"
+                        groups="disbursement.group_disbursement_head"
+                    />
+                    <!-- The acts (Validate, Approve …) are buttons of the
+                         modules that implement them. -->
+                    <button
+                        name="action_draft"
+                        string="Reset to draft"
+                        type="object"
+                        class="btn btn-secondary"
+                        attrs="{'invisible': [('state', 'not in', ('submitted', 'signed', 'cancel'))]}"
+                    />
+                    <button
+                        name="action_cancel"
+                        string="Cancel"
+                        type="object"
+                        confirm="Cancel this disbursement request?"
+                        attrs="{'invisible': [('state', 'in', ('done', 'cancel'))]}"
+                    />
+                    <!-- Once the circuit is done: finance officers only, until
+                         the money has started. -->
+                    <button
+                        name="action_cancel"
+                        string="Cancel"
+                        type="object"
+                        confirm="Cancel this disbursement request?"
+                        attrs="{'invisible': ['|', ('state', '!=', 'done'), ('settlement_stage', '!=', 'none')]}"
+                        groups="disbursement.group_disbursement_officer"
+                    />
+                    <field
+                        name="state"
+                        widget="statusbar"
+                        statusbar_visible="draft,submitted,signed,in_progress,done"
+                    />
+                    <field name="can_edit_header" invisible="1" />
+                    <field name="can_edit_lines" invisible="1" />
+                    <field name="can_edit_attachments" invisible="1" />
+                    <field name="can_edit_dimensions" invisible="1" />
+                    <field name="can_edit_budget" invisible="1" />
                 </header>
-                <!-- Budget Consumed Banner -->
-                <div class="alert alert-success" role="alert" style="margin-bottom:0px;" attrs="{'invisible': [('budget_consumed_amount', '=', 0)]}">
-                    <strong>ตัดงบประมาณแล้ว:</strong>
-                    <field name="budget_consumed_amount" widget="monetary" class="oe_inline" nolabel="1"/>
-                    <span> เมื่อ </span>
-                    <field name="budget_consumed_date" class="oe_inline" nolabel="1"/>
-                </div>
                 <!-- Returned to source for correction -->
-                <div class="alert alert-warning" role="alert" style="margin-bottom:0px;" attrs="{'invisible': [('returned_to_source', '=', False)]}">
-                    <field name="returned_to_source" invisible="1"/>
+                <div
+                    class="alert alert-warning"
+                    role="alert"
+                    style="margin-bottom:0px;"
+                    attrs="{'invisible': [('returned_to_source', '=', False)]}"
+                >
+                    <field name="returned_to_source" invisible="1" />
                     <strong>Returned to source for correction:</strong>
-                    <field name="return_source_reason" class="oe_inline" nolabel="1" readonly="1"/>
-                </div>
-                <!-- Returned to the verification officer for a re-check -->
-                <div class="alert alert-warning" role="alert" style="margin-bottom:0px;" attrs="{'invisible': [('returned_to_verification', '=', False)]}">
-                    <field name="returned_to_verification" invisible="1"/>
-                    <strong>Returned to verification:</strong>
-                    <field name="return_verification_reason" class="oe_inline" nolabel="1" readonly="1"/>
-                </div>
-                <!-- Approval rejected by an approver -->
-                <div class="alert alert-danger" role="alert" style="margin-bottom:0px;" attrs="{'invisible': [('approval_state', '!=', 'rejected')]}">
-                    <strong>Approval rejected:</strong>
-                    <field name="approval_reject_reason" class="oe_inline" nolabel="1" readonly="1"/>
+                    <field
+                        name="return_source_reason"
+                        class="oe_inline"
+                        nolabel="1"
+                        readonly="1"
+                    />
                 </div>
                 <!-- Exception Alert -->
-                <div class="alert alert-danger" role="alert" style="margin-bottom:0px;" attrs="{'invisible': [('exceptions_summary','=',False)]}">
+                <div
+                    class="alert alert-danger"
+                    role="alert"
+                    style="margin-bottom:0px;"
+                    attrs="{'invisible': [('exceptions_summary','=',False)]}"
+                >
                     <p>
-                        <strong>There are exceptions blocking this Disbursement Request:</strong>
+                        <strong
+                        >This Disbursement Request has errors to fix before it can go on:</strong>
                     </p>
                     <field name="exceptions_summary" />
-                    <button name="action_ignore_exceptions" type="object" class="btn-danger" string="Ignore Exceptions" help="Click here to be able to confirm this Disbursement Request regardless of the exceptions." groups="base_exception.group_exception_rule_manager" />
+                    <button
+                        name="action_ignore_exceptions"
+                        type="object"
+                        class="btn-danger"
+                        string="Ignore Exceptions"
+                        help="Click here to be able to confirm this Disbursement Request regardless of the exceptions."
+                        groups="base_exception.group_exception_rule_manager"
+                    />
                 </div>
                 <sheet>
-                    <div class="oe_button_box" name="button_box">
-                        <button name="open_preview" type="object" class="oe_stat_button" icon="fa-globe">
-                            <div class="o_field_widget o_stat_info">
-                                <span class="o_stat_text">Preview</span>
-                            </div>
-                        </button>
-                    </div>
+                    <div class="oe_button_box" name="button_box" />
                     <div class="oe_title">
                         <h1>
-                            <field name="name" readonly="1" />
+                            <field
+                                name="name"
+                                readonly="1"
+                                attrs="{'invisible': [('name', '=', '/')]}"
+                            />
+                            <!-- A div, not a span: its text stays a plain term
+                                 for the translation. -->
+                            <div
+                                class="text-muted"
+                                attrs="{'invisible': [('name', '!=', '/')]}"
+                            >New Disbursement Request</div>
                         </h1>
                     </div>
                     <group>
-                        <group id="header_right_group" name="disbursement_information" string="Disbursement Information">
-                            <field name="date" />
-                            <field name="payment_type" widget="radio" options="{'horizontal': true}" required="1" />
-                            <field name="reference_model_name" readonly="1"
-                                attrs="{'invisible': ['|', ('id', '=', False), ('reference_model_name', '=', False)]}" />
-                            <field name="reference"
-                                attrs="{'readonly': ['|', '|', ('id', '!=', False), ('state', '!=', 'draft'), ('reference_model', '!=', False)]}"
-                                force_save="1" />
-                            <field name="reference_model" invisible="1" />
-                            <field name="ref" />
-                            <field name="note" />
-                            <!-- Recipients live on the request lines (pay-by-name);
-                                 keep the header partner fields hidden. -->
-                            <field name="partner_type" invisible="1" />
-                            <field name="partner_id" invisible="1" />
-                            <field name="partner_bank_id" invisible="1" />
-                            <field name="is_company" invisible="1" />
+                        <group
+                            id="header_right_group"
+                            name="disbursement_information"
+                            string="Disbursement Information"
+                        >
+                            <!-- Not used: the dates that matter are in the Dates group. -->
+                            <field name="date" invisible="1" />
+                            <field
+                                name="payment_type"
+                                widget="radio"
+                                options="{'horizontal': true}"
+                                required="1"
+                                attrs="{'readonly': [('can_edit_header', '=', False)]}"
+                            />
+                            <field name="pays_out" invisible="1" />
+                            <!-- Payees live on the lines (pay-by-name); the header
+                                 only fixes which type they must all be. -->
+                            <field
+                                name="partner_type_id"
+                                options="{'no_create': True, 'no_open': True}"
+                                attrs="{'readonly': [('can_edit_header', '=', False)]}"
+                            />
+                            <!-- Stamped by e-Saraban (disbursement_sarabun); a
+                                 direct claim types it (disbursement_direct_claim). -->
+                            <field name="memo_number" readonly="1" />
+                            <field
+                                name="has_tax"
+                                attrs="{'readonly': [('can_edit_header', '=', False)]}"
+                                force_save="1"
+                            />
+                            <!-- ขั้นการชำระ: hidden, kept for the modifiers that read it. -->
+                            <field name="settlement_stage" invisible="1" />
                         </group>
-                        <group id="budget" name="budget_information" string="Budget Information">
-                            <field name="account_fiscal_year_id" readonly="1" options="{'no_open': True}" />
-                            <field name="budget_commitment_id" />
-                            <field name="source_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '!=', 'draft')]}" />
-                            <field name="department_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '!=', 'draft')]}" />
-                            <field name="fund_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '!=', 'draft')]}" />
-                            <field name="activity_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '!=', 'draft')]}" />
-                            <field name="budget_account_id" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '!=', 'draft')]}" />
-                            <field name="budget_account_id" invisible="1" />
-                            <!-- Loaded (hidden) so the line list can hide the
-                                 product column via parent. -->
-                            <field name="is_budget_account_product_expense" invisible="1" />
-                            <field name="analytic_distribution" invisible="1"/>
-                            <field name="budget_consumed_amount" attrs="{'invisible': [('budget_consumed_amount', '=', 0)]}" />
-                            <field name="budget_consumed_date" attrs="{'invisible': [('budget_consumed_amount', '=', 0)]}" />
-                            <field name="currency_id" invisible="1"/>
-                        </group>
-                        <group id="other_information" name="other_information" string="Other Information">
-                            <field name="company_id" groups="base.group_multi_company" />
-                            <field name="user_id" groups="disbursement.group_disbursement_manager" />
-                            <field name="user_id" readonly="1" groups="!disbursement.group_disbursement_manager" />
-                            <field name="verifier_id" attrs="{'invisible': [('verifier_id', '=', False)]}" />
-                            <field name="verify_date" attrs="{'invisible': [('verifier_id', '=', False)]}" />
-                            <field name="finance_approver_id" attrs="{'invisible': [('finance_approver_id', '=', False)]}" />
-                            <field name="finance_approve_date" attrs="{'invisible': [('finance_approver_id', '=', False)]}" />
-                            <field name="rector_approver_id" attrs="{'invisible': [('rector_approver_id', '=', False)]}" />
-                            <field name="rector_approve_date" attrs="{'invisible': [('rector_approver_id', '=', False)]}" />
-                            <field name="ignore_exception" states="to_approve" groups='base_exception.group_exception_rule_manager' />
-                            <field name="exception_ids" widget="many2many_tags" readonly="True" groups='base.group_no_one' />
+                        <group
+                            id="budget"
+                            name="budget_information"
+                            string="Budget Information"
+                        >
+                            <field
+                                name="account_fiscal_year_id"
+                                required="1"
+                                options="{'no_create': True, 'no_open': True}"
+                                attrs="{'readonly': [('can_edit_header', '=', False)]}"
+                            />
+                            <field
+                                name="source_analytic_id"
+                                required="1"
+                                options="{'no_create': True, 'no_open': True}"
+                                attrs="{'readonly': [('can_edit_dimensions', '=', False)]}"
+                            />
+                            <field
+                                name="department_analytic_id"
+                                required="1"
+                                options="{'no_create': True, 'no_open': True}"
+                                attrs="{'readonly': [('can_edit_dimensions', '=', False)]}"
+                            />
+                            <field
+                                name="fund_analytic_id"
+                                required="1"
+                                options="{'no_create': True, 'no_open': True}"
+                                attrs="{'readonly': [('can_edit_dimensions', '=', False)]}"
+                            />
+                            <field
+                                name="activity_analytic_id"
+                                required="1"
+                                options="{'no_create': True, 'no_open': True}"
+                                attrs="{'readonly': [('can_edit_dimensions', '=', False)]}"
+                            />
+                            <field name="analytic_distribution" invisible="1" />
+                            <field name="currency_id" invisible="1" />
                         </group>
                     </group>
 
-                    <group name="attachment" string="Attachment for Disbursement Request">
-                        <field name="attachment_ids"
-                            widget="many2many_binary">
+                    <!-- The request's content, before its metadata; rich text,
+                         so full width rather than squeezed into a column. -->
+                    <group name="description" string="Description">
+                        <!-- Open before the request enters the circuit, and at a
+                             station that lets its people edit the header. -->
+                        <field
+                            name="note"
+                            nolabel="1"
+                            colspan="2"
+                            placeholder="What is this disbursement for? e.g. reception costs for the faculty meeting on ..."
+                            attrs="{'readonly': [('state', 'not in', ('draft', 'submitted', 'signed')), ('can_edit_header', '=', False)]}"
+                        />
+                    </group>
+
+                    <group>
+                        <!-- One date per step. -->
+                        <group id="dates" name="dates" string="Dates">
+                            <field name="sign_date" readonly="1" />
+                        </group>
+                        <group
+                            id="other_information"
+                            name="other_information"
+                            string="Other Information"
+                        >
+                            <field
+                                name="company_id"
+                                groups="base.group_multi_company"
+                                attrs="{'readonly': [('can_edit_header', '=', False)]}"
+                            />
+                            <!-- Both nodes: a field repeated in a form takes its
+                                 model-level modifiers from the last one, so the
+                                 manager node carries its own attrs. -->
+                            <field
+                                name="user_id"
+                                groups="disbursement.group_disbursement_manager"
+                                attrs="{'readonly': [('can_edit_header', '=', False)]}"
+                            />
+                            <field
+                                name="user_id"
+                                readonly="1"
+                                groups="!disbursement.group_disbursement_manager"
+                            />
+                            <field
+                                name="ignore_exception"
+                                invisible="1"
+                                groups='base_exception.group_exception_rule_manager'
+                            />
+                            <field
+                                name="exception_ids"
+                                widget="many2many_tags"
+                                readonly="True"
+                                groups='base.group_no_one'
+                            />
+                        </group>
+                    </group>
+
+                    <group
+                        name="attachment"
+                        string="Attachment for Disbursement Request"
+                    >
+                        <field
+                            name="attachment_ids"
+                            widget="many2many_binary"
+                            attrs="{'readonly': [('can_edit_attachments', '=', False)]}"
+                        >
                         </field>
                     </group>
 
                     <notebook>
                         <page string="Request Lines" name="lines">
-                            <field name="line_ids" widget="one2many" context="{'default_request_id': active_id}">
+                            <field
+                                name="line_ids"
+                                widget="one2many"
+                                context="{'default_request_id': active_id}"
+                                attrs="{'readonly': [('can_edit_lines', '=', False)]}"
+                            >
                                 <tree editable="bottom">
                                     <field name="sequence" widget="handle" />
+                                    <!-- No no_open: the user opens the partner from here
+                                         to add a missing bank account. -->
                                     <field name="partner_id" required="1" />
-                                    <field name="partner_bank_id" optional="show" />
-                                    <!-- Budget codes that carry their own product stamp it
-                                         automatically, so the whole column is hidden and only
-                                         ordinary disbursements pick a product by hand. -->
-                                    <field name="product_id" attrs="{'column_invisible': [('parent.is_budget_account_product_expense', '=', True)], 'required': [('parent.is_budget_account_product_expense', '=', False)]}" />
-                                    <field name="name" optional="show" />
-                                    <field name="quantity" />
-                                    <field name="price_unit" />
-                                    <field name="tax_ids" widget="many2many_tags" />
-                                    <field name="wht_tax_id" />
-                                    <field name="account_id" optional="hide" />
-                                    <field name="analytic_distribution" widget="analytic_distribution" groups="analytic.group_analytic_accounting" readonly="1" optional="hide" />
-                                    <field name="price_subtotal" />
-                                    <field name="price_tax" optional="show" />
-                                    <field name="amount_wht" optional="show" />
-                                    <field name="price_total" />
+                                    <!-- Accounts are managed through the payee bank wizard
+                                         (disbursement_partner_bank), not from here. -->
+                                    <field
+                                        name="partner_bank_id"
+                                        optional="show"
+                                        options="{'no_open': True, 'no_create': True, 'no_edit': True}"
+                                        attrs="{'column_invisible': [('parent.pays_out', '=', False)]}"
+                                    />
+                                    <field name="account_id" />
+                                    <field name="name" invisible="1" />
+                                    <field name="note" />
+                                    <field name="amount" />
+                                    <field
+                                        name="tax_ids"
+                                        widget="many2many_tags"
+                                        attrs="{'column_invisible': [('parent.has_tax', '=', False)]}"
+                                    />
+                                    <field
+                                        name="wht_tax_id"
+                                        attrs="{'column_invisible': [('parent.has_tax', '=', False)]}"
+                                    />
+                                    <field
+                                        name="analytic_distribution"
+                                        widget="analytic_distribution"
+                                        groups="analytic.group_analytic_accounting"
+                                        readonly="1"
+                                        optional="hide"
+                                    />
+                                    <field
+                                        name="price_subtotal"
+                                        attrs="{'column_invisible': [('parent.has_tax', '=', False)]}"
+                                    />
+                                    <field
+                                        name="price_tax"
+                                        optional="show"
+                                        attrs="{'column_invisible': [('parent.has_tax', '=', False)]}"
+                                    />
+                                    <field
+                                        name="amount_wht"
+                                        optional="show"
+                                        attrs="{'column_invisible': [('parent.has_tax', '=', False)]}"
+                                    />
+                                    <field name="price_total" optional="hide" />
                                     <field name="company_id" invisible="1" />
                                     <field name="currency_id" invisible="1" />
                                 </tree>
                             </field>
                             <group class="oe_subtotal_footer oe_right">
-                                <field name="amount_untaxed" attrs="{'invisible': [('amount_tax', '=', 0)]}" />
-                                <field name="amount_tax" attrs="{'invisible': [('amount_tax', '=', 0)]}" />
+                                <field
+                                    name="amount_untaxed"
+                                    attrs="{'invisible': [('amount_tax', '=', 0)]}"
+                                />
+                                <field
+                                    name="amount_tax"
+                                    attrs="{'invisible': [('amount_tax', '=', 0)]}"
+                                />
                                 <field name="amount_total" />
-                                <field name="amount_wht" />
-                                <field name="amount_net" class="oe_subtotal_footer_separator" />
+                                <field
+                                    name="amount_wht"
+                                    attrs="{'invisible': [('has_tax', '=', False)]}"
+                                />
+                                <field
+                                    name="amount_net"
+                                    class="oe_subtotal_footer_separator"
+                                />
                             </group>
                             <div class="oe_clear" />
                         </page>
-                        <page string="WHT" name="wht">
+                        <page
+                            string="WHT"
+                            name="wht"
+                            attrs="{'invisible': [('has_tax', '=', False)]}"
+                        >
                             <field name="wht_line_ids" nolabel="1">
                                 <tree create="0" delete="0" edit="0">
-                                    <field name="partner_id" string="Disburser"/>
-                                    <field name="wht_tax_id" string="WHT Item"/>
-                                    <field name="price_subtotal" string="Amount Before WHT"/>
-                                    <field name="amount_wht" string="WHT Deduction"/>
-                                    <field name="currency_id" invisible="1"/>
+                                    <field name="partner_id" string="Disburser" />
+                                    <field name="wht_tax_id" string="WHT Item" />
+                                    <field
+                                        name="price_subtotal"
+                                        string="Amount Before WHT"
+                                    />
+                                    <field name="amount_wht" string="WHT Deduction" />
+                                    <field name="currency_id" invisible="1" />
                                 </tree>
                             </field>
                             <group class="oe_subtotal_footer oe_right">
@@ -210,19 +404,25 @@
                         <!-- Read-only: rows are frozen snapshots written by the
                              workflow, so the officer can check the block before
                              printing but nobody can edit a signature. -->
-                        <page string="Signatures" name="signatures"
-                              attrs="{'invisible': [('signature_ids', '=', [])]}">
+                        <page
+                            string="Signatures"
+                            name="signatures"
+                            attrs="{'invisible': [('signature_ids', '=', [])]}"
+                        >
                             <field name="signature_ids" nolabel="1">
                                 <tree create="0" delete="0" edit="0">
-                                    <field name="step"/>
-                                    <field name="signed_by_id"/>
-                                    <field name="signed_name"/>
-                                    <field name="signed_position_name"/>
-                                    <field name="signed_date"/>
+                                    <field name="step" />
+                                    <field name="signed_by_id" />
+                                    <field name="signed_name" />
+                                    <field name="signed_position_name" />
+                                    <field name="signed_date" />
                                     <!-- signature_image, not the raw snapshot: this
                                          is exactly what the PDF will print. -->
-                                    <field name="signature_image" widget="image"
-                                           options="{'size': [0, 40]}"/>
+                                    <field
+                                        name="signature_image"
+                                        widget="image"
+                                        options="{'size': [0, 40]}"
+                                    />
                                 </tree>
                             </field>
                         </page>
@@ -243,65 +443,211 @@
         <field name="model">disbursement.request</field>
         <field name="arch" type="xml">
             <search string="Disbursement Requests">
-                <field name="name" string="Name" filter_domain="['|', ('name', 'ilike', self), ('ref', 'ilike', self)]" />
-                <field name="partner_id" />
+                <field name="name" />
+                <field name="memo_number" />
+                <field name="note" />
+                <field
+                    name="line_ids"
+                    string="Payee"
+                    filter_domain="[('line_ids.partner_id', 'ilike', self)]"
+                />
+                <field name="partner_type_id" />
                 <field name="account_fiscal_year_id" />
-                <field name="source_analytic_id" domain="[('root_plan_id.code', '=', 'sources')]" />
+                <field
+                    name="source_analytic_id"
+                    domain="[('root_plan_id.code', '=', 'sources')]"
+                />
+                <field
+                    name="department_analytic_id"
+                    domain="[('root_plan_id.code', '=', 'departments')]"
+                />
+                <field name="user_id" />
+                <filter
+                    string="My Requests"
+                    name="my"
+                    domain="[('user_id', '=', uid)]"
+                />
+                <filter
+                    string="Following"
+                    name="following"
+                    domain="[('message_is_follower', '=', True)]"
+                />
                 <separator />
-                <filter string="Pre-approval" name="pre_approval" domain="[('pipeline_status', '=', 'pre_approval')]" />
-                <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]" />
-                <filter string="Submitted" name="submitted" domain="[('state', '=', 'submitted')]" />
-                <filter string="Signed" name="signed" domain="[('state', '=', 'signed')]" />
-                <filter string="Verified" name="verified" domain="[('state', '=', 'verified')]" />
-                <filter string="Approved" name="approved" domain="[('state', '=', 'approved')]" />
-                <filter string="Bill Draft" name="bill_draft" domain="[('pipeline_status', '=', 'bill_draft')]" />
-                <filter string="Bill Posted" name="bill_posted" domain="[('pipeline_status', '=', 'bill_posted')]" />
-                <filter string="Payment Draft" name="payment_draft" domain="[('pipeline_status', '=', 'payment_draft')]" />
-                <filter string="Payment Posted" name="payment_posted" domain="[('pipeline_status', '=', 'payment_posted')]" />
-                <filter string="Done" name="done" domain="[('pipeline_status', '=', 'done')]" />
+                <filter
+                    string="Ongoing"
+                    name="open"
+                    domain="[('state', 'not in', ('done', 'cancel'))]"
+                />
+                <filter
+                    string="Draft"
+                    name="draft"
+                    domain="[('state', '=', 'draft')]"
+                />
+                <filter
+                    string="Submitted"
+                    name="submitted"
+                    domain="[('state', '=', 'submitted')]"
+                />
+                <filter
+                    string="Signed"
+                    name="signed"
+                    domain="[('state', '=', 'signed')]"
+                />
+                <filter
+                    string="In Progress"
+                    name="in_progress"
+                    domain="[('state', '=', 'in_progress')]"
+                />
+                <!-- Anchor of the finance filters: the circuit is finished. -->
+                <filter string="Done" name="done" domain="[('state', '=', 'done')]" />
                 <separator />
-                <filter icon="fa-exclamation-circle" name="tofix" string="Blocked in Draft" domain="[('main_exception_id','!=',False)]" />
+                <filter
+                    string="Billed"
+                    name="stage_billed"
+                    domain="[('settlement_stage', '=', 'billed')]"
+                />
+                <filter
+                    string="Settled"
+                    name="stage_settled"
+                    domain="[('settlement_stage', '=', 'settled')]"
+                />
+                <filter
+                    string="Booked"
+                    name="stage_booked"
+                    domain="[('settlement_stage', '=', 'booked')]"
+                />
+                <separator />
+                <filter
+                    icon="fa-exclamation-circle"
+                    name="tofix"
+                    string="Has Errors"
+                    domain="[('main_exception_id','!=',False)]"
+                />
                 <separator />
                 <filter name="date" string="Date" date="date" />
                 <group expand="0" name="group_by" string="Group By">
-                    <filter string="Partner" name="partner" context="{'group_by': 'partner_id'}" />
-                    <filter string="Department" name="group_department" context="{'group_by': 'department_analytic_id'}" />
-                    <filter string="Source" name="group_source" context="{'group_by': 'source_analytic_id'}" />
+                    <filter
+                        string="Responsible"
+                        name="group_user"
+                        context="{'group_by': 'user_id'}"
+                    />
+                    <filter
+                        string="Fiscal Year"
+                        name="group_fiscal_year"
+                        context="{'group_by': 'account_fiscal_year_id'}"
+                    />
+                    <filter
+                        string="Payee Type"
+                        name="group_partner_type"
+                        context="{'group_by': 'partner_type_id'}"
+                    />
+                    <filter
+                        string="Department"
+                        name="group_department"
+                        context="{'group_by': 'department_analytic_id'}"
+                    />
+                    <filter
+                        string="Source"
+                        name="group_source"
+                        context="{'group_by': 'source_analytic_id'}"
+                    />
                     <filter string="Date" name="date" context="{'group_by': 'date'}" />
-                    <filter string="State" name="state" context="{'group_by': 'state'}" />
+                    <filter
+                        string="State"
+                        name="state"
+                        context="{'group_by': 'state'}"
+                    />
+                    <filter
+                        string="Settlement Stage"
+                        name="group_settlement_stage"
+                        context="{'group_by': 'settlement_stage'}"
+                    />
                 </group>
                 <!-- แหล่งเงิน down the left: it is the first cut the finance office
                      takes on any list of requests, and it is a handful of values,
                      so it is a click rather than something to type. -->
                 <searchpanel>
-                    <field name="source_analytic_id" icon="fa-money" select="multi" enable_counters="1" />
+                    <field
+                        name="source_analytic_id"
+                        icon="fa-money"
+                        select="multi"
+                        enable_counters="1"
+                    />
+                    <field
+                        name="partner_type_id"
+                        icon="fa-users"
+                        select="multi"
+                        enable_counters="1"
+                    />
                 </searchpanel>
             </search>
         </field>
     </record>
 
-    <!-- Action: default to requester queue (DRs not yet approved) -->
-    <record id="action_disbursement_request" model="ir.actions.act_window">
-        <field name="name">Disbursement Requests</field>
+    <!-- Action: the requests the user created, every state -->
+    <record id="action_disbursement_request_my" model="ir.actions.act_window">
+        <field name="name">My Disbursement Requests</field>
         <field name="res_model">disbursement.request</field>
         <field name="view_mode">tree,form</field>
-        <field name="context">{"search_default_pre_approval": 1}</field>
+        <field name="context">{"search_default_my": 1}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-                ไม่มีใบขอเบิกที่อยู่ระหว่างขออนุมัติ
+                สร้างใบขอเบิกใบแรกของคุณ
             </p>
             <p>
-                ใบขอเบิกที่กำลังอยู่ในขั้นตอนการอนุมัติ (draft / submitted / signed / verified)
+                ใบขอเบิกที่คุณสร้างจะแสดงที่นี่ทุกสถานะ ตั้งแต่ฉบับร่างจนเสร็จสิ้น
+            </p>
+        </field>
+    </record>
+
+    <!-- Action: the requests still open (not done, not cancelled) -->
+    <record id="action_disbursement_request" model="ir.actions.act_window">
+        <field name="name">All Disbursement Requests</field>
+        <field name="res_model">disbursement.request</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{"search_default_open": 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                ไม่มีใบขอเบิกที่ยังดำเนินการอยู่
+            </p>
+            <p>
+                ใบขอเบิกที่ยังไม่เสร็จสิ้นและยังไม่ยกเลิก (ฉบับร่าง / ส่งแล้ว / ลงนามแล้ว / อยู่ระหว่างดำเนินการ)
             </p>
         </field>
     </record>
 
     <!-- Root menu for Disbursement app -->
-    <menuitem id="menu_disbursement_root" name="Disbursement" sequence="5" web_icon="disbursement,static/description/icon.png"/>
+    <menuitem
+        id="menu_disbursement_root"
+        name="Disbursement"
+        sequence="5"
+        web_icon="disbursement,static/description/icon.png"
+    />
 
-    <!-- Disbursement Requests submenu -->
-    <menuitem id="menu_disbursement_request" name="Disbursement Requests" parent="menu_disbursement_root" action="action_disbursement_request" sequence="10" groups="disbursement.group_disbursement_user"/>
+    <menuitem
+        id="menu_disbursement_request_my"
+        name="My Disbursement Requests"
+        parent="menu_disbursement_root"
+        action="action_disbursement_request_my"
+        sequence="5"
+        groups="disbursement.group_disbursement_user"
+    />
+
+    <menuitem
+        id="menu_disbursement_request"
+        name="All Disbursement Requests"
+        parent="menu_disbursement_root"
+        action="action_disbursement_request"
+        sequence="10"
+        groups="disbursement.group_disbursement_user"
+    />
 
     <!-- Configuration submenu -->
-    <menuitem id="menu_disbursement_config" name="Configuration" parent="menu_disbursement_root" sequence="100" groups="disbursement.group_disbursement_manager"/>
+    <menuitem
+        id="menu_disbursement_config"
+        name="Configuration"
+        parent="menu_disbursement_root"
+        sequence="100"
+        groups="disbursement.group_disbursement_manager"
+    />
 </odoo>

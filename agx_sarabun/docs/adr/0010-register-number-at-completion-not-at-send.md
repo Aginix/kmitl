@@ -1,5 +1,7 @@
 # ลงทะเบียน runs at completion (final ลงนาม/อนุมัติ), not at send
 
+> **Update (2026-10-15 · [ADR-0017](./0017-register-number-at-issuing-sign.md)):** the number now runs at the first **number-issuing** step (ลงนามในใบปะหน้า by default), not at completion. A หนังสือ may be numbered while still circulating; ปฏิเสธ after that sign voids the number, ตีกลับ keeps it. The send-time register guard and idempotency below still hold.
+
 **Supersedes the numbering timing in [ADR-0002](./0002-document-lifecycle-negative-paths.md) and [ADR-0006](./0006-recall-split-pullback-vs-cancel-send.md).** ADR-0002 (and the DESIGN §4 "Register event") fixed ลงทะเบียน to fire **automatically at send** (`draft → circulating`): the official number was allocated the moment the หนังสือ left the sender, then **voided** as a permanent register gap if the Document was later rejected (ปฏิเสธ) or cancelled (ยกเลิกการส่ง). In practice this floods the register with voided gaps for every หนังสือ that does not survive its route, and — more fundamentally — assigns an official number to a document that has **not yet been approved by anyone**.
 
 KMITL's requirement: **the official number must run only when the หนังสือ receives the signature/approval of the *final* authority.** While the หนังสือ travels its approval route it has **no number** (ที่ = `/`).

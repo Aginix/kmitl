@@ -1,4 +1,5 @@
-from odoo import api, fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import UserError
 
 
 class BudgetMoveLine(models.Model):
@@ -27,20 +28,16 @@ class BudgetMoveLine(models.Model):
         "source_analytic_id",
         "move_id.account_fiscal_year_id",
     )
+    @api.depends_context("transfer_fiscal_year_id")
     def _compute_allowed_kmitl_project_analytic_ids(self):
         Project = self.env["kmitl.project"].sudo()
         for line in self:
             domain = [("analytic_account_id", "!=", False)]
             if line.account_id:
                 domain.append(("budget_account_id", "=", line.account_id.id))
-            if line.move_id.account_fiscal_year_id:
-                domain.append(
-                    (
-                        "account_fiscal_year_id",
-                        "=",
-                        line.move_id.account_fiscal_year_id.id,
-                    )
-                )
+            fiscal_year = line._transfer_fiscal_year()
+            if fiscal_year:
+                domain.append(("account_fiscal_year_id", "=", fiscal_year.id))
             if line.department_analytic_id:
                 domain.append(
                     ("department_analytic_id", "=", line.department_analytic_id.id)
@@ -55,3 +52,45 @@ class BudgetMoveLine(models.Model):
                 if line[dim]:
                     projects = projects.filtered(lambda p, d=dim: p[d] == line[d])
             line.allowed_kmitl_project_analytic_ids = projects.analytic_account_id
+
+    def action_open_kmitl_project(self):
+        """Open the line's kmitl.project in a new browser tab.
+
+        Looked up as superuser (archived included) so the button works on every
+        row; the opened form applies the normal access rules.
+        """
+        self.ensure_one()
+        record = (
+            self.env["kmitl.project"]
+            .sudo()
+            .with_context(active_test=False)
+            .search(
+                [("analytic_account_id", "=", self.kmitl_project_analytic_id.id)],
+                limit=1,
+            )
+        )
+        if not record:
+            raise UserError(
+                _("ไม่พบรายการที่ผูกกับมิติ %s") % self.kmitl_project_analytic_id.display_name
+            )
+        return {
+            "type": "ir.actions.act_url",
+            "target": "new",
+            "url": f"/web#id={record.id}&model=kmitl.project&view_type=form",
+        }
+
+    def _get_pool_owner_commitment(self):
+        """The reservations of the project a ``kmitl_project`` tag names, so a
+        transfer onto/off its coordinate tops it up / releases it (budget
+        ADR-0017, Q5)."""
+        commitments = super()._get_pool_owner_commitment()
+        if self.kmitl_project_analytic_id:
+            projects = (
+                self.env["kmitl.project"]
+                .sudo()
+                .search(
+                    [("analytic_account_id", "=", self.kmitl_project_analytic_id.id)]
+                )
+            )
+            commitments |= projects.budget_commitment_ids
+        return commitments

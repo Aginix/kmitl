@@ -28,7 +28,14 @@ upfront.
     context): give a ใบขอซื้อ (พ.1) its **แหล่งงบประมาณ** — reserve anew from the
     ผังงบประมาณ, or draw the reservation of a โครงการ or a แผนจัดซื้อจัดจ้าง. Each
     bridge owns its own answer; a source-less ใบจองงบประมาณ is not an option here
-    (budget ADR-0015).
+    (budget ADR-0015). With the add-on `purchase_request_budget_cross_charge`,
+    reserving anew opens the ใบจองงบประมาณ itself as a dialog, where ถัวจ่าย codes are
+    added to its Reservation Split (`budget_commitment_cross_charge`, budget ADR-0020).
+- [Budget Support Request](./budget_support_request/CONTEXT.md) — a requesting unit's
+  application for central to allocate budget onto its own `department` dimension
+  (ขอรับการสนับสนุนงบประมาณ); routed for approval through e-Saraban, then **fulfilled**
+  by central choosing either `budget.transfer` (โอน) or `budget.commitment` (จอง) —
+  structurally mirrors `budget_transfer`'s core + Operating Unit + e-Saraban module split.
 - [Budget Appropriation Summary](./budget_appropriation_summary/CONTEXT.md) —
   institution-wide roll-up of unit appropriations for one fiscal year × source
   (สรุปภาพรวมสถาบัน gathering รวมเล่มหน่วยงาน), rendering the F-series summary reports
@@ -39,9 +46,11 @@ upfront.
   revenue** (`account.move.line`, income types) row by row; each row carries two
   independent selectors because the budget chart and the CoA have no stored link.
 - [Procurement Plan](./procurement_plan/CONTEXT.md) — annual procurement planning; a
-  plan stands on its own (budget-free core), optionally reserves budget when verified,
-  and may originate from a posted appropriation. Realised through one purchase request;
-  its installments (งวด) track actual disbursement (see the Disbursement bridge below).
+  plan stands on its own (budget-free core), optionally reserves the budget it has
+  received when verified, and may originate from a posted appropriation. Realised through
+  one or more purchase requests, closed by hand; no per-plan approval — the unit's annual
+  plan is what is published (procurement_plan ADR-0002). Its installments (งวด) track
+  actual disbursement (see the Disbursement bridge below).
 - [Procurement Plan — Disbursement](./procurement_plan_disbursement/CONTEXT.md) —
   tracking-only bridge that manually links each งวด (`procurement.plan.payment`) to the
   disbursement request paying it, so the plan can compare planned งวด against budget
@@ -104,7 +113,8 @@ upfront.
   post-bill payment-execution phase of a disbursement request (audit → authorize → pay →
   clear); owns the payee-level **รายการจ่ายเงิน** and keeps apart the several records
   that all sound like "what this payment is" (เรื่องที่จ่าย, ประเภทธุรกรรม,
-  ลักษณะการจ่าย, หัวจ่าย, วิธีจ่าย, ใบสำคัญ).
+  ลักษณะการจ่าย, หัวจ่าย, วิธีจ่าย, ใบสำคัญ). The ตรวจจ่าย act is its own module,
+  `disbursement_payment_audit`.
 - [Cash & Revenue Handover](./disbursement_cash_revenue_handover/CONTEXT.md) — the
   **โอนเงินและรายได้** entry that re-recognises centrally-held government-budget cash
   and revenue under the dimensions of the unit actually spending it; the first bridge in
@@ -117,6 +127,14 @@ upfront.
   by **Cash Route** (`kmitl.cash.route`), one row per (paying account × sources of
   funds); a row naming no intermediate account means "pays directly", a missing row is a
   setup gap.
+- [KMITL Student](./partner_student_kmitl/CONTEXT.md) — a student as an Odoo contact,
+  keyed by the institute's **Student ID** and named from the **Student catalog**
+  (ทะเบียนนักศึกษา สจล.) API — an optional connector, `partner_student_kmitl_api`; the
+  catalog supplies identity only, never a bank account or a national ID.
+- [Disbursement — Student List Import](./disbursement_student_import/CONTEXT.md) —
+  appends one line per row of a requester's Excel list (scholarships, TA pay) to a draft
+  นักศึกษา-type disbursement request; unknown students are **skipped rows**, never a
+  rejected list.
 - [Advance Payment](./advance_payment/CONTEXT.md) — employee cash-advance loans
   (สัญญายืมเงิน); a single-disbursement loan to one borrower, tracked from request
   through clearing to closure. A borrower may hold only one active agreement at a time,
@@ -128,22 +146,78 @@ upfront.
   deposit account, alongside the 6D dimensions on every line.
 - [HR Employee Academic Standing Thailand](./hr_employee_academic_standing_thailand/CONTEXT.md)
   — the Thai academic **คำนำหน้าชื่อทางวิชาการ** (title prefix) computed onto every
-  employee from academic standing, rank, profession, rank nobility and education level.
+  employee from academic standing, rank, profession, rank nobility and a hand-set **ดร.
+  flag** (`title_dr`).
   - **`hr_employee_name_search`** ([glossary](./hr_employee_name_search/CONTEXT.md)) —
     add-on that makes an employee findable by that title prefix or by full name (title +
     name), via a hidden search index, in both the employee picker and the Employees
     list.
+  - **`hr_employee_academic_standing_thailand_dr_auto`** (no own glossary — part of this
+    context): add-on that overrides the ดร. flag with a stored compute, deriving it
+    automatically from the employee's highest education level (ปริญญาเอก → ดร.) and
+    re-coupling to `hr_employee_education_history`; the flag becomes read-only while it
+    is installed (base ADR-0001).
+- [HR Employee Name Title KMITL](./hr_employee_name_title_kmitl/CONTEXT.md) — composes
+  the stored, locked `hr.employee.name` as "work-track title prefix + name parts":
+  academic staff get their [[hr-employee-academic-standing-thailand]] title, everyone
+  else their personal honorific (`prefix_id`), glued to the
+  [[kmitl-hr-employee-full-name]] first/middle/last name.
+- [Photo Viewer — Annotation](./agx_photoviewer_annotation/CONTEXT.md) — reviewers tick,
+  draw, highlight and comment directly on an image or PDF attachment inside the photo
+  viewer; marks are an overlay stored beside the untouched file, exportable on demand as
+  an annotated PDF.
+  - **`agx_photoviewer_annotation_revision`** (no own glossary — part of this context):
+    Revisions of an annotated file — a corrected file is uploaded as the next revision,
+    never over the annotated one (ADR-0003).
+  - **`agx_photoviewer_change_request`** (no own glossary — bridge to Change Requests):
+    pins a Change request on a file and cancels it when the file is deleted
+    (agx_change_request ADR-0001).
+- [Change Requests](./agx_change_request/CONTEXT.md) — a reviewer asks a record's maker
+  to fix or explain something, on the record or pinned on one of its files; Assignees get
+  an activity, every step lands in the chatter, and its author (or someone on their
+  behalf) closes it. Opt-in
+  per model through a mixin.
+- [Related Documents](./agx_related_document/CONTEXT.md) — a record cites other
+  documents (in-system or not) as supporting evidence: kinds configured by admins,
+  a snapshot row per citation, opened under the reader's own rights, and an automatic
+  ถูกอ้างอิงโดย list on the cited model. Opt-in per model through a mixin; consumers are
+  thin bridges (`budget_support_request_related_document`,
+  `budget_transfer_related_document`, `advance_payment_related_document`,
+  `agx_related_document_sarabun`).
+- [Photo Viewer — Annotation History](./agx_photoviewer_annotation_history/CONTEXT.md) —
+  a side panel listing who added, changed or removed marks on a file in each visit, and
+  drawing the layer as any of those Changes left it.
+- [Disbursement — Stations](./disbursement_work_center/CONTEXT.md) — routes the DR
+  through the stations of a configured route: signing enters the circuit, forwarding
+  out of the last station makes it done, and the station holding it decides who may
+  act, edit, send it back or cancel it. The DR's state is progress around the วงจร;
+  the ขั้นการชำระ is the money.
+- [Disbursement — Acts](./disbursement/CONTEXT.md) — the ตรวจสอบ, ผอ.กองคลัง and
+  ผู้รับมอบอำนาจอธิการบดี acts on the DR (`disbursement_validation`,
+  `disbursement_endorser_director`, `disbursement_approver_rector`): each stamps who
+  acted and one signature row, none changes the DR's state.
 
 ## Relationships
 
+- **Budget → Change Requests**: budget transfers take Change requests
+  (`budget_transfer_change_request`, on top of Buddy Verification): the Buddy details
+  what to fix as requests, ยืนยันตรวจสอบ is refused while any is outstanding, and a
+  covering Buddy may close one on its author's behalf.
+- **Photo Viewer — Annotation → Change Requests**: a Pinned Change request's pin is a
+  Comment of a file's Annotation layer; deleting the file cancels the request
+  (agx_change_request ADR-0001).
 - **Budget → Procurement Plan**: posting a `budget.appropriation` line creates a
   `procurement.plan` and reserves its `budget.commitment` for the full amount
   (ADR-0005).
-- **Procurement Plan → Budget**: the plan's single purchase request, and the
-  disbursement requests that flow from its purchase order, draw that one shared
-  commitment down (obligate+consume per DR) (ADR-0004, ADR-0006). The disbursements are
-  created and operated on the PO, not the plan; the plan only **tracks** them, linking
-  each งวด to its DR by hand (`procurement_plan_disbursement`).
+- **Procurement Plan → Budget**: the plan reserves what it has **received** at its own
+  dimension (procurement_plan ADR-0003), not its วงเงินตามแผน. Its purchase requests —
+  many, capped at that received budget (procurement_plan ADR-0004, superseding budget ADR-0006's
+  one-active rule) — and the disbursement requests that flow from their purchase orders
+  draw that one shared commitment down (obligate+consume per DR) (budget ADR-0004). The plan is
+  closed by hand once nothing is open, returning the unspent reservation (คืนจอง); it
+  never auto-closes (procurement_plan ADR-0005). The disbursements are created and
+  operated on the PO, not the plan; the plan only **tracks** them, linking each งวด to
+  its DR by hand (`procurement_plan_disbursement`).
 - **Budget → KMITL Project**: posting an appropriation on an `is_project` budget code
   leaves the pool _floating_ — it does **not** auto-create a project or reserve
   (contrast Procurement Plan). งานแผน then **allocates** a slice into the project's own
@@ -153,6 +227,12 @@ upfront.
 - **KMITL Project → Budget**: the project's purchase requests (พ.1) and disbursements
   draw that one shared commitment down (obligate+consume); a project may hold many PRs,
   capped at the commitment (ADR-0007).
+- **Budget Support Request → Budget**: once approved (via e-Saraban), central fulfils the
+  request by opening a pre-filled, unsaved `budget.transfer` or `budget.commitment` form
+  (`support_request_id` carried via context defaults) for central to complete and
+  post/reserve; the request moves `approved → in_progress` the moment that document is
+  posted/reserved (an idempotent hook on the transfer's `_post_transfer()` /
+  commitment's `action_reserve()`).
 - **Disbursement ↔ Finance (paying account)**: a **หัวจ่าย** is one of Odoo's own
   `account.payment.method.line` records — bank account × method × voucher × GL — seeded
   by `account_kmitl` on ใบสำคัญจ่าย (PV) and administered in `finance_kmitl`
@@ -241,6 +321,12 @@ upfront.
   surfaced as a non-blocking warning at Submit. Scoped to vouchers raised from a
   disbursement request; the budget ledger and the bank reconciliation view are both
   untouched by design (`disbursement_cash_movement_kmitl` ADR-0001/0002).
+- **Student List Import → Disbursement / KMITL Student**: the import resolves each row to a
+  **Student** (by Student ID, then national ID, else created from the **Student
+  catalog**), adds or reuses the row's bank account on that contact, and appends an
+  ordinary request line paying them — the request's own **Payee** rules apply unchanged,
+  and downstream finance still raises one voucher per payee (`partner_student_kmitl`
+  ADR-0001).
 - **Budget ↔ Operating Units (cross-OU reservation)**: a standalone `budget.commitment`
   (ใบจองงบประมาณ) may be reserved by one OU (the **Owning Unit** / funder — normally
   central) _for_ another (the **Beneficiary Unit** — the requesting unit); both OUs see

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+    <!-- A chatter message keeps the revision it was posted with. -->
+    <t t-inherit="mail.AttachmentCard" t-inherit-mode="extension" owl="1">
+        <xpath expr="//div[hasclass('o_AttachmentCard_details')]" position="inside">
+            <span
+                t-if="attachmentCard.attachment.revisionSupersededBy"
+                class="o_agx_revision_superseded"
+            >Replaced by revision <t
+                    t-esc="attachmentCard.attachment.revisionSupersededBy"
+                /></span>
+        </xpath>
+    </t>
+
+    <t t-inherit="mail.AttachmentImage" t-inherit-mode="extension" owl="1">
+        <xpath expr="//div[hasclass('o_AttachmentImage')]" position="inside">
+            <span
+                t-if="attachmentImage.attachment.revisionSupersededBy"
+                class="o_agx_revision_superseded o_agx_revision_superseded_image"
+            >Replaced by revision <t
+                    t-esc="attachmentImage.attachment.revisionSupersededBy"
+                /></span>
+        </xpath>
+    </t>
+
+</templates>

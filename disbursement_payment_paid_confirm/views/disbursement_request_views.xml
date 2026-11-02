@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_disbursement_request_form" model="ir.ui.view">
+        <field name="name">disbursement.request.form (disbursement_payment_paid_confirm)</field>
+        <field name="model">disbursement.request</field>
+        <field
+            name="inherit_id"
+            ref="disbursement_finance_kmitl.view_disbursement_request_form_inherit_finance"
+        />
+        <field name="arch" type="xml">
+            <button name="action_draft" position="before">
+                <button
+                    name="action_confirm_payment_paid"
+                    string="Confirm Payment Completed"
+                    type="object"
+                    class="oe_highlight"
+                    confirm="Confirm that every payee of this disbursement has been paid?"
+                    attrs="{'invisible': [('can_confirm_payment_paid', '=', False)]}"
+                    groups="disbursement_finance_kmitl.group_disbursement_payment_finance"
+                />
+                <field name="can_confirm_payment_paid" invisible="1" />
+            </button>
+            <xpath
+                expr="//page[@name='payment_execution']//field[@name='payment_authorize_date']"
+                position="after"
+            >
+                <field
+                    name="paid_confirmer_id"
+                    attrs="{'invisible': [('paid_confirmer_id', '=', False)]}"
+                />
+                <field
+                    name="paid_confirm_date"
+                    attrs="{'invisible': [('paid_confirmer_id', '=', False)]}"
+                />
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from datetime import date
 
 from odoo.exceptions import UserError, ValidationError
@@ -9,8 +8,9 @@ from odoo.tests.common import TransactionCase, tagged
 class TestProjectBudgetReserve(TransactionCase):
     """Budget reserve flow on kmitl.project (ADR-0006): a project is submitted
     to งานแผน (action_confirm → to_verify, minting analytic + key), งานแผน
-    allocates via a budget.move at the project's dimension, then the project
-    reserves its budget.commitment via the จองงบ wizard (to_verify → to_send)."""
+    allocates via a budget.move at the project's dimension, the project confirms
+    it via the ยืนยันงบ wizard (to_verify → to_send), and reserves its
+    budget.commitment when approved (→ in_progress, ADR-0010)."""
 
     @classmethod
     def setUpClass(cls):
@@ -76,6 +76,9 @@ class TestProjectBudgetReserve(TransactionCase):
                 "move_type": "appropriation",
                 "budget_type": "expense",
                 "account_fiscal_year_id": self.fiscal_year.id,
+                # an appropriation line takes its ส่วนงาน/แหล่งเงิน from the header
+                "department_analytic_id": self.department.id,
+                "source_analytic_id": self.source.id,
                 "line_ids": [
                     (
                         0,
@@ -99,11 +102,16 @@ class TestProjectBudgetReserve(TransactionCase):
         return move
 
     def _reserve(self, project):
-        """Use the wizard to reserve budget (to_verify → to_send)."""
+        """Use the wizard to confirm the budget (to_verify → to_send)."""
         wizard = self.env["kmitl.project.reserve.confirm"].create(
             {"project_id": project.id}
         )
         wizard.action_confirm()
+
+    def _reserve_and_approve(self, project):
+        """Confirm the budget, then approve — which reserves (ADR-0010)."""
+        self._reserve(project)
+        project.action_approve()
 
     def test_confirm_mints_analytic_and_key(self):
         """action_confirm (draft→to_verify) mints key + analytic account."""
@@ -141,7 +149,8 @@ class TestProjectBudgetReserve(TransactionCase):
         self.assertAlmostEqual(project.budget_amount, 100000.0)
 
     def test_reserve_after_allocation(self):
-        """Full flow: confirm → allocate → reserve (wizard) → to_send with commitment."""
+        """Full flow: confirm → allocate → ยืนยันงบ (wizard) → to_send without a
+        commitment → approve → in_progress with the commitment."""
         project = self._make_project()
         project.action_confirm()
         self._allocate(project, 100000.0)
@@ -150,6 +159,11 @@ class TestProjectBudgetReserve(TransactionCase):
         self._reserve(project)
 
         self.assertEqual(project.state, "to_send")
+        self.assertFalse(project.budget_commitment_ids)
+
+        project.action_approve()
+
+        self.assertEqual(project.state, "in_progress")
         self.assertEqual(len(project.budget_commitment_ids), 1)
         commitment = project.budget_commitment_ids
         self.assertEqual(commitment.state, "reserved")
@@ -165,54 +179,101 @@ class TestProjectBudgetReserve(TransactionCase):
         project = self._make_project()
         project.action_confirm()
         self._allocate(project, 50000.0)
-        self._reserve(project)
+        self._reserve_and_approve(project)
         commitment = project.budget_commitment_ids
         self.assertIn(
             str(project.analytic_account_id.id),
             commitment.analytic_distribution or {},
         )
 
-    def test_budget_remaining_starts_at_full_reserved(self):
-        """budget_remaining = reserved − consumed; right after reserve nothing consumed."""
+    def test_budget_remaining_is_received_minus_consumed(self):
+        """budget_remaining = received − consumed (ADR-0012): the full allocation
+        before the reservation, then lowered by each ตัดงบ."""
         project = self._make_project()
         project.action_confirm()
         self._allocate(project, 100000.0)
-        self._reserve(project)
         self.assertAlmostEqual(project.budget_remaining, 100000.0)
+        self._reserve_and_approve(project)
+        self.assertAlmostEqual(project.budget_remaining, 100000.0)
+        project.budget_commitment_ids._post_budget_event("consume", 40000.0)
+        project.invalidate_recordset()
+        self.assertAlmostEqual(project.budget_consumed, 40000.0)
+        self.assertAlmostEqual(project.budget_remaining, 60000.0)
 
     def test_reserve_is_idempotent(self):
         """Re-running _reserve_project_commitment does not create a second commitment."""
         project = self._make_project()
         project.action_confirm()
         self._allocate(project, 100000.0)
-        self._reserve(project)
+        self._reserve_and_approve(project)
         self.assertEqual(len(project.budget_commitment_ids), 1)
         project._reserve_project_commitment()
         self.assertEqual(len(project.budget_commitment_ids), 1)
 
-    def test_cancel_releases_untouched_commitment(self):
-        """Cancelling a project that has not yet spent cancels its reservation."""
+    def test_cancel_blocked_while_money_held(self):
+        """Cancel is the soft delete of ADR-0011: a project still holding its
+        allocation (reserved or not) cannot be cancelled, and nothing moves."""
         project = self._make_project()
         project.action_confirm()
         self._allocate(project, 100000.0)
-        self._reserve(project)
+        self._reserve_and_approve(project)
         commitment = project.budget_commitment_ids
-        project.action_cancel()
-        self.assertEqual(project.state, "cancel")
-        self.assertEqual(commitment.state, "cancel")
+        with self.assertRaises(UserError):
+            project.action_cancel()
+        self.assertEqual(project.state, "in_progress")
+        self.assertEqual(commitment.state, "reserved")
 
-    def test_cancel_keeps_commitment_when_in_progress(self):
-        """Cancelling an in-progress project keeps its commitment."""
+    def test_approve_keeps_legacy_reservation(self):
+        """A legacy project reserved before approval keeps its single commitment
+        through approval (``_reserve_project_commitment`` is idempotent)."""
         project = self._make_project()
         project.action_confirm()
         self._allocate(project, 100000.0)
         self._reserve(project)
+        project._reserve_project_commitment()  # legacy: reserved at to_send
+        project.state = "sent"
+        commitment = project.budget_commitment_ids
         project.action_approve()
         self.assertEqual(project.state, "in_progress")
-        commitment = project.budget_commitment_ids
-        project.action_cancel()
-        self.assertEqual(project.state, "cancel")
-        self.assertEqual(commitment.state, "reserved")
+        self.assertEqual(project.budget_commitment_ids, commitment)
+
+    def test_approve_without_budget_still_approves(self):
+        """A reservation that fails at approval does not block it: the project
+        lands in_progress without a commitment and a note is posted; the retry
+        button reserves once the money is free again."""
+        project = self._make_project()
+        project.action_confirm()
+        self._allocate(project, 100000.0)
+        self._reserve(project)
+        # Another reservation at the project's coordinate eats the money.
+        Commitment = self.env["budget.commitment"]
+        vals = {
+            "account_id": self.budget_account.id,
+            "amount": 60000.0,
+            "analytic_distribution": dict(project.analytic_distribution),
+            "account_fiscal_year_id": self.fiscal_year.id,
+            "company_id": project.company_id.id,
+        }
+        if "operating_unit_id" in Commitment._fields:
+            vals["operating_unit_id"] = project.operating_unit_id.id
+        rival = Commitment.create(vals)
+        rival.action_reserve()
+        self.env["ir.config_parameter"].sudo().set_param("budget.allow_negative", False)
+
+        project.action_approve()
+
+        self.assertEqual(project.state, "in_progress")
+        self.assertFalse(project.budget_commitment_ids)
+        self.assertIn("ยังจองงบประมาณไม่ได้", project.message_ids[:1].body or "")
+        with self.assertRaises(UserError):
+            project.action_retry_reserve_budget()
+
+        rival.action_cancel()
+        project.action_retry_reserve_budget()
+        self.assertEqual(len(project.budget_commitment_ids), 1)
+        self.assertEqual(project.budget_commitment_ids.state, "reserved")
+        with self.assertRaises(UserError):
+            project.action_retry_reserve_budget()
 
     def test_confirm_runs_exception_gate(self):
         """ส่งเข้าแผน runs detect_exceptions: a Strategic Project missing strategic-plan
@@ -307,9 +368,9 @@ class TestProjectBudgetReserve(TransactionCase):
         other_dept = self.env["account.analytic.account"].create(
             {
                 "name": "Other Dept",
-                "plan_id": self.env["account.analytic.plan"].search(
-                    [("code", "=", "departments")], limit=1
-                ).id,
+                "plan_id": self.env["account.analytic.plan"]
+                .search([("code", "=", "departments")], limit=1)
+                .id,
             }
         )
         with self.assertRaises(UserError):
@@ -323,9 +384,9 @@ class TestProjectBudgetReserve(TransactionCase):
         other_activity = self.env["account.analytic.account"].create(
             {
                 "name": "Other Activity",
-                "plan_id": self.env["account.analytic.plan"].search(
-                    [("code", "=", "activities")], limit=1
-                ).id,
+                "plan_id": self.env["account.analytic.plan"]
+                .search([("code", "=", "activities")], limit=1)
+                .id,
             }
         )
         dist = dict(project.analytic_distribution or {})
@@ -342,25 +403,95 @@ class TestProjectBudgetReserve(TransactionCase):
         # The project now has analytic_account_id from action_confirm.
         # The kmitl_project key should already be in analytic_distribution.
         # Simulate writing the same distribution again (no-op change) — should not raise.
-        project.write({"analytic_distribution": dict(project.analytic_distribution or {})})
+        project.write(
+            {"analytic_distribution": dict(project.analytic_distribution or {})}
+        )
 
-    def test_auto_resync_on_allocation_change(self):
-        """After a top-up allocation move, budget_amount rises and if commitment
-        exists it is re-synced to the new amount (pre-spending)."""
+    def _active_commitment(self, project):
+        return project.budget_commitment_ids.filtered(lambda c: c.state != "cancel")
+
+    def test_direct_allocation_tops_up_reservation(self):
+        """A later allocation posted as a budget.move (not a budget transfer)
+        tops the reservation up by the same amount, even once spending has
+        started (budget ADR-0017, Q5)."""
         project = self._make_project()
         project.action_confirm()
         self._allocate(project, 100000.0)
-        self._reserve(project)
-        self.assertAlmostEqual(project.budget_amount, 100000.0)
-        commitment = project.budget_commitment_ids.filtered(lambda c: c.state != "cancel")
-        self.assertAlmostEqual(commitment.amount, 100000.0)
+        self._reserve_and_approve(project)
+        commitment = self._active_commitment(project)
+        commitment._post_budget_event("consume", 40000.0)
 
-        self._allocate(project, 50000.0)
+        move = self._allocate(project, 50000.0)
 
         project.invalidate_recordset()
         self.assertAlmostEqual(project.budget_amount, 150000.0)
-        active = project.budget_commitment_ids.filtered(lambda c: c.state != "cancel")
-        self.assertAlmostEqual(active.amount, 150000.0)
+        self.assertEqual(self._active_commitment(project), commitment)
+        self.assertAlmostEqual(commitment.amount, 150000.0)
+        self.assertAlmostEqual(commitment.total_reserved, 150000.0)
+        self.assertAlmostEqual(commitment.available_to_obligate, 110000.0)
+        self.assertAlmostEqual(commitment.total_consumed, 40000.0)
+        self.assertTrue(commitment._has_budget_event(move, "reserve"))
+
+    def test_cancelling_allocation_releases_its_top_up(self):
+        project = self._make_project()
+        project.action_confirm()
+        self._allocate(project, 100000.0)
+        self._reserve_and_approve(project)
+        commitment = self._active_commitment(project)
+        move = self._allocate(project, 50000.0)
+        self.assertAlmostEqual(commitment.total_reserved, 150000.0)
+
+        move.button_cancel()
+
+        project.invalidate_recordset()
+        self.assertAlmostEqual(project.budget_amount, 100000.0)
+        self.assertAlmostEqual(commitment.amount, 100000.0)
+        self.assertAlmostEqual(commitment.total_reserved, 100000.0)
+        self.assertFalse(commitment._has_budget_event(move, "reserve"))
+
+    def test_cancelling_spent_allocation_blocked(self):
+        """The topped-up money is no longer free once spent: the allocation
+        cannot be undone under the reservation."""
+        project = self._make_project()
+        project.action_confirm()
+        self._allocate(project, 100000.0)
+        self._reserve_and_approve(project)
+        commitment = self._active_commitment(project)
+        move = self._allocate(project, 50000.0)
+        commitment._post_budget_event("consume", 120000.0)
+        with self.assertRaises(UserError), self.env.cr.savepoint():
+            move.button_cancel()
+        self.assertEqual(move.state, "posted")
+        self.assertAlmostEqual(commitment.total_reserved, 150000.0)
+
+    def test_reposting_pre_reserve_allocation_does_not_double(self):
+        """An allocation posted before the reservation, reset and re-posted,
+        brings back money the reservation already covers: no top-up."""
+        project = self._make_project()
+        project.action_confirm()
+        move = self._allocate(project, 100000.0)
+        self._reserve_and_approve(project)
+        commitment = self._active_commitment(project)
+        move.button_draft()
+        move.action_post()
+        project.invalidate_recordset()
+        self.assertAlmostEqual(project.budget_amount, 100000.0)
+        self.assertAlmostEqual(commitment.amount, 100000.0)
+        self.assertAlmostEqual(commitment.total_reserved, 100000.0)
+
+    def test_deleting_allocation_releases_its_top_up(self):
+        project = self._make_project()
+        project.action_confirm()
+        self._allocate(project, 100000.0)
+        self._reserve_and_approve(project)
+        commitment = self._active_commitment(project)
+        move = self._allocate(project, 50000.0)
+        self.assertAlmostEqual(commitment.total_reserved, 150000.0)
+        move.unlink()
+        project.invalidate_recordset()
+        self.assertAlmostEqual(project.budget_amount, 100000.0)
+        self.assertAlmostEqual(commitment.amount, 100000.0)
+        self.assertAlmostEqual(commitment.total_reserved, 100000.0)
 
     def test_isolation_two_projects(self):
         """Two projects sharing the four base dims do not cross-deplete each other."""

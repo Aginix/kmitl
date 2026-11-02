@@ -2,7 +2,7 @@
     "name": "KMITL Project — Coordinator",
     "summary": "Project coordinators: Own Project access, cross-OU visibility "
     "and status notifications for the project's owners",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.0.1",
     "category": "Project",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",

@@ -1,0 +1,81 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* disbursement_payment_paid_confirm
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-29 12:00+0000\n"
+"PO-Revision-Date: 2026-10-29 12:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: disbursement_payment_paid_confirm
+#: model:ir.model.fields,field_description:disbursement_payment_paid_confirm.field_disbursement_request__can_confirm_payment_paid
+msgid "Can Confirm Payment Paid"
+msgstr "ยืนยันจ่ายสำเร็จได้"
+
+#. module: disbursement_payment_paid_confirm
+#. odoo-python
+#: code:addons/disbursement_payment_paid_confirm/models/disbursement_request.py:0
+#: model_terms:ir.ui.view,arch_db:disbursement_payment_paid_confirm.view_disbursement_request_form
+#, python-format
+msgid "Confirm Payment Completed"
+msgstr "ยืนยันจ่ายสำเร็จ"
+
+#. module: disbursement_payment_paid_confirm
+#: model_terms:ir.ui.view,arch_db:disbursement_payment_paid_confirm.view_disbursement_request_form
+msgid "Confirm that every payee of this disbursement has been paid?"
+msgstr "ยืนยันว่าจ่ายเงินให้ผู้รับทุกรายของใบขอเบิกนี้สำเร็จแล้ว?"
+
+#. module: disbursement_payment_paid_confirm
+#: model:ir.model,name:disbursement_payment_paid_confirm.model_disbursement_request
+msgid "Disbursement Request"
+msgstr "ใบขอเบิก"
+
+#. module: disbursement_payment_paid_confirm
+#: model:ir.model,name:disbursement_payment_paid_confirm.model_disbursement_request_signature
+msgid "Disbursement Request Signature"
+msgstr "ลายเซ็นในใบขอเบิก"
+
+#. module: disbursement_payment_paid_confirm
+#: model:ir.model.fields.selection,name:disbursement_payment_paid_confirm.selection__disbursement_request_signature__step__payment_paid
+msgid "Paying Officer"
+msgstr "เจ้าหน้าที่การเงินจ่าย"
+
+#. module: disbursement_payment_paid_confirm
+#: model:ir.model.fields,field_description:disbursement_payment_paid_confirm.field_disbursement_request__paid_confirmer_id
+msgid "Payment Confirmed By"
+msgstr "ผู้ยืนยันจ่ายสำเร็จ"
+
+#. module: disbursement_payment_paid_confirm
+#: model:ir.model.fields,field_description:disbursement_payment_paid_confirm.field_disbursement_request__paid_confirm_date
+msgid "Payment Confirmed On"
+msgstr "วันที่ยืนยันจ่ายสำเร็จ"
+
+#. module: disbursement_payment_paid_confirm
+#. odoo-python
+#: code:addons/disbursement_payment_paid_confirm/models/disbursement_request.py:0
+#, python-format
+msgid "Raise the payment vouchers first."
+msgstr "กรุณาออกใบสำคัญจ่ายก่อน"
+
+#. module: disbursement_payment_paid_confirm
+#. odoo-python
+#: code:addons/disbursement_payment_paid_confirm/models/disbursement_request.py:0
+#, python-format
+msgid "These payees have no voucher yet: %s"
+msgstr "ผู้รับเงินเหล่านี้ยังไม่มีใบสำคัญจ่าย: %s"
+
+#. module: disbursement_payment_paid_confirm
+#. odoo-python
+#: code:addons/disbursement_payment_paid_confirm/models/disbursement_request.py:0
+#, python-format
+msgid "These vouchers are not paid yet: %s"
+msgstr "ใบสำคัญจ่ายเหล่านี้ยังไม่ได้จ่าย: %s"

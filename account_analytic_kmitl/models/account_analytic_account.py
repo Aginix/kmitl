@@ -70,3 +70,41 @@ class AccountAnalyticAccount(models.Model):
             )
         ],
     )
+
+    def _has_ledger_footprint(self, exclude=None):
+        """Whether any of these analytic accounts was ever recorded on another
+        document: an analytic line, or any stored ``analytic_distribution``
+        (budget moves, reservations, transfers, purchase requests, …) in any
+        state, cancelled included. ``exclude`` is the owning record, whose own
+        distribution carries the account and does not count.
+
+        Deleting an account with a footprint would leave a dead id in those
+        JSON distributions, so such an account is archived, never deleted."""
+        if not self:
+            return False
+        if self.sudo().line_ids:
+            return True
+        # Raw SQL below: pending ORM writes must reach the tables first.
+        self.env.flush_all()
+        ids = [str(account_id) for account_id in self.ids]
+        for model in self.env.registry.values():
+            field = model._fields.get("analytic_distribution")
+            if (
+                model._abstract
+                or model._transient
+                or not model._auto
+                or not field
+                or not field.store
+            ):
+                continue
+            query = "SELECT 1 FROM {} WHERE analytic_distribution ?| %s".format(
+                model._table
+            )
+            params = [ids]
+            if exclude is not None and exclude._name == model._name and exclude.ids:
+                query += " AND id NOT IN %s"
+                params.append(tuple(exclude.ids))
+            self.env.cr.execute(query + " LIMIT 1", params)
+            if self.env.cr.fetchone():
+                return True
+        return False

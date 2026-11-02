@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="approval_request_view_form" model="ir.ui.view">
+        <field name="name">approval.request.form.verifier.operating_unit</field>
+        <field name="model">approval.request</field>
+        <field
+            name="inherit_id"
+            ref="agx_approval_verifier.approval_request_view_form"
+        />
+        <field name="arch" type="xml">
+            <!-- the visible OU field is gated on multi-OU: without this one a
+                 plain requester's new form never loads the default OU, so the
+                 candidates (and the dropdown) come up empty -->
+            <field name="verifier_id" position="before">
+                <field name="operating_unit_id" invisible="1" />
+            </field>
+        </field>
+    </record>
+</odoo>

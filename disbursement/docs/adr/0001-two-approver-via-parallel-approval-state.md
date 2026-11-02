@@ -1,5 +1,12 @@
 # Two-approver step via a parallel `approval_state` (not tier.validation, not new `state` values)
 
+**Status: superseded by [disbursement_wc ADR-0001](../../../disbursement_wc/docs/adr/0001-the-route-is-the-only-control.md).**
+`approval_state`, the two-approver step, the approver queues and the reject flow are
+retired: Validate and the two approvals are acts of their own modules
+(`disbursement_validation`, `disbursement_approver_director`,
+`disbursement_approver_rector`) that a station lists, and where the request sits is
+the station's business. Kept as history.
+
 The `verified → approved` transition on `disbursement.request` requires **two
 approvals in sequence** — the Finance Division Director (ผอ.กองคลัง) then the
 Rector-delegated approver (ผู้ได้รับมอบอำนาจอธิการบดี), on every request
@@ -36,7 +43,8 @@ notes it "mirrors `disbursement.request.display_status`").
   Todo leaves when cleared via `activity_feedback`.
 - `action_approve` is **repurposed** as the second (Rector) step: it now requires
   `approval_state == 'pending_rector'` and is the single place the budget hook
-  (`_action_approve_budget`) fires. Any code that called `action_approve()` on a
+  (`_action_approve_budget`; since [ADR 0003](0003-budget-split-into-disbursement-budget.md)
+  the core hook `_on_final_approval`, filled in by `disbursement_budget`) fires. Any code that called `action_approve()` on a
   merely-`verified` request must first go through `action_approve_finance()`.
 - The two-approver progress is shown as a **separate `approval_state` status bar**
   on the form (visible only while the request is `verified`), deliberately kept

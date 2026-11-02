@@ -46,6 +46,11 @@
             min-width: 200px;
         }
 
+        // Refresh button sits at the far right of the filter bar.
+        &.o_bd_refresh {
+            margin-left: auto;
+        }
+
         &.o_bd_check {
             justify-content: flex-end;
 

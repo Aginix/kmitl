@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
+    <data noupdate="1">
     <!--
       "เจ้าหน้าที่แผน" — the Responsible Role used to route group Todos for
       procurement planning (ADR-0002). A base_user_role role names *who does the
@@ -14,4 +15,5 @@
             eval="[(6, 0, [ref('procurement_plan.group_procurement_plan_user')])]"
         />
     </record>
+    </data>
 </odoo>

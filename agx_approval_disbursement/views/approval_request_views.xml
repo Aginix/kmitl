@@ -8,28 +8,32 @@
             ref="agx_approval.approval_request_view_form"
         />
         <field name="arch" type="xml">
-            <xpath expr="//header" position="after">
-                <div class="alert alert-warning" role="alert" style="margin-bottom:0px;"
-                    attrs="{'invisible': [('is_correction', '=', False)]}">
-                    <p><strong>ตีกลับจากการเบิก:</strong> คำขอนี้ถูกตีกลับจากใบเบิก แก้ไขบัญชีผู้รับเงิน คำอธิบาย หรือหลักฐานการเบิก แล้วกด "ยืนยันการแก้ไข"</p>
-                </div>
-            </xpath>
-            <xpath expr="//header/field[@name='is_correction']" position="after">
-                <field name="has_active_disbursement" invisible="1" />
-            </xpath>
-            <xpath expr="//header/button[@name='action_bill']" position="attributes">
-                <attribute name="name">action_create_disbursement_request</attribute>
-                <attribute name="groups">disbursement.group_disbursement_user</attribute>
-                <attribute name="attrs">{'invisible': ['|', ('state', '!=', 'to_disburse'), ('has_active_disbursement', '=', True)]}</attribute>
-            </xpath>
-            <xpath expr="//header/button[@name='action_cancel']" position="after">
+            <xpath expr="//header/button[@name='action_cancel']" position="before">
                 <button
-                    name="action_confirm_correction"
-                    string="ยืนยันการแก้ไข"
+                    name="action_create_disbursement_request"
+                    string="สร้างใบขอเบิก"
                     type="object"
                     class="oe_highlight"
-                    groups="agx_approval.group_approval_user"
-                    attrs="{'invisible': [('is_correction', '=', False)]}"
+                    icon="fa-plus"
+                    groups="disbursement.group_disbursement_user"
+                    attrs="{'invisible': [('state', '!=', 'approved')]}"
+                />
+                <button
+                    name="action_close_disbursement"
+                    string="ปิดคำขอ"
+                    type="object"
+                    class="btn-secondary"
+                    groups="disbursement.group_disbursement_user"
+                    confirm="ปิดคำขอนี้? หลังปิดจะสร้างใบขอเบิกเพิ่มไม่ได้ และยอดคงเหลือจะถูกส่งคืนเงินเหลือจ่าย (ยกเว้นคำขอที่ใช้ใบจองร่วมของโครงการ/แผน)"
+                    attrs="{'invisible': [('state', '!=', 'approved')]}"
+                />
+                <button
+                    name="action_reopen_disbursement"
+                    string="เปิดคำขอกลับ"
+                    type="object"
+                    class="btn-secondary"
+                    groups="disbursement.group_disbursement_manager"
+                    attrs="{'invisible': ['|', ('state', '!=', 'done'), ('leftover_returned_amount', '!=', 0)]}"
                 />
             </xpath>
             <xpath expr="//div[@name='button_box']" position="inside">
@@ -39,24 +43,78 @@
                     class="oe_stat_button"
                     icon="fa-money"
                     attrs="{'invisible': [('disbursement_request_count', '=', 0)]}"
+                    groups="disbursement.group_disbursement_user,agx_approval.group_approval_own"
                 >
                     <field
                         name="disbursement_request_count"
                         widget="statinfo"
-                        string="Disbursements"
+                        string="ใบขอเบิก"
                     />
                 </button>
             </xpath>
-            <xpath expr="//page[@name='actual_expenses']" position="inside">
-                <group name="attachment_for_disbursement" string="เอกสารแนบสำหรับการเบิก"
-                    attrs="{'invisible': [('state', 'not in', ['approved', 'to_disburse', 'billed', 'returned'])]}">
-                    <field name="disbursement_attachment_ids"
-                        widget="many2many_binary_disbursement"
-                        attrs="{'readonly': ['&amp;', ('disbursement_request_count', '>', 0), ('is_correction', '=', False)]}">
-                    </field>
-                </group>
+            <!-- ภาพรวมการเบิกจ่าย: the figures right under the title, the
+                 tables in the first tab, once the request is approved. -->
+            <xpath expr="//div[hasclass('oe_title')]" position="after">
+                <field name="disbursement_overview" invisible="1" />
+                <field name="leftover_returned_amount" invisible="1" />
+                <div attrs="{'invisible': [('state', 'not in', ('approved', 'done'))]}">
+                    <widget name="agx_approval_disbursement_overview_summary" />
+                </div>
+            </xpath>
+            <xpath expr="//notebook/page[1]" position="before">
+                <page
+                    string="การเบิกจ่าย"
+                    name="disbursement"
+                    attrs="{'invisible': [('state', 'not in', ('approved', 'done'))]}"
+                >
+                    <widget name="agx_approval_disbursement_overview_detail" />
+                </page>
             </xpath>
         </field>
     </record>
 
+    <!-- ใบขออนุมัติที่รอเบิก: what finance works from (ADR-0010). -->
+    <record id="approval_request_view_tree_open_disbursement" model="ir.ui.view">
+        <field name="name">approval.request.tree.open.disbursement</field>
+        <field name="model">approval.request</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <tree string="ใบขออนุมัติที่รอเบิก" create="0" decoration-danger="remaining_amount &lt; 0">
+                <field name="name" />
+                <field name="category_id" />
+                <field name="owner_id" />
+                <field name="requesting_department_id" optional="show" />
+                <field name="account_fiscal_year_id" optional="hide" options="{'no_open': True}" />
+                <field name="currency_id" invisible="1" />
+                <field name="total_amount" string="ยอดอนุมัติ" sum="รวม" />
+                <field name="disbursed_amount" sum="รวม" />
+                <field name="in_progress_amount" sum="รวม" />
+                <field name="remaining_amount" sum="รวม" />
+                <field name="state" widget="badge" decoration-info="state == 'approved'"
+                    decoration-success="state == 'done'" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_approval_request_open_disbursement" model="ir.actions.act_window">
+        <field name="name">ใบขออนุมัติที่รอเบิก</field>
+        <field name="res_model">approval.request</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('state', '=', 'approved')]</field>
+        <field
+            name="view_ids"
+            eval="[(5, 0, 0),
+                   (0, 0, {'view_mode': 'tree', 'view_id': ref('approval_request_view_tree_open_disbursement')}),
+                   (0, 0, {'view_mode': 'form', 'view_id': ref('agx_approval.approval_request_view_form')})]"
+        />
+    </record>
+
+    <menuitem
+        id="menu_approval_request_open_disbursement"
+        name="ใบขออนุมัติที่รอเบิก"
+        parent="disbursement.menu_disbursement_root"
+        action="action_approval_request_open_disbursement"
+        sequence="12"
+        groups="disbursement.group_disbursement_user"
+    />
 </odoo>

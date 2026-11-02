@@ -1,0 +1,3 @@
+id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
+access_kmitl_project_budget_move_line_user,kmitl_project_budget_move_line_user,model_kmitl_project_budget_move_line,kmitl_project.group_kmitl_project_user,1,0,0,0
+access_kmitl_project_budget_move_line_budget_viewer,kmitl_project_budget_move_line_budget_viewer,model_kmitl_project_budget_move_line,budget.group_budget_viewer,1,0,0,0

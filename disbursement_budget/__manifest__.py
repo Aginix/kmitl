@@ -1,0 +1,28 @@
+# License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
+
+{
+    "name": "Disbursement Budget",
+    "summary": "Consume the linked budget commitment as the disbursement request's own act",
+    "version": "16.0.1.3.1",
+    "category": "Disbursement",
+    "license": "LGPL-3",
+    "author": "KMITL",
+    "depends": [
+        "disbursement",
+        # A DR consumes without obligating first; the budget ledger liquidates
+        # the reservation for it (budget ADR-0017).
+        "budget",
+        # The printed ใบขอเบิก the budget rows are added to.
+        "disbursement_pdf",
+    ],
+    "data": [
+        "security/security.xml",
+        "data/exception_rule_data.xml",
+        "views/disbursement_request_views.xml",
+        "views/budget_commitment_views.xml",
+        "report/report_disbursement_request.xml",
+    ],
+    "installable": True,
+    # disbursement_pdf is pulled in, not a trigger.
+    "auto_install": ["disbursement", "budget"],
+}
