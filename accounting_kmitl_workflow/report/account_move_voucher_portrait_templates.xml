@@ -16,9 +16,6 @@
                 <t t-set="no_dim" t-value="o.env['account.analytic.account']"/>
                 <t t-set="dept" t-value="dims.get('departments', no_dim)"/>
                 <t t-set="dept_root" t-value="o._kmitl_voucher_ancestors(dept)[:1]"/>
-                <!-- Activity hierarchy, root first: ด้าน → แผนงาน → กิจกรรมหลัก → กิจกรรมรอง → กิจกรรมย่อย -->
-                <t t-set="activity_chain" t-value="o._kmitl_voucher_ancestors(dims.get('activities', no_dim))"/>
-                <t t-set="activity_levels" t-value="[(1, 'แผนงาน'), (0, 'ด้าน'), (2, 'กิจกรรมหลัก'), (3, 'กิจกรรมรอง'), (4, 'กิจกรรมย่อย')]"/>
                 <t t-set="title" t-value="{'in_invoice': 'ใบสำคัญตั้งเจ้าหนี้', 'out_invoice': 'ใบสำคัญตั้งลูกหนี้'}.get(o.move_type, 'ใบสำคัญรายการบัญชี')"/>
                 <t t-call="web.basic_layout">
                     <div class="page">
@@ -43,9 +40,10 @@
                             .kv-p table.kv td { padding: 0 2px !important; vertical-align: bottom; }
                             .kv-p table.kv td.lbl { white-space: nowrap; text-align: right; width: 1%; }
 
-                            /* Dimensions */
-                            .kv-p table.dims { width: 100%; margin-top: 10px; }
-                            .kv-p table.dims td { width: 50%; vertical-align: top; padding: 0 4px !important; }
+                            /* Budget details — the same table as the DR (disbursement_sarabun). */
+                            .kv-p table.budget { width: 100%; border-collapse: collapse; }
+                            .kv-p table.budget td { border: 1px solid #bfbfbf !important; padding: 2px 4px !important; vertical-align: top; }
+                            .kv-p table.budget td:first-child { width: 30%; }
 
                             /* Accounting lines */
                             .kv-p table.items { width: 100%; margin-top: 10px; }
@@ -116,29 +114,19 @@
                                     <td class="lbl">รหัสงบประมาณ :</td>
                                     <td><span class="dot" t-out="', '.join(dict.fromkeys(lines.filtered(lambda l: l.analytic_distribution and l.account_id.internal_group in ('expense', 'income')).mapped('account_id.code')))"/></td>
                                 </tr>
-                                <tr>
-                                    <td class="lbl">รหัสโครงการ :</td>
-                                    <td><span class="dot" t-out="dims.get('kmitl_project', no_dim).code or ''"/></td>
-                                </tr>
                             </table>
 
-                            <!-- Financial dimensions -->
-                            <div class="mt-3"><span class="b">อ้างอิง จากแหล่งเงิน</span> : <t t-if="'sources' in dims"><span t-out="dims['sources'].name"/> (<span t-out="dims['sources'].code"/>)</t></div>
-                            <table class="dims">
+                            <!-- Financial dimensions, shown as the DR shows them: each
+                                 account by its display name, "[code] parent / … / child". -->
+                            <div class="mt-3 mb-1">รายละเอียดงบประมาณ</div>
+                            <table class="budget">
+                                <tr t-foreach="[('sources', 'แหล่งเงิน'), ('departments', 'ส่วนงาน'), ('funds', 'กองทุน'), ('activities', 'ด้าน/แผนงาน/กิจกรรม'), ('kmitl_project', 'โครงการ')]" t-as="row">
+                                    <td t-out="row[1]"/>
+                                    <td t-out="dims.get(row[0], no_dim).display_name or ''"/>
+                                </tr>
                                 <tr>
-                                    <td>
-                                        <div><span class="b">หน่วยงาน</span> : <t t-if="dept"><span t-out="dept.name"/> (<span t-out="dept.code"/>)</t></div>
-                                        <div><span class="b">โครงการ</span> : <span t-out="dims.get('kmitl_project', no_dim).name or ''"/></div>
-                                        <div><span class="b">หลักสูตร/สาขาวิชา</span> :</div>
-                                    </td>
-                                    <td>
-                                        <t t-foreach="activity_levels" t-as="level">
-                                            <t t-set="acc" t-value="activity_chain[level[0]] if len(activity_chain) &gt; level[0] else no_dim"/>
-                                            <t t-set="acc_name" t-value="acc.name or ''"/>
-                                            <div><span class="b" t-out="level[1]"/> : <t t-if="acc"><span t-out="acc_name[len(level[1]) + 1:] if acc_name.startswith(level[1] + ' ') else acc_name"/> (<span t-out="acc.code"/>)</t></div>
-                                        </t>
-                                        <div><span class="b">กองทุน</span> : <t t-if="'funds' in dims"><span t-out="dims['funds'].name"/> (<span t-out="dims['funds'].code"/>)</t></div>
-                                    </td>
+                                    <td>หลักสูตร/สาขาวิชา</td>
+                                    <td/>
                                 </tr>
                             </table>
 
