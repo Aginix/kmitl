@@ -136,3 +136,8 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:disbursement_pdf.report_disbursement_request
 msgid "ใบขอเบิกเงิน"
 msgstr ""
+
+#. module: disbursement_pdf
+#: model_terms:ir.ui.view,arch_db:disbursement_pdf.report_disbursement_request
+msgid "Page"
+msgstr "หน้า"

@@ -1,7 +1,7 @@
 from odoo import _, models
 
 # Approval request states that no longer hold the project open.
-APPROVAL_REQUEST_CLOSED_STATES = ("billed", "rejected")
+APPROVAL_REQUEST_CLOSED_STATES = ("done", "rejected")
 
 
 class KmitlProject(models.Model):

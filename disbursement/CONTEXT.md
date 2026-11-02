@@ -63,6 +63,14 @@ _Avoid_: จ่ายตรง / Direct paid (that is the **payment type** — p
 the payee rather than as an advance or a prepayment), Stand-alone request (a
 request without budget control at all).
 
+**Advance clearing request** (ใบเบิกชดใช้เงินยืม):
+A request of payment type เงินยืม. It names one ค้างชำระ advance-payment
+agreement of its operating unit, its only payee is that loan's borrower, and it
+pays no money out — no payment method, no bank account. Its ตัดงบประมาณ act
+clears the loan by the consumed amount (`advance_payment_disbursement`,
+advance_payment ADR-0032).
+_Avoid_: ใบเบิกเงินยืม (sounds like paying the loan out), advance DR.
+
 **Memo number** (เลขที่หนังสือ):
 The number of the official memo (หนังสือบันทึกข้อความ) authorising the request.
 Typed in by hand on a direct claim; on any other request it is the number

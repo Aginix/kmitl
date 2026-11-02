@@ -28,7 +28,9 @@ upfront.
     context): give a ใบขอซื้อ (พ.1) its **แหล่งงบประมาณ** — reserve anew from the
     ผังงบประมาณ, or draw the reservation of a โครงการ or a แผนจัดซื้อจัดจ้าง. Each
     bridge owns its own answer; a source-less ใบจองงบประมาณ is not an option here
-    (budget ADR-0015).
+    (budget ADR-0015). With the add-on `purchase_request_budget_cross_charge`,
+    reserving anew opens the ใบจองงบประมาณ itself as a dialog, where ถัวจ่าย codes are
+    added to its Reservation Split (`budget_commitment_cross_charge`, budget ADR-0020).
 - [Budget Support Request](./budget_support_request/CONTEXT.md) — a requesting unit's
   application for central to allocate budget onto its own `department` dimension
   (ขอรับการสนับสนุนงบประมาณ); routed for approval through e-Saraban, then **fulfilled**
@@ -175,6 +177,13 @@ upfront.
   an activity, every step lands in the chatter, and its author (or someone on their
   behalf) closes it. Opt-in
   per model through a mixin.
+- [Related Documents](./agx_related_document/CONTEXT.md) — a record cites other
+  documents (in-system or not) as supporting evidence: kinds configured by admins,
+  a snapshot row per citation, opened under the reader's own rights, and an automatic
+  ถูกอ้างอิงโดย list on the cited model. Opt-in per model through a mixin; consumers are
+  thin bridges (`budget_support_request_related_document`,
+  `budget_transfer_related_document`, `advance_payment_related_document`,
+  `agx_related_document_sarabun`).
 - [Photo Viewer — Annotation History](./agx_photoviewer_annotation_history/CONTEXT.md) —
   a side panel listing who added, changed or removed marks on a file in each visit, and
   drawing the layer as any of those Changes left it.

@@ -91,6 +91,11 @@ class DisbursementRequest(models.Model):
         tracking=True,
     )
 
+    # Whether the request pays money out to its payees. An advance (เงินยืม)
+    # books spending already paid out of a loan: no payment method, no bank
+    # account.
+    pays_out = fields.Boolean(compute="_compute_pays_out")
+
     # เลขที่หนังสือ: stamped by disbursement_sarabun when e-Saraban issues the
     # หนังสือ's number; typed from the memo on a direct claim
     # (disbursement_direct_claim).
@@ -479,6 +484,11 @@ class DisbursementRequest(models.Model):
             self.has_tax = True
         elif self.payment_type in ("advance", "prepaid"):
             self.has_tax = False
+
+    @api.depends("payment_type")
+    def _compute_pays_out(self):
+        for rec in self:
+            rec.pays_out = rec.payment_type != "advance"
 
     @api.onchange("has_tax")
     def _onchange_has_tax(self):
