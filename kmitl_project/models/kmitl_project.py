@@ -227,7 +227,7 @@ class KmitlProject(models.Model):
     target_ids = fields.One2many(
         "project.target",
         "project_id",
-        string="กลุ่มเป้าหมาย/ผู้ดำเนินโครงการ",
+        string="กลุ่มเป้าหมาย",
         domain=[("line_type", "=", "target")],
         readonly=True,
         states=EDITABLE_STATES,
@@ -236,7 +236,7 @@ class KmitlProject(models.Model):
     participant_ids = fields.One2many(
         "project.target",
         "project_id",
-        string="กลุ่มเป้าหมาย/ผู้ดำเนินโครงการ",
+        string="ผู้เข้าร่วมโครงการ",
         domain=[("line_type", "=", "participant")],
         readonly=True,
         states=EDITABLE_STATES,
@@ -245,7 +245,7 @@ class KmitlProject(models.Model):
     organizer_ids = fields.One2many(
         "project.target",
         "project_id",
-        string="กลุ่มเป้าหมาย/ผู้ดำเนินโครงการ",
+        string="ผู้ดำเนินโครงการ และวิทยากร",
         domain=[("line_type", "=", "organizer")],
         readonly=True,
         states=EDITABLE_STATES,
