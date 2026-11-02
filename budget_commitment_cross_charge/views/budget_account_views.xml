@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_budget_account_tree" model="ir.ui.view">
+        <field name="name">budget.account.tree (cross-charge)</field>
+        <field name="model">budget.account</field>
+        <field name="inherit_id" ref="budget.view_budget_account_tree" />
+        <field name="arch" type="xml">
+            <field name="budgetable" position="after">
+                <field
+                    name="cross_chargeable"
+                    widget="boolean_toggle"
+                    optional="show"
+                />
+            </field>
+        </field>
+    </record>
+
+    <record id="view_budget_account_form" model="ir.ui.view">
+        <field name="name">budget.account.form (cross-charge)</field>
+        <field name="model">budget.account</field>
+        <field name="inherit_id" ref="budget.view_budget_account_form" />
+        <field name="arch" type="xml">
+            <field name="budgetable" position="after">
+                <field name="cross_chargeable" />
+            </field>
+        </field>
+    </record>
+</odoo>

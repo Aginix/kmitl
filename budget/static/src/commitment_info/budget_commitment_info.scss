@@ -1,11 +1,15 @@
-// Long analytic names (ส่วนงาน / กิจกรรม / โครงการ) routinely exceed a single
-// half-card line at the 40rem cap. Wrap to two lines instead of ellipsing on
-// one — the card grows just enough for the long dimensions, short ones still
-// read as one line. Anything genuinely longer than two lines still ends in an
-// ellipsis and the full text stays available on hover via title=.
-.o_budget_commitment_info_value {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+// Show every value in full: long analytic and budget-code names wrap instead of
+// ending in an ellipsis (a reader confirming the slip must see all of it).
+.o_budget_commitment_info {
+    .o_budget_commitment_info_title,
+    .o_budget_commitment_info_value,
+    .o_budget_commitment_info_path,
+    .o_budget_commitment_info_lines td {
+        white-space: normal;
+        overflow-wrap: anywhere;
+    }
+    .o_budget_commitment_info_lines td {
+        vertical-align: top;
+        border-bottom-width: 0;
+    }
 }
