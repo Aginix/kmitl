@@ -101,7 +101,9 @@
                 t-field="o.procurement_method_id"
             /> เลขที่ <span
                 t-field="o.request_id"
-            /> ลงวันที่ 3 กรกฎาคม พ.ศ. 2568
+            /> ลงวันที่ <span
+                t-out="o.format_date_thai(o.request_id.active_sarabun_document_id.signed_at)"
+            />
             ได้รับอนุมัติหลักการและงบประมาณ <span
                 t-out="o.product_id.name"
             />
