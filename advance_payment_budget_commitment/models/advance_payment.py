@@ -30,6 +30,49 @@ class AdvancePayment(models.Model):
         compute_sudo=True,
         help="Technical flag read by the live-commitment exception rule.",
     )
+    # What the voucher will be charged to, shown at รอโอนเงิน (read-only).
+    commitment_account_id = fields.Many2one(
+        comodel_name="budget.account",
+        string="รหัสงบประมาณ",
+        compute="_compute_commitment_voucher_budget",
+        compute_sudo=True,
+    )
+    commitment_department_analytic_id = fields.Many2one(
+        comodel_name="account.analytic.account",
+        string="ส่วนงาน",
+        compute="_compute_commitment_voucher_budget",
+        compute_sudo=True,
+    )
+    commitment_source_analytic_id = fields.Many2one(
+        comodel_name="account.analytic.account",
+        string="แหล่งเงิน",
+        compute="_compute_commitment_voucher_budget",
+        compute_sudo=True,
+    )
+    commitment_fund_analytic_id = fields.Many2one(
+        comodel_name="account.analytic.account",
+        string="กองทุน",
+        compute="_compute_commitment_voucher_budget",
+        compute_sudo=True,
+    )
+    commitment_activity_analytic_id = fields.Many2one(
+        comodel_name="account.analytic.account",
+        string="ด้าน/แผนงาน/กิจกรรม",
+        compute="_compute_commitment_voucher_budget",
+        compute_sudo=True,
+    )
+    commitment_kmitl_project_analytic_id = fields.Many2one(
+        comodel_name="account.analytic.account",
+        string="โครงการ/กิจกรรม",
+        compute="_compute_commitment_voucher_budget",
+        compute_sudo=True,
+    )
+    commitment_procurement_plan_analytic_id = fields.Many2one(
+        comodel_name="account.analytic.account",
+        string="แผนจัดซื้อจัดจ้าง",
+        compute="_compute_commitment_voucher_budget",
+        compute_sudo=True,
+    )
 
     def _get_source_commitment(self):
         """The commitment of the source document, if its model has one."""
@@ -87,12 +130,33 @@ class AdvancePayment(models.Model):
                 > 0
             )
 
+    # Not `related=`: budget_commitment_id is a non-searchable compute, so
+    # related fields over it warn on every registry load.
+    @api.depends("reference")
+    def _compute_commitment_voucher_budget(self):
+        for rec in self:
+            commitment = rec.budget_commitment_id
+            rec.commitment_account_id = commitment.account_id
+            for dim in (
+                "department",
+                "source",
+                "fund",
+                "activity",
+                "kmitl_project",
+                "procurement_plan",
+            ):
+                rec["commitment_%s_analytic_id" % dim] = commitment[
+                    "%s_analytic_id" % dim
+                ]
+
     def _prepare_account_payment_vals(self, payment_type):
-        """Charge the voucher to the commitment header's dimensions — the
-        commitment as a whole, not per line; accounting may still correct
-        them on the voucher (ADR-0029)."""
+        """Charge the voucher to the commitment header's dimensions and
+        primary code — the commitment as a whole, not per line; accounting
+        may still correct them on the voucher (ADR-0029)."""
         vals = super()._prepare_account_payment_vals(payment_type)
-        distribution = self.sudo().budget_commitment_id.analytic_distribution
-        if distribution:
-            vals["analytic_distribution"] = distribution
+        commitment = self.sudo().budget_commitment_id
+        if commitment.analytic_distribution:
+            vals["analytic_distribution"] = commitment.analytic_distribution
+        if commitment.account_id:
+            vals["budget_account_id"] = commitment.account_id.id
         return vals

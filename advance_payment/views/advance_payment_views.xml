@@ -335,6 +335,13 @@
                                 name="endorser_id"
                                 attrs="{'readonly': ['&amp;', ('state', '!=', 'draft'), ('is_manager', '=', False)]}"
                             />
+                            <div
+                                class="text-muted"
+                                colspan="2"
+                                attrs="{'invisible': [('state', '!=', 'draft')]}"
+                            >
+                                เลือกชื่อหัวหน้าส่วนงาน เช่น คณบดีหรือเทียบเท่า (ผู้อำนวยการสำนัก)
+                            </div>
                             <field
                                 name="date_endorsed"
                                 attrs="{'invisible': [('date_endorsed', '=', False)]}"
