@@ -479,7 +479,8 @@ class PurchaseRequest(models.Model):
         now. Hook: purchase_request_budget_cross_charge opens the
         ใบจองงบประมาณ as a dialog instead (budget ADR-0020)."""
         self.ensure_one()
-        amount = sum(self.line_ids.mapped("estimated_cost"))
+        # Reserve the VAT-inclusive total — what the request will actually spend.
+        amount = self.amount_total
 
         # ปีงบยึดตามเอกสาร: check/reserve against this request's own fiscal year
         # (account_fiscal_year_id), not today() — otherwise a request whose FY differs
