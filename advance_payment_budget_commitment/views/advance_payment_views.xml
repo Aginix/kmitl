@@ -23,13 +23,17 @@
                     string="มิติทางบัญชี / รหัสงบประมาณ (ใบสำคัญจ่าย)"
                     attrs="{'invisible': ['|', ('state', '!=', 'approved'), ('budget_commitment_id', '=', False)]}"
                 >
-                    <field name="commitment_account_id" options="{'no_open': True}" />
                     <field
-                        name="commitment_department_analytic_id"
+                        name="budget_commitment_id"
+                        string="เลขที่ใบจองงบประมาณ"
                         options="{'no_open': True}"
                     />
                     <field
                         name="commitment_source_analytic_id"
+                        options="{'no_open': True}"
+                    />
+                    <field
+                        name="commitment_department_analytic_id"
                         options="{'no_open': True}"
                     />
                     <field
@@ -40,6 +44,7 @@
                         name="commitment_activity_analytic_id"
                         options="{'no_open': True}"
                     />
+                    <field name="commitment_account_id" options="{'no_open': True}" />
                     <field
                         name="commitment_kmitl_project_analytic_id"
                         options="{'no_open': True}"
