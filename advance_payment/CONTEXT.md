@@ -109,7 +109,7 @@ How much more may still be borrowed against a Source Reference: the full reserve
 _Avoid_: borrowing cap (that is the full reserved amount), available budget, คงเหลือผูกพันได้ (that is the commitment's own balance)
 
 **มิติทางบัญชี (financial dimensions)**:
-The four dimensions a loan is charged to — ส่วนงาน, แหล่งเงิน, กองทุน, ด้าน/แผนงาน/กิจกรรม — The loan itself carries none (ADR-0025). The disbursement voucher (ใบสำคัญจ่ายเงินยืม) takes them from the header of the Source Reference's Budget Commitment when it is created — the commitment as a whole, not per commitment line; accounting may still correct them on the voucher.
+The four dimensions a loan is charged to — ส่วนงาน, แหล่งเงิน, กองทุน, ด้าน/แผนงาน/กิจกรรม — The loan itself carries none (ADR-0025). The disbursement voucher (ใบสำคัญจ่ายเงินยืม) takes them from the header of the Source Reference's Budget Commitment when it is created — the commitment as a whole, not per commitment line — together with its รหัสงบประมาณ (the commitment's primary `account_id`); accounting may still correct them on the draft voucher. ยืนยันส่งธนาคาร refuses a loan voucher missing any of the four dimensions or the รหัสงบประมาณ.
 _Avoid_: analytic accounts (that is the underlying model), cost centre
 
 **Required reference model (`loan_type_id.reference_model`)**:
