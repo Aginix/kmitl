@@ -87,7 +87,9 @@ upfront.
 - [Approval Request (Expense Plan)](./agx_approval/CONTEXT.md) — expense-approval form
   reframed as proposing an _expense plan_ (what is planned to be spent + who is
   involved); the payee is deliberately **not** on the plan — the recipient is settled
-  later at disbursement. Routed for approval through e-Saraban.
+  later at disbursement. Routed for approval through e-Saraban. With the add-on
+  `agx_approval_budget_cross_charge`, ยืนยันงบประมาณ opens the ใบจองงบประมาณ as a
+  dialog for ถัวจ่าย, like the พ.1 (`agx_approval` ADR-0011, budget ADR-0020).
 - [Approval ↔ Disbursement Bridge](./agx_approval_disbursement/CONTEXT.md) — links an
   Approval Request to the Disbursement Request it is billed into; returning a
   disbursement keeps it intact (at `signed`) and bounces the approval request to

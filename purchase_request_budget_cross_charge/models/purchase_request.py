@@ -5,6 +5,9 @@ from odoo.exceptions import UserError
 class PurchaseRequest(models.Model):
     _inherit = "purchase.request"
 
+    # Who may edit this พ.1's slip in its dialog (budget ADR-0020).
+    _cross_charge_group = "purchase_request_budget.group_purchase_request_budget_commit"
+
     def _reserve_new_budget(self):
         """From the form (context ``budget_reserve_dialog``), Reserve opens the
         ใบจองงบประมาณ itself as a dialog, where ถัวจ่าย codes are added before

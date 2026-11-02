@@ -75,7 +75,7 @@ The step after ส่งคำขอ where the Request Verifier checks the reque
 _Avoid_: รอตรวจสอบ / จองงบประมาณ (the old combined step), reserve step
 
 **Awaiting Budget Confirmation (รอยืนยันงบประมาณ — `to_commit`)**:
-The step after verification where the Budget Confirmer completes the budget code and dimensions and presses ยืนยันงบประมาณ, which reserves the budget and moves the request on to รอส่งขออนุมัติ. ตีกลับ returns it to รอตรวจสอบข้อมูล.
+The step after verification where the Budget Confirmer completes the budget code and dimensions and presses ยืนยันงบประมาณ, which reserves the budget and moves the request on to รอส่งขออนุมัติ. With **ถัวจ่าย** installed, ยืนยันงบประมาณ first opens the ใบจองงบประมาณ itself, where other codes may share the amount (see **Cross-charge**). ตีกลับ returns it to รอตรวจสอบข้อมูล.
 _Avoid_: รอตรวจสอบ / จองงบประมาณ, verify step
 
 **Request Verifier (ผู้ตรวจสอบคำขอ)**:
@@ -93,6 +93,10 @@ _Avoid_: Budget Confirmer (that is the role, held by many)
 **Budget Confirmer (ผู้ยืนยันงบประมาณ)**:
 The person who, at รอยืนยันงบประมาณ, completes the budget code and dimensions and reserves the budget. The only role that reserves on an Approval Request.
 _Avoid_: verifier, budget officer (ambiguous with the budget module's own roles)
+
+**Cross-charge (ถัวจ่าย)**:
+One request funded from several budget codes with the same dimensions. The request keeps one code, the **Primary Code** (รหัสหลัก); the other codes and their amounts sit on its ใบจองงบประมาณ (the budget module's Reservation Split), and the Primary Code takes what is left of the plan total. Every other code must be flagged ถัวจ่ายได้ **and** be an Approval-eligible Budget Code; it need not fall under the category's pinned code. Only the Budget Confirmer edits it, while the reservation is still a draft, or reserved but unused while the request waits to be sent or is back from e-Saraban (ตีกลับ/ดึงกลับ). A ใบขอเบิก still names only the Primary Code; the budget charges the codes in order. See [ADR-0011](docs/adr/0011-cross-charge-on-approval-request.md).
+_Avoid_: เกลี่ยระหว่างรายการ (moving money between the request's Expenses), ถัวงบ per Expense
 
 **Send back (ตีกลับ — verification steps)**:
 The Request Verifier or Budget Confirmer returning a request one step back, with a mandatory reason: รอยืนยันงบประมาณ → รอตรวจสอบข้อมูล, or รอตรวจสอบข้อมูล → draft. **Distinct** from Pull back (the requester's own action) and from e-Saraban's ตีกลับ (which lands a circulating request in `returned`).
