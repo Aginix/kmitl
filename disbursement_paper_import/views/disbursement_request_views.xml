@@ -15,10 +15,11 @@
             </xpath>
             <field name="payment_type" position="after">
                 <!-- One of the two survives per user: only the paper import
-                     group may edit the flag. -->
+                     group sees the checkbox; everyone else only gets the
+                     badge, which still needs the field in the view. -->
                 <field
                     name="is_paper_import"
-                    readonly="1"
+                    invisible="1"
                     groups="!disbursement_paper_import.group_disbursement_paper_import"
                 />
                 <field
