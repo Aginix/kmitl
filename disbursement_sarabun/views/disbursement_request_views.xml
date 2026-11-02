@@ -52,4 +52,16 @@
         </field>
     </record>
 
+    <record id="view_disbursement_request_search_sarabun" model="ir.ui.view">
+        <field name="name">disbursement.request.search.sarabun</field>
+        <field name="model">disbursement.request</field>
+        <field name="inherit_id" ref="disbursement.view_disbursement_request_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="active_sarabun_document_id" string="เลขที่หนังสือ"
+                       filter_domain="[('active_sarabun_document_id.name', 'ilike', self)]"/>
+            </xpath>
+        </field>
+    </record>
+
 </odoo>
