@@ -5,16 +5,33 @@
         <field name="model">advance.payment</field>
         <field name="inherit_id" ref="advance_payment.view_advance_payment_form" />
         <field name="arch" type="xml">
-            <xpath expr="//header/button[@name='action_verify']" position="before">
-                <button
-                    name="action_open_partner_bank_wizard"
-                    string="สร้างบัญชีธนาคาร"
-                    type="object"
-                    class="btn-primary"
+            <!-- Next to the declared account, not in the header: it fixes
+                 data, it is no workflow step. Shown even once bank_id is set,
+                 to re-point it after the borrower changed the account. -->
+            <field name="book_bank_file" position="after">
+                <div
+                    colspan="2"
                     attrs="{'invisible': ['|', '|', ('state', '!=', 'to_verify'), ('use_unlisted_bank', '=', False), ('can_verify', '=', False)]}"
                     groups="advance_payment.group_advance_payment_loan_officer"
-                />
-            </xpath>
+                >
+                    <button
+                        name="action_open_partner_bank_wizard"
+                        string="สร้างบัญชีธนาคาร"
+                        type="object"
+                        class="btn-link ps-0"
+                        icon="fa-university"
+                        attrs="{'invisible': [('bank_id', '!=', False)]}"
+                    />
+                    <button
+                        name="action_open_partner_bank_wizard"
+                        string="สร้าง/เปลี่ยนบัญชีจากข้อมูลที่แจ้ง"
+                        type="object"
+                        class="btn-link ps-0"
+                        icon="fa-university"
+                        attrs="{'invisible': [('bank_id', '=', False)]}"
+                    />
+                </div>
+            </field>
         </field>
     </record>
 </odoo>

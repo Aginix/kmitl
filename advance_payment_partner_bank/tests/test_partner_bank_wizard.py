@@ -85,7 +85,7 @@ class TestPartnerBankWizard(TransactionCase):
         wizard.action_apply()
         self.assertEqual(loan.bank_id.partner_id, self.partner)
         self.assertEqual(loan.bank_id.acc_number, "123-4-56789-0")
-        self.assertFalse(loan.use_unlisted_bank)
+        self.assertTrue(loan.use_unlisted_bank)  # kept as the record of it
         loan.with_user(self.officer).action_verify()
         self.assertEqual(loan.state, "to_director")
 
@@ -93,6 +93,13 @@ class TestPartnerBankWizard(TransactionCase):
         loan = self._loan()
         self._wizard(loan, acc_number="999-9-99999-9").action_apply()
         self.assertEqual(loan.bank_id.acc_number, "999-9-99999-9")
+
+    def test_repoints_after_the_borrower_changed_the_account(self):
+        loan = self._loan()
+        self._wizard(loan).action_apply()
+        loan.unlisted_acc_number = "555-5-55555-5"
+        self._wizard(loan).action_apply()
+        self.assertEqual(loan.bank_id.acc_number, "555-5-55555-5")
 
     def test_reuses_existing_account_with_same_number(self):
         existing = self.env["res.partner.bank"].create(

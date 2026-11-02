@@ -26,6 +26,26 @@
         <field name="model">advance.payment</field>
         <field name="inherit_id" ref="advance_payment.view_advance_payment_list" />
         <field name="arch" type="xml">
+            <!-- A row with an exception is red: the state colours step aside
+                 so red always wins; the state badge keeps its own colour. -->
+            <xpath expr="/tree" position="attributes">
+                <attribute name="decoration-danger">main_exception_id</attribute>
+                <attribute
+                    name="decoration-info"
+                >state == 'draft' and not main_exception_id</attribute>
+                <attribute
+                    name="decoration-muted"
+                >state == 'cancel' and not main_exception_id</attribute>
+                <attribute
+                    name="decoration-warning"
+                >state in ('to_endorse', 'to_verify', 'to_director', 'to_approve') and not main_exception_id</attribute>
+                <attribute
+                    name="decoration-primary"
+                >state in ('approved', 'in_progress') and not main_exception_id</attribute>
+                <attribute
+                    name="decoration-success"
+                >state == 'done' and not main_exception_id</attribute>
+            </xpath>
             <field name="loan_reason" position="before">
                 <field name="main_exception_id" optional="hide" />
             </field>

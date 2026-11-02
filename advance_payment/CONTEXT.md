@@ -84,6 +84,8 @@ Any transition that puts a request back in `draft`, keeping the ADV number. Four
 - the **supervisor's ส่งกลับแก้ไข** (`action_endorse_reject`, from `to_endorse`) — sending it back before it even reaches the finance officer (ADR-0020);
 - the **loan officer's ส่งกลับแก้ไข** (`action_reset_to_draft` / `_action_do_reject`, from `to_verify`) — sending it back for the borrower to fix;
 - the **manager's un-cancel** (`action_reset_cancel_to_draft`, from `cancel`) — ad-hoc recovery of a request cancelled before the money moved.
+
+Only the three **ส่งกลับแก้ไข** paths — the supervisor's, the director's (Office route) and the loan officer's — flag the request with the non-blocking exception **ส่งกลับแก้ไข** until its next state change (normally the resubmit). The reason lives in the chatter. The borrower's own pull-back and the un-cancel are not a sending back and set no flag.
 _Avoid_: recall / ดึงกลับ (reserved for e-Saraban's own ดึงกลับ — see ADR-0011), withdraw, reopen (that is `action_reopen`: `done` → `in_progress`)
 
 **Source Reference (AR / PR)**:
@@ -130,8 +132,12 @@ _Avoid_: actual expense report, ยอดค่าใช้จ่ายจริ
 What the borrower still owes right now: loan amount minus ส่งใช้คืน. Zero means the debt is settled.
 _Avoid_: leftover, return amount, ยอดคงเหลือ
 
+**Change request (ข้อแก้ไข)**:
+The loan's use of the generic Change request of `agx_change_request`: anyone who reads the request may ask its maker to fix or explain something. Besides the author, whoever may send the request back at its current step may close one on the author's behalf: the supervisor at `to_endorse`, the director at `to_director`, the assigned loan officer at `to_verify`. Outstanding ones hold up **Verify** only, through a switchable exception rule. Endorse and the other steps are not held up, so a supervisor is never stuck behind an officer's request. A ส่งกลับแก้ไข while some are outstanding needs no typed reason: it lists them in the chatter and flags the request **มีข้อแก้ไขที่ต้องแก้** next to ส่งกลับแก้ไข.
+_Avoid_: comment, issue, note
+
 **Unlisted bank account (บัญชีธนาคารนอกรายการ)**:
-A payee account the borrower declares on the loan because it is not yet among their work contact's `res.partner.bank`: tick `use_unlisted_bank`, then give the bank, account number and a Book Bank image. Ticking clears `bank_id`. At `to_verify` the loan officer checks it against the Book Bank and materialises it with **สร้างบัญชีธนาคาร** (`advance_payment_partner_bank`), which reuses or creates the account, sets `bank_id` and clears the tick. Verify is refused until `bank_id` is set (ADR-0022).
+A payee account the borrower declares on the loan because it is not yet among their work contact's `res.partner.bank`: tick `use_unlisted_bank`, then give the bank, account number and a Book Bank image. Ticking clears `bank_id`. At `to_verify` the loan officer checks it against the Book Bank and materialises it with **สร้างบัญชีธนาคาร** (`advance_payment_partner_bank`), which reuses or creates the account and sets `bank_id`. The tick then **stays**: it is the lasting record that the borrower declared an unlisted account and attached a Book Bank, shown beside the real `bank_id` as evidence. An unlisted account is *awaiting materialisation* while it is ticked and `bank_id` is empty. Editing the declared fields afterwards (e.g. after a ส่งกลับแก้ไข) never clears `bank_id`. Verify is refused until `bank_id` is set (ADR-0022).
 _Avoid_: new bank account, manual bank account
 
 **Return due date (วันที่ครบกำหนด)**:
