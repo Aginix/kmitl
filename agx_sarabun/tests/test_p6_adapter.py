@@ -131,3 +131,20 @@ class TestP6Adapter(SarabunCommon):
         self._act(step2, "return", self.user_a, destination="sender_restart")
         self.assertTrue(doc2.is_returned)
         self.assertTrue(origin2.sarabun_has_live_document)  # returned is NOT terminal → still live
+
+    def test_submit_blocked_while_live_document(self):
+        """A stale form can't spawn a second หนังสือ: submit re-checks server-side,
+        and is allowed again only once the live one is cancelled/rejected."""
+        origin = self._origin()
+        doc = self.env["sarabun.document"].browse(
+            origin.action_submit_to_sarabun()["res_id"]
+        )
+        with self.assertRaises(UserError):
+            origin.action_submit_to_sarabun()
+        self.assertEqual(origin.sarabun_document_count, 1)
+        self._add_step(doc, order=10, verb="sign_approve", user=self.user_a)
+        doc.action_send()
+        doc.action_recall(reason="ยกเลิก")
+        origin.action_submit_to_sarabun()
+        origin.invalidate_recordset(["sarabun_document_count"])
+        self.assertEqual(origin.sarabun_document_count, 2)
