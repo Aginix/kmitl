@@ -223,6 +223,11 @@
                     domain="[('work_center_assignee_id', '=', uid)]"
                 />
                 <filter
+                    string="Done by Me"
+                    name="done_by_me"
+                    domain="[('work_center_visit_ids.departed_by_id', '=', uid)]"
+                />
+                <filter
                     string="Not Assigned"
                     name="not_assigned"
                     domain="[('work_center_id', '!=', False), ('work_center_assignee_id', '=', False)]"

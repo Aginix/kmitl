@@ -50,6 +50,28 @@ class TestPayeeType(TwoApproverCommon):
             dr.exception_ids,
         )
 
+    def test_advance_to_external_payee_blocks_submit(self):
+        dr = self._draft(self.partner, payment_type="advance")
+        dr.action_submit()
+        self.assertEqual(dr.state, "draft")
+        self.assertIn(
+            self.env.ref("disbursement.excep_disbursement_advance_internal_payee"),
+            dr.exception_ids,
+        )
+
+    def test_prepaid_to_internal_staff_submits(self):
+        staff_type = self.env.ref("partner_type_kmitl.partner_type_employee")
+        staff = self.env["res.partner"].create({
+            "name": "Staff",
+            "partner_type_id": staff_type.id,
+            "bank_ids": [(0, 0, {"acc_number": "4445556667"})],
+        })
+        dr = self._draft(
+            staff, payment_type="prepaid", partner_type_id=staff_type.id
+        )
+        dr.action_submit()
+        self.assertEqual(dr.state, "submitted")
+
     def test_payee_without_bank_blocks_submit_until_added(self):
         self.partner.bank_ids.unlink()
         dr = self._draft(self.partner)
