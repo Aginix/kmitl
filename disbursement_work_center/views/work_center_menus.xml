@@ -20,12 +20,44 @@
         </field>
     </record>
 
+    <!-- The requests the user has moved out of a station: their name is in
+         "Left By" of the visit log. -->
+    <record id="action_disbursement_request_done_by_me" model="ir.actions.act_window">
+        <field name="name">Work I've Done</field>
+        <field name="res_model">disbursement.request</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{"search_default_done_by_me": 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No work done yet</p>
+            <p>
+                The disbursement requests you have moved out of a station show here.
+            </p>
+        </field>
+    </record>
+
+    <menuitem
+        id="menu_disbursement_stations_root"
+        name="Stations"
+        parent="disbursement.menu_disbursement_root"
+        sequence="15"
+        groups="disbursement.group_disbursement_user"
+    />
+
     <menuitem
         id="menu_disbursement_stations"
         name="Stations"
-        parent="disbursement.menu_disbursement_root"
+        parent="menu_disbursement_stations_root"
         action="action_disbursement_stations"
-        sequence="15"
+        sequence="10"
+        groups="disbursement.group_disbursement_user"
+    />
+
+    <menuitem
+        id="menu_disbursement_request_done_by_me"
+        name="Work I've Done"
+        parent="menu_disbursement_stations_root"
+        action="action_disbursement_request_done_by_me"
+        sequence="20"
         groups="disbursement.group_disbursement_user"
     />
 
