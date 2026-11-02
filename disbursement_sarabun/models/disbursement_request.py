@@ -18,6 +18,14 @@ class DisbursementRequest(models.Model):
             f"ขออนุมัติเบิกเงิน{source_name} {department_name} ประจำปีงบประมาณ พ.ศ. {fy_name}"
         )
 
+    def _stamp_signature(self, step):
+        """Re-render once per stamp, not once for the archive and again for the row."""
+        signature = super(
+            DisbursementRequest, self.with_context(sarabun_defer_refreeze=True)
+        )._stamp_signature(step)
+        self._refreeze_sarabun_signed_pdf()
+        return signature
+
     def _refreeze_sarabun_signed_pdf(self):
         """Re-render the frozen ฉบับลงนาม of each completed หนังสือ.
 

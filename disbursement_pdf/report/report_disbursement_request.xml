@@ -227,7 +227,6 @@
                 </div>
                 <div t-else="" style="height: 60px;"/>
                 <div>(<span t-out="sig.signed_name or sig.signed_by_id.name"/>)</div>
-                <div t-field="sig.step"/>
                 <div t-if="sig.signed_position_name" t-out="sig.signed_position_name"/>
                 <div t-if="sig.signed_date" t-out="o.format_datetime_thai_sign(sig.signed_date)"/>
             </div>
