@@ -57,19 +57,6 @@ class TestProjectAnnex(TransactionCase):
                 "analytic_account_id": cls.proj_tag.id,
             }
         )
-        cls.cat = env["project.budget.category"].create({"name": "KPTP Cat"})
-        env["project.budget.line"].create(
-            [
-                {
-                    "project_id": cls.project.id,
-                    "budget_type": "expense",
-                    "name": "KPTP Line %s" % i,
-                    "category_id": cls.cat.id,
-                    "amount": 100 * i,
-                }
-                for i in (1, 2)
-            ]
-        )
 
     def _transfer(self, tagged_amounts):
         dims = {
@@ -109,16 +96,12 @@ class TestProjectAnnex(TransactionCase):
             }
         )
 
-    def test_lines_of_one_project_collapse_with_expense_plan(self):
+    def test_lines_of_one_project_collapse_to_one_row(self):
         annex = self._transfer([1000, 500])._annex_projects()
         self.assertEqual(len(annex), 1)
         label, rows = annex[0]
         self.assertIn("โอนเข้า", label)
-        self.assertEqual(len(rows), 1)
-        project, amount, groups = rows[0]
-        self.assertEqual((project, amount), (self.project, 1500.0))
-        self.assertEqual(len(groups), 1)
-        self.assertEqual([ln.amount for ln in groups[0][1]], [100.0, 200.0])
+        self.assertEqual(rows, [(self.project, 1500.0)])
 
     def test_pdf_renders_with_annex(self):
         transfer = self._transfer([1000])
@@ -126,4 +109,4 @@ class TestProjectAnnex(TransactionCase):
             "budget_transfer_pdf.report_budget_transfer", transfer.ids
         )
         self.assertIn("รายละเอียดโครงการ/กิจกรรม", html.decode())
-        self.assertIn("KPTP Line 1", html.decode())
+        self.assertIn("KPTP Project", html.decode())

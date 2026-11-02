@@ -1,5 +1,5 @@
 <odoo>
-    <!-- เอกสารแนบท้าย แบบ งปม.303 — โครงการ/กิจกรรมที่ปรากฏในบรรทัดโอน พร้อมแผนงบรายจ่าย.
+    <!-- เอกสารแนบท้าย แบบ งปม.303 — โครงการ/กิจกรรมที่ปรากฏในบรรทัดโอน.
          priority 10: applied before the plan annex so the plan annex prints first. -->
     <template
         id="report_budget_transfer_project_annex"
@@ -14,45 +14,27 @@
                         รายละเอียดโครงการ/กิจกรรม<br/>
                         <span t-out="side[0]"/>
                     </div>
-                    <t t-foreach="side[1]" t-as="row">
-                        <table class="detail" style="page-break-inside: auto;">
-                            <thead>
-                                <tr>
-                                    <th class="seq" t-out="row_index + 1"/>
-                                    <th style="text-align:left;">
-                                        <span t-out="row[0].key or ''"/> <span t-out="row[0].name"/>
-                                        <t t-if="row[0].manager_id"><br/>หัวหน้าโครงการ : <span t-out="row[0].manager_id.name"/></t>
-                                    </th>
-                                    <th class="amt">ยอดโอน <span t-out="'{:,.2f}'.format(row[1])"/></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <t t-foreach="row[2]" t-as="group">
-                                    <tr class="group">
-                                        <td colspan="3" t-out="group[0] or 'ไม่ระบุประเภทงบ'"/>
-                                    </tr>
-                                    <tr t-foreach="group[1]" t-as="line">
-                                        <td class="seq"/>
-                                        <td>
-                                            <t t-out="line.name"/>
-                                            <div t-if="line.description" style="color:#555;"><t t-out="line.description"/></div>
-                                        </td>
-                                        <td class="amt" t-out="'{:,.2f}'.format(line.amount)"/>
-                                    </tr>
-                                </t>
-                                <tr t-if="not row[2]">
-                                    <td class="seq">-</td>
-                                    <td>ไม่มีแผนงบรายจ่าย</td>
-                                    <td class="amt"/>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </t>
                     <table class="detail">
-                        <tr class="total">
-                            <td style="text-align:right;">รวมยอดโอนทั้งสิ้น</td>
-                            <td class="amt" t-out="'{:,.2f}'.format(sum(r[1] for r in side[1]))"/>
-                        </tr>
+                        <thead>
+                            <tr>
+                                <th class="seq">ที่</th>
+                                <th>รหัสโครงการ</th>
+                                <th>ชื่อโครงการ</th>
+                                <th class="amt">ยอดโอน (บาท)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="side[1]" t-as="row">
+                                <td class="seq" t-out="row_index + 1"/>
+                                <td t-out="row[0].key"/>
+                                <td t-out="row[0].name"/>
+                                <td class="amt" t-out="'{:,.2f}'.format(row[1])"/>
+                            </tr>
+                            <tr class="total">
+                                <td colspan="3" style="text-align:right;">รวมทั้งสิ้น</td>
+                                <td class="amt" t-out="'{:,.2f}'.format(sum(r[1] for r in side[1]))"/>
+                            </tr>
+                        </tbody>
                     </table>
                 </div>
             </t>

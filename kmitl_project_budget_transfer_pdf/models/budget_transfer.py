@@ -1,5 +1,4 @@
 from collections import defaultdict
-from itertools import groupby
 
 from odoo import models
 
@@ -10,10 +9,8 @@ class BudgetTransfer(models.Model):
     _inherit = "budget.transfer"
 
     def _annex_projects(self):
-        """งปม.303 enclosure rows: ``[(side label, [(project, amount, groups)])]``
-        for each side that carries project-tagged lines, one row per project
-        (amounts summed). ``groups`` is the project's expense plan as
-        ``[(ประเภทงบ, lines)]``."""
+        """งปม.303 enclosure rows: ``[(side label, [(project, amount)])]`` for each
+        side that carries project-tagged lines, one row per project (amounts summed)."""
         self.ensure_one()
         Project = self.env["kmitl.project"].sudo().with_context(active_test=False)
         result = []
@@ -23,18 +20,7 @@ class BudgetTransfer(models.Model):
                 totals[line.kmitl_project_analytic_id.id] += line.amount
             projects = Project.search([("analytic_account_id", "in", list(totals))])
             if projects:
-                rows = [
-                    (
-                        p,
-                        totals[p.analytic_account_id.id],
-                        [
-                            (cat.complete_name, list(lines))
-                            for cat, lines in groupby(
-                                p.expense_line_ids, key=lambda ln: ln.category_id
-                            )
-                        ],
-                    )
-                    for p in projects.sorted(lambda p: p.key or "")
-                ]
+                projects = projects.sorted(lambda p: p.key or "")
+                rows = [(p, totals[p.analytic_account_id.id]) for p in projects]
                 result.append((label, rows))
         return result

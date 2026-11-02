@@ -19,7 +19,6 @@
                                 <th class="seq">ที่</th>
                                 <th>รหัสแผน</th>
                                 <th>ชื่อรายการ</th>
-                                <th>จำนวน</th>
                                 <th class="amt">ยอดโอน (บาท)</th>
                             </tr>
                         </thead>
@@ -27,12 +26,11 @@
                             <tr t-foreach="side[1]" t-as="row">
                                 <td class="seq" t-out="row_index + 1"/>
                                 <td t-out="row[0].name"/>
-                                <td t-out="row[0].description"/>
-                                <td><t t-out="row[0].amount"/> <t t-out="row[0].unit"/></td>
+                                <td><t t-out="row[0].description"/> <t t-out="row[0].amount"/> <t t-out="row[0].unit"/></td>
                                 <td class="amt" t-out="'{:,.2f}'.format(row[1])"/>
                             </tr>
                             <tr class="total">
-                                <td colspan="4" style="text-align:right;">รวมทั้งสิ้น</td>
+                                <td colspan="3" style="text-align:right;">รวมทั้งสิ้น</td>
                                 <td class="amt" t-out="'{:,.2f}'.format(sum(r[1] for r in side[1]))"/>
                             </tr>
                         </tbody>

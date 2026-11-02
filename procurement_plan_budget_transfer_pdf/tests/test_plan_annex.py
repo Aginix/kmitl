@@ -39,3 +39,5 @@ class TestPlanAnnex(PlanTransferCommon):
         )
         self.assertIn("รายละเอียดแผนจัดซื้อจัดจ้าง", html.decode())
         self.assertIn(plan.name, html.decode())
+        label = "%s %s %s" % (plan.description, plan.amount, plan.unit)
+        self.assertIn(label, html.decode())
