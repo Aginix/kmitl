@@ -49,6 +49,7 @@ class KmitlProject(models.Model):
         ],
         required=True,
         default="project",
+        tracking=True,
         readonly=True,
         states=EDITABLE_STATES,
     )
@@ -147,12 +148,14 @@ class KmitlProject(models.Model):
     date_start = fields.Date(
         string="Start Date",
         required=False,
+        tracking=True,
         readonly=True,
         states=EDITABLE_STATES,
     )
     date_end = fields.Date(
         string="End Date",
         required=False,
+        tracking=True,
         readonly=True,
         states=EDITABLE_STATES,
     )
@@ -278,6 +281,7 @@ class KmitlProject(models.Model):
         string="โครงการนี้มีรายรับ",
         help="ติ๊กเมื่อโครงการมีรายรับ (เช่น ค่าลงทะเบียน/เงินบริจาค/เงินรายได้) "
         "เพื่อแสดงตารางกรอกงบประมาณรายรับ; รายจ่ายจะแสดงเสมอ",
+        tracking=True,
         readonly=True,
         states=EDITABLE_STATES,
     )
@@ -433,7 +437,7 @@ class KmitlProject(models.Model):
         "Track the costs and revenues of your procurement plan by setting this analytic account on your related documents (e.g. budgetings, purchase requests, purchase orders etc.).",
     )
 
-    active = fields.Boolean(default=True)
+    active = fields.Boolean(default=True, tracking=True)
     is_editable = fields.Boolean(compute="_compute_is_editable")
 
     budget_account_id = fields.Many2one(
