@@ -10,7 +10,7 @@
                 <field
                     name="budget_account_id"
                     options="{'no_create': True}"
-                    attrs="{'invisible': [('is_budget_code_required', '=', False), ('budget_account_id', '=', False)], 'required': [('is_budget_code_required', '=', True)], 'readonly': [('finance_state', '!=', 'draft')]}"
+                    attrs="{'invisible': [('is_budget_code_required', '=', False), ('budget_account_id', '=', False)], 'required': [('is_budget_code_required', '=', True), ('finance_state', '=', 'draft')],'readonly': [('finance_state', '!=', 'draft')]}"
                 />
             </group>
         </field>

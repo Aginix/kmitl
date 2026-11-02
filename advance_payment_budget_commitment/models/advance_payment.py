@@ -32,28 +32,46 @@ class AdvancePayment(models.Model):
     )
     # What the voucher will be charged to, shown at รอโอนเงิน (read-only).
     commitment_account_id = fields.Many2one(
-        related="budget_commitment_id.account_id", string="รหัสงบประมาณ"
+        comodel_name="budget.account",
+        string="รหัสงบประมาณ",
+        compute="_compute_commitment_voucher_budget",
+        compute_sudo=True,
     )
     commitment_department_analytic_id = fields.Many2one(
-        related="budget_commitment_id.department_analytic_id", string="ส่วนงาน"
+        comodel_name="account.analytic.account",
+        string="ส่วนงาน",
+        compute="_compute_commitment_voucher_budget",
+        compute_sudo=True,
     )
     commitment_source_analytic_id = fields.Many2one(
-        related="budget_commitment_id.source_analytic_id", string="แหล่งเงิน"
+        comodel_name="account.analytic.account",
+        string="แหล่งเงิน",
+        compute="_compute_commitment_voucher_budget",
+        compute_sudo=True,
     )
     commitment_fund_analytic_id = fields.Many2one(
-        related="budget_commitment_id.fund_analytic_id", string="กองทุน"
+        comodel_name="account.analytic.account",
+        string="กองทุน",
+        compute="_compute_commitment_voucher_budget",
+        compute_sudo=True,
     )
     commitment_activity_analytic_id = fields.Many2one(
-        related="budget_commitment_id.activity_analytic_id",
+        comodel_name="account.analytic.account",
         string="ด้าน/แผนงาน/กิจกรรม",
+        compute="_compute_commitment_voucher_budget",
+        compute_sudo=True,
     )
     commitment_kmitl_project_analytic_id = fields.Many2one(
-        related="budget_commitment_id.kmitl_project_analytic_id",
+        comodel_name="account.analytic.account",
         string="โครงการ/กิจกรรม",
+        compute="_compute_commitment_voucher_budget",
+        compute_sudo=True,
     )
     commitment_procurement_plan_analytic_id = fields.Many2one(
-        related="budget_commitment_id.procurement_plan_analytic_id",
+        comodel_name="account.analytic.account",
         string="แผนจัดซื้อจัดจ้าง",
+        compute="_compute_commitment_voucher_budget",
+        compute_sudo=True,
     )
 
     def _get_source_commitment(self):
@@ -111,6 +129,25 @@ class AdvancePayment(models.Model):
                 )
                 > 0
             )
+
+    # Not `related=`: budget_commitment_id is a non-searchable compute, so
+    # related fields over it warn on every registry load.
+    @api.depends("reference")
+    def _compute_commitment_voucher_budget(self):
+        for rec in self:
+            commitment = rec.budget_commitment_id
+            rec.commitment_account_id = commitment.account_id
+            for dim in (
+                "department",
+                "source",
+                "fund",
+                "activity",
+                "kmitl_project",
+                "procurement_plan",
+            ):
+                rec["commitment_%s_analytic_id" % dim] = commitment[
+                    "%s_analytic_id" % dim
+                ]
 
     def _prepare_account_payment_vals(self, payment_type):
         """Charge the voucher to the commitment header's dimensions and
