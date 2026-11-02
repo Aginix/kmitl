@@ -57,8 +57,9 @@
                             /* Signatures */
                             .kv-p table.sign { width: 100%; margin-top: 14px; page-break-inside: avoid; }
                             .kv-p table.sign td { width: 50%; text-align: center; vertical-align: top; padding: 0 6px !important; }
-                            .kv-p .sig-space { height: 40px; }
-                            .kv-p .sig-space img { max-height: 40px; max-width: 160px; }
+                            /* Same signature size as the sarabun signature block. */
+                            .kv-p .sig-space { height: 60px; }
+                            .kv-p .sig-space img { max-height: 60px; }
                             .kv-p .sig-date { font-size: 13pt; }
                         </style>
 
