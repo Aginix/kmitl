@@ -1,7 +1,7 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 
 from odoo import http
-from odoo.http import request
+from odoo.http import content_disposition, request
 
 
 class DisbursementSarabunPreviewController(http.Controller):
@@ -12,15 +12,16 @@ class DisbursementSarabunPreviewController(http.Controller):
         website=False,
     )
     def disbursement_sarabun_preview(self, request_id, **kw):
-        """Dry-run HTML of the หนังสือ the request would send (ADR 0007)."""
+        """Dry-run PDF of the หนังสือ the request would send (ADR 0007)."""
         disbursement = request.env["disbursement.request"].browse(request_id)
         disbursement.check_access_rights("read")
         disbursement.check_access_rule("read")
-        html = disbursement._render_sarabun_draft_preview_html()
+        pdf = disbursement._render_sarabun_draft_preview_pdf()
         return request.make_response(
-            html,
+            pdf,
             headers=[
-                ("Content-Type", "text/html; charset=utf-8"),
-                ("Content-Length", len(html)),
+                ("Content-Type", "application/pdf"),
+                ("Content-Length", len(pdf)),
+                ("Content-Disposition", content_disposition("ตัวอย่าง.pdf", "inline")),
             ],
         )

@@ -1,13 +1,18 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 
-from odoo import _, models
+from markupsafe import Markup
+
+from odoo import models
 
 # A faint diagonal mark on the dry run: it is not the official หนังสือ.
-WATERMARK_STYLE = (
+WATERMARK_STYLE = Markup(
     "<style>"
-    '.page::before{content:"ตัวอย่าง";position:absolute;top:40%;left:0;right:0;'
+    ".page{position:relative;}"
+    '.page::after{content:"ตัวอย่าง";position:absolute;top:40%;left:0;right:0;'
     "text-align:center;font-size:160px;font-weight:bold;"
-    "transform:rotate(-30deg);color:rgba(0,0,0,.07);"
+    # wkhtmltopdf's old WebKit only knows the prefixed transform.
+    "-webkit-transform:rotate(-30deg);transform:rotate(-30deg);"
+    "color:rgba(0,0,0,.07);"
     "pointer-events:none;z-index:10;}"
     "</style>"
 )
@@ -17,21 +22,18 @@ class DisbursementRequest(models.Model):
     _inherit = "disbursement.request"
 
     def action_preview_sarabun_document(self):
-        """The 'ดูตัวอย่างเอกสาร' button (ADR 0007): the live หนังสือ's own preview
-        once it exists, else a dry run of the one Submit to Sarabun would create."""
+        """The 'ดูตัวอย่างเอกสาร' button (ADR 0007): opens a printable PDF in a new
+        tab — the live หนังสือ's own PDF once it exists, else a dry run of the one
+        Submit to Sarabun would create."""
         self.ensure_one()
         if self.sarabun_has_live_document:
-            return self.active_sarabun_document_id.action_open_pdf_preview()
-        return {
-            "type": "ir.actions.client",
-            "tag": "disbursement_sarabun_draft_preview",
-            "name": _("ตัวอย่างเอกสาร (Preview)"),
-            "target": "new",
-            "params": {"url": f"/disbursement/request/{self.id}/sarabun_preview"},
-        }
+            url = f"/sarabun/document/{self.active_sarabun_document_id.id}/pdf"
+        else:
+            url = f"/disbursement/request/{self.id}/sarabun_preview"
+        return {"type": "ir.actions.act_url", "url": f"{url}?inline=1", "target": "new"}
 
-    def _render_sarabun_draft_preview_html(self):
-        """A4-framed HTML of the หนังสือ this request would produce, watermarked.
+    def _render_sarabun_draft_preview_pdf(self):
+        """PDF of the หนังสือ this request would produce, watermarked.
 
         The หนังสือ is an unsaved ``new()`` record built from the same vals Submit
         to Sarabun uses: no number, no route, nothing written. ``new()`` skips
@@ -54,11 +56,23 @@ class DisbursementRequest(models.Model):
                 "docs": doc,
                 "doc_ids": [],
                 "doc_model": "sarabun.document",
-                "report_type": "html",
+                "report_type": "pdf",
             },
-        ).decode("utf-8")
-        if "</body>" in html:
-            html = html.replace("</body>", WATERMARK_STYLE + "</body>", 1)
-        else:
-            html += WATERMARK_STYLE
-        return doc._frame_preview_html(html)
+        )
+        # The same html -> wkhtmltopdf steps as _render_qweb_pdf, which needs
+        # saved res_ids; the watermark goes into each rebuilt body's <head>.
+        Report = Report.with_context(debug=False)
+        bodies, _ids, header, footer, paperformat_args = Report._prepare_html(
+            html, report_model="sarabun.document"
+        )
+        head_end = Markup("</head>")
+        bodies = [
+            body.replace(head_end, WATERMARK_STYLE + head_end, 1) for body in bodies
+        ]
+        return Report._run_wkhtmltopdf(
+            bodies,
+            report_ref=report_name,
+            header=header,
+            footer=footer,
+            specific_paperformat_args=paperformat_args,
+        )

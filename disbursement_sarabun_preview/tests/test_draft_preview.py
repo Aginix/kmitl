@@ -41,10 +41,13 @@ class TestDraftPreview(TwoApproverCommon):
         Doc = self.env["sarabun.document"].sudo()
         count = Doc.search_count([])
         action = dr.action_preview_sarabun_document()
-        self.assertEqual(action["tag"], "disbursement_sarabun_draft_preview")
-        html = dr._render_sarabun_draft_preview_html().decode("utf-8")
-        self.assertIn(dr._get_sarabun_subject(), html)
-        self.assertIn("ตัวอย่าง", html)
+        self.assertEqual(action["type"], "ir.actions.act_url")
+        self.assertEqual(action["target"], "new")
+        self.assertEqual(
+            action["url"], f"/disbursement/request/{dr.id}/sarabun_preview?inline=1"
+        )
+        pdf = dr._render_sarabun_draft_preview_pdf()
+        self.assertTrue(pdf.startswith(b"%PDF"))
         self.assertEqual(Doc.search_count([]), count)
 
     def test_live_document_opens_its_own_preview(self):
@@ -52,5 +55,8 @@ class TestDraftPreview(TwoApproverCommon):
         dr.action_submit()
         dr.action_submit_to_sarabun()
         action = dr.action_preview_sarabun_document()
-        self.assertEqual(action["tag"], "sarabun_pdf_preview")
-        self.assertEqual(action["params"]["doc_id"], dr.active_sarabun_document_id.id)
+        self.assertEqual(action["type"], "ir.actions.act_url")
+        self.assertEqual(
+            action["url"],
+            f"/sarabun/document/{dr.active_sarabun_document_id.id}/pdf?inline=1",
+        )
