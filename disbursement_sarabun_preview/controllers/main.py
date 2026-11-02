@@ -12,16 +12,17 @@ class DisbursementSarabunPreviewController(http.Controller):
         website=False,
     )
     def disbursement_sarabun_preview(self, request_id, **kw):
-        """Dry-run PDF of the หนังสือ the request would send (ADR 0007)."""
+        """PDF of the หนังสือ the request sends (ADR 0007): the live one once
+        sent to Sarabun, else a dry run."""
         disbursement = request.env["disbursement.request"].browse(request_id)
         disbursement.check_access_rights("read")
         disbursement.check_access_rule("read")
-        pdf = disbursement._render_sarabun_draft_preview_pdf()
+        pdf, filename = disbursement._get_sarabun_preview_pdf()
         return request.make_response(
             pdf,
             headers=[
                 ("Content-Type", "application/pdf"),
                 ("Content-Length", len(pdf)),
-                ("Content-Disposition", content_disposition("ตัวอย่าง.pdf", "inline")),
+                ("Content-Disposition", content_disposition(filename, "inline")),
             ],
         )

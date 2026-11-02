@@ -44,7 +44,7 @@ class TestDraftPreview(TwoApproverCommon):
         self.assertEqual(action["type"], "ir.actions.act_url")
         self.assertEqual(action["target"], "new")
         self.assertEqual(
-            action["url"], f"/disbursement/request/{dr.id}/sarabun_preview?inline=1"
+            action["url"], f"/disbursement/request/{dr.id}/sarabun_preview"
         )
         pdf = dr._render_sarabun_draft_preview_pdf()
         self.assertTrue(pdf.startswith(b"%PDF"))
@@ -54,9 +54,6 @@ class TestDraftPreview(TwoApproverCommon):
         dr = self._draft()
         dr.action_submit()
         dr.action_submit_to_sarabun()
-        action = dr.action_preview_sarabun_document()
-        self.assertEqual(action["type"], "ir.actions.act_url")
-        self.assertEqual(
-            action["url"],
-            f"/sarabun/document/{dr.active_sarabun_document_id.id}/pdf?inline=1",
-        )
+        pdf, filename = dr._get_sarabun_preview_pdf()
+        self.assertTrue(pdf.startswith(b"%PDF"))
+        self.assertEqual(filename, dr.name.replace("/", "_") + ".pdf")

@@ -1,8 +1,11 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 
+import io
+
 from markupsafe import Markup
 
 from odoo import models
+from odoo.tools.pdf import PdfFileReader, PdfFileWriter
 
 # A faint diagonal mark on the dry run: it is not the official หนังสือ.
 WATERMARK_STYLE = Markup(
@@ -26,11 +29,30 @@ class DisbursementRequest(models.Model):
         tab — the live หนังสือ's own PDF once it exists, else a dry run of the one
         Submit to Sarabun would create."""
         self.ensure_one()
+        return {
+            "type": "ir.actions.act_url",
+            "url": f"/disbursement/request/{self.id}/sarabun_preview",
+            "target": "new",
+        }
+
+    def _get_sarabun_preview_pdf(self):
+        """(pdf, filename) behind the button. The PDF is titled with the request
+        number (DR/69/0001 -> DR_69_0001): browsers show that title on the tab."""
+        self.ensure_one()
         if self.sarabun_has_live_document:
-            url = f"/sarabun/document/{self.active_sarabun_document_id.id}/pdf"
+            doc = self.active_sarabun_document_id
+            doc.check_access_rights("read")
+            doc.check_access_rule("read")
+            pdf = doc._get_official_pdf()
         else:
-            url = f"/disbursement/request/{self.id}/sarabun_preview"
-        return {"type": "ir.actions.act_url", "url": f"{url}?inline=1", "target": "new"}
+            pdf = self._render_sarabun_draft_preview_pdf()
+        title = self.display_name.replace("/", "_")
+        writer = PdfFileWriter()
+        writer.appendPagesFromReader(PdfFileReader(io.BytesIO(pdf), strict=False))
+        writer.addMetadata({"/Title": title})
+        stream = io.BytesIO()
+        writer.write(stream)
+        return stream.getvalue(), f"{title}.pdf"
 
     def _render_sarabun_draft_preview_pdf(self):
         """PDF of the หนังสือ this request would produce, watermarked.
