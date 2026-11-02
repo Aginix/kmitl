@@ -4,10 +4,7 @@
         id="kmitl_project_portal_content_strategic_plan"
         inherit_id="kmitl_project.kmitl_project_portal_content"
     >
-        <xpath
-            expr="//dd[@t-out=&quot;kmitl_project.kmitl_plan_id.name or '—'&quot;]"
-            position="after"
-        >
+        <xpath expr="//dl[@id='strategic-plan']" position="inside">
             <dt class="col-sm-5">แผนบริหารสถาบัน</dt>
             <dd
                 class="col-sm-7"
