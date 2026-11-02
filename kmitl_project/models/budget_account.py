@@ -15,8 +15,8 @@ class BudgetAccount(models.Model):
 
     project_type = fields.Selection(
         [
-            ("project", "โครงการ (งบประจำ)"),
-            ("activity", "กิจกรรม (งบประจำ)"),
+            ("project", "โครงการงบประจำ"),
+            ("activity", "กิจกรรมงบประจำ"),
             ("strategic_project", "โครงการยุทธศาสตร์"),
         ],
         tracking=True,
