@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import _, api, fields, models
+from odoo.exceptions import UserError
 
 
 class SarabunDocumentMixin(models.AbstractModel):
@@ -208,6 +209,25 @@ class SarabunDocumentMixin(models.AbstractModel):
         need to reimplement this method.
         """
         self.ensure_one()
+        # Re-check server-side: a stale form (opened before someone else created
+        # the หนังสือ) still shows the button. Only a cancelled/rejected one frees it;
+        # sudo so a หนังสือ the clicker cannot read still counts.
+        live = self.env["sarabun.document"].sudo().search(
+            [
+                ("origin_model", "=", self._name),
+                ("origin_res_id", "=", self.id),
+                ("state", "not in", ("rejected", "cancelled")),
+            ],
+            limit=1,
+        )
+        if live:
+            raise UserError(
+                _(
+                    "มีหนังสือสารบรรณที่ยังดำเนินการอยู่แล้ว (%s) "
+                    "ต้องยกเลิกหนังสือฉบับเดิมก่อนจึงจะสร้างใหม่ได้"
+                )
+                % live.display_name
+            )
         if not self._sarabun_submit_guard():
             return False
         action = self.action_create_sarabun_document()

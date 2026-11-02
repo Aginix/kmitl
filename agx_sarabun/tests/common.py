@@ -58,6 +58,10 @@ class SarabunOriginSpy(models.TransientModel):
     # flip to make the completed callback raise (rollback test)
     raise_on_completed = fields.Boolean(default=False)
 
+    def _sarabun_post(self, kind, document, step=None):
+        # no chatter on this transient spy (lets tests call action_submit_to_sarabun)
+        pass
+
     def _on_sarabun_circulating(self, document):
         self.circulating_count += 1
 
