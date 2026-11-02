@@ -120,6 +120,29 @@ class AccountMove(models.Model):
             lambda line: line.display_type not in ("line_section", "line_note")
         )
 
+    def _kmitl_voucher_dimensions(self):
+        """The analytic account of each financial dimension, keyed by root plan
+        code, for the portrait voucher.
+
+        Read off ``analytic_distribution`` — the entry's own first, then its
+        lines' — since that JSON is the source of truth for every dimension, and
+        the project / procurement-plan ones exist only there.
+        """
+        self.ensure_one()
+        distributions = [self.analytic_distribution] + self.line_ids.mapped(
+            "analytic_distribution"
+        )
+        ids = [int(key) for dist in distributions for key in (dist or {})]
+        dims = {}
+        for account in self.env["account.analytic.account"].browse(ids).exists():
+            dims.setdefault(account.root_plan_id.code, account)
+        return dims
+
+    def _kmitl_voucher_ancestors(self, account):
+        """``account`` and its parents, root first (e.g. ด้าน → … → กิจกรรมย่อย)."""
+        ids = [int(i) for i in (account.parent_path or "").split("/") if i]
+        return account.browse(ids)
+
     # ------------------------------------------------------------------
     # Workflow actions
     # ------------------------------------------------------------------

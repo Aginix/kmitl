@@ -2,7 +2,7 @@
 
 {
     "name": "KMITL Accounting Workflow",
-    "version": "16.0.1.2.0",
+    "version": "16.0.1.3.0",
     "category": "KMITL/Accounting",
     "summary": "Workflow อนุมัติ 2 ขั้น (ผู้จัดทำ/ตรวจสอบ → ผู้อนุมัติ) "
     "บน account.move และใบสำคัญรายการบัญชี",
@@ -11,19 +11,22 @@
     "license": "AGPL-3",
     "depends": [
         "accounting_kmitl",
+        "hr_employee_digitized_signature",
         "mail_activity_todo",
         "l10n_th_fonts",
         "l10n_th_amount_to_text",
+        "thai_date_utils",
     ],
     "data": [
         "security/ir.model.access.csv",
         "data/mail_activity_type.xml",
         "wizards/reject_reason_views.xml",
-        "views/account_move_views.xml",
-        "views/account_move_queue_views.xml",
         "report/paperformat.xml",
         "report/account_move_voucher_report.xml",
+        "views/account_move_views.xml",
+        "views/account_move_queue_views.xml",
         "report/account_move_voucher_templates.xml",
+        "report/account_move_voucher_portrait_templates.xml",
     ],
     "assets": {
         "web.assets_backend": [

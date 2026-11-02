@@ -36,6 +36,12 @@
                         groups="accounting_kmitl.group_accounting_kmitl_manager"/>
             </xpath>
 
+            <!-- Print the portrait voucher straight from the form. -->
+            <xpath expr="//button[@name='button_draft']" position="before">
+                <button name="%(action_report_account_move_voucher_portrait)d"
+                        string="พิมพ์ใบสำคัญรายการบัญชี" type="action"/>
+            </xpath>
+
             <!-- Approval audit block next to the accounting dimensions. -->
             <xpath expr="//group[@name='budget_info']" position="after">
                 <group name="approval_workflow" string="Approval Workflow">

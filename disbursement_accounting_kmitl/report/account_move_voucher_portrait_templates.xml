@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- The portrait voucher's รายละเอียดงบประมาณ, completed as on the DR it came
+         from (disbursement_sarabun_budget): its ใบจองงบประมาณ before แหล่งเงิน and
+         its รหัสค่าใช้จ่าย after ด้าน/แผนงาน/กิจกรรม. -->
+    <template id="report_account_move_voucher_portrait"
+              inherit_id="accounting_kmitl_workflow.report_account_move_voucher_portrait">
+        <xpath expr="//tr[hasclass('o_field_source_analytic_id')]" position="before">
+            <tr class="o_field_budget_commitment_id">
+                <td>เลขที่ใบจองงบประมาณ</td>
+                <td><span t-field="o.disbursement_budget_commitment_id"/></td>
+            </tr>
+        </xpath>
+        <xpath expr="//tr[hasclass('o_field_activity_analytic_id')]" position="after">
+            <tr class="o_field_budget_account_id">
+                <td>รหัสค่าใช้จ่าย</td>
+                <td><span t-field="o.disbursement_request_id.budget_account_id"/></td>
+            </tr>
+        </xpath>
+    </template>
+</odoo>
