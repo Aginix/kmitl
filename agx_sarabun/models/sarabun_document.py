@@ -396,7 +396,8 @@ class SarabunDocument(models.Model):
     is_terminal = fields.Boolean(compute="_compute_state_flags")
     is_editable = fields.Boolean(
         compute="_compute_state_flags",
-        help="True while the หนังสือ may still be edited (draft or returned).",
+        help="True while the หนังสือ may still be edited (draft or returned) by its "
+        "ผู้จัดทำ (sender).",
     )
 
     # === Defaults ===
@@ -450,7 +451,8 @@ class SarabunDocument(models.Model):
                 doc.sudo().write({"enclosure_attachment_ids": commands})
 
     # === Computes ===
-    @api.depends("state")
+    @api.depends("state", "sender_user_id")
+    @api.depends_context("uid")
     def _compute_state_flags(self):
         for record in self:
             record.is_draft = record.state == "draft"
@@ -460,7 +462,11 @@ class SarabunDocument(models.Model):
             record.is_rejected = record.state == "rejected"
             record.is_cancelled = record.state == "cancelled"
             record.is_terminal = record.state in ("rejected", "cancelled")
-            record.is_editable = record.state in ("draft", "returned")
+            # Only the ผู้จัดทำ edits — a reader of a returned / pulled-back หนังสือ must not.
+            record.is_editable = (
+                record.state in ("draft", "returned")
+                and record.sender_user_id == self.env.user
+            )
 
     @api.depends("origin_model")
     def _compute_include_content(self):

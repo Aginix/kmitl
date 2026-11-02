@@ -14,7 +14,7 @@ P4 concern (stubbed). Numbering (P3) and freeze/sign (P5) live on the document.
 from markupsafe import Markup
 
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError
+from odoo.exceptions import AccessError, UserError
 
 # Keep in sync with sarabun_route_template.py
 TARGET_MODE = [
@@ -255,9 +255,27 @@ class SarabunRoutingStep(models.Model):
             step.order = (max(orders) + 1) if orders else 1
 
     # ------------------------------------------------------------ ORM guards
+    def _check_route_owner(self, documents):
+        """Outside circulation (draft / returned / terminal) only the ผู้จัดทำ (or a
+        manager) may change the Route; while circulating, route edits are gated by
+        agx_sarabun_route_edit. Engine writes run sudo and pass."""
+        if self.env.su or self.env.user.has_group("agx_sarabun.group_sarabun_manager"):
+            return
+        if documents.filtered(
+            lambda d: d.state != "circulating" and d.sender_user_id != self.env.user
+        ):
+            raise AccessError(_("Only the sender (ผู้จัดทำ) may edit this document."))
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        steps = super().create(vals_list)
+        self._check_route_owner(steps.document_id)
+        return steps
+
     def write(self, vals):
         """The originator (ผู้จัดทำ/ผู้ส่ง) row is locked — a user may change only its
         verb. Engine writes (sudo: activation, archive, stamping) pass through."""
+        self._check_route_owner(self.document_id)
         if not self.env.su and vals and set(vals) - {"verb"}:
             if self.filtered("is_originator"):
                 raise UserError(
@@ -272,6 +290,7 @@ class SarabunRoutingStep(models.Model):
         """A user cannot remove the originator row (it must always be the first step).
         Document deletion cascades at the DB level (ondelete='cascade'), bypassing
         the ORM unlink, so it is not blocked here."""
+        self._check_route_owner(self.document_id)
         if not self.env.su and self.filtered("is_originator"):
             raise UserError(_("The ผู้จัดทำ/ผู้ส่ง step cannot be removed from the Route."))
         return super().unlink()
