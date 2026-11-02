@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- procurement.plan.budget.move.line follows the visibility of its plan
+         (its unit, plus the access-all OU group), never budget's OU rules. -->
+    <record id="procurement_plan_budget_move_line_company_rule" model="ir.rule">
+        <field name="name">Plan Budget Movement: Multi-company</field>
+        <field name="model_id" ref="model_procurement_plan_budget_move_line" />
+        <field name="domain_force">[
+            '|', ('company_id', '=', False), ('company_id', 'in', company_ids)
+        ]</field>
+        <field name="global" eval="True" />
+    </record>
+
+    <record id="procurement_plan_budget_move_line_operating_unit_rule" model="ir.rule">
+        <field name="name">Plan Budget Movement: Operating Unit</field>
+        <field name="model_id" ref="model_procurement_plan_budget_move_line" />
+        <field name="domain_force">[
+            '|', '|',
+            (1, '=', 1) if user.has_group('procurement_plan_operating_unit_access_all.group_all_ou_procurement_plan') else (0, '=', 1),
+            ('plan_id.operating_unit_id', '=', False),
+            ('plan_id.operating_unit_id', 'in', user.operating_unit_ids.ids)
+        ]</field>
+        <field name="global" eval="True" />
+    </record>
+</odoo>

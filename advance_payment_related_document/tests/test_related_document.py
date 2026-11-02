@@ -1,10 +1,11 @@
-from odoo.exceptions import UserError, ValidationError
+from odoo.exceptions import AccessError, UserError, ValidationError
 from odoo.tests.common import TransactionCase, tagged
 
 
 @tagged("post_install", "-at_install")
 class TestRelatedDocument(TransactionCase):
-    """Who may change a loan's related documents, and until when (ADR-0029)."""
+    """Who may change a loan's related documents, and until when (ADR-0029). The
+    rows themselves are covered by agx_related_document."""
 
     @classmethod
     def setUpClass(cls):
@@ -29,6 +30,10 @@ class TestRelatedDocument(TransactionCase):
         cls.officer = user(
             "officer_ap_rd", "advance_payment.group_advance_payment_loan_officer"
         )
+        cls.endorser = user("endorser_ap_rd", "base.group_user")
+        cls.stranger = user(
+            "stranger_ap_rd", "advance_payment.group_advance_payment_own_only"
+        )
         employee = cls.env["hr.employee"].create(
             {"name": "Borrower", "user_id": cls.borrower.id}
         )
@@ -48,15 +53,19 @@ class TestRelatedDocument(TransactionCase):
             )
             .sudo()
         )
+        if "ignore_exception" in cls.loan._fields:
+            # Moving the loan to to_verify must not trip the exception rules.
+            cls.loan.ignore_exception = True
 
     def _add(self, user, **vals):
         return (
-            self.env["advance.payment.related.document"]
+            self.env["related.document"]
             .with_user(user)
             .create(
                 dict(
                     {
-                        "advance_payment_id": self.loan.id,
+                        "res_model": "advance.payment",
+                        "res_id": self.loan.id,
                         "document_number": "อว 0001/1",
                         "name": "หนังสือขยายเวลา",
                     },
@@ -105,32 +114,18 @@ class TestRelatedDocument(TransactionCase):
         with self.assertRaises(ValidationError):
             self._add(self.borrower, document_number=False, name=False)
 
-    # In-system kinds are configured, not coded (ADR-0029).
-
-    def _partner_kind(self):
-        Fields = self.env["ir.model.fields"]
-        return self.env["advance.payment.related.document.kind"].create(
-            {
-                "name": "Partner by reference",
-                "model_id": self.env["ir.model"]._get_id("res.partner"),
-                "number_field_id": Fields._get("res.partner", "ref").id,
-                "subject_field_id": Fields._get("res.partner", "comment").id,
-            }
+    def test_endorser_reads_but_cannot_add(self):
+        self.loan.state = "in_progress"
+        row = self._add(self.borrower)
+        self.loan.endorser_id = self.endorser
+        self.assertEqual(
+            self.env["related.document"].with_user(self.endorser).search([]), row
         )
+        with self.assertRaises(AccessError):
+            self._add(self.endorser)
 
-    def test_configured_kind_found_by_number(self):
-        kind = self._partner_kind()
-        partner = self.env["res.partner"].create(
-            {"name": "Doc Partner", "ref": "RD-0001", "comment": "<p>เรื่องทดสอบ</p>"}
+    def test_other_user_cannot_read_rows(self):
+        row = self._add(self.borrower)
+        self.assertNotIn(
+            row, self.env["related.document"].with_user(self.stranger).search([])
         )
-        row = self._add(
-            self.borrower, kind_id=kind.id, document_number=" rd-0001 ", name=False
-        )
-        self.assertEqual((row.res_model, row.res_id), ("res.partner", partner.id))
-        self.assertEqual(row.document_number, "RD-0001")
-        self.assertEqual(row.name, "เรื่องทดสอบ")
-
-    def test_configured_kind_unknown_number_refused(self):
-        kind = self._partner_kind()
-        with self.assertRaises(ValidationError):
-            self._add(self.borrower, kind_id=kind.id, document_number="NO-SUCH")

@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_related_document_kind_user,related.document.kind user,model_related_document_kind,base.group_user,1,0,0,0
+access_related_document_kind_system,related.document.kind system,model_related_document_kind,base.group_system,1,1,1,1
+access_related_document_user,related.document user,model_related_document,base.group_user,1,1,1,1

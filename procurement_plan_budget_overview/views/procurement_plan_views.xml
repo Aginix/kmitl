@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- One "บัญชีแผน" stat button in place of the movement and commitment
+         buttons; it always shows คงเหลือ. -->
+    <record id="view_procurement_plan_form" model="ir.ui.view">
+        <field name="name">procurement.plan.form.budget.overview</field>
+        <field name="model">procurement.plan</field>
+        <field
+            name="inherit_id"
+            ref="procurement_plan_budget_movement.view_procurement_plan_form"
+        />
+        <!-- Replaces buttons: apply after the movement extension (priority 99). -->
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <data>
+                <button name="action_open_budget_movements" position="replace">
+                    <button
+                        name="action_open_budget_overview"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-book"
+                        attrs="{'invisible': [('analytic_account_id', '=', False)]}"
+                        groups="procurement_plan.group_procurement_plan_user,budget.group_budget_viewer"
+                    >
+                        <div class="o_field_widget o_stat_info">
+                            <span class="o_stat_text">บัญชีแผน</span>
+                            <span class="o_stat_value">
+                                <span class="fw-normal me-1">คงเหลือ</span>
+                                <field name="budget_remaining" />
+                            </span>
+                        </div>
+                    </button>
+                </button>
+                <button name="action_open_budget_commitments" position="replace" />
+            </data>
+        </field>
+    </record>
+
+    <!-- บัญชีแผน: a read-only view of the plan, opened from the stat button.
+         Priority keeps it from becoming the default form. -->
+    <record id="view_procurement_plan_budget_overview_form" model="ir.ui.view">
+        <field name="name">procurement.plan.budget.overview.form</field>
+        <field name="model">procurement.plan</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <form
+                string="บัญชีแผน"
+                create="0"
+                edit="0"
+                delete="0"
+                duplicate="0"
+                class="o_ppbo_form"
+            >
+                <header>
+                    <button
+                        name="action_open_plan_form"
+                        type="object"
+                        string="กลับไปหน้าแผน"
+                        icon="fa-arrow-left"
+                        class="btn-secondary"
+                    />
+                </header>
+                <sheet>
+                    <field name="state" invisible="1" />
+                    <field name="company_id" invisible="1" />
+                    <field name="analytic_account_id" invisible="1" />
+                    <field name="total_price" invisible="1" />
+                    <field name="budget_amount" invisible="1" />
+                    <field name="budget_consumed" invisible="1" />
+                    <field name="budget_short" invisible="1" />
+                    <field name="budget_reserved_total" invisible="1" />
+                    <field name="budget_unreserved" invisible="1" />
+                    <field name="budget_commitment_count" invisible="1" />
+                    <field name="budget_off_target_count" invisible="1" />
+                    <field name="has_held_money" invisible="1" />
+                    <div class="oe_title">
+                        <div class="text-muted">บัญชีแผน</div>
+                        <h1><field name="name" readonly="1" /></h1>
+                        <h4><field name="description" readonly="1" /></h4>
+                    </div>
+                    <group>
+                        <group>
+                            <field
+                                name="account_fiscal_year_id"
+                                readonly="1"
+                                options="{'no_open': True}"
+                            />
+                            <field
+                                name="budget_account_id"
+                                readonly="1"
+                                options="{'no_open': True}"
+                            />
+                            <field
+                                name="department_analytic_id"
+                                readonly="1"
+                                options="{'no_open': True}"
+                            />
+                        </group>
+                        <group>
+                            <field
+                                name="source_analytic_id"
+                                readonly="1"
+                                options="{'no_open': True}"
+                            />
+                            <field
+                                name="fund_analytic_id"
+                                readonly="1"
+                                options="{'no_open': True}"
+                            />
+                            <field
+                                name="activity_analytic_id"
+                                readonly="1"
+                                options="{'no_open': True}"
+                            />
+                        </group>
+                    </group>
+
+                    <widget name="procurement_plan_budget_overview_summary" />
+
+                    <div class="o_ppbo_alerts">
+                        <div
+                            class="alert alert-info mb-2"
+                            role="status"
+                            attrs="{'invisible': [('budget_pending_amount', '=', 0)]}"
+                        >
+                            <strong>รอโอน <field
+                                    name="budget_pending_amount"
+                                    class="d-inline"
+                                /> บาท</strong>
+                            — มีใบโอนอยู่ระหว่างดำเนินการ ยังไม่นับในยอดได้รับจัดสรร
+                        </div>
+                        <div
+                            class="alert alert-warning mb-2"
+                            role="alert"
+                            attrs="{'invisible': ['|', ('state', '!=', 'to_verify'), ('budget_short', '=', False)]}"
+                        >
+                            <strong>ได้รับงบประมาณยังไม่ครบวงเงินตามแผน</strong>
+                            — จองงบประมาณได้เมื่อได้รับงบครบวงเงินแล้ว
+                        </div>
+                        <div
+                            class="alert alert-warning mb-2"
+                            role="alert"
+                            attrs="{'invisible': ['|', '|', ('state', '!=', 'in_progress'), ('budget_reserved_total', '=', 0), ('budget_unreserved', '=', 0)]}"
+                        >
+                            <strong>ได้รับแต่ยังไม่ได้จอง <field
+                                    name="budget_unreserved"
+                                    class="d-inline"
+                                /> บาท</strong>
+                            — เงินที่จัดสรรเพิ่มหลังเริ่มเบิกจ่ายยังไม่อยู่ในใบจอง จึงยังใช้เปิดใบขอซื้อ/ขอเบิกไม่ได้ กรุณาติดต่อเจ้าหน้าที่งบประมาณ
+                        </div>
+                        <div
+                            class="alert alert-warning mb-2"
+                            role="alert"
+                            attrs="{'invisible': ['|', ('state', 'not in', ('done', 'cancel')), ('has_held_money', '=', False)]}"
+                        >
+                            <strong>เงินค้างในมิติแผน <field
+                                    name="budget_remaining"
+                                    class="d-inline"
+                                /> บาท</strong>
+                            — แผนปิดหรือถูกลบแล้ว เงินที่เหลือต้องโอนคืนงบลอย
+                        </div>
+                        <div
+                            class="alert alert-danger mb-2"
+                            role="alert"
+                            attrs="{'invisible': [('budget_off_target_count', '=', 0)]}"
+                        >
+                            <strong>พิกัดไม่ตรงกับแผน</strong>
+                            — มีรายการที่ติดมิติแผนแต่รหัสงบ/มิติไม่ตรงกับแผน จึงไม่นับในยอด
+                            <button
+                                name="action_open_off_target_movements"
+                                type="object"
+                                string="ดูรายการ"
+                                class="btn-link p-0 align-baseline"
+                            />
+                        </div>
+                    </div>
+
+                    <!-- Same buttons as the plan header, which keeps them too. -->
+                    <div class="o_ppbo_actions">
+                        <button
+                            string="จัดสรรงบประมาณ (งบลอย)"
+                            name="action_open_floating_allocation"
+                            type="object"
+                            icon="fa-plus"
+                            class="btn-outline-primary"
+                            groups="budget.group_budget_user"
+                            attrs="{'invisible': [('state', 'not in', ('to_verify', 'verified', 'in_progress'))]}"
+                        />
+                        <button
+                            string="โอนคืนงบลอย"
+                            name="action_open_floating_return"
+                            type="object"
+                            icon="fa-undo"
+                            class="btn-outline-primary"
+                            groups="budget.group_budget_user"
+                            attrs="{'invisible': [('has_held_money', '=', False)]}"
+                        />
+                        <button
+                            string="เปิดใบจอง"
+                            name="action_open_budget_commitments"
+                            type="object"
+                            icon="fa-external-link"
+                            class="btn-link"
+                            groups="budget.group_budget_viewer"
+                            attrs="{'invisible': [('budget_commitment_count', '=', 0)]}"
+                        />
+                    </div>
+
+                    <notebook>
+                        <page name="movements" string="การเคลื่อนไหวงบประมาณ">
+                            <field name="budget_movement_ids" nolabel="1">
+                                <tree
+                                    create="0"
+                                    delete="0"
+                                    decoration-muted="status in ('other_year', 'off_target')"
+                                >
+                                    <field name="date" />
+                                    <field name="name" />
+                                    <field name="kind" />
+                                    <field
+                                        name="counterpart_department_id"
+                                        options="{'no_open': True}"
+                                    />
+                                    <field name="source_name" />
+                                    <field name="amount" />
+                                    <field
+                                        name="status"
+                                        widget="badge"
+                                        decoration-success="status == 'posted'"
+                                        decoration-warning="status == 'in_progress'"
+                                        decoration-info="status == 'other_year'"
+                                        decoration-danger="status == 'off_target'"
+                                    />
+                                </tree>
+                            </field>
+                            <div class="o_ppbo_footer">
+                                <button
+                                    name="action_open_budget_movements"
+                                    type="object"
+                                    string="ดูทั้งหมด"
+                                    icon="fa-list"
+                                    class="btn-link p-0"
+                                />
+                                <div class="o_ppbo_total">
+                                    คงเหลือ
+                                    <field name="budget_remaining" class="d-inline" />
+                                </div>
+                            </div>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- A stored action keeps บัญชีแผน in the URL across a reload. -->
+    <record id="action_procurement_plan_budget_overview" model="ir.actions.act_window">
+        <field name="name">บัญชีแผน</field>
+        <field name="res_model">procurement.plan</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_procurement_plan_budget_overview_form" />
+        <field name="target">current</field>
+    </record>
+
+</odoo>

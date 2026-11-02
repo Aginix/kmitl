@@ -1,18 +1,26 @@
 # Approval Request (Expense Plan)
 
-The expense-approval application (`agx_approval`): a requester fills a form to get an expense **approved before** the money is spent. The form-filling stage is framed as proposing an **expense plan** — what is planned to be spent and who is involved — not a settled bill. Who actually receives the money is *not* decided on the plan; it is recorded later, **after the mission**, when actual expenses are broken down per recipient on the same request, and only then billed into a disbursement.
+The expense-approval application (`agx_approval`): a requester fills a form to get an expense **approved before** the money is spent. The form-filling stage is framed as proposing an **expense plan** — what is planned to be spent and who is involved — not a settled bill. Approval is where the request's own work ends: the requester records nothing afterwards. Finance then disburses it over time through any number of ใบขอเบิก, each line paying one planned Expense, and reads the request's Remaining at a glance.
 
 Approval itself is **routed through e-Saraban**: a submitted request spawns a หนังสือ that circulates for sign-off, and the หนังสือ's outcome drives the request's state (completed → approved, returned → returned, rejected → rejected). The internal approve button is not the approval path when the Sarabun bridge is installed.
 
 ## Language
 
 **Approval Request (ใบขออนุมัติ)**:
-The `approval.request` document. Spans two moments of one activity: the **plan** (approved before the money is spent) and the **actual expense record** (filled after the mission, before billing). Reserves budget on approval.
+The `approval.request` document: the plan, approved before the money is spent. Reserves budget on approval and is then disbursed against, never edited again.
 _Avoid_: expense request, claim, bill
 
 **Approval Category (ประเภทค่าใช้จ่าย)**:
-A fine-grained expense type (`approval.category`), one per government budget code (~90 of them) — **not** a broad request kind. The category **owns its product**: single-product by default (`multi_product = False`, exactly one `allowed_product_ids`), so the product is a foregone conclusion the user never picks. A handful (5) of travel/training categories set `multi_product = True` and expose a small pick-list of sub-items (ค่าหลักสูตร/ค่าเดินทาง/ค่าเบี้ยเลี้ยง/ค่าที่พัก/อื่นๆ) instead. Also **scopes** what a request of that kind may use — allowed people, and its **budget code**: when it pins a budget code that code becomes the request's constraint (not just a default); when it leaves the code blank the request selects freely from the **Approval-eligible Budget Codes**. See [ADR-0006](docs/adr/0006-category-owned-product-single-product-plan.md).
-_Avoid_: request type, request kind, template, budget preset
+A fine-grained expense type (`approval.category`), one per government budget code (~90 of them) — **not** a broad request kind. Decides whether its requests itemize: by default a request of the category carries **one** Expense (a single amount); a category that **has Expense Items** (มีรายการค่าใช้จ่ายย่อย) lets the requester break the plan down into several Expenses, each naming one of the category's own Expense Items. Also **scopes** what a request of that kind may use — allowed people, and its **budget code**: when it pins a budget code that code becomes the request's constraint (not just a default); when it leaves the code blank the request selects freely from the **Approval-eligible Budget Codes**.
+_Avoid_: request type, request kind, template, budget preset; product (categories no longer own a product)
+
+**Expense Item (รายการค่าใช้จ่ายย่อย)**:
+A named kind of spending configured **on one category and owned by it** — never shared across categories (e.g. ค่ารับรองและพิธีการ → อาหารว่างและเครื่องดื่ม, อาหารกลางวัน, ของที่ระลึก). Exists only on a category that has Expense Items; an Expense of such a category names one, and several Expenses may name the same one (e.g. อาหารว่าง เช้า and บ่าย). Retired by deactivating, never deleted, since past requests name it. Carries no rate limit. Not a product.
+_Avoid_: product, sub-product, รายการย่อย (the old name of the travel/training product pick-list)
+
+**Other Expense (อื่น ๆ)**:
+An Expense of a category with Expense Items that names none of them: the requester picks อื่น ๆ and types what it is (ระบุรายการ), separately from its รายละเอียด. Shown as "อื่น ๆ: <what was typed>" so it reads as non-standard. Allowed per category (on by default); typing one never adds an Expense Item — an administrator does that.
+_Avoid_: a free-text Expense Item, an auto-learned item
 
 **Approval-eligible Budget Code (รหัสงบที่ใช้ในคำขออนุมัติได้)**:
 A budget code an administrator has explicitly marked usable from a ใบขออนุมัติ. Independent of whether it is also a procurement code: a code may be usable from a ใบขอซื้อ, from a ใบขออนุมัติ, from both, or from neither. See [ADR-0004](docs/adr/0004-budget-code-selection-scoped-by-category-non-procurement.md) (amended).
@@ -23,40 +31,44 @@ The planned spending captured while filling the form — the purpose of the entr
 _Avoid_: budget, estimate, quotation
 
 **Expense (ค่าใช้จ่าย)**:
-A single **planned** line (`approval.request.line`): รายการ (product) + รายละเอียด (detail) + จำนวนเงิน (planned amount). Broken down **by expense type, not by person**, and carries **no payee** — a plan line says what is spent, not who is paid. For a single-product category the product is implicit (the category's own product) and the form shows only a bare จำนวนเงิน (`plan_amount`) on the header, mirrored onto this line behind the scenes; the per-line product picker is shown **only** for the 5 multi-product (travel/training) categories, where จำนวนเงิน is instead the Spending Ceiling ([ADR-0006](docs/adr/0006-category-owned-product-single-product-plan.md)).
-_Avoid_: request line, payee line, actual expense
+A single **planned** line of the Expense Plan: จำนวนเงิน (amount) + an optional free-text รายละเอียด (where the requester writes how it adds up, e.g. 20 คน × 50), plus its Expense Item when the category has them. Carries **no payee** — it says what is spent, not who is paid. A request of a category without Expense Items has exactly one Expense; a category with them has as many as the requester itemizes. The unit finance disburses against: every ใบขอเบิก line pays one Expense.
+_Avoid_: request line, payee line, actual expense, product line
 
 **Spending Ceiling (เพดานค่าใช้จ่าย)**:
-On a multi-product request, the จำนวนเงิน the requester declares up front; the plan lines must add up to exactly this amount before the request can move to the next step. On a single-product request จำนวนเงิน is simply the one line's amount.
+On a request whose category has Expense Items, the จำนวนเงิน the requester declares up front; its Expenses must add up to exactly this amount before the request can move to the next step. Otherwise จำนวนเงิน is simply the one Expense's amount. Equals the Approved Amount once approved.
 _Avoid_: budget limit, reserved amount (that is the ใบจองงบประมาณ's)
 
 **Participant (รายชื่อ)**:
-A person involved in the activity — traveller, attendee, or related person — listed on the plan (person + note, no bank, no amount). The roster from which recipients are later chosen: to pay someone they must first appear here.
+A person involved in the activity — traveller, attendee, or related person — listed on the plan (person + note, no bank, no amount). Not a payee list: who is paid is decided by finance on the ใบขอเบิก.
 _Avoid_: payee, recipient (ผู้รับเงิน)
 
-**Borrowing Participant (ผู้ยืมในคำขอ)**:
-A Participant who drew a สัญญายืม against this request rather than fronting the cost. Borrowing is **per person and discretionary** — each participant decides for themselves once the request is approved and *before* the money is spent — and the amount is the borrower's own declaration, since the plan apportions nothing per person. A request may have none, one borrowing on the group's behalf, several borrowing their own, or any mix with people who front the cost instead.
-_Avoid_: recipient (that is the post-mission ผู้รับเงิน), payee, advance row, per-line borrowing
+**Finance-authored Disbursement (ใบขอเบิกที่การเงินตั้ง)**:
+A ใบขอเบิก a disbursement user raises against an approved request — from the request itself (สร้างใบขอเบิก) or from the ใบขอเบิก side by naming it (อ้างอิงใบขออนุมัติ). References **exactly one** request, whose reservation, budget code and dimensions it inherits. A request may have **many**, raised over time — it is not cleared in one go. Its payee lines (who receives the money) are kept apart from its **Expense breakdown** (ค่าใช้จ่ายที่ขอเบิก): the recipient is not always the one who spent — it may be someone who advanced or borrowed the money — so the ใบขอเบิก states separately which of the request's Expenses it covers, with an explanation and amount each, adding up to its total. With a single Expense the breakdown is that Expense. Whoever may read a ใบขอเบิก may also read the request it references — read-only, its attachments included — so a reviewer in another unit sees what was approved. Disbursement evidence (receipts) is attached to each ใบขอเบิก, not to the request. The requester records nothing after approval: there is no actual-expense step on the request.
+_Avoid_: billing the request, one DR per request, actual expense (ค่าใช้จ่ายจริง — the removed post-mission record)
 
-**Borrowing Headroom (วงเงินยืมคงเหลือของคำขอ)**:
-The request's approved amount (reserved budget, else the plan total) minus every **non-cancelled** สัญญายืม already drawn against it — what the remaining participants may still borrow. A *closed* loan still consumes it: the cash left the institute under this request.
-_Avoid_: remaining budget, credit limit, per-person cap
+**Approved Amount (ยอดอนุมัติ)**:
+What this request may spend in total: its **Expense Plan total** — the cap on its ใบขอเบิก. For a request that reserved its own budget this equals its reservation; for one drawing from a shared reservation (a project's or procurement plan's) it is only this request's share of it, so the cap is the request's own guard, not the budget engine's. Never raised after approval: spending beyond it is not the request's to cover — there is no top-up or amendment.
+_Avoid_: the reservation's total (จองเงิน) — shared reservations are larger than any one request
 
-**Actual Expense Allocation (ค่าใช้จ่ายจริง / จัดสรรรายคน)**:
-The after-mission breakdown recorded on the request: rows of (**recipient**, expense product, **actual** amount, **payment type**, bank). Grouped by recipient it *is* the งบหน้าใบสำคัญคู่จ่าย view; recipients are drawn from the participants. A `direct`/`prepaid` row bills into a disbursement line; an `advance` row is excluded from the disbursement and instead **names the Funding Loan** it was paid out of (see Payment type). The allocation is the *itemisation* of what happened; it never clears a loan by itself.
-_Avoid_: expense plan (that is the pre-spend estimate), payee sync, loan clearing
+**Disbursed (เบิกจ่ายแล้ว)**:
+The part of a request's ใบขอเบิก whose budget has been **consumed** (ตัดงบแล้ว). Not "paid": payment may still be pending.
+_Avoid_: paid (จ่ายเงินแล้ว), billed
 
-**Recipient (ผู้รับเงิน)**:
-A participant who actually receives money — known only after the mission, named on an Actual Expense Allocation row with their bank. A single request may pay **several** recipients.
-_Avoid_: participant, payee-per-plan-line
+**In-progress Disbursement (อยู่ระหว่างเบิก)**:
+Non-cancelled ใบขอเบิก of a request whose budget is **not yet consumed**, drafts included — held so concurrent ใบขอเบิก cannot overspend the request.
+_Avoid_: pending payment
 
-**Payment type (ประเภทการจ่ายเงิน)**:
-How an actual-allocation row's money is settled, recorded **per row** in the `actual` stage: `direct` (จ่ายตรง — the institute pays the named recipient directly), `prepaid` (สำรองจ่าย — a participant fronts the cost, then claims it back), or `advance` (เงินยืม — paid out of a Funding Loan). `direct`/`prepaid` bill into a disbursement (one DR per request, header `direct` in the interim until the DR module supports per-line type); `advance` is excluded from the disbursement. One recipient may mix types across their rows.
-_Avoid_: the removed plan-level `payment_type` (ADR-0001 D6) — this is its post-mission, per-row successor ([ADR-0002](docs/adr/0002-payment-type-per-actual-row.md))
+**Remaining (คงเหลือ)**:
+Approved Amount − Disbursed − In-progress Disbursement − what was given back at Close, per request and per Expense — so a Completed request always reads zero. A single Expense may go below zero when finance shifts money between the request's Expenses (เกลี่ยระหว่างรายการ). The request as a whole may dip below zero only while a draft ใบขอเบิก overshoots — shown in red; no ใบขอเบิก can be submitted that leaves it below zero. Counted on each ใบขอเบิก's total as the budget consumes it (VAT included, before withholding tax).
+_Avoid_: คงเหลือเบิกได้, available budget (the budget engine's figure), ถัวจ่าย (that is the budget module's multi-code cross-charge)
 
-**Funding Loan (แหล่งเงินของแถวเงินยืม)**:
-The สัญญายืม an `advance` allocation row was paid out of — **chosen per row** from the loans drawn against this request, and **not necessarily the recipient's own**: one participant may borrow on the group's behalf and pay the others from it. Answers "which loan did this money come from", which is a different question from "who received it".
-_Avoid_: the recipient's loan, borrower's loan (it may be someone else's), auto-matched loan
+**Open for Disbursement (รอเบิก)**:
+An approved request not yet Completed: finance may still raise ใบขอเบิก against it. Finance finds such requests itself, from the paperwork the requester sends in — the request raises no To-Do of its own. The requester is told (FYI) as its ใบขอเบิก are disbursed and when it closes.
+_Avoid_: to_disburse / รอการเงินตรวจสอบ (the superseded hand-off state the requester triggered)
+
+**Close (ปิดคำขอ)**:
+Ending a request's disbursing: it becomes **Completed (เสร็จสิ้น)** and no further ใบขอเบิก may reference it. Happens by itself when Remaining reaches zero; otherwise finance closes it by hand once nothing is In-progress, which **returns the request's Remaining** to the budget (ส่งคืนเงินเหลือจ่าย, the budget module's คืนจอง) — only for a request that reserved its own budget. A request drawing from a shared reservation (a project's or procurement plan's) returns nothing: its Remaining simply stays in the shared reservation for the owner to use or return. Money a consumed ใบขอเบิก frees after the close (cancelled later) is given back the same way at once, so the request stays Completed and reads zero. A finance manager may reopen a Completed request, unless its leftover was already returned — that money is back in the pool, so a new request is needed instead.
+_Avoid_: ตั้งเบิกครบแล้ว / billed (the superseded one-shot close), cancel
 
 **Awaiting Verification (รอตรวจสอบข้อมูล — `to_verify`)**:
 The step after ส่งคำขอ where the Request Verifier checks the request and may fill in the budget code and dimensions, which need not be complete yet. Ends with ยืนยันตรวจสอบ (to the next step) or ตีกลับ (to draft).
@@ -101,7 +113,3 @@ _Avoid_: assuming every request routes through e-Saraban when the Sarabun bridge
 **Requesting Unit (หน่วยงานผู้ขอ)**:
 The unit the requester files the expense under (`requesting_department_id`), declared at entry — required while the plan is editable, defaulting to the current user's most recently used unit. Distinct from the budget dimension ส่วนงาน (`department_analytic_id`, the charged unit chosen by the Request Verifier / Budget Confirmer, and overwritten by the mode switch/project draw-down): the two may differ, e.g. a project-funded request charged to the project's own ส่วนงาน while the requester still belongs to their own unit. No check compares them. See [ADR-0007](docs/adr/0007-requesting-unit-separate-from-budget-department.md).
 _Avoid_: ส่วนงาน/department (ambiguous with the budget dimension), OU
-
-**Disbursement Voucher Cover Sheet (งบหน้าใบสำคัญคู่จ่าย)**:
-The **PDF report** (`report_disbursement_voucher`) over the Actual Expense Allocation — grouped per recipient × expense type, with withholding-tax columns (from the recipient's partner-type WHT) and the dean's signature. Each recipient may have made their own loan or fronted their own money, so there is no single ผู้ทดรองจ่าย designation.
-_Avoid_: disbursement request (that is the payment document itself)

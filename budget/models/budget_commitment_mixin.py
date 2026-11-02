@@ -1,6 +1,6 @@
 import logging
 
-from odoo import api, fields, models, _
+from odoo import fields, models, _
 from odoo.exceptions import ValidationError, UserError
 
 _logger = logging.getLogger(__name__)
@@ -245,9 +245,9 @@ class BudgetCommitmentMixin(models.AbstractModel):
         if kwargs.get("operating_unit_id"):
             commitment_vals["operating_unit_id"] = kwargs["operating_unit_id"]
 
-        if kwargs.get("beneficiary_operating_unit_id"):
-            commitment_vals["beneficiary_operating_unit_id"] = kwargs[
-                "beneficiary_operating_unit_id"
+        if kwargs.get("beneficiary_operating_unit_ids"):
+            commitment_vals["beneficiary_operating_unit_ids"] = [
+                (6, 0, kwargs["beneficiary_operating_unit_ids"])
             ]
 
         if include_company:

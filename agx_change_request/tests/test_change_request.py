@@ -3,6 +3,7 @@ from odoo.exceptions import AccessError, UserError
 from odoo.tests.common import TransactionCase, new_test_user, tagged
 
 ANSWER = "agx_change_request.mail_activity_change_request_answer"
+CHECK = "agx_change_request.mail_activity_change_request_check"
 
 
 class RequestHolder(models.Model):
@@ -93,24 +94,28 @@ class TestChangeRequest(TransactionCase):
         self.assertIn(self.maker.partner_id, self.holder.message_ids[0].partner_ids)
 
         # Anyone who reads the record replies; a reply from someone else
-        # answers it, clears the Assignee's activity and gives the author none.
+        # answers it, clears the Assignee's activity and gives the author one
+        # to check the answer.
         answered = self.Request.with_user(self.other).request_reply(
             made["id"], "Fixed in revision 2"
         )
         self.assertEqual(answered["state"], "answered")
         self.assertFalse(self._activities(made["id"], ANSWER))
-        self.assertFalse(
-            self.env["mail.activity"].search([("change_request_id", "=", made["id"])])
-        )
+        self.assertEqual(self._activities(made["id"], CHECK).user_id, self.reviewer)
+        # Another answer renews it, never adds a second one.
+        self.Request.with_user(self.maker).request_reply(made["id"], "And page 2")
+        self.assertEqual(self._activities(made["id"], CHECK).user_id, self.reviewer)
         # Answered is still outstanding.
         self.assertEqual(self._count(), 1)
         # The author replying to an answered request opens it again: the
-        # conversation goes on, the Assignee gets the activity back.
+        # conversation goes on, the Assignee gets the activity back and the
+        # author's is cleared.
         reopened = self.Request.with_user(self.reviewer).request_reply(
             made["id"], "Line 3 is still wrong"
         )
         self.assertEqual(reopened["state"], "open")
         self.assertEqual(self._activities(made["id"], ANSWER).user_id, self.maker)
+        self.assertFalse(self._activities(made["id"], CHECK))
         answered = self.Request.with_user(self.maker).request_reply(
             made["id"], "Fixed line 3 too"
         )
@@ -119,6 +124,7 @@ class TestChangeRequest(TransactionCase):
             [(r["body"], r["by_request_author"]) for r in answered["replies"]],
             [
                 ("Fixed in revision 2", False),
+                ("And page 2", False),
                 ("Line 3 is still wrong", True),
                 ("Fixed line 3 too", False),
             ],

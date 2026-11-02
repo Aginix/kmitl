@@ -12,15 +12,75 @@
                  behaviour are now generic (base disbursement view + assignment
                  view, keyed on returned_to_source). -->
             <xpath expr="//div[@name='button_box']" position="inside">
-                <field name="approval_request_id" invisible="1" />
                 <button
                     name="action_view_approval_request"
                     type="object"
                     class="oe_stat_button"
                     icon="fa-check-circle"
-                    string="Approval"
+                    string="ใบขออนุมัติ"
                     attrs="{'invisible': [('approval_request_id', '=', False)]}"
                 />
+            </xpath>
+            <!-- อ้างอิงใบขออนุมัติ (agx_approval ADR-0010): naming the request
+                 prefills the header; fixed once the ใบขอเบิก leaves draft. -->
+            <xpath
+                expr="//group[@name='disbursement_information']/field[@name='payment_type']"
+                position="before"
+            >
+                <field
+                    name="approval_request_id"
+                    options="{'no_create': True}"
+                    attrs="{'readonly': [('state', '!=', 'draft')]}"
+                />
+            </xpath>
+            <!-- ค่าใช้จ่ายที่ขอเบิก: its own section, apart from the payees — the
+                 recipient is not always the one who spent (an advance or a
+                 loan), so the ใบขอเบิก explains which Expenses it covers. -->
+            <xpath expr="//field[@name='line_ids']/ancestor::notebook[1]" position="before">
+                <group
+                    name="approval_expenses"
+                    string="ค่าใช้จ่ายที่ขอเบิก (ตามใบขออนุมัติ)"
+                    attrs="{'invisible': [('approval_request_id', '=', False)]}"
+                >
+                    <div colspan="2" class="text-muted mb-2">
+                        ชี้แจงว่าใบขอเบิกนี้เบิกค่าใช้จ่ายรายการใดของใบขออนุมัติ
+                    </div>
+                    <field
+                        name="approval_expense_ids"
+                        colspan="2"
+                        nolabel="1"
+                        attrs="{'readonly': [('can_edit_lines', '=', False)]}"
+                    >
+                        <tree editable="bottom">
+                            <field name="sequence" widget="handle" />
+                            <field name="currency_id" invisible="1" />
+                            <field
+                                name="approval_request_line_id"
+                                domain="[('request_id', '=', parent.approval_request_id)]"
+                                context="{'approval_line_show_remaining': True}"
+                                options="{'no_create': True, 'no_open': True}"
+                            />
+                            <field name="description" />
+                            <field name="approved_amount" />
+                            <field name="amount" sum="รวม" />
+                            <field
+                                name="remaining_after"
+                                decoration-warning="remaining_after &lt; 0"
+                                decoration-bf="1"
+                            />
+                        </tree>
+                    </field>
+                    <div
+                        colspan="2"
+                        class="text-end text-warning fw-bold"
+                        attrs="{'invisible': [('approval_expense_unexplained', '=', 0)]}"
+                    >
+                        ยังไม่ได้ชี้แจงอีก <field
+                            name="approval_expense_unexplained"
+                            class="d-inline"
+                        /> บาท
+                    </div>
+                </group>
             </xpath>
         </field>
     </record>

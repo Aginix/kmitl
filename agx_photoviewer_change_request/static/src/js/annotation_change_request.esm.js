@@ -88,6 +88,22 @@ patch(AnnotationEditor.prototype, "agx_photoviewer_change_request", {
             this.requestsOpen = Boolean((this.data.requests || []).length);
         }
         this.renderRequests();
+        // Live: steps taken by others (the form relays the record's bus
+        // notifications), e.g. a Reply, show up here too.
+        if (!this.onRequestsChanged) {
+            this.onRequestsChanged = (ev) => {
+                if (!ev.detail || ev.detail.editor !== this) {
+                    this.reloadRequests();
+                }
+            };
+            window.addEventListener(CHANGED_EVENT, this.onRequestsChanged);
+        }
+    },
+
+    leave() {
+        this._super(...arguments);
+        window.removeEventListener(CHANGED_EVENT, this.onRequestsChanged);
+        this.onRequestsChanged = null;
     },
 
     // ------------------------------------------------------------ marks
@@ -168,6 +184,12 @@ patch(AnnotationEditor.prototype, "agx_photoviewer_change_request", {
         return values;
     },
 
+    openComment(sheet, annotation) {
+        // The Comment whose popover is open, refreshed by reloadRequests.
+        this.popoverAnnotation = annotation;
+        this._super(...arguments);
+    },
+
     showComment(annotation) {
         this._super(...arguments);
         if (annotation.request) {
@@ -223,7 +245,49 @@ patch(AnnotationEditor.prototype, "agx_photoviewer_change_request", {
     },
 
     notifyChanged() {
-        window.dispatchEvent(new CustomEvent(CHANGED_EVENT));
+        window.dispatchEvent(new CustomEvent(CHANGED_EVENT, {detail: {editor: this}}));
+    },
+
+    /**
+     * Take in the Change requests as they are now on the server, keeping
+     * what is being typed.
+     */
+    async reloadRequests() {
+        const loading = this.loading;
+        let data = null;
+        try {
+            data = await this.call("annotation_load", this.attachment.id);
+        } catch {
+            // A background refresh, e.g. of a file just deleted: stay quiet.
+            return;
+        }
+        if (this.left || loading !== this.loading) {
+            return;
+        }
+        const requests = new Map(data.annotations.map((a) => [a.id, a.request]));
+        for (const annotation of this.annotations) {
+            if (requests.has(annotation.id)) {
+                annotation.request = requests.get(annotation.id);
+            }
+        }
+        this.data.requests = data.requests;
+        this.data.assignee_suggestions = data.assignee_suggestions;
+        // Not while a mark is being drawn or dragged: redraw drops its draft.
+        if (!this.pointer) {
+            this.redraw();
+        }
+        if (!this.requestsPanel.querySelector("textarea")) {
+            this.renderRequests();
+        }
+        const annotation = this.popoverAnnotation;
+        if (
+            this.popover &&
+            annotation &&
+            annotation.id &&
+            !this.popover.querySelector("textarea")
+        ) {
+            this.showComment(annotation);
+        }
     },
 
     /**

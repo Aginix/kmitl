@@ -2,6 +2,7 @@ from . import budget_account
 from . import budget_move
 from . import budget_move_line
 from . import budget_journal
+
 # Modern budget models (renamed from _new to normal)
 from . import budget_commitment_mixin
 from . import budget_commitment

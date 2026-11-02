@@ -1,0 +1,167 @@
+from odoo import api, fields, models, tools
+
+
+class ProcurementPlanBudgetMoveLine(models.Model):
+    """Plan Budget Movements (การเคลื่อนไหวงบ) — one row per budget move line on
+    a plan's ``procurement_plan`` dimension, so plan users follow every movement
+    without any right on ``budget.move(.line)`` (procurement_plan ADR-0006,
+    after kmitl_project ADR-0007).
+
+    Rows are posted allocations, budget entries and ตัดงบ plus in-flight
+    transfers; reservations are not movements. A row in another fiscal year is
+    ``other_year``; one in the plan's year that misses its coordinate is
+    ``off_target``; neither is counted. Posted non-ตัดงบ rows net to the plan's
+    ``budget_amount``.
+    """
+
+    _name = "procurement.plan.budget.move.line"
+    _description = "Plan Budget Movement"
+    _auto = False
+    _order = "date desc, id desc"
+
+    plan_id = fields.Many2one("procurement.plan", string="แผนจัดซื้อจัดจ้าง", readonly=True)
+    company_id = fields.Many2one("res.company", readonly=True)
+    move_id = fields.Many2one(
+        "budget.move",
+        string="Budget Move",
+        readonly=True,
+        groups="budget.group_budget_viewer",
+    )
+    commitment_line_id = fields.Many2one("budget.commitment.line", readonly=True)
+    transfer_id = fields.Many2one(
+        "budget.transfer",
+        string="ใบโอนงบประมาณ",
+        readonly=True,
+        groups="budget.group_budget_viewer",
+    )
+    can_open_transfer = fields.Boolean(compute="_compute_can_open_transfer")
+    name = fields.Char(string="เลขที่เอกสาร", readonly=True)
+    source_name = fields.Char(
+        string="เอกสารต้นทาง",
+        related="commitment_line_id.res_name",
+        help="เอกสารที่ตัดงบ (เช่น ใบขอซื้อ / ใบขอเบิก)",
+    )
+    date = fields.Date(string="วันที่", readonly=True)
+    account_fiscal_year_id = fields.Many2one(
+        "account.fiscal.year", string="ปีงบประมาณ", readonly=True
+    )
+    kind = fields.Selection(
+        [
+            ("appropriation", "จัดสรร"),
+            ("transfer_in", "รับโอนเข้า"),
+            ("transfer_out", "โอนออก"),
+            ("entry", "บันทึกงบประมาณ"),
+            ("consume", "ตัดงบ"),
+        ],
+        string="ประเภท",
+        readonly=True,
+    )
+    account_id = fields.Many2one("budget.account", string="รหัสงบ", readonly=True)
+    counterpart_department_id = fields.Many2one(
+        "account.analytic.account",
+        string="ส่วนงานคู่โอน",
+        readonly=True,
+        help="รับโอนเข้า: ส่วนงานต้นทาง (ผู้สนับสนุน) / โอนออก: ส่วนงานปลายทาง",
+    )
+    amount = fields.Float(string="จำนวนเงิน", digits="Product Price", readonly=True)
+    status = fields.Selection(
+        [
+            ("posted", "ผ่านแล้ว"),
+            ("in_progress", "อยู่ระหว่างดำเนินการ"),
+            ("other_year", "ต่างปีงบประมาณ"),
+            ("off_target", "พิกัดไม่ตรงกับแผน"),
+        ],
+        string="สถานะ",
+        readonly=True,
+    )
+
+    @api.depends_context("uid")
+    def _compute_can_open_transfer(self):
+        """Whether the user may open the row's transfer: budget rights and the
+        transfer's operating unit — a Funding Unit's transfer is often keyed in
+        another OU."""
+        Transfer = self.env["budget.transfer"]
+        transfers = self.sudo().transfer_id
+        readable = (
+            Transfer.search([("id", "in", transfers.ids)]).ids
+            if Transfer.check_access_rights("read", raise_exception=False)
+            else []
+        )
+        for rec in self:
+            rec.can_open_transfer = rec.sudo().transfer_id.id in readable
+
+    def init(self):
+        tools.drop_view_if_exists(self.env.cr, self._table)
+        self.env.cr.execute(
+            """
+            CREATE OR REPLACE VIEW procurement_plan_budget_move_line AS (
+                SELECT
+                    l.id AS id,
+                    p.id AS plan_id,
+                    p.company_id AS company_id,
+                    m.id AS move_id,
+                    m.commitment_line_id AS commitment_line_id,
+                    t.id AS transfer_id,
+                    COALESCE(t.name, m.name) AS name,
+                    m.date AS date,
+                    l.account_fiscal_year_id AS account_fiscal_year_id,
+                    CASE
+                        WHEN l.move_type = 'appropriation' THEN 'appropriation'
+                        WHEN l.move_type = 'consume' THEN 'consume'
+                        WHEN l.transfer_direction = 'to' THEN 'transfer_in'
+                        WHEN l.transfer_direction = 'from' THEN 'transfer_out'
+                        ELSE 'entry'
+                    END AS kind,
+                    l.account_id AS account_id,
+                    CASE
+                        WHEN t.id IS NOT NULL THEN (
+                            SELECT c.department_analytic_id
+                            FROM budget_move_line c
+                            WHERE c.move_id = l.move_id
+                                AND c.transfer_direction <> l.transfer_direction
+                            ORDER BY c.id
+                            LIMIT 1
+                        )
+                    END AS counterpart_department_id,
+                    -- A transfer line's balance is only stamped from its
+                    -- amount at posting; until then read the amount itself.
+                    CASE
+                        WHEN m.state = 'posted' THEN l.balance
+                        WHEN l.transfer_direction = 'to' THEN l.amount
+                        WHEN l.transfer_direction = 'from' THEN -l.amount
+                        ELSE l.balance
+                    END AS amount,
+                    CASE
+                        WHEN l.account_fiscal_year_id
+                            IS DISTINCT FROM p.account_fiscal_year_id
+                            THEN 'other_year'
+                        WHEN NOT COALESCE(
+                            l.account_id = p.budget_account_id
+                            AND l.company_id = p.company_id
+                            AND p.analytic_distribution
+                                ? l.department_analytic_id::text
+                            AND p.analytic_distribution ? l.source_analytic_id::text
+                            AND p.analytic_distribution ? l.fund_analytic_id::text
+                            AND p.analytic_distribution
+                                ? l.activity_analytic_id::text,
+                            FALSE
+                        ) THEN 'off_target'
+                        WHEN m.state = 'posted' THEN 'posted'
+                        ELSE 'in_progress'
+                    END AS status
+                FROM budget_move_line l
+                JOIN budget_move m ON m.id = l.move_id
+                JOIN procurement_plan p
+                    ON p.analytic_account_id = l.procurement_plan_analytic_id
+                LEFT JOIN budget_transfer t ON t.move_id = m.id
+                -- The line's own bucket, not the move's (budget ADR-0017):
+                -- skips a consume's liquidation and a transfer's reservation
+                -- top-up/release lines.
+                WHERE l.move_type IN ('appropriation', 'entry', 'consume')
+                    AND (
+                        m.state = 'posted'
+                        OR t.state IN ('to_verify', 'submitted', 'sent', 'returned')
+                    )
+            )
+            """
+        )

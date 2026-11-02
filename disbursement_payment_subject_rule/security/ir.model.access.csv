@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_disbursement_payment_subject_rule_user,disbursement.payment.subject.rule user,model_disbursement_payment_subject_rule,finance_kmitl.group_finance_kmitl_user_out,1,0,0,0
+access_disbursement_payment_subject_rule_manager,disbursement.payment.subject.rule manager,model_disbursement_payment_subject_rule,finance_kmitl.group_finance_kmitl_manager,1,1,1,1
