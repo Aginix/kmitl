@@ -616,11 +616,13 @@ class AdvancePayment(models.Model):
         comodel_name="res.bank",
         string="ธนาคาร",
         copy=False,
+        tracking=True,
         states=READONLY_STATES,
     )
     unlisted_acc_number = fields.Char(
         string="เลขที่บัญชี",
         copy=False,
+        tracking=True,
         states=READONLY_STATES,
     )
     book_bank_file = fields.Binary(
@@ -629,7 +631,10 @@ class AdvancePayment(models.Model):
         copy=False,
         states=READONLY_STATES,
     )
-    book_bank_filename = fields.Char(copy=False)
+    # mail does not track Binary fields: the file name stands for the file.
+    book_bank_filename = fields.Char(
+        string="ชื่อไฟล์ Book Bank", copy=False, tracking=True
+    )
 
     return_due_date = fields.Date(
         string="วันที่ครบกำหนด",
@@ -1399,6 +1404,7 @@ class AdvancePayment(models.Model):
                 ),
                 subtype_xmlid="mail.mt_note",
             )
+            rec.sudo()._on_sent_back()
 
     def _check_verify_permission(self):
         """Officer-only: only the assigned loan officer (or an admin) may
@@ -1493,6 +1499,7 @@ class AdvancePayment(models.Model):
                 ),
                 subtype_xmlid="mail.mt_note",
             )
+            rec._on_sent_back()
 
     def _check_approve_permission(self):
         """Approver-only: only the named approver (or an admin) may approve —
@@ -1681,6 +1688,7 @@ class AdvancePayment(models.Model):
                 ),
                 subtype_xmlid="mail.mt_note",
             )
+            rec._on_sent_back()
 
     def action_reset_cancel_to_draft(self):
         """Manager reopens a cancelled agreement back to draft (ad-hoc recovery).
@@ -1831,6 +1839,13 @@ class AdvancePayment(models.Model):
             else _("ส่งกลับแก้ไข")
         )
         self.message_post(body=body, subtype_xmlid="mail.mt_note")
+        self._on_sent_back()
+
+    def _on_sent_back(self):
+        """Hook run after a ส่งกลับแก้ไข put the request back in draft: the
+        supervisor's, the director's or the loan officer's — never the
+        borrower's own pull-back nor the un-cancel. Runs under sudo on the
+        supervisor's path, as the endorser no longer reads a draft."""
 
     def action_reject(self):
         self.ensure_one()

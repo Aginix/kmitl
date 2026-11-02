@@ -27,3 +27,9 @@ The button and wizard live in a **separate module**, `advance_payment_partner_ba
 
 - Without `advance_payment_partner_bank` installed, an unlisted-bank loan stops at `to_verify` until someone with bank-account rights creates the account and the officer picks it in `bank_id`.
 - `bank_id`'s edit window is unchanged (the officer may still correct it up to the transfer). The unlisted fields are only meaningful until the account is materialised; they are kept afterwards as the audit trail of what the borrower declared.
+
+## Amendment (2026-11-02 feedback): the tick stays
+
+สร้างบัญชีธนาคาร no longer clears `use_unlisted_bank`. The tick now records, for good, that the borrower declared an unlisted account and attached a Book Bank. "Awaiting materialisation" is `use_unlisted_bank and not bank_id`: the button, the missing-bank rule and the verify guard all read that. While ticked, `bank_id` stays hidden in `draft`. Once it is set, from `to_verify` on it is shown next to the declared fields, which stay visible as evidence. Editing the declared fields afterwards does **not** clear `bank_id`: the loan officer re-checks on the next verify.
+
+The button **moves from the header into the form**, as a link under the declared fields. The header keeps only workflow steps, and the officer sees the evidence next to the action. It shows at `to_verify` whenever the box is ticked, **even when `bank_id` is already set**. A borrower who changed the declared account after a ส่งกลับแก้ไข can then be re-materialised: the wizard reuses or creates the account and re-points `bank_id`. The exception rule and the verify guard still read "ticked and `bank_id` empty".

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <!-- ส่งกลับแก้ไข marker: linked by the send-back and cleared on the next
+         state change, never evaluated (see SENT_BACK_RULE). -->
+    <record id="excep_advance_payment_sent_back" model="exception.rule">
+        <field name="name">ส่งกลับแก้ไข</field>
+        <field
+            name="description"
+        >สัญญายืมเงินถูกส่งกลับให้ผู้ยืมแก้ไขแล้วส่งใหม่ ดูเหตุผลในประวัติของสัญญา</field>
+        <field name="sequence">80</field>
+        <field name="model">advance.payment</field>
+        <field name="exception_type">by_py_code</field>
+        <field name="code"># set by the send-back, never evaluated
+failed = False</field>
+        <field name="is_blocking" eval="False" />
+        <field name="active" eval="True" />
+    </record>
+</odoo>
