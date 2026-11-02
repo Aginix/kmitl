@@ -1,5 +1,5 @@
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError
+from odoo.exceptions import AccessError, UserError
 from odoo.tools import formatLang
 
 
@@ -63,6 +63,7 @@ class BudgetCommitment(models.Model):
                         ("budget_type", "=", "expense"),
                         ("id", "!=", record.account_id.id),
                     ]
+                    + record._split_candidate_domain()
                 )
                 for account in candidates:
                     available = controller.get_available_detail(
@@ -123,6 +124,14 @@ class BudgetCommitment(models.Model):
                     _("รหัสต่อไปนี้ยังไม่ได้ตั้งค่า ถัวจ่ายได้: %s")
                     % ", ".join(blocked.mapped("display_name"))
                 )
+            extra = self._split_candidate_domain()
+            if extra:
+                refused = others.account_id - others.account_id.filtered_domain(extra)
+                if refused:
+                    problems.append(
+                        _("รหัสต่อไปนี้ใช้ถัวจ่ายในเอกสารนี้ไม่ได้: %s")
+                        % ", ".join(refused.mapped("display_name"))
+                    )
         for split in splits.filtered(lambda s: s.account_id and not s.is_sufficient):
             problems.append(
                 _(
@@ -277,6 +286,7 @@ class BudgetCommitment(models.Model):
     }
 
     def write(self, vals):
+        self._check_owner_write(vals)
         nested = self.env.context.get("budget_split_batch")
         res = super(BudgetCommitment, self.with_context(budget_split_batch=True)).write(
             vals
@@ -284,7 +294,125 @@ class BudgetCommitment(models.Model):
         # Once per save: the dimension inverses write again from inside.
         if not nested and ({"split_ids"} | self._SPLIT_HEADER_FIELDS) & set(vals):
             self.filtered("split_ids")._on_split_changed()
+        if (
+            not nested
+            and not self.env.context.get("budget_slip_from_request")
+            and (self._SPLIT_HEADER_FIELDS - {"amount"}) & set(vals)
+        ):
+            self._check_owner_budget_fields()
+            self._sync_owner_from_slip()
         return res
+
+    # --- Owner documents (พ.1, คำขออนุมัติ) ---
+
+    def _get_split_owner(self):
+        """The document whose dialog owns this slip's split, or False. Owner
+        bridges override it and widen ``split_editable`` to their windows; the
+        owner model names its budget committer group in
+        ``_cross_charge_group``."""
+        self.ensure_one()
+        return False
+
+    def _split_candidate_domain(self):
+        """Extra domain a ถัว code must match for this slip's owner."""
+        return []
+
+    # What an owner's dialog may change: the split, the primary code and the
+    # dimensions. The วงเงิน stays the owner's total.
+    _SPLIT_DIALOG_FIELDS = _SPLIT_HEADER_FIELDS - {"amount"} | {"split_ids"}
+
+    def _check_owner_write(self, vals):
+        """An owner's budget committer holds write on the slip for the dialog
+        fields only, and only inside the owner's windows — no Budget User
+        rights (ADR-0020)."""
+        if not self.env.su and not self.env.user.has_group("budget.group_budget_user"):
+            if set(vals) - self._SPLIT_DIALOG_FIELDS:
+                raise AccessError(
+                    _("แก้ไขได้เฉพาะรหัสงบ มิติ และรายการจองงบประมาณ (ถัวจ่าย) ของใบจอง")
+                )
+            for record in self:
+                if not record._is_owner_committer():
+                    raise UserError(
+                        _("ใบจอง %s แก้ไขรายการจองงบประมาณ (ถัวจ่าย) ในขั้นนี้ไม่ได้")
+                        % record.display_name
+                    )
+        # Clearing the code or a dimension is refused up front, before the
+        # re-cut reports it as a budget shortfall.
+        cleared = [f for f in self._OWNER_REQUIRED_FIELDS if f in vals and not vals[f]]
+        if cleared and any(record._get_split_owner() for record in self):
+            labels = dict(self._owner_required_labels())
+            raise UserError(
+                _("กรุณาระบุข้อมูลงบประมาณให้ครบ: %s")
+                % ", ".join(labels[f] for f in cleared)
+            )
+
+    def _is_owner_committer(self):
+        """This slip's owner is in its window and the user is its committer."""
+        self.ensure_one()
+        owner = self._get_split_owner()
+        return bool(
+            owner
+            and self.split_editable
+            and self.env.user.has_group(owner._cross_charge_group)
+        )
+
+    _OWNER_REQUIRED_FIELDS = (
+        "account_id",
+        "department_analytic_id",
+        "source_analytic_id",
+        "fund_analytic_id",
+        "activity_analytic_id",
+    )
+
+    def _owner_required_labels(self):
+        return [
+            ("account_id", _("รหัสงบประมาณ")),
+            ("department_analytic_id", _("ส่วนงาน")),
+            ("source_analytic_id", _("แหล่งเงิน")),
+            ("fund_analytic_id", _("กองทุน")),
+            ("activity_analytic_id", _("กิจกรรม")),
+        ]
+
+    def _check_owner_budget_fields(self):
+        """An owner's slip needs its code and all four dimensions, as Reserve
+        on the owner demands."""
+        for record in self:
+            if not record._get_split_owner():
+                continue
+            missing = [
+                label
+                for fname, label in self._owner_required_labels()
+                if not record[fname]
+            ]
+            if missing:
+                raise UserError(_("กรุณาระบุข้อมูลงบประมาณให้ครบ: %s") % ", ".join(missing))
+
+    def _sync_owner_from_slip(self):
+        """Copy the slip's primary code and dimensions back to its owner (and
+        the owner's lines), so the owner and its letter follow the slip."""
+        for record in self.sudo():
+            owner = record._get_split_owner()
+            if not owner or not record._is_split_capable():
+                continue
+            vals = {}
+            if owner.budget_account_id != record.account_id:
+                vals["budget_account_id"] = record.account_id.id
+            distribution = record.analytic_distribution or False
+            if (owner.analytic_distribution or False) != distribution:
+                vals["analytic_distribution"] = distribution
+            if not vals:
+                continue
+            owner.write(vals)
+            if (
+                "analytic_distribution" in vals
+                and owner.line_ids
+                and "analytic_distribution" in owner.line_ids._fields
+            ):
+                owner.line_ids.write({"analytic_distribution": distribution})
+            owner.message_post(
+                body=_("เปลี่ยนรหัสงบประมาณ/มิติตามใบจอง %s") % record.display_name,
+                subtype_xmlid="mail.mt_note",
+            )
 
     # --- Hooks into the core reservation ---
 

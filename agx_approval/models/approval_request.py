@@ -916,6 +916,13 @@ class ApprovalRequest(models.Model):
                 agx_exception_action="action_reserve_budget"
             )._popup_exceptions()
 
+        return self._reserve_new_budget()
+
+    def _reserve_new_budget(self):
+        """Reserve this request's own code anew; the budget fields are complete
+        by now. Hook: agx_approval_budget_cross_charge opens the ใบจองงบประมาณ
+        as a dialog instead (agx_approval ADR-0011)."""
+        self.ensure_one()
         amount = sum(self.line_ids.mapped("total_amount"))
 
         # ปีงบยึดตามเอกสาร: check/reserve against this request's own fiscal year
@@ -1095,20 +1102,21 @@ class ApprovalRequest(models.Model):
             "to_commit": user.has_group("agx_approval.group_approval_budget_commit"),
         }
         for rec in self:
+            # A draft slip (left by the ถัวจ่าย dialog) reserves nothing yet.
             if rec.state in can_edit and (
                 not rec.budget_commitment_id
-                or rec.budget_commitment_id.state == "cancel"
+                or rec.budget_commitment_id.state in ("cancel", "draft")
             ):
                 rec.is_budget_editable = can_edit[rec.state]
             else:
                 rec.is_budget_editable = rec.state == "draft"
 
-    @api.depends("state", "budget_commitment_id")
+    @api.depends("state", "budget_commitment_id", "budget_commitment_id.state")
     def _compute_hide_reserve_budget_button(self):
         for rec in self:
             if rec.state == "to_commit" and (
                 not rec.budget_commitment_id
-                or rec.budget_commitment_id.state == "cancel"
+                or rec.budget_commitment_id.state in ("cancel", "draft")
             ):
                 rec.hide_reserve_budget_button = False
             else:

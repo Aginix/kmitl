@@ -1,5 +1,5 @@
 from odoo import _, api, models
-from odoo.exceptions import AccessError, UserError
+from odoo.exceptions import UserError
 
 _REQUEST_GROUP = "purchase_request_budget.group_purchase_request_budget_commit"
 
@@ -38,107 +38,8 @@ class BudgetCommitment(models.Model):
             )
         )
 
-    # What the พ.1 dialog may change: the split, the primary code and the
-    # dimensions. The วงเงิน stays the พ.1 total.
-    _REQUEST_DIALOG_FIELDS = {
-        "split_ids",
-        "account_id",
-        "analytic_distribution",
-        "department_analytic_id",
-        "source_analytic_id",
-        "fund_analytic_id",
-        "activity_analytic_id",
-    }
-
-    def write(self, vals):
-        """ผู้จองงบประมาณ พ.1 holds write on the slip for its dialog fields
-        only, and only inside the พ.1's windows — no Budget User rights
-        (ADR-0020). A changed code or dimension is copied back to the พ.1."""
-        if not self.env.su and not self.env.user.has_group("budget.group_budget_user"):
-            if set(vals) - self._REQUEST_DIALOG_FIELDS:
-                raise AccessError(
-                    _("แก้ไขได้เฉพาะรหัสงบ มิติ และรายการจองงบประมาณ (ถัวจ่าย) ของใบจอง")
-                )
-            for record in self:
-                # Only a พ.1's own slip: the group must not reach the split of
-                # a standalone draft slip it happens to see.
-                if not (record.split_editable and record.sudo().purchase_request_ids):
-                    raise UserError(
-                        _("ใบจอง %s แก้ไขรายการจองงบประมาณ (ถัวจ่าย) ในขั้นนี้ไม่ได้")
-                        % record.display_name
-                    )
-        # Clearing the code or a dimension is refused up front, before the
-        # re-cut reports it as a budget shortfall.
-        cleared = [
-            f for f in self._REQUEST_REQUIRED_FIELDS if f in vals and not vals[f]
-        ]
-        if cleared and self.sudo().purchase_request_ids:
-            labels = dict(self._request_required_labels())
-            raise UserError(
-                _("กรุณาระบุข้อมูลงบประมาณให้ครบ: %s")
-                % ", ".join(labels[f] for f in cleared)
-            )
-        res = super().write(vals)
-        if (
-            not self.env.context.get("budget_split_batch")
-            and not self.env.context.get("budget_slip_from_request")
-            and (self._REQUEST_DIALOG_FIELDS - {"split_ids"}) & set(vals)
-        ):
-            self._check_request_budget_fields()
-            self._sync_request_from_slip()
-        return res
-
-    _REQUEST_REQUIRED_FIELDS = (
-        "account_id",
-        "department_analytic_id",
-        "source_analytic_id",
-        "fund_analytic_id",
-        "activity_analytic_id",
-    )
-
-    def _request_required_labels(self):
-        return [
-            ("account_id", _("รหัสงบประมาณ")),
-            ("department_analytic_id", _("ส่วนงาน")),
-            ("source_analytic_id", _("แหล่งเงิน")),
-            ("fund_analytic_id", _("กองทุน")),
-            ("activity_analytic_id", _("กิจกรรม")),
-        ]
-
-    def _check_request_budget_fields(self):
-        """A พ.1's slip needs its code and all four dimensions, as Reserve on
-        the พ.1 demands."""
-        for record in self.filtered(lambda r: r.sudo().purchase_request_ids):
-            missing = [
-                label
-                for fname, label in self._request_required_labels()
-                if not record[fname]
-            ]
-            if missing:
-                raise UserError(_("กรุณาระบุข้อมูลงบประมาณให้ครบ: %s") % ", ".join(missing))
-
-    def _sync_request_from_slip(self):
-        """Copy the slip's primary code and dimensions back to its พ.1 (and the
-        พ.1 lines), so the พ.1, its product and its letter follow the slip."""
-        for record in self.sudo():
-            request = record.purchase_request_ids[:1]
-            if not request or not record._is_split_capable():
-                continue
-            vals = {}
-            if request.budget_account_id != record.account_id:
-                vals["budget_account_id"] = record.account_id.id
-            distribution = record.analytic_distribution or False
-            if (request.analytic_distribution or False) != distribution:
-                vals["analytic_distribution"] = distribution
-            if not vals:
-                continue
-            request.write(vals)
-            if "analytic_distribution" in vals and request.line_ids:
-                request.line_ids.write({"analytic_distribution": distribution})
-            request.message_post(
-                body=_("เปลี่ยนรหัสงบประมาณ/มิติตามใบจอง %s") % record.display_name,
-                subtype_xmlid="mail.mt_note",
-            )
+    def _get_split_owner(self):
+        return self.sudo().purchase_request_ids[:1] or super()._get_split_owner()
 
     def _get_split_request(self):
         """The พ.1 this slip's dialog acts for, with the group re-checked."""
@@ -162,7 +63,7 @@ class BudgetCommitment(models.Model):
             "to_approve",
         ):
             raise UserError(_("ใบจอง %s ยืนยันจองงบประมาณในขั้นนี้ไม่ได้") % self.display_name)
-        self._check_request_budget_fields()
+        self._check_owner_budget_fields()
         self.sudo().action_reserve()
         request.message_post(
             body=_("Budget reserved: %s for amount %s") % (self.name, self.amount)

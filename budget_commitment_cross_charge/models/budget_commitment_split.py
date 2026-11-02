@@ -140,8 +140,13 @@ class BudgetCommitmentSplit(models.Model):
     def _check_editable(self):
         if self.env.su or self.env.context.get("budget_split_sync"):
             return
+        budget_user = self.env.user.has_group("budget.group_budget_user")
         for commitment in self.commitment_id:
-            if not commitment.split_editable:
+            # An owner's committer reaches only its owner's slip, never a
+            # standalone draft slip it happens to see.
+            if not commitment.split_editable or not (
+                budget_user or commitment._is_owner_committer()
+            ):
                 raise UserError(
                     _("ใบจอง %s แก้ไขรายการจองงบประมาณ (ถัวจ่าย) ในขั้นนี้ไม่ได้")
                     % commitment.display_name

@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_budget_commitment_approval_budget_commit,budget.commitment approval budget confirmer (split only),budget.model_budget_commitment,agx_approval.group_approval_budget_commit,1,1,0,0
+access_budget_commitment_split_approval_own,budget.commitment.split approval user (read),budget_commitment_cross_charge.model_budget_commitment_split,agx_approval.group_approval_own,1,0,0,0
+access_budget_commitment_split_approval_budget_commit,budget.commitment.split approval budget confirmer,budget_commitment_cross_charge.model_budget_commitment_split,agx_approval.group_approval_budget_commit,1,1,1,1

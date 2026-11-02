@@ -1,7 +1,7 @@
 {
     "name": "Purchase Request Budget Cross-charge",
     "summary": "ถัวจ่าย on a พ.1: Reserve opens the ใบจองงบประมาณ as a dialog",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.0.1",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "development_status": "Beta",

@@ -1,6 +1,6 @@
 {
     "name": "Aginix Approval",
-    "version": "16.0.2.0.0",
+    "version": "16.0.2.0.1",
     "category": "Accounting",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",

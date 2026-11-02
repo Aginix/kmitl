@@ -122,5 +122,10 @@ an event is immutable from the moment it is created, even on a draft slip (ADR-0
 - The reservation info card on the พ.1 lists the ถัว codes. The พ.1 print, the e-Saraban
   letter and the dashboard still show only the Primary Code (follow-up).
 - Existing slips have no split rows and behave exactly as before; no migration.
+- **A second owner (2026-11-02): the คำขออนุมัติ** (`agx_approval_budget_cross_charge`,
+  agx_approval ADR-0011). The owner guard, the required-fields check and the copy-back
+  to the owner moved into `budget_commitment_cross_charge` behind `_get_split_owner()`
+  (the owner model names its committer group in `_cross_charge_group`) and
+  `_split_candidate_domain()`; each owner bridge keeps its own windows and dialog.
 - A slip left in draft by a closed dialog stays linked to its พ.1 and is reused by the
   next Reserve; ดึงกลับ and ตีกลับ treat a draft slip as "nothing reserved".
