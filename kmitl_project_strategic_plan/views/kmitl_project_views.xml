@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_kmitl_project_form_strategic_plan" model="ir.ui.view">
+        <field name="name">view.kmitl.project.form.strategic.plan</field>
+        <field name="model">kmitl.project</field>
+        <field name="inherit_id" ref="kmitl_project.view_kmitl_project_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='kmitl_plan_id']" position="after">
+                <field name="institute_admin_plan_id" />
+                <field name="performance_agreement_id" />
+                <field name="department_plan" />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_project_strategic_plan_form_level" model="ir.ui.view">
+        <field name="name">view.project.strategic.plan.form.level</field>
+        <field name="model">project.strategic.plan</field>
+        <field name="inherit_id" ref="kmitl_project.view_project_strategic_plan_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='parent_id']" position="after">
+                <field name="level" />
+            </xpath>
+        </field>
+    </record>
+</odoo>

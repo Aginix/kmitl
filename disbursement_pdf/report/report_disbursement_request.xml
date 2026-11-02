@@ -25,6 +25,11 @@
                         }
                     </style>
 
+                    <div t-if="report_type == 'pdf'" class="footer"
+                         style="text-align: right; font-family: 'THSarabunNew'; font-size: 14pt;">
+                        Page <t t-translation="off"><span class="page"/>/<span class="topage"/></t>
+                    </div>
+
                     <div class="page">
                         <!-- Company Logo (top-left) -->
                         <div style="position: absolute; top: 0px; left: 0px">

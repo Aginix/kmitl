@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- The rows as an editable list inside the citing form. Reference it
+         with context="{'tree_view_ref': 'agx_related_document.view_related_document_embedded_tree',
+         'default_res_model': '<citing model>'}" — the model is needed by the
+         kind dropdown, which only offers kinds usable on it. -->
+    <record id="view_related_document_embedded_tree" model="ir.ui.view">
+        <field name="name">related.document.embedded.tree</field>
+        <field name="model">related.document</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom">
+                <field name="id" invisible="1" />
+                <field name="res_model" invisible="1" />
+                <field name="target_res_model" invisible="1" />
+                <field name="picker_domain" invisible="1" />
+                <field
+                    name="kind_id"
+                    placeholder="เอกสารนอกระบบ"
+                    options="{'no_create': True, 'no_open': True}"
+                    domain="['|', ('citing_model_names', '=', False), ('citing_model_names', 'ilike', ',' + res_model + ',')]"
+                />
+                <field
+                    name="target_res_id"
+                    widget="related_document_picker"
+                    attrs="{'readonly': [('kind_id', '=', False)]}"
+                />
+                <field name="document_number" />
+                <field name="document_date" optional="show" />
+                <field name="name" />
+                <field name="file_name" invisible="1" />
+                <field name="file" filename="file_name" />
+                <button
+                    name="action_open_document"
+                    type="object"
+                    icon="fa-external-link"
+                    title="เปิดเอกสาร"
+                    attrs="{'invisible': ['|', ('id', '=', False), ('target_res_id', '=', False)]}"
+                />
+                <field name="added_by_id" optional="hide" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_related_document_cited_by_tree" model="ir.ui.view">
+        <field name="name">related.document.cited.by.tree</field>
+        <field name="model">related.document</field>
+        <field name="arch" type="xml">
+            <tree string="ถูกอ้างอิงโดย" create="0" edit="0" delete="0">
+                <field name="citing_model_label" string="ชนิดเอกสารที่อ้าง" />
+                <field name="citing_name" string="เอกสารที่อ้าง" />
+                <field name="kind_id" />
+                <field name="document_number" />
+                <field name="document_date" />
+                <field name="name" />
+                <field name="added_by_id" />
+                <button
+                    name="action_open_citing"
+                    type="object"
+                    icon="fa-external-link"
+                    title="เปิดเอกสารที่อ้าง"
+                />
+            </tree>
+        </field>
+    </record>
+</odoo>
