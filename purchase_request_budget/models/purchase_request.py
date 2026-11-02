@@ -279,15 +279,12 @@ class PurchaseRequest(models.Model):
             if rec.state == "to_verify_budget":
                 rec.is_editable = True
 
-    @api.depends("state", "requested_by")
+    @api.depends("state", "user_id", "create_uid")
     def _compute_can_reset_to_draft(self):
         super()._compute_can_reset_to_draft()
-        is_manager = self.env.user.has_group(
-            "purchase_request.group_purchase_request_manager"
-        )
         for rec in self:
             if rec.state == "to_verify_budget":
-                rec.can_reset_to_draft = is_manager or rec.requested_by == self.env.user
+                rec.can_reset_to_draft = rec._is_pr_owner()
 
     def _inverse_activity_analytic(self):
         """Update distribution when activity changes"""
@@ -376,17 +373,50 @@ class PurchaseRequest(models.Model):
     def _action_do_return_to_draft(self, reason):
         """ตีกลับ ถอยทีละขั้น (root ADR-0010): ผู้จองงบประมาณตีกลับ
         ``to_verify_budget`` ไปให้ผู้ตรวจสอบที่ ``to_verify`` — ไม่ผ่าน
-        ``button_draft`` เพราะจะยกเลิกใบจองที่ยังมีผลอยู่ (กรณีตีกลับ/แก้ไข ADR-0007)."""
+        ``button_draft`` เพราะจะยกเลิกใบจองที่ยังมีผลอยู่ (กรณีตีกลับ/แก้ไข ADR-0007).
+        ผู้จัดทำ/ธุรการ/พัสดุตีกลับ ``to_approve`` ไปให้ผู้ยืนยันงบที่ ``to_verify_budget``
+        โดยใบจองยังอยู่ (root ADR-0014)."""
         self.ensure_one()
-        if self.state != "to_verify_budget":
+        if self.state == "to_approve":
+            self._check_is_team()
+            back_vals = self._back_to_verify_budget_vals()
+        elif self.state == "to_verify_budget":
+            self._check_can_commit_budget()
+            back_vals = self._back_to_verify_vals()
+        else:
             return super()._action_do_return_to_draft(reason)
-        self._check_can_commit_budget()
         body = _("ตีกลับคำขอ (พ.1) %(pr)s เหตุผล: %(reason)s") % {
             "pr": self.name,
             "reason": reason,
         }
         self.message_post(body=body, subtype_xmlid="mail.mt_note")
-        self.write(self._back_to_verify_vals())
+        self.write(back_vals)
+
+    def _back_to_verify_budget_vals(self):
+        # Back at to_verify_budget the commitment stays live; the committer's
+        # ยืนยันงบประมาณ re-advances on it and re-stamps who confirmed.
+        return {
+            "state": "to_verify_budget",
+            "budget_committed_by": False,
+            "date_budget_committed": False,
+        }
+
+    def action_recall_to_verify_budget(self):
+        """ดึงกลับ (root ADR-0014): ผู้จองงบประมาณดึงเรื่องที่ยืนยันงบแล้วจาก
+        ``to_approve`` กลับมาที่ ``to_verify_budget`` — ใบจองยังอยู่."""
+        self._check_step_group(
+            "to_approve",
+            "purchase_request_budget.group_purchase_request_budget_commit",
+            _("เฉพาะผู้ที่มีสิทธิ์จองงบประมาณแบบขอให้จัดหา (พ.1) เท่านั้นที่ดึงกลับได้"),
+        )
+        for rec in self:
+            if rec.state != "to_approve":
+                raise UserError(_("ดึงกลับได้เฉพาะคำขอที่รออนุมัติ"))
+            rec.message_post(
+                body=_("ดึงกลับคำขอ (พ.1) %s มายืนยันงบประมาณใหม่") % rec.name,
+                subtype_xmlid="mail.mt_note",
+            )
+        self.write(self._back_to_verify_budget_vals())
 
     def _back_to_verify_vals(self):
         # Back at to_verify the verification is void until ตรวจสอบ is pressed again.
@@ -658,7 +688,9 @@ class PurchaseRequest(models.Model):
                 if record._release_commitment_on_draft():
                     try:
                         name = record.budget_commitment_id.name
-                        record._cancel_budget_commitment()
+                        # ดึงกลับ is gated per state (root ADR-0014); พัสดุ/ธุรการ
+                        # hold no budget rights, so release as sudo (cf. Reserve).
+                        record.sudo()._cancel_budget_commitment()
                         record.message_post(
                             body=_("Budget commitment %s has been cancelled") % name
                         )
@@ -697,22 +729,23 @@ class PurchaseRequest(models.Model):
 
         return super().button_rejected()
 
-    def button_cancel(self):
-        for record in self:
-            if record.budget_commitment_id:
-                try:
-                    record._cancel_budget_commitment()
-                    record.message_post(
-                        body=_("Budget commitment %s has been cancelled")
-                        % record.budget_commitment_id.name
-                    )
-                except UserError as e:
-                    record.message_post(
-                        body=_("Warning: Could not cancel budget commitment: %s")
-                        % str(e)
-                    )
-
-        return super().button_cancel()
+    def _action_do_cancel(self, reason):
+        # Released here, not in button_cancel (which only opens the reason
+        # wizard), so every cancel path — the wizard and Sarabun's ยกเลิกการส่ง —
+        # frees the reserved budget, and dismissing the wizard frees nothing.
+        if self.budget_commitment_id:
+            try:
+                # The ผู้จัดทำ who cancels holds no budget rights (root ADR-0014).
+                self.sudo()._cancel_budget_commitment()
+                self.message_post(
+                    body=_("Budget commitment %s has been cancelled")
+                    % self.budget_commitment_id.name
+                )
+            except UserError as e:
+                self.message_post(
+                    body=_("Warning: Could not cancel budget commitment: %s") % str(e)
+                )
+        return super()._action_do_cancel(reason)
 
     @api.onchange("analytic_distribution")
     def _onchange_analytic_distribution(self):

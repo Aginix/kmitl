@@ -60,6 +60,7 @@ class PurchaseRequest(models.Model):
         through to the standard mixin behaviour that creates a fresh sarabun."""
         self.ensure_one()
         if self.can_resume_returned_sarabun:
+            self._check_is_team()
             return self._resume_returned_sarabun()
         return super().action_submit_to_sarabun()
 

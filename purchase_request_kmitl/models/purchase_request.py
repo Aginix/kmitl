@@ -189,6 +189,8 @@ class PurchaseRequest(models.Model):
     )
     hide_create_po_button = fields.Boolean(compute="_hide_create_po_button")
     can_reset_to_draft = fields.Boolean(compute="_compute_can_reset_to_draft")
+    can_owner_act = fields.Boolean(compute="_compute_can_act")
+    can_team_act = fields.Boolean(compute="_compute_can_act")
 
     def _compute_is_purchase_request(self):
         for rec in self:
@@ -205,6 +207,41 @@ class PurchaseRequest(models.Model):
             own_by_me = rec.requested_by.id == current_user.id
             rec.can_request = own_by_me or is_manager or is_admin
 
+    def _is_pr_owner(self):
+        """ผู้จัดทำ: the PR's ``user_id``."""
+        self.ensure_one()
+        return self.env.su or self.user_id == self.env.user
+
+    def _is_pr_team(self):
+        """ผู้จัดทำ / ธุรการ (who created the PR) / พัสดุ (Purchase User)."""
+        self.ensure_one()
+        return (
+            self._is_pr_owner()
+            or self.create_uid == self.env.user
+            or self.env.user.has_group("purchase.group_purchase_user")
+        )
+
+    @api.depends("user_id", "create_uid")
+    def _compute_can_act(self):
+        for rec in self:
+            rec.can_owner_act = rec._is_pr_owner()
+            rec.can_team_act = rec._is_pr_team()
+
+    def _check_is_owner(self):
+        if any(not rec._is_pr_owner() for rec in self):
+            raise UserError(
+                _("เฉพาะผู้จัดทำแบบขอให้จัดหา (พ.1) เท่านั้นที่ดำเนินการขั้นนี้ได้")
+            )
+
+    def _check_is_team(self):
+        if any(not rec._is_pr_team() for rec in self):
+            raise UserError(
+                _(
+                    "เฉพาะผู้จัดทำ ธุรการ หรือพัสดุของแบบขอให้จัดหา (พ.1) "
+                    "เท่านั้นที่ดำเนินการขั้นนี้ได้"
+                )
+            )
+
     @api.depends("state")
     def _compute_is_editable(self):
         super()._compute_is_editable()
@@ -214,6 +251,7 @@ class PurchaseRequest(models.Model):
 
     def button_to_verify(self):
         self.ensure_one()
+        self._check_is_owner()
         if self.detect_exceptions() and not self.ignore_exception:
             return self._popup_exceptions()
         vals = {"state": "to_verify"}
@@ -260,19 +298,27 @@ class PurchaseRequest(models.Model):
         return res
 
     def button_draft(self):
+        self._check_can_reset_to_draft()
         self.write({"verified_by": False, "date_verified": False})
         return super().button_draft()
 
-    @api.depends("state", "requested_by")
-    def _compute_can_reset_to_draft(self):
-        is_manager = self.env.user.has_group(
-            "purchase_request.group_purchase_request_manager"
-        )
+    def _check_can_reset_to_draft(self):
+        """ดึงกลับ → ร่าง is gated per state by ``can_reset_to_draft``. Other
+        states (draft itself, post-approval) keep the base behaviour."""
+        if self.env.su:
+            return
+        pull_back_states = ("to_verify", "to_verify_budget", "to_approve", "returned")
         for rec in self:
-            if rec.state == "to_approve":
-                rec.can_reset_to_draft = is_manager
-            elif rec.state == "to_verify":
-                rec.can_reset_to_draft = is_manager or rec.requested_by == self.env.user
+            if rec.state in pull_back_states and not rec.can_reset_to_draft:
+                raise UserError(_("คุณไม่มีสิทธิ์ดึงกลับคำขอ (พ.1) %s") % rec.name)
+
+    @api.depends("state", "user_id", "create_uid")
+    def _compute_can_reset_to_draft(self):
+        for rec in self:
+            if rec.state == "to_verify":
+                rec.can_reset_to_draft = rec._is_pr_owner()
+            elif rec.state in ("to_approve", "returned"):
+                rec.can_reset_to_draft = rec._is_pr_team()
             else:
                 rec.can_reset_to_draft = False
 
@@ -312,6 +358,7 @@ class PurchaseRequest(models.Model):
 
     def button_cancel(self):
         self.ensure_one()
+        self._check_can_cancel()
         return {
             "type": "ir.actions.act_window",
             "name": _("ยกเลิกคำขอ (พ.1)"),
@@ -320,6 +367,25 @@ class PurchaseRequest(models.Model):
             "target": "new",
             "context": {"default_request_id": self.id},
         }
+
+    def _check_can_cancel(self):
+        """Before Sarabun, only the ผู้จัดทำ cancels, and only from draft — a PR
+        further along must be pulled back or returned to draft first. Post-approval
+        states keep their existing Cancel."""
+        if self.env.su:
+            return
+        pre_sarabun_states = (
+            "to_verify",
+            "to_verify_budget",
+            "to_approve",
+            "sent",
+            "returned",
+        )
+        if any(rec.state in pre_sarabun_states for rec in self):
+            raise UserError(
+                _("ยกเลิกคำขอ (พ.1) ได้เฉพาะสถานะร่าง — กรุณาดึงกลับเป็นร่างก่อน")
+            )
+        self.filtered(lambda r: r.state == "draft")._check_is_owner()
 
     def _action_do_cancel(self, reason):
         self.ensure_one()
@@ -360,4 +426,5 @@ class PurchaseRequest(models.Model):
             "reason": reason,
         }
         self.message_post(body=body, subtype_xmlid="mail.mt_note")
-        return self.button_draft()
+        # The verifier is not the ผู้จัดทำ who owns ดึงกลับ; authority was checked above.
+        return self.sudo().button_draft()

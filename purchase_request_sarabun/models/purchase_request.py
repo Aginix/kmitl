@@ -48,6 +48,12 @@ class PurchaseRequest(models.Model):
         )
 
     def _on_sarabun_circulating(self, document):
+        # The หนังสือ outlives a pull-back of the พ.1 (root ADR-0014), so it may
+        # only go out while the พ.1 waits for it — raising rolls the send back.
+        if self.state != "to_approve":
+            raise UserError(
+                _("ส่งหนังสือได้เฉพาะเมื่อคำขอ (พ.1) %s อยู่สถานะรออนุมัติ") % self.name
+            )
         self.write({"state": "sent"})
         return super()._on_sarabun_circulating(document)
 
@@ -66,12 +72,17 @@ class PurchaseRequest(models.Model):
         self._action_do_return(post_message=False)
         return super()._on_sarabun_returned(document, step)
 
-    def action_resend_to_sarabun(self):
-        self.ensure_one()
-        document = self.active_sarabun_document_id
-        if not document:
-            raise UserError(_("No active Sarabun document to resend."))
-        return document.action_send()
+    def _on_sarabun_recalled(self, document):
+        """ดึงกลับ (แก้ไข) by the sender (root ADR-0014): the พ.1 goes back to
+        waiting for its หนังสือ, which is edited and re-sent — not to ``returned``.
+        A recall from any other state (admin Reset) keeps the ตีกลับ handling."""
+        if self.state != "sent":
+            return super()._on_sarabun_recalled(document)
+        self.write({"state": "to_approve"})
+        self.message_post(
+            body=_("ดึงกลับหนังสือ %s มาแก้ไข") % document.name,
+            subtype_xmlid="mail.mt_note",
+        )
 
     def _on_sarabun_cancelled(self, document):
         self._action_do_cancel(_("ยกเลิกจากสารบรรณ: %s") % document.name)
@@ -112,7 +123,53 @@ class PurchaseRequest(models.Model):
         )
 
     def action_submit_to_sarabun(self):
-        """Also carry the request's เอกสารแนบ onto the หนังสือ as สิ่งที่ส่งมาด้วย."""
+        """Also carry the request's เอกสารแนบ onto the หนังสือ as สิ่งที่ส่งมาด้วย.
+
+        A หนังสือ still open from an earlier pass (draft, or returned by ตีกลับ /
+        ดึงกลับ) is reused instead of spawning a new one (root ADR-0014)."""
+        self.ensure_one()
+        if self.state != "to_approve":
+            raise UserError(_("สร้างหนังสือได้เฉพาะคำขอ (พ.1) ที่รออนุมัติ"))
+        self._check_is_team()
+        # Searched, not read off active_sarabun_document_id: that compute would be
+        # cached empty and hide the หนังสือ created below from the caller.
+        # Searched as sudo: another team member's หนังสือ is invisible to the user.
+        document = (
+            self.env["sarabun.document"]
+            .sudo()
+            .search(
+                [
+                    ("origin_model", "=", self._name),
+                    ("origin_res_id", "=", self.id),
+                    ("state", "in", ("draft", "returned")),
+                ],
+                order="id desc",
+                limit=1,
+            )
+        )
+        if document:
+            # Only its sender edits and sends a หนังสือ; never fork a second one.
+            if document.sender_user_id != self.env.user and not self.env.user.has_group(
+                "agx_sarabun.group_sarabun_manager"
+            ):
+                raise UserError(
+                    _(
+                        "คำขอ (พ.1) นี้มีหนังสือ %(doc)s อยู่แล้ว "
+                        "กรุณาให้ %(sender)s ผู้จัดทำหนังสือเป็นผู้แก้ไขและส่งต่อ"
+                    )
+                    % {
+                        "doc": document.subject,
+                        "sender": document.sender_user_id.name,
+                    }
+                )
+            document.write({"subject": self._get_sarabun_subject()})
+            return {
+                "type": "ir.actions.act_window",
+                "res_model": "sarabun.document",
+                "res_id": document.id,
+                "view_mode": "form",
+                "target": "current",
+            }
         action = super().action_submit_to_sarabun()
         if action and action.get("res_id"):
             document = self.env["sarabun.document"].browse(action["res_id"])

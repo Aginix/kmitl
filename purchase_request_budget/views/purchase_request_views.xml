@@ -16,9 +16,6 @@
                     separator=","
                 />
             </xpath>
-            <xpath expr="//button[@name='button_cancel']" position="attributes">
-                <attribute name="states" add="to_verify_budget" separator="," />
-            </xpath>
             <!-- ตีกลับ to_verify_budget → to_verify: ปุ่มของผู้จองงบประมาณ พ.1
                  เอง (root ADR-0010) -->
             <xpath expr="//button[@name='button_return']" position="after">
@@ -27,6 +24,21 @@
                     states="to_verify_budget"
                     string="Return"
                     type="object"
+                    groups="purchase_request_budget.group_purchase_request_budget_commit"
+                />
+                <!-- รออนุมัติ ถอยกลับ to_verify_budget (root ADR-0014): ผู้จัดทำ/ธุรการ/
+                     พัสดุตีกลับ, ผู้จองงบประมาณ พ.1 ดึงกลับ — ใบจองยังอยู่ -->
+                <button
+                    name="button_return"
+                    string="Return"
+                    type="object"
+                    attrs="{'invisible': ['|', ('state', '!=', 'to_approve'), ('can_team_act', '=', False)]}"
+                />
+                <button
+                    name="action_recall_to_verify_budget"
+                    string="ดึงกลับ"
+                    type="object"
+                    states="to_approve"
                     groups="purchase_request_budget.group_purchase_request_budget_commit"
                 />
                 <!-- ดึงกลับ to_verify_budget → to_verify: ผู้ตรวจสอบ พ.1 แก้สิ่งที่

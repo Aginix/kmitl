@@ -154,6 +154,8 @@
             <xpath expr="//form" position="inside">
                 <field name="hide_create_po_button" invisible="1" />
                 <field name="can_reset_to_draft" invisible="1" />
+                <field name="can_owner_act" invisible="1" />
+                <field name="can_team_act" invisible="1" />
             </xpath>
 
             <xpath
@@ -169,16 +171,16 @@
                 <attribute
                     name="groups"
                 >purchase_request_kmitl.group_purchase_request_verify</attribute>
-                <attribute name="string">ตรวจสอบ</attribute>
+                <attribute name="string">ยืนยันตรวจสอบ</attribute>
             </button>
 
             <button name="button_to_approve" position="before">
                 <button
                     name="button_to_verify"
-                    states="draft"
                     string="Request approval"
                     type="object"
                     class="oe_highlight"
+                    attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('can_owner_act', '=', False)]}"
                     groups="purchase_request.group_purchase_request_user"
                 />
             </button>
@@ -191,17 +193,23 @@
                 >{'invisible': [('can_reset_to_draft', '=', False)]}</attribute>
             </xpath>
 
-            <!-- states ที่นี่คือของโมดูลนี้เท่านั้น (draft/in_progress ของ OCA,
-                 to_verify/to_approve/returned ของ kmitl) โมดูลที่เพิ่ม state
-                 ของตัวเอง (budget/sarabun/egp/approval) ต่อเข้า states นี้เอง
-                 ด้วย add= เหมือน statusbar_visible -->
+            <!-- ยกเลิกหลังอนุมัติ: states ที่นี่คือของโมดูลนี้เท่านั้น (in_progress
+                 ของ OCA) โมดูลที่เพิ่ม state ของตัวเอง (egp/approval) ต่อเข้า states
+                 นี้เอง ด้วย add= เหมือน statusbar_visible. ก่อนเข้าสารบรรณ ยกเลิกได้
+                 เฉพาะร่าง โดยผู้จัดทำ (ปุ่มถัดไป) — ระหว่างทางต้องดึงกลับเป็นร่างก่อน -->
             <xpath expr="//header" position="inside">
                 <button
                     name="button_cancel"
-                    states="draft,to_verify,to_approve,in_progress,returned"
+                    states="in_progress"
                     string="Cancel"
                     type="object"
                     groups="purchase_request_kmitl.group_purchase_request_user_all"
+                />
+                <button
+                    name="button_cancel"
+                    string="Cancel"
+                    type="object"
+                    attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('can_owner_act', '=', False)]}"
                 />
                 <!-- ตีกลับ ถอยทีละขั้น: แต่ละ state มีปุ่มของตัวเอง ตามกลุ่มเจ้าของขั้น
                      (ADR-0010) — budget ต่อปุ่มของ to_verify_budget เอง -->

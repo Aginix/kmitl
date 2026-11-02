@@ -63,6 +63,14 @@ several Buddies, and one Buddy may hold several rows. Coverage only supplies the
 **Assigned Officer** default. It is not authority and not access. _Avoid_: Budget Buddy
 (budget's own group and list, kept separate on purpose); Designated Verifier.
 
+**ผู้จัดทำ / ธุรการ / พัสดุ (PR requester side)**: **ผู้จัดทำ** is the PR's `user_id`;
+**ธุรการ** is whoever created the PR (`create_uid`), possibly the same person; **พัสดุ** is
+any Purchase User. Until the budget is reserved only the ผู้จัดทำ submits, cancels (draft
+only) and ดึงกลับ; from `to_approve` on, any of the three creates the หนังสือ, ดึงกลับ to
+draft or ตีกลับ to `to_verify_budget`. See
+[ADR-0014](docs/adr/0014-pr-step-actors-and-sarabun-reuse.md). _Avoid_: ผู้ขอ
+(`requested_by`, who asks for the goods, not who works the document).
+
 **ผู้ตรวจสอบ พ.1 (Verifier)**: The ธุรการ who checks a submitted PR at `to_verify`. They
 enter its รหัสงบประมาณ and dimensions, and either press ตรวจสอบ to pass it to the budget
 step or ตีกลับ it to `draft`. After ตรวจสอบ they may ดึงกลับ it from `to_verify_budget`

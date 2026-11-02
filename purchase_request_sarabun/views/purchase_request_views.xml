@@ -9,9 +9,6 @@
             <xpath expr="//form/header/field[@name='state']" position="attributes">
                 <attribute name="statusbar_visible" add="sent" separator="," />
             </xpath>
-            <xpath expr="//button[@name='button_cancel']" position="attributes">
-                <attribute name="states" add="sent" separator="," />
-            </xpath>
 
             <!-- Add Submit to Sarabun button after Request approval button -->
             <xpath expr="//button[@name='button_draft']" position="before">
@@ -20,14 +17,7 @@
                     string="Create Sarabun"
                     type="object"
                     class="oe_highlight"
-                    attrs="{'invisible': ['|', ('state', '!=', 'to_approve'), ('sarabun_has_live_document', '=', True)]}"
-                />
-                <button
-                    name="action_resend_to_sarabun"
-                    string="Resend to Sarabun"
-                    type="object"
-                    class="oe_highlight"
-                    states="returned"
+                    attrs="{'invisible': ['|', ('state', '!=', 'to_approve'), ('can_team_act', '=', False)]}"
                 />
             </xpath>
 
