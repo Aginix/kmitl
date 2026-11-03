@@ -4,18 +4,19 @@
         id="report_kmitl_project_strategic_plan"
         inherit_id="kmitl_project.report_kmitl_project"
     >
-        <xpath expr="//span[@t-if='not o.fight_id']/parent::div" position="after">
-            <div class="item-content">
-                แผนบริหารสถาบัน : <span t-out="o.institute_admin_plan_id.name or '-'" />
-            </div>
-            <div class="item-content">
-                ข้อตกลงการปฏิบัติงาน : <span
+        <xpath
+            expr="//span[@t-out=&quot;o.fight_id.name or '-'&quot;]/.."
+            position="after"
+        >
+            <div>แผนบริหารสถาบัน : <span
+                    t-out="o.institute_admin_plan_id.name or '-'"
+                /></div>
+            <div>ข้อตกลงการปฏิบัติงาน : <span
                     t-out="o.performance_agreement_id.name or '-'"
-                />
-            </div>
-            <div class="item-content">
-                แผนกลยุทธ์/แผนบริหารส่วนงาน : <span t-out="o.department_plan or '-'" />
-            </div>
+                /></div>
+            <div>แผนกลยุทธ์/แผนบริหารส่วนงาน : <span
+                    t-out="o.department_plan or '-'"
+                /></div>
         </xpath>
     </template>
 </odoo>
