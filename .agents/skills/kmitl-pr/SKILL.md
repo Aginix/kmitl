@@ -100,8 +100,17 @@ $SK/scripts/push_pr_assets.sh "$(git branch --show-current)" .context/a.png .con
 # prints raw.githubusercontent.com URLs
 ```
 
+`gh` cannot upload images (there is no drag-and-drop API), so this branch is the only
+way to get them into the PR. Never end with the screenshots only in `.context/`.
+
 Push only screenshots of demo or test data. Real people's data from a prod or UAT copy
-must not go to a public repo; crop it or use demo records instead. If you run git
+must not go to a public repo. If that is all you have, **don't skip the images
+silently**: tell the user and ask whether to crop or blur them, re-shoot on demo
+records, or leave them out.
+
+If the PR already exists (for example, testing ran after it was opened), add the results
+with `gh pr comment --body-file <file>`, or update the body with `gh pr edit
+--body-file <file>`. If you run git
 commands by hand in zsh, write `"${c}:refs/..."` with braces: `$c:r` is a zsh modifier
 and corrupts the refspec.
 
