@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Admin reset-to-draft (ADR-0011) — behaviour of ``action_reset_to_draft``.
 
 Reuses agx_sarabun's SarabunCommon fixtures + spy origin; adds a reset-admin user.
@@ -6,6 +5,7 @@ Covers reset from completed / rejected / circulating, the guards (draft, non-adm
 empty reason), number keep/reclaim, un-freeze, the ``_on_sarabun_recalled`` origin
 rollback, and re-send on the same number.
 """
+
 from odoo.exceptions import UserError
 from odoo.tests.common import new_test_user, tagged
 
@@ -18,7 +18,9 @@ class TestSarabunReset(SarabunCommon):
     def setUpClass(cls):
         super().setUpClass()
         cls.reset_user = new_test_user(
-            cls.env, login="sb_reset", name="ผู้รีเซ็ต",
+            cls.env,
+            login="sb_reset",
+            name="ผู้รีเซ็ต",
             groups="base.group_user,agx_sarabun_reset.group_sarabun_reset",
         )
         # An employee so reset_user's has_group / route reads are ordinary.
@@ -34,14 +36,23 @@ class TestSarabunReset(SarabunCommon):
         acknowledge step before completion, so the reset has a 'direct' insertion to
         drop."""
         doc = self._make_doc(sender=self.user_a, origin=origin)
-        self._add_step(doc, order=10, verb="sign_approve", target_mode="person",
-                       user=self.user_a)
+        self._add_step(
+            doc, order=10, verb="sign_approve", target_mode="person", user=self.user_a
+        )
         with self.mute_pdf():
             doc.action_send()
             step = self._active_step(doc)
             if with_insertion:
-                self._act(step, "direct", self.user_a, verb=self._verb("acknowledge").id,
-                          target_mode="person", employee_id=self.emp_b.id)
+                self._act(
+                    step,
+                    "direct",
+                    self.user_a,
+                    verb=self._verb("acknowledge").id,
+                    target_mode="person",
+                    employee_id=self.emp_b.id,
+                )
+                # a รับทราบ alone in its stage holds completion until acknowledged
+                self._act(self._active_step(doc), "complete", self.user_b)
             else:
                 self._act(step, "complete", self.user_a)
         return doc
@@ -59,8 +70,11 @@ class TestSarabunReset(SarabunCommon):
         self.assertTrue(doc.is_frozen)
         number = doc.register_number_id
         original_name = doc.name
-        self.assertTrue(doc.routing_step_ids.filtered(
-            lambda s: s.created_by_disposition == "direct"))
+        self.assertTrue(
+            doc.routing_step_ids.filtered(
+                lambda s: s.created_by_disposition == "direct"
+            )
+        )
 
         self._reset(doc, reason="แก้คำผิด")
 
@@ -70,8 +84,12 @@ class TestSarabunReset(SarabunCommon):
         self.assertEqual(doc.register_number_id, number)
         self.assertEqual(number.state, "used")
         # route = seed backbone only; the เกษียนสั่งการ insertion is dropped
-        self.assertFalse(doc.routing_step_ids.filtered(
-            lambda s: s.created_by_disposition == "direct"), "insertion dropped")
+        self.assertFalse(
+            doc.routing_step_ids.filtered(
+                lambda s: s.created_by_disposition == "direct"
+            ),
+            "insertion dropped",
+        )
         gating = doc.routing_step_ids.filtered("gating")
         self.assertEqual(len(gating), 1)
         self.assertTrue(all(s.state == "waiting" for s in doc.routing_step_ids))
@@ -96,8 +114,9 @@ class TestSarabunReset(SarabunCommon):
     def test_reset_from_rejected_unvoids_number(self):
         """Reset out of rejected reclaims the voided number (voided → used)."""
         doc = self._make_doc(sender=self.user_a)
-        self._add_step(doc, order=10, verb="sign_approve", target_mode="person",
-                       user=self.user_a)
+        self._add_step(
+            doc, order=10, verb="sign_approve", target_mode="person", user=self.user_a
+        )
         with self.mute_pdf():
             doc.action_send()
             step = self._active_step(doc)
@@ -117,8 +136,9 @@ class TestSarabunReset(SarabunCommon):
     def test_reset_from_cancelled_unvoids_number(self):
         """Reset out of cancelled (ยกเลิกการส่ง) reclaims the voided number too."""
         doc = self._make_doc(sender=self.user_a)
-        self._add_step(doc, order=10, verb="sign_approve", target_mode="person",
-                       user=self.user_a)
+        self._add_step(
+            doc, order=10, verb="sign_approve", target_mode="person", user=self.user_a
+        )
         with self.mute_pdf():
             doc.action_send()
         doc.action_recall("ส่งผิด")
@@ -135,8 +155,9 @@ class TestSarabunReset(SarabunCommon):
     def test_reset_from_circulating(self):
         """Reset a mid-flight หนังสือ: back to draft, seed route re-created, number kept."""
         doc = self._make_doc(sender=self.user_a)
-        self._add_step(doc, order=10, verb="sign_approve", target_mode="person",
-                       user=self.user_a)
+        self._add_step(
+            doc, order=10, verb="sign_approve", target_mode="person", user=self.user_a
+        )
         with self.mute_pdf():
             doc.action_send()
         self.assertEqual(doc.state, "circulating")
@@ -170,8 +191,9 @@ class TestSarabunReset(SarabunCommon):
         fresh waiting steps; a user reached in the archived attempt keeps READ via
         reached_user_ids (ADR-0013) — being involved is a property of the หนังสือ."""
         doc = self._make_doc(sender=self.user_a)
-        self._add_step(doc, order=10, verb="sign_approve", target_mode="person",
-                       user=self.user_b)
+        self._add_step(
+            doc, order=10, verb="sign_approve", target_mode="person", user=self.user_b
+        )
         with self.mute_pdf():
             doc.with_user(self.user_a).action_send()
             step = self._active_step(doc)
@@ -186,7 +208,9 @@ class TestSarabunReset(SarabunCommon):
         self.assertTrue(doc.archived_step_ids)
         # new attempt's step is only waiting (not yet reached), but the archived
         # attempt's recipient row keeps user_b in reached_user_ids → still readable
-        still_reads = bool(self.Doc.with_user(self.user_b).search([("id", "=", doc.id)]))
+        still_reads = bool(
+            self.Doc.with_user(self.user_b).search([("id", "=", doc.id)])
+        )
         self.assertTrue(still_reads, "read persists across reset")
 
     def test_can_reset_flag(self):

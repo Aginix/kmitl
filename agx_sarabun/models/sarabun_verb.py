@@ -39,7 +39,8 @@ class SarabunVerb(models.Model):
     gating = fields.Boolean(
         string="Gating",
         help="A gating verb must be positively completed for its Stage to pass. "
-        "Non-gating verbs (e.g. รับทราบ) never block advancement.",
+        "Non-gating verbs (e.g. รับทราบ) never block a Stage that has a gating "
+        "step; alone in their Stage they hold the next Stage until done.",
     )
     show_signature = fields.Boolean(
         string="แสดงลายเซ็น (Show signature)",

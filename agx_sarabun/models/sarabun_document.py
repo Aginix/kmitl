@@ -1041,12 +1041,14 @@ class SarabunDocument(models.Model):
 
     def _stage_complete(self, order):
         """A stage is passed when any one gating step in it is positively done
-        (first-to-act across the Stage). A stage with no gating step never stalls
-        the Route."""
+        (first-to-act across the Stage). A stage with no gating step is passed once
+        its non-CC steps (รับทราบ / รับทราบและลงนาม) are done, so the Route keeps the
+        order the sender set; สำเนาเรียน (CC) steps never stall the Route."""
         self.ensure_one()
-        gating = self.routing_step_ids.filtered(lambda s: s.order == order and s.gating)
+        stage = self.routing_step_ids.filtered(lambda s: s.order == order)
+        gating = stage.filtered("gating")
         if not gating:
-            return True
+            return all(s.state in ("done", "skipped") for s in stage if not s.for_info)
         return any(
             s.state == "done" and s.disposition in POSITIVE_DISPOSITIONS for s in gating
         )
@@ -1104,6 +1106,10 @@ class SarabunDocument(models.Model):
         self.routing_step_ids._clear_activities()  # drop to-dos before archive
         if destination == "resume_step" and resume_step_id:
             resume = self.env["sarabun.routing.step"].browse(int(resume_step_id))
+            # Resuming past the returner would drop it (and the steps between) from
+            # the Route — only the returner's own stage or an earlier one.
+            if resume.order > step.order:
+                raise UserError(_("Resume from the returning step or an earlier one."))
             # Snapshot the tail's seed vals BEFORE archiving, then recreate them
             # fresh in the new attempt (the originals stay archived as history).
             tail = self.routing_step_ids.filtered(

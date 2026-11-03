@@ -28,6 +28,38 @@ class TestP2Engine(SarabunCommon):
             self._act(sign, "complete", self.user_a)
         self.assertTrue(doc.is_completed)  # acknowledge still pending, did not block
 
+    def test_acknowledge_alone_holds_next_stage(self):
+        """A รับทราบ step alone in its stage holds the next stage until it is done —
+        the later signer cannot act ahead of it nor complete the หนังสือ past it."""
+        doc = self._make_doc()
+        s10 = self._add_step(doc, order=10, verb="endorse", user=self.user_a)
+        ack = self._add_step(doc, order=20, verb="acknowledge_sign", user=self.user_b)
+        s30 = self._add_step(doc, order=30, verb="sign_approve", user=self.manager)
+        doc.action_send()
+        self._act(s10, "complete", self.user_a)
+        self.assertEqual(ack.state, "active")
+        self.assertEqual(s30.state, "waiting")
+        with self.assertRaises(UserError):
+            self._act(s30, "complete", self.manager)
+        self._act(ack, "complete", self.user_b)
+        self.assertEqual(s30.state, "active")
+        with self.mute_pdf():
+            self._act(s30, "complete", self.manager)
+        self.assertTrue(doc.is_completed)
+
+    def test_cc_alone_never_blocks(self):
+        """A สำเนาเรียน (CC) step alone in its stage never holds the next stage."""
+        doc = self._make_doc()
+        s10 = self._add_step(doc, order=10, verb="endorse", user=self.user_a)
+        cc = self._add_step(
+            doc, order=20, verb="endorse", user=self.user_b, for_info=True
+        )
+        s30 = self._add_step(doc, order=30, verb="sign_approve", user=self.manager)
+        doc.action_send()
+        self._act(s10, "complete", self.user_a)
+        self.assertEqual(cc.state, "active")
+        self.assertEqual(s30.state, "active")
+
     def test_sequential_stages_advance_in_order(self):
         """Stage 20 only activates once stage 10's gating is done."""
         doc = self._make_doc()
@@ -211,6 +243,25 @@ class TestP2Engine(SarabunCommon):
                 lambda s: s.order == 10 and s.state == "waiting"
             )
         )
+
+    def test_return_resume_step_cannot_skip_ahead(self):
+        """ตีกลับ cannot resume from a later step — that would drop the returner
+        (and every step between) from the Route."""
+        doc = self._make_doc()
+        s10 = self._add_step(doc, order=10, verb="endorse", user=self.user_a)
+        s20 = self._add_step(doc, order=20, verb="endorse", user=self.user_b)
+        s30 = self._add_step(doc, order=30, verb="sign_approve", user=self.manager)
+        doc.action_send()
+        self._act(s10, "complete", self.user_a)
+        with self.assertRaises(UserError):
+            self._act(
+                s20,
+                "return",
+                self.user_b,
+                note="ข้ามไปขั้นถัดไป",
+                destination="resume_step",
+                resume_step_id=s30.id,
+            )
 
     def test_rejected_then_duplicate_to_draft(self):
         """rejected is terminal; retry is a NEW linked draft (1:N)."""

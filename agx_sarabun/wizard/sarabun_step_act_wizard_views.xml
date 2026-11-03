@@ -7,6 +7,7 @@
             <form string="Act on Step">
                 <field name="step_id" invisible="1" />
                 <field name="document_id" invisible="1" />
+                <field name="step_order" invisible="1" />
                 <field name="is_sign" invisible="1" />
                 <field name="needs_target" invisible="1" />
                 <field name="is_return" invisible="1" />
