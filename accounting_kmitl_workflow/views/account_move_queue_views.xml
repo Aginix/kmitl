@@ -18,11 +18,34 @@
         </field>
     </record>
 
+    <!-- Search panel (left sidebar) of the approval queue. Only loaded by the
+         client action below; the high priority keeps it from becoming the
+         default account.move search view. -->
+    <record id="view_account_move_approval_queue_search" model="ir.ui.view">
+        <field name="name">account.move.approval.queue.search</field>
+        <field name="model">account.move</field>
+        <field name="priority">99</field>
+        <field name="arch" type="xml">
+            <search>
+                <searchpanel>
+                    <field name="journal_id" select="multi" icon="fa-book" enable_counters="1"/>
+                    <field name="department_analytic_id" select="multi" icon="fa-sitemap" enable_counters="1"/>
+                    <field name="source_analytic_id" select="multi" icon="fa-money" enable_counters="1"/>
+                    <field name="fund_analytic_id" select="multi" icon="fa-university" enable_counters="1"/>
+                    <field name="activity_analytic_id" select="multi" icon="fa-tasks" enable_counters="1"/>
+                    <field name="submitted_by" select="multi" icon="fa-user" enable_counters="1"/>
+                    <field name="partner_type_id" select="multi" icon="fa-users" enable_counters="1"/>
+                </searchpanel>
+            </search>
+        </field>
+    </record>
+
     <!-- Approval queue: a custom OWL accordion screen (inline-expandable rows).
          New xml id (the old act_window id is dropped → orphan-cleaned on update). -->
     <record id="action_approval_queue" model="ir.actions.client">
         <field name="name">Approval List</field>
         <field name="tag">accounting_kmitl_workflow.approval_queue</field>
+        <field name="params" eval="{'search_view_id': ref('view_account_move_approval_queue_search')}"/>
     </record>
 
     <!-- Approved entries: a standard list (history of what was approved) -->

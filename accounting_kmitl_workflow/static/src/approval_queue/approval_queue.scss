@@ -1,6 +1,20 @@
 .o_approval_queue {
     height: 100%;
-    overflow: auto;
+    display: flex;
+    flex-direction: column;
+
+    > .o_content {
+        flex: 1 1 auto;
+        min-height: 0;
+    }
+
+    // Keep the selected total visible while scrolling a long queue.
+    .o_aq_footer td {
+        position: sticky;
+        bottom: 0;
+        background-color: #fff;
+        border-top: 2px solid #dee2e6;
+    }
 
     .o_aq_row {
         cursor: pointer;

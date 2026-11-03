@@ -6,10 +6,7 @@
         <field name="model">bank.payment.export.create</field>
         <field name="arch" type="xml">
             <form string="Create e-Payment File">
-                <div class="alert alert-info" role="alert">
-                    <span
-                    >One file debits one account, so the selected vouchers are split by paying account. Each row below is one file.</span>
-                </div>
+                <div class="alert alert-info" role="alert">One file debits one account, so the selected vouchers are split by paying account. Each row below is one file.</div>
                 <field name="line_ids" nolabel="1">
                     <tree editable="bottom" create="false" delete="false">
                         <field name="paying_account_id" />
