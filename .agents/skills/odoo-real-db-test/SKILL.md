@@ -265,19 +265,3 @@ another user's access rights, or a production server you can't reach. If the san
 contradicts the user's observation, say so and give the most likely environmental cause
 (restart, `-i`, cache, filters) with a quick way for them to check, e.g. DevTools →
 Network → the RPC's context and response.
-
-### Attaching the screenshots to a PR
-
-If the user wants the results in a PR, or the branch already has one
-(`gh pr view --json url`), don't stop at `.context/`. `gh` cannot upload images, so
-the only way to show them is to push them to `pr-assets/<branch>` and link the raw URLs.
-Use the `kmitl-pr` skill's helper:
-
-```bash
-.agents/skills/kmitl-pr/scripts/push_pr_assets.sh "$(git branch --show-current)" .context/*.png
-gh pr comment --body-file .context/test_result.md   # or: gh pr edit --body-file <new body>
-```
-
-The repo is public. If the screenshots show real people's data from a prod or UAT clone,
-**do not skip the upload silently**. Tell the user and ask: crop or blur the screenshots,
-re-shoot them on demo records, or keep them local only.
