@@ -92,7 +92,7 @@ class PurchaseRequest(models.Model):
 
     # === The two entry points every step back goes through ===
 
-    def _reset_to_draft(self, reason, label):
+    def _reset_to_draft(self, reason, label, post=True):
         """กลับแบบร่าง / ตีกลับ / หนังสือถูกตีกลับ → draft.
 
         ``button_draft`` releases this request's own ใบจอง (a drawn or
@@ -100,12 +100,13 @@ class PurchaseRequest(models.Model):
         so the next pass reserves again. Callers check permissions first; the
         release then runs sudo, because the budget override swallows an access
         error and would silently keep the ใบจอง."""
-        for rec in self:
-            rec.message_post(
-                body=_("%(label)s คำขอ (พ.1) %(pr)s เหตุผล: %(reason)s")
-                % {"label": label, "pr": rec.name, "reason": reason},
-                subtype_xmlid="mail.mt_note",
-            )
+        if post:
+            for rec in self:
+                rec.message_post(
+                    body=_("%(label)s คำขอ (พ.1) %(pr)s เหตุผล: %(reason)s")
+                    % {"label": label, "pr": rec.name, "reason": reason},
+                    subtype_xmlid="mail.mt_note",
+                )
         return self.sudo().with_context(pr_flow_reset=True).button_draft()
 
     def _cancel_all(self, reason, label=None):
@@ -198,16 +199,17 @@ class PurchaseRequest(models.Model):
         self._cancel_all(reason)
 
     def _action_do_return_to_draft(self, reason):
-        """ตีกลับ goes straight to draft (and releases the ใบจอง), replacing the
-        one-step-back of ADR-0010."""
+        """ตีกลับ ends at draft (releasing the ใบจอง). Chained so the step
+        owners' checks, notes and follow-ups (e.g. purchase_request_verifier's
+        returned To-do) still run; budget's step back to to_verify is then
+        carried on to draft."""
         self.ensure_one()
-        if self.state == "to_verify":
-            self._check_can_verify()
-        elif self.state == "to_verify_budget":
-            self._check_can_commit_budget()
-        else:
+        if self.state not in ("to_verify", "to_verify_budget"):
             raise UserError(_("ตีกลับได้เฉพาะขั้นรอตรวจสอบและรอยืนยันงบประมาณ"))
-        return self._reset_to_draft(reason, _("ตีกลับ"))
+        res = super()._action_do_return_to_draft(reason)
+        if self.state != "draft":
+            self._reset_to_draft(reason, _("ตีกลับ"), post=False)
+        return res
 
     def action_submit_to_sarabun(self):
         self.ensure_one()
@@ -261,7 +263,17 @@ class PurchaseRequest(models.Model):
 
     # === Sarabun outcomes ===
 
+    def _on_sarabun_circulating(self, document):
+        if self.state == "cancelled":
+            raise UserError(_("คำขอ (พ.1) %s ถูกยกเลิกแล้ว ส่งหนังสือไม่ได้") % self.display_name)
+        return super()._on_sarabun_circulating(document)
+
     def _on_sarabun_returned(self, document, step):
+        if self.state == "cancelled":
+            # e.g. agx_sarabun_reset reviving a cancelled หนังสือ: a cancelled
+            # request never comes back to draft.
+            self._sarabun_post("returned", document, step)
+            return
         res = super()._on_sarabun_returned(document, step)
         reason = (
             (step and step.note)

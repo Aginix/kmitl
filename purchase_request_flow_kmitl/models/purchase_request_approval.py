@@ -110,7 +110,15 @@ class PurchaseRequestApproval(models.Model):
             raise UserError(_("ส่งหนังสือใหม่ได้เฉพาะ พจ.1 ที่เป็นแบบร่าง"))
         return super().action_resend_to_sarabun()
 
+    def _on_sarabun_circulating(self, document):
+        if self.state == "cancelled":
+            raise UserError(_("พจ.1 %s ถูกยกเลิกแล้ว ส่งหนังสือไม่ได้") % self.display_name)
+        return super()._on_sarabun_circulating(document)
+
     def _on_sarabun_returned(self, document, step):
+        if self.state == "cancelled":
+            self._sarabun_post("returned", document, step)
+            return
         res = super()._on_sarabun_returned(document, step)
         self.write({"state": "draft"})
         return res
