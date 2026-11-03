@@ -27,6 +27,31 @@
                      the note is what tells the next reader why this file was
                      cut apart. -->
                 <field name="epayment_note" />
+                <!-- The figure the whole file comes down to, at the top where the
+                     officer looks first rather than only under the rows. -->
+                <field name="total_amount" string="Total Transfer Amount" />
+            </xpath>
+
+            <!-- The base asks with a fixed browser sentence, which cannot say how
+                 much money the file moves. Hidden rather than replaced, so modules
+                 anchoring on it keep working; `states` goes too, because it would
+                 overwrite a plain invisible="1". -->
+            <xpath
+                expr="//button[@name='action_export_text_file']"
+                position="attributes"
+            >
+                <attribute name="states" />
+                <attribute name="confirm" />
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_export_text_file']" position="after">
+                <button
+                    name="action_open_export_text_file_confirm"
+                    string="Export Text File"
+                    class="btn-primary"
+                    type="object"
+                    states="confirm"
+                />
             </xpath>
 
             <!-- หัวจ่าย is picked before the payments: one file debits one
@@ -134,7 +159,7 @@
                     role="alert"
                     attrs="{'invisible': [('other_draft_export_ids', '=', [])]}"
                 >
-                    <span>Another draft file already debits this paying account:</span>
+                    Another draft file already debits this paying account:
                     <field
                         name="other_draft_export_ids"
                         widget="many2many_tags"

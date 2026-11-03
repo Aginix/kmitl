@@ -89,3 +89,13 @@ msgstr "07 - เงินกู้"
 #: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_bay.selection__bank_payment_export__bay_service_type__59
 msgid "59 - Other"
 msgstr "59 - อื่น ๆ"
+
+#. module: l10n_th_bank_payment_export_bay
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_bay.field_bank_payment_export__bay_sender_name
+msgid "Bay Sender Name"
+msgstr "ชื่อผู้โอน BAY"
+
+#. module: l10n_th_bank_payment_export_bay
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_bay.field_bank_payment_export__bay_service_type
+msgid "Bay Service Type"
+msgstr "ประเภทบริการ BAY"
