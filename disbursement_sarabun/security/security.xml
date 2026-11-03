@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- The Finance Division Director (ผอ.กองคลัง) acts on the request after the
+         faculty signs, but is never on the หนังสือ's route: read every
+         disbursement request's หนังสือ. Read-only; ORed with agx_sarabun's own
+         rules. -->
+    <record id="sarabun_document_finance_director_rule" model="ir.rule">
+        <field name="name">Sarabun Document: Disbursement Finance Director</field>
+        <field name="model_id" ref="agx_sarabun.model_sarabun_document" />
+        <field
+            name="groups"
+            eval="[(4, ref('disbursement.group_disbursement_finance_director'))]"
+        />
+        <field name="domain_force">[('origin_model', '=', 'disbursement.request')]</field>
+        <field name="perm_read" eval="True" />
+        <field name="perm_write" eval="False" />
+        <field name="perm_create" eval="False" />
+        <field name="perm_unlink" eval="False" />
+    </record>
+</odoo>
