@@ -362,6 +362,17 @@ class AccountMove(models.Model):
             "context": {"active_ids": self.ids, "active_model": "account.move"},
         }
 
+    def action_print_voucher_portrait(self):
+        """The 'พิมพ์ใบสำคัญรายการบัญชี' button: the portrait voucher PDF,
+        opened in a new tab instead of downloaded."""
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_url",
+            "url": "/report/pdf/accounting_kmitl_workflow."
+            f"report_account_move_voucher_portrait/{self.id}",
+            "target": "new",
+        }
+
     def action_draft(self):
         """Reset to draft from submitted; doubles as recall (to_approve→draft).
 
