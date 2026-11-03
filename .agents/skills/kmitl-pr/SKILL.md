@@ -31,8 +31,8 @@ Make the code change first, then call the skill from the same workspace:
 | "commit แล้ว push แล้วเปิด PR" | ทำเฉพาะขั้นที่ 3–5 |
 
 You can also say it in plain words, e.g. "เปิด PR ให้หน่อย". If the user doesn't name a
-DB or a page to test, pick them from the change: the DB from `odoo_sandbox.sh dbs`,
-the page from the views/reports in the diff. State the choice in the PR.
+DB or a page to test, pick them from the change: the DB is the newest by the date in
+its name (`scripts/pick_db.py`, see step 2), the page from the views/reports in the diff. State the choice in the PR.
 
 `SK` = this skill's base directory (printed by the skill loader).
 `T` = the odoo-real-db-test skill's `scripts` folder (`.agents/skills/odoo-real-db-test/scripts`).
@@ -57,8 +57,22 @@ from earlier runs:
 
 - **Compose dir:** `export ODOO_COMPOSE_DIR=/Users/boat/Aginix/kmitl-odoo`. The
   script's default `~/Workspace/kmitl-odoo` does not exist here.
-- **Pick a DB:** `$T/odoo_sandbox.sh dbs`. If only `devel` exists (no UAT or prod copy),
-  clone it, `install` the touched modules (demo data comes along), and create the test
+- **Pick a DB (when the user didn't name one): newest first.** Rank the DBs by the date
+  in their name:
+  ```bash
+  $T/odoo_sandbox.sh dbs | $SK/scripts/pick_db.py
+  # 2026-11-01  uat-01-11-26
+  # 2026-10-15  pre-production-20261015
+  # -           devel
+  ```
+  - The script reads `YYYYMMDD[HHMM]`, `YYYY-MM-DD`, `DD-MM-YYYY`, and `DD-MM-YY`
+    (separators `-`, `_`, `.`).
+  - It skips `cache-*`, `sbx_*`, and `postgres`.
+  - On the same date it prefers `ok_uat` over `pre-production`.
+  - Take the first line, then run a read-only `sql` check that the data you need is
+    there. If it isn't, move to the next line.
+  - Write the chosen DB and its date in the PR.
+- **If only `devel` exists** (no dated UAT or prod copy), clone it, `install` the touched modules (demo data comes along), and create the test
   records yourself in an `odoo shell` script. Say in the PR that it ran on demo data.
 - **Prove the server side** with a shell script that prints plain markers (`SEL ...`,
   `BODY: ...`). Keep the script in `.context/` so it can be re-run.
