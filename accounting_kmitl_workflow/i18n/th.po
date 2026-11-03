@@ -319,36 +319,6 @@ msgstr "วันที่ถึง"
 #. module: accounting_kmitl_workflow
 #. odoo-javascript
 #: code:addons/accounting_kmitl_workflow/static/src/approval_queue/approval_queue.js:0
-msgid "Departments"
-msgstr "ส่วนงาน"
-
-#. module: accounting_kmitl_workflow
-#. odoo-javascript
-#: code:addons/accounting_kmitl_workflow/static/src/approval_queue/approval_queue.js:0
-msgid "Sources"
-msgstr "แหล่งเงิน"
-
-#. module: accounting_kmitl_workflow
-#. odoo-javascript
-#: code:addons/accounting_kmitl_workflow/static/src/approval_queue/approval_queue.js:0
-msgid "Funds"
-msgstr "กองทุน"
-
-#. module: accounting_kmitl_workflow
-#. odoo-javascript
-#: code:addons/accounting_kmitl_workflow/static/src/approval_queue/approval_queue.js:0
-msgid "Activities"
-msgstr "กิจกรรม"
-
-#. module: accounting_kmitl_workflow
-#. odoo-javascript
-#: code:addons/accounting_kmitl_workflow/static/src/approval_queue/approval_queue.js:0
-msgid "Journals"
-msgstr "สมุดรายวัน"
-
-#. module: accounting_kmitl_workflow
-#. odoo-javascript
-#: code:addons/accounting_kmitl_workflow/static/src/approval_queue/approval_queue.js:0
 msgid "Partners"
 msgstr "คู่ค้า"
 
@@ -398,18 +368,6 @@ msgstr "ส่งอนุมัติไม่สำเร็จ:"
 #: code:addons/accounting_kmitl_workflow/models/account_move.py:0
 msgid "Submit"
 msgstr "ส่งอนุมัติ"
-
-#. module: accounting_kmitl_workflow
-#. odoo-javascript
-#: code:addons/accounting_kmitl_workflow/static/src/approval_queue/approval_queue.js:0
-msgid "Filters"
-msgstr "ตัวกรอง"
-
-#. module: accounting_kmitl_workflow
-#. odoo-javascript
-#: code:addons/accounting_kmitl_workflow/static/src/approval_queue/approval_queue.js:0
-msgid "Clear Filters"
-msgstr "ล้างตัวกรอง"
 
 #. module: accounting_kmitl_workflow
 #. odoo-javascript

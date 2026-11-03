@@ -1,14 +1,11 @@
 .o_approval_queue {
     height: 100%;
+    display: flex;
+    flex-direction: column;
 
-    .o_aq_sidebar {
-        flex: 0 0 280px;
-        overflow-y: auto;
-    }
-
-    .o_aq_main {
-        min-width: 0;
-        overflow: auto;
+    > .o_content {
+        flex: 1 1 auto;
+        min-height: 0;
     }
 
     // Keep the selected total visible while scrolling a long queue.
