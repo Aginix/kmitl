@@ -1,0 +1,421 @@
+// Project portal: a minimal reading layout (lists and the project detail).
+
+.o_kp {
+    --kp-ink: #{$gray-900};
+    --kp-muted: #{$gray-600};
+    // Translucent so it reads on the theme's white or grey page background.
+    --kp-line: #{rgba($black, 0.1)};
+    --kp-soft: #{rgba($black, 0.035)};
+    --kp-accent: #{$primary};
+    color: var(--kp-ink);
+    padding: 2rem 0 4rem;
+
+    a {
+        color: inherit;
+        text-decoration: none;
+    }
+}
+.o_kpc {
+    max-width: 800px;
+    margin: 0 auto;
+    counter-reset: kp-sec;
+}
+
+.o_kp_crumbs {
+    font-size: 0.85rem;
+    color: var(--kp-muted);
+    margin-bottom: 2rem;
+
+    a:hover {
+        color: var(--kp-ink);
+    }
+    span {
+        margin: 0 0.4rem;
+        opacity: 0.5;
+    }
+}
+
+// Header
+.o_kp_eyebrow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+    font-size: 0.85rem;
+    color: var(--kp-muted);
+}
+.o_kp_code {
+    font-family: $font-family-monospace;
+    font-size: 0.8rem;
+    letter-spacing: 0.02em;
+    color: var(--kp-muted);
+}
+.o_kp_title {
+    font-size: 2rem;
+    font-weight: 600;
+    line-height: 1.35;
+    margin: 0.75rem 0 1.75rem;
+}
+
+// Status: dot + label
+.o_kp_status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.85rem;
+    color: var(--kp-ink);
+    white-space: nowrap;
+
+    &::before {
+        content: "";
+        width: 0.5rem;
+        height: 0.5rem;
+        border-radius: 50%;
+        background: var(--kp-dot, #{$gray-400});
+    }
+    &[data-state="to_verify"],
+    &[data-state="to_send"],
+    &[data-state="sent"] {
+        --kp-dot: #{$blue};
+    }
+    &[data-state="returned"] {
+        --kp-dot: #{$yellow};
+    }
+    &[data-state="rejected"] {
+        --kp-dot: #{$red};
+    }
+    &[data-state="in_progress"] {
+        --kp-dot: var(--kp-accent);
+    }
+    &[data-state="complete"] {
+        --kp-dot: #{$green};
+    }
+}
+
+// Fact sheet
+.o_kpc_sheet {
+    background: var(--kp-soft);
+    border-radius: 10px;
+    padding: 1.5rem 1.75rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 2.5rem;
+    margin-bottom: 3.5rem;
+
+    dl {
+        margin: 0;
+    }
+    .o_kp_dl {
+        grid-template-columns: 8.5rem 1fr;
+        row-gap: 0.55rem;
+        font-size: 0.92rem;
+    }
+    .o_kpc_money dd {
+        font-variant-numeric: tabular-nums;
+        text-align: right;
+    }
+    .o_kpc_money .is-total {
+        font-weight: 600;
+        padding-top: 0.55rem;
+        border-top: 1px solid var(--kp-line);
+    }
+}
+
+// Numbered sections
+.o_kpc_sec {
+    counter-increment: kp-sec;
+    margin-bottom: 3rem;
+    padding-left: 2.4rem;
+    min-width: 0;
+
+    > h2 {
+        display: flex;
+        gap: 0.9rem;
+        align-items: baseline;
+        font-size: 1.15rem;
+        font-weight: 600;
+        margin: 0 0 1rem -2.4rem;
+
+        &::before {
+            content: counter(kp-sec, decimal-leading-zero);
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--kp-accent);
+            font-variant-numeric: tabular-nums;
+            min-width: 1.5rem;
+        }
+    }
+    h3 {
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: var(--kp-muted);
+        margin: 1.5rem 0 0.5rem;
+    }
+    > h3:first-of-type {
+        margin-top: 0;
+    }
+}
+.o_kp_prose {
+    line-height: 1.75;
+    white-space: pre-line;
+}
+.o_kp_empty {
+    color: var(--kp-muted);
+    font-size: 0.9rem;
+}
+
+// Key–value list
+.o_kp_dl {
+    display: grid;
+    grid-template-columns: 11rem 1fr;
+    row-gap: 0.7rem;
+    column-gap: 1.5rem;
+    margin: 0;
+
+    dt {
+        font-weight: 400;
+        color: var(--kp-muted);
+    }
+    dd {
+        margin: 0;
+    }
+}
+
+// Hairline tables
+.o_kp_table {
+    width: 100%;
+    font-size: 0.9rem;
+    font-variant-numeric: tabular-nums;
+
+    th {
+        font-weight: 500;
+        font-size: 0.78rem;
+        color: var(--kp-muted);
+        padding: 0.5rem 0.75rem;
+        border-bottom: 1px solid var(--kp-line);
+        white-space: nowrap;
+    }
+    td {
+        padding: 0.6rem 0.75rem;
+        border-bottom: 1px solid var(--kp-line);
+        vertical-align: top;
+    }
+    th:first-child,
+    td:first-child {
+        padding-left: 0;
+    }
+    th:last-child,
+    td:last-child {
+        padding-right: 0;
+    }
+    .is-group td {
+        font-weight: 500;
+        background: var(--kp-soft);
+    }
+    tfoot td {
+        font-weight: 600;
+        border-bottom: 0;
+        border-top: 1px solid var(--kp-ink);
+    }
+}
+.o_kp_num {
+    text-align: right;
+    white-space: nowrap;
+}
+.o_kp_desc {
+    color: var(--kp-muted);
+    white-space: pre-line;
+}
+
+// Operating plan: a dot per month
+.o_kp_plan {
+    .o_kp_m {
+        width: 2.1rem;
+        text-align: center;
+        padding-left: 0;
+        padding-right: 0;
+    }
+    td.o_kp_m i {
+        display: inline-block;
+        width: 0.55rem;
+        height: 0.55rem;
+        border-radius: 50%;
+        background: var(--kp-line);
+    }
+    td.o_kp_m.is-on i {
+        background: var(--kp-accent);
+    }
+    th.o_kp_q {
+        text-align: center;
+        border-bottom: 0;
+        padding-bottom: 0;
+    }
+}
+
+.o_kp_list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    li {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 0.55rem 0;
+        border-bottom: 1px solid var(--kp-line);
+    }
+    li:last-child {
+        border-bottom: 0;
+    }
+    .o_kp_num {
+        color: var(--kp-muted);
+    }
+}
+.o_kp_tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 0.75rem;
+
+    span {
+        font-size: 0.85rem;
+        padding: 0.2rem 0.65rem;
+        border: 1px solid var(--kp-line);
+        border-radius: 999px;
+    }
+}
+
+.o_kp_files a {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.7rem 0;
+    border-bottom: 1px solid var(--kp-line);
+
+    &:last-child {
+        border-bottom: 0;
+    }
+    &:hover .o_kp_fname {
+        color: var(--kp-accent);
+    }
+    .o_kp_fname {
+        flex: 1;
+    }
+    .o_kp_fsize {
+        color: var(--kp-muted);
+        font-size: 0.8rem;
+    }
+}
+
+// List page
+.o_kp_listhead {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.5rem;
+
+    h1 {
+        font-size: 1.6rem;
+        font-weight: 600;
+        margin: 0;
+    }
+    p {
+        color: var(--kp-muted);
+        margin: 0.25rem 0 0;
+    }
+}
+.o_kp_search {
+    width: 18rem;
+    max-width: 100%;
+    border: 1px solid var(--kp-line);
+    border-radius: 0.5rem;
+    padding: 0.45rem 0.8rem;
+    font-size: 0.9rem;
+
+    &:focus {
+        outline: none;
+        border-color: var(--kp-accent);
+    }
+}
+.o_kpc_year {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--kp-muted);
+    margin: 2.25rem 0 0.25rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--kp-ink);
+}
+.o_kpc_item {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.25rem 2rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--kp-line);
+
+    &:hover .o_kpc_name {
+        color: var(--kp-accent);
+    }
+    .o_kp_status {
+        justify-self: end;
+        font-size: 0.82rem;
+    }
+}
+.o_kpc_name {
+    font-weight: 500;
+}
+.o_kpc_amt {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    font-weight: 500;
+}
+.o_kpc_sub {
+    color: var(--kp-muted);
+    font-size: 0.85rem;
+
+    > span + span::before {
+        content: "·";
+        margin: 0 0.5rem;
+        opacity: 0.6;
+    }
+}
+
+@include media-breakpoint-down(md) {
+    .o_kp {
+        padding-top: 1.25rem;
+    }
+    .o_kp_title {
+        font-size: 1.4rem;
+    }
+    .o_kpc_sheet {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        padding: 1.25rem;
+    }
+    .o_kpc_sec {
+        padding-left: 0;
+
+        > h2 {
+            margin-left: 0;
+        }
+    }
+    .o_kp_dl {
+        grid-template-columns: 1fr;
+        row-gap: 0.15rem;
+
+        dd {
+            margin-bottom: 0.6rem;
+        }
+    }
+    .o_kpc_item {
+        grid-template-columns: 1fr;
+
+        .o_kpc_amt,
+        .o_kp_status {
+            order: 1;
+            text-align: left;
+            justify-self: start;
+        }
+    }
+}

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <template
+        id="kmitl_project_portal_content_strategic_plan"
+        inherit_id="kmitl_project_portal.kmitl_project_portal_content"
+    >
+        <xpath expr="//dl[@id='strategic-plan']" position="inside">
+            <dt>แผนบริหารสถาบัน</dt>
+            <dd t-out="kmitl_project.institute_admin_plan_id.name or '—'" />
+            <dt>ข้อตกลงการปฏิบัติงาน</dt>
+            <dd t-out="kmitl_project.performance_agreement_id.name or '—'" />
+            <dt>แผนกลยุทธ์/แผนบริหารส่วนงาน</dt>
+            <dd t-out="kmitl_project.department_plan or '—'" />
+        </xpath>
+    </template>
+</odoo>

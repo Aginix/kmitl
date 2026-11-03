@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import json
 import logging
 
@@ -38,7 +37,7 @@ class KmitlProjectDashboard(http.Controller):
     def dashboard(self, **kw):
         """Main dashboard page - renders template with filter options"""
         values = self._prepare_filter_options(**kw)
-        return request.render("kmitl_project.portal_dashboard", values)
+        return request.render("kmitl_project_portal.portal_dashboard", values)
 
     @http.route("/project/dashboard/api", type="json", auth="public", csrf=False)
     def dashboard_api(self, fiscal_year_id=None, department_id=None, **kw):
@@ -64,7 +63,9 @@ class KmitlProjectDashboard(http.Controller):
             return request.redirect("/project/dashboard")
 
         values = self._prepare_department_filter_options(department, **kw)
-        return request.render("kmitl_project.portal_department_dashboard", values)
+        return request.render(
+            "kmitl_project_portal.portal_department_dashboard", values
+        )
 
     @http.route(
         "/project/dashboard/<int:department_id>/api",
@@ -96,14 +97,15 @@ class KmitlProjectDashboard(http.Controller):
         departments = self._departments()
 
         # Convert to JSON for OWL component
-        fiscal_years_json = json.dumps([
-            {"id": fy.id, "name": fy.name}
-            for fy in fiscal_years
-        ])
-        departments_json = json.dumps([
-            {"id": dept.id, "code": dept.code or "", "name": dept.name}
-            for dept in departments
-        ])
+        fiscal_years_json = json.dumps(
+            [{"id": fy.id, "name": fy.name} for fy in fiscal_years]
+        )
+        departments_json = json.dumps(
+            [
+                {"id": dept.id, "code": dept.code or "", "name": dept.name}
+                for dept in departments
+            ]
+        )
 
         return {
             "fiscal_years_json": fiscal_years_json,
@@ -162,10 +164,12 @@ class KmitlProjectDashboard(http.Controller):
             Department = request.env["account.analytic.account"].sudo()
             dept = Department.browse(int(kw["department_id"]))
             if dept.exists() and dept.parent_path:
-                child_depts = Department.search([
-                    ("parent_path", "=like", dept.parent_path + "%"),
-                    ("root_plan_id.code", "=", "departments"),
-                ])
+                child_depts = Department.search(
+                    [
+                        ("parent_path", "=like", dept.parent_path + "%"),
+                        ("root_plan_id.code", "=", "departments"),
+                    ]
+                )
                 domain.append(("department_analytic_id", "in", child_depts.ids))
             else:
                 domain.append(("department_analytic_id", "=", int(kw["department_id"])))
@@ -196,9 +200,7 @@ class KmitlProjectDashboard(http.Controller):
             "industrial": request.env.ref(
                 "kmitl_project.industrial", raise_if_not_found=False
             ),
-            "social": request.env.ref(
-                "kmitl_project.social", raise_if_not_found=False
-            ),
+            "social": request.env.ref("kmitl_project.social", raise_if_not_found=False),
         }
 
         for key, impact in impact_refs.items():
@@ -246,10 +248,10 @@ class KmitlProjectDashboard(http.Controller):
             # Get projects for this department and all child departments (using parent_path)
             dept_projects = projects.filtered(
                 lambda p, d=dept: (
-                    p.department_analytic_id and
-                    p.department_analytic_id.parent_path and
-                    d.parent_path and
-                    p.department_analytic_id.parent_path.startswith(d.parent_path)
+                    p.department_analytic_id
+                    and p.department_analytic_id.parent_path
+                    and d.parent_path
+                    and p.department_analytic_id.parent_path.startswith(d.parent_path)
                 )
             )
 
@@ -271,19 +273,21 @@ class KmitlProjectDashboard(http.Controller):
 
             total_budget = budget_source_1 + budget_source_2 + budget_other
 
-            table_data.append({
-                "department_id": dept.id,
-                "department_code": dept.code or "",
-                "department_name": dept.name,
-                "budget_source_1": budget_source_1,
-                "budget_source_2": budget_source_2,
-                "budget_other": budget_other,
-                "q1": "-",
-                "q2": "-",
-                "q3": "-",
-                "q4": "-",
-                "total_budget": total_budget,
-            })
+            table_data.append(
+                {
+                    "department_id": dept.id,
+                    "department_code": dept.code or "",
+                    "department_name": dept.name,
+                    "budget_source_1": budget_source_1,
+                    "budget_source_2": budget_source_2,
+                    "budget_other": budget_other,
+                    "q1": "-",
+                    "q2": "-",
+                    "q3": "-",
+                    "q4": "-",
+                    "total_budget": total_budget,
+                }
+            )
 
         return table_data
 
@@ -303,7 +307,9 @@ class KmitlProjectDashboard(http.Controller):
         for key in project.analytic_distribution.keys():
             try:
                 analytic_id = int(key)
-                analytic = request.env["account.analytic.account"].sudo().browse(analytic_id)
+                analytic = (
+                    request.env["account.analytic.account"].sudo().browse(analytic_id)
+                )
                 if analytic.exists() and analytic.root_plan_id.id == sources_plan.id:
                     return analytic_id
             except (ValueError, TypeError):
@@ -323,10 +329,9 @@ class KmitlProjectDashboard(http.Controller):
         if not fiscal_year_id and fiscal_years:
             fiscal_year_id = str(fiscal_years[0].id)
 
-        fiscal_years_json = json.dumps([
-            {"id": fy.id, "name": fy.name}
-            for fy in fiscal_years
-        ])
+        fiscal_years_json = json.dumps(
+            [{"id": fy.id, "name": fy.name} for fy in fiscal_years]
+        )
 
         return {
             "department_id": department.id,
@@ -364,7 +369,9 @@ class KmitlProjectDashboard(http.Controller):
             "projects_table": projects_table,
         }
 
-    def _build_project_domain_for_department(self, fiscal_year_id=None, department_id=None):
+    def _build_project_domain_for_department(
+        self, fiscal_year_id=None, department_id=None
+    ):
         """Build search domain for department-dimension filtering using parent_path"""
         domain = [
             ("active", "=", True),
@@ -379,10 +386,12 @@ class KmitlProjectDashboard(http.Controller):
             Department = request.env["account.analytic.account"].sudo()
             dept = Department.browse(int(department_id))
             if dept.exists() and dept.parent_path:
-                child_depts = Department.search([
-                    ("parent_path", "=like", dept.parent_path + "%"),
-                    ("root_plan_id.code", "=", "departments"),
-                ])
+                child_depts = Department.search(
+                    [
+                        ("parent_path", "=like", dept.parent_path + "%"),
+                        ("root_plan_id.code", "=", "departments"),
+                    ]
+                )
                 domain.append(("department_analytic_id", "in", child_depts.ids))
             else:
                 domain.append(("department_analytic_id", "=", int(department_id)))
@@ -417,40 +426,48 @@ class KmitlProjectDashboard(http.Controller):
             # Collect strategic alignment badges
             badges = []
             if proj.impact_id:
-                badges.append({
-                    "text": proj.impact_id.name,
-                    "color": "info",
-                })
+                badges.append(
+                    {
+                        "text": proj.impact_id.name,
+                        "color": "info",
+                    }
+                )
             if proj.global_index_id:
-                badges.append({
-                    "text": proj.global_index_id.name,
-                    "color": "primary",
-                })
+                badges.append(
+                    {
+                        "text": proj.global_index_id.name,
+                        "color": "primary",
+                    }
+                )
             if proj.fight_id:
-                badges.append({
-                    "text": proj.fight_id.name,
-                    "color": "secondary",
-                })
+                badges.append(
+                    {
+                        "text": proj.fight_id.name,
+                        "color": "secondary",
+                    }
+                )
 
-            table_data.append({
-                "id": proj.id,
-                "name": proj.name,
-                "budget_source_1": budget_source_1,
-                "budget_source_2": budget_source_2,
-                "budget_other": budget_other,
-                "q1": "-",
-                "q2": "-",
-                "q3": "-",
-                "q4": "-",
-                "total_actual": "-",
-                "state": proj.state,
-                "state_display": dict(proj._fields["state"].selection).get(
-                    proj.state, proj.state
-                ),
-                "badges": badges,
-                "write_date": proj.write_date.strftime("%d/%m/%Y %H:%M")
-                if proj.write_date
-                else "-",
-            })
+            table_data.append(
+                {
+                    "id": proj.id,
+                    "name": proj.name,
+                    "budget_source_1": budget_source_1,
+                    "budget_source_2": budget_source_2,
+                    "budget_other": budget_other,
+                    "q1": "-",
+                    "q2": "-",
+                    "q3": "-",
+                    "q4": "-",
+                    "total_actual": "-",
+                    "state": proj.state,
+                    "state_display": dict(proj._fields["state"].selection).get(
+                        proj.state, proj.state
+                    ),
+                    "badges": badges,
+                    "write_date": proj.write_date.strftime("%d/%m/%Y %H:%M")
+                    if proj.write_date
+                    else "-",
+                }
+            )
 
         return table_data

@@ -1,6 +1,6 @@
 {
     "name": "KMITL Project",
-    "version": "16.0.3.0.5",
+    "version": "16.0.3.0.6",
     "category": "Project",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
@@ -37,8 +37,6 @@
         "views/menu_views.xml",
         "views/kmitl_project_views.xml",
         "views/budget_account_views.xml",
-        "views/portal_templates.xml",
-        "views/portal_dashboard_templates.xml",
         "views/project_evaluation_views.xml",
         "views/project_fight_views.xml",
         "views/project_global_index_views.xml",
@@ -55,10 +53,6 @@
     ],
     "assets": {
         "web.assets_backend": ["kmitl_project/static/src/components/**/*"],
-        "web.assets_frontend": [
-            "kmitl_project/static/src/portal/scss/dashboard.scss",
-            "kmitl_project/static/src/portal/js/dashboard.js",
-        ],
     },
     "application": True,
     "installable": True,

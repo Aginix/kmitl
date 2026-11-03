@@ -1,0 +1,153 @@
+from odoo import http
+from odoo.exceptions import AccessError, MissingError
+from odoo.http import request
+from odoo.osv import expression
+from odoo.addons.portal.controllers import portal
+from odoo.addons.portal.controllers.portal import pager as portal_pager
+
+# A project is published only once its ขออนุมัติ หนังสือ has been signed: the whole
+# approval band (and a rejected project) is internal, exactly as the pre-ADR-0005
+# draft was. Kept as a state list rather than a positive one so a future state is
+# public by default only when deliberately left out of here.
+NON_PUBLIC_STATES = [
+    "draft",
+    "to_verify",
+    "to_send",
+    "sent",
+    "returned",
+    "rejected",
+]
+
+
+class KmitlProjectPortal(portal.CustomerPortal):
+    def _get_project_domain(self):
+        """Return domain to filter projects for current user.
+
+        Users see projects where they are:
+        - The project manager's linked user (manager_id.user_id)
+        - The creator (creating_user_id)
+        """
+        user = request.env.user
+        return [
+            "|",
+            ("manager_id.user_id", "=", user.id),
+            ("creating_user_id", "=", user.id),
+        ]
+
+    def _prepare_home_portal_values(self, counters):
+        values = super()._prepare_home_portal_values(counters)
+        if "project_count" in counters:
+            domain = self._get_project_domain()
+            values["project_count"] = request.env["kmitl.project"].search_count(domain)
+        return values
+
+    def _render_project_list(self, Project, domain, url, page, search, **extra):
+        """Paged project list, newest fiscal year first so the template can
+        group rows by fiscal year; ``search`` matches name or project number."""
+        if search:
+            domain = expression.AND(
+                [domain, ["|", ("name", "ilike", search), ("key", "ilike", search)]]
+            )
+        projects_count = Project.search_count(domain)
+        pager = portal_pager(
+            url=url,
+            url_args={"search": search} if search else None,
+            total=projects_count,
+            page=page,
+            step=self._items_per_page,
+        )
+        projects = Project.search(
+            domain,
+            order="account_fiscal_year_id desc, id desc",
+            limit=self._items_per_page,
+            offset=pager["offset"],
+        )
+        values = self._prepare_portal_layout_values()
+        values.update(
+            {
+                "projects": projects,
+                "projects_count": projects_count,
+                "pager": pager,
+                "search": search,
+                "default_url": url,
+                **extra,
+            }
+        )
+        return request.render("kmitl_project_portal.portal_kmitl_projects", values)
+
+    @http.route(
+        ["/my/kmitl-projects", "/my/kmitl-projects/page/<int:page>"],
+        type="http",
+        auth="user",
+        website=True,
+    )
+    def portal_my_kmitl_projects(self, page=1, search=None, **kw):
+        """Display list of KMITL Projects for current user (no sudo - ORM security)"""
+        return self._render_project_list(
+            request.env["kmitl.project"],
+            self._get_project_domain(),
+            "/my/kmitl-projects",
+            page,
+            search,
+            page_name="kmitl_projects",
+            title="โครงการของฉัน",
+            project_url="/my/kmitl-project/",
+        )
+
+    @http.route(
+        ["/my/kmitl-project/<int:project_id>"], type="http", auth="user", website=True
+    )
+    def portal_my_kmitl_project(self, project_id=None, access_token=None, **kw):
+        """Display single KMITL Project detail"""
+        try:
+            project_sudo = self._document_check_access(
+                "kmitl.project", project_id, access_token=access_token
+            )
+        except (AccessError, MissingError):
+            return request.redirect("/my")
+
+        values = self._get_page_view_values(
+            project_sudo,
+            access_token,
+            {"kmitl_project": project_sudo, "list_url": "/my/kmitl-projects"},
+            False,
+            False,
+            **kw,
+        )
+
+        return request.render("kmitl_project_portal.portal_my_kmitl_project", values)
+
+    @http.route(
+        ["/projects", "/projects/page/<int:page>"],
+        type="http",
+        auth="public",
+        website=True,
+    )
+    def portal_public_projects(self, page=1, search=None, **kw):
+        """Public list of KMITL Projects (approved ones only)"""
+        return self._render_project_list(
+            request.env["kmitl.project"].sudo(),
+            [("state", "not in", NON_PUBLIC_STATES)],
+            "/projects",
+            page,
+            search,
+            page_name="public_projects",
+            title="โครงการ/กิจกรรม",
+            project_url="/project/",
+        )
+
+    @http.route(["/project/<int:project_id>"], type="http", auth="public", website=True)
+    def portal_public_project(self, project_id=None, **kw):
+        """Public detail view (approved projects only)"""
+        project_sudo = request.env["kmitl.project"].sudo().browse(project_id)
+
+        # Block access to non-existent or not-yet-approved projects
+        if not project_sudo.exists() or project_sudo.state in NON_PUBLIC_STATES:
+            return request.redirect("/projects")
+
+        values = {
+            "kmitl_project": project_sudo,
+            "page_name": "public_project",
+            "list_url": "/projects",
+        }
+        return request.render("kmitl_project_portal.portal_my_kmitl_project", values)
