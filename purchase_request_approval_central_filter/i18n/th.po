@@ -1,0 +1,22 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* purchase_request_approval_central_filter
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-03 18:15+0000\n"
+"PO-Revision-Date: 2026-11-04 01:16+0700\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"X-Generator: Poedit 3.8\n"
+
+#. module: purchase_request_approval_central_filter
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval_central_filter.view_purchase_request_approval_search_central_filter
+msgid "Under Central"
+msgstr "ภายใต้ สนอ"
