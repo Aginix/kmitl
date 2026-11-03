@@ -1,7 +1,6 @@
-# -*- coding: utf-8 -*-
 {
     "name": "KMITL Project Viewer",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.1.0",
     "summary": "Read-only access to KMITL projects",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
