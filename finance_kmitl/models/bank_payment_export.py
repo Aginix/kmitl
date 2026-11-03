@@ -441,6 +441,18 @@ class BankPaymentExport(models.Model):
             "context": {"default_payment_export_id": self.id},
         }
 
+    def action_open_export_text_file_confirm(self):
+        """Show the amount the file moves before it is written."""
+        self.ensure_one()
+        return {
+            "name": _("Confirm Export Text File"),
+            "type": "ir.actions.act_window",
+            "res_model": "bank.payment.export.text.confirm",
+            "view_mode": "form",
+            "target": "new",
+            "context": {"default_payment_export_id": self.id},
+        }
+
     def _confirm_epayment_success(self, note=False):
         """Close the file: the money reached the payees.
 

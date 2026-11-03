@@ -292,9 +292,21 @@ msgid "A/C Payee Only crossing"
 msgstr "ขีดคร่อม A/C Payee Only"
 
 #. module: finance_kmitl
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export.field_account_setup_bank_manual_config__acc_holder_name_en
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export.field_res_partner_bank__acc_holder_name_en
+msgid "Account Holder Name (EN)"
+msgstr "ชื่อเจ้าของบัญชี (ภาษาอังกฤษ)"
+
+#. module: finance_kmitl
 #: model_terms:ir.ui.view,arch_db:finance_kmitl.kmitl_payment_type_view_form
 msgid "Account Overrides"
 msgstr "บัญชีที่กำหนดเอง"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,help:l10n_th_bank_payment_export.field_account_setup_bank_manual_config__acc_holder_name_en
+#: model:ir.model.fields,help:l10n_th_bank_payment_export.field_res_partner_bank__acc_holder_name_en
+msgid "Account holder name, in case it is bank bahtnet"
+msgstr "ชื่อเจ้าของบัญชี ใช้กรณีโอนผ่าน BAHTNET"
 
 #. module: finance_kmitl
 #: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_form_inherit
@@ -326,6 +338,7 @@ msgstr "หัวจ่ายที่อนุญาต"
 
 #. module: finance_kmitl
 #: model:ir.model.fields,field_description:finance_kmitl.field_cheque_register__amount
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export.field_bank_payment_export_line__payment_amount
 msgid "Amount"
 msgstr "จำนวนเงิน"
 
@@ -355,6 +368,11 @@ msgid "Another draft file already debits this paying account:"
 msgstr "หัวจ่ายนี้มีไฟล์ร่างอื่นค้างอยู่:"
 
 #. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export.bank_payment_export_line_view_tree
+msgid "Are you sure to reject this line ?"
+msgstr "ต้องการตีกลับรายการนี้ใช่หรือไม่?"
+
+#. module: finance_kmitl
 #: model:ir.model.fields,field_description:finance_kmitl.field_kmitl_payment_subject__auto_match_payee_bank
 msgid "Auto-match by Payee's Bank"
 msgstr "จับคู่หัวจ่ายตามธนาคารผู้รับ"
@@ -362,6 +380,11 @@ msgstr "จับคู่หัวจ่ายตามธนาคารผู
 #. module: finance_kmitl
 #: model:ir.model.fields,field_description:finance_kmitl.field_bank_payment_export_create_line__bank_id
 #: model:ir.model.fields,field_description:finance_kmitl.field_cheque_register__bank_id
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export.field_bank_payment_export__bank
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export.field_bank_payment_export_line__payment_bank_id
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export.field_bank_payment_template__bank
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export.bank_payment_export_view_search
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export.bank_payment_template_view_search
 msgid "Bank"
 msgstr "ธนาคาร"
 
@@ -378,8 +401,17 @@ msgstr "รูปแบบไฟล์ส่งออก"
 #. module: finance_kmitl
 #: model:ir.actions.report,name:finance_kmitl.action_report_bank_payment_export
 #: model:report.paperformat,name:finance_kmitl.paperformat_bank_payment_export_report
+#: model:ir.actions.act_window,name:l10n_th_bank_payment_export.action_bank_payment_export
+#: model:ir.ui.menu,name:l10n_th_bank_payment_export.menu_bank_payment_export
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export.bank_payment_export_view_search
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export.view_account_payment_search
 msgid "Bank Payment Export"
 msgstr "ส่งออกรายการจ่ายเงิน"
+
+#. module: finance_kmitl
+#: model:ir.model,name:l10n_th_bank_payment_export.model_bank_payment_export
+msgid "Bank Payment Export File"
+msgstr "ไฟล์ e-Payment"
 
 #. module: finance_kmitl
 #: model:ir.model,name:finance_kmitl.model_bank_payment_export_line
@@ -387,7 +419,23 @@ msgid "Bank Payment Export Line"
 msgstr "รายการส่งออกการจ่ายเงิน"
 
 #. module: finance_kmitl
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export.field_account_payment_register__is_export
+msgid "Bank Payment Exported"
+msgstr "ส่งออกไฟล์ธนาคารแล้ว"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export.field_account_payment__bank_payment_template_id
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export.field_account_payment_register__bank_payment_template_id
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export.field_res_partner__property_bank_payment_template_id
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export.field_res_users__property_bank_payment_template_id
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export.view_account_payment_search
+msgid "Bank Payment Template"
+msgstr "รูปแบบการจ่ายเงินธนาคาร"
+
+#. module: finance_kmitl
 #: model:ir.ui.menu,name:finance_kmitl.menu_settings_bank_payment_template
+#: model:ir.actions.act_window,name:l10n_th_bank_payment_export.action_bank_payment_template
+#: model:ir.ui.menu,name:l10n_th_bank_payment_export.menu_bank_payment_template
 msgid "Bank Payment Templates"
 msgstr "รูปแบบการจ่ายเงินธนาคาร"
 
@@ -418,7 +466,10 @@ msgid "Buddhist Era Date"
 msgstr "ใช้ปี พ.ศ."
 
 #. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.bank_payment_export_confirm_view_form
 #: model_terms:ir.ui.view,arch_db:finance_kmitl.bank_payment_export_create_view_form
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.bank_payment_export_text_confirm_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export.bank_payment_export_view_form
 msgid "Cancel"
 msgstr "ยกเลิก"
 
@@ -441,8 +492,14 @@ msgstr "เหตุผลที่ยกเลิก"
 #. module: finance_kmitl
 #: model:ir.model.fields.selection,name:finance_kmitl.selection__cheque_register__state__cancelled
 #: model:ir.model.fields.selection,name:l10n_th_bank_payment_export.selection__bank_payment_export__state__cancel
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export.bank_payment_export_view_search
 msgid "Cancelled"
 msgstr "ยกเลิก"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.bank_payment_export_text_confirm_view_form
+msgid "Check the amount before exporting. This operation cannot be undone."
+msgstr "กรุณาตรวจสอบยอดเงินก่อนออกไฟล์ การดำเนินการนี้ไม่สามารถย้อนกลับได้"
 
 #. module: finance_kmitl
 #: model:ir.model,name:finance_kmitl.model_cheque_register
@@ -537,9 +594,27 @@ msgid "Choose which draft file the %s vouchers go into."
 msgstr "เลือกไฟล์ร่างที่จะใส่ใบสำคัญจ่ายของ %s"
 
 #. module: finance_kmitl
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export.field_bank_payment_export__company_id
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export.field_bank_payment_export_line__company_id
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export.field_bank_payment_template__company_id
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export.bank_payment_export_view_search
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export.bank_payment_template_view_search
+msgid "Company"
+msgstr "บริษัท"
+
+#. module: finance_kmitl
 #: model_terms:ir.ui.view,arch_db:finance_kmitl.bank_payment_export_confirm_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export.bank_payment_export_view_form
 msgid "Confirm"
 msgstr "ยืนยัน"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/models/bank_payment_export.py:0
+#: model:ir.model,name:finance_kmitl.model_bank_payment_export_text_confirm
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.bank_payment_export_text_confirm_view_form
+#, python-format
+msgid "Confirm Export Text File"
+msgstr "ยืนยันการออกไฟล์ข้อความ"
 
 #. module: finance_kmitl
 #: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_form_inherit
@@ -557,6 +632,7 @@ msgstr "ยืนยันการโอนเงินสำเร็จ"
 
 #. module: finance_kmitl
 #: model:ir.model.fields.selection,name:l10n_th_bank_payment_export.selection__bank_payment_export__state__confirm
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export.bank_payment_export_view_search
 msgid "Confirmed"
 msgstr "ยืนยันแล้ว"
 
@@ -587,6 +663,10 @@ msgstr "รายการสร้างไฟล์ e-Payment"
 
 #. module: finance_kmitl
 #: model:ir.model.fields,field_description:finance_kmitl.field_cheque_register__currency_id
+#: model:ir.model.fields,field_description:finance_kmitl.field_bank_payment_export_text_confirm__currency_id
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export.field_bank_payment_export__currency_id
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export.field_bank_payment_export_line__currency_id
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export.bank_payment_export_view_search
 msgid "Currency"
 msgstr "สกุลเงิน"
 
@@ -611,6 +691,12 @@ msgid "Default Voucher"
 msgstr "ใบสำคัญตั้งต้น"
 
 #. module: finance_kmitl
+#: model:ir.model.fields,help:l10n_th_bank_payment_export.field_res_partner__property_bank_payment_template_id
+#: model:ir.model.fields,help:l10n_th_bank_payment_export.field_res_users__property_bank_payment_template_id
+msgid "Default bank payment template on each partner."
+msgstr "รูปแบบการจ่ายเงินธนาคารเริ่มต้นของผู้ติดต่อแต่ละราย"
+
+#. module: finance_kmitl
 #: model:ir.model.fields,help:finance_kmitl.field_kmitl_payment_type__journal_id
 msgid "Default journal for this payment type. Leave empty to use the default."
 msgstr ""
@@ -632,9 +718,16 @@ msgid "Document Templates"
 msgstr "รูปแบบเอกสาร"
 
 #. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export.bank_payment_export_view_search
+msgid "Done"
+msgstr "ออกไฟล์แล้ว"
+
+#. module: finance_kmitl
 #: model:ir.model.fields.selection,name:finance_kmitl.selection__account_payment__finance_state__draft
 #: model:ir.model.fields.selection,name:finance_kmitl.selection__cheque_register__state__draft
 #: model:ir.model.fields.selection,name:l10n_th_bank_payment_export.selection__bank_payment_export__state__draft
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export.selection__account_payment__export_status__draft
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export.bank_payment_export_view_search
 msgid "Draft"
 msgstr "ร่าง"
 
@@ -652,6 +745,11 @@ msgstr "ไฟล์ร่างของหัวจ่ายนี้"
 #: model:ir.model.fields.selection,name:finance_kmitl.selection__cheque_register__cancel_reason__misdrawn
 msgid "Drawn Incorrectly"
 msgstr "เขียนเช็คผิด"
+
+#. module: finance_kmitl
+#: model:ir.model.constraint,message:l10n_th_bank_payment_export.constraint_bank_payment_export_line_export_product_uniq
+msgid "Duplicate payment in transaction not allowed!"
+msgstr "ไม่สามารถใส่รายการจ่ายเงินซ้ำในไฟล์เดียวกันได้"
 
 #. module: finance_kmitl
 #: model:ir.model.fields,field_description:finance_kmitl.field_bank_payment_export_line__epayment_date
@@ -675,6 +773,9 @@ msgstr "สถานะ E-Payment"
 
 #. module: finance_kmitl
 #: model:ir.model.fields,field_description:finance_kmitl.field_bank_payment_export_create_line__payment_export_effective_date
+#: model:ir.model.fields,field_description:finance_kmitl.field_bank_payment_export_text_confirm__effective_date
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export.field_bank_payment_export__effective_date
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export.bank_payment_export_view_search
 msgid "Effective Date"
 msgstr "วันที่มีผลที่ธนาคาร"
 
@@ -705,8 +806,52 @@ msgstr ""
 "แถวที่ติ๊กว่าจ่ายไม่สำเร็จไว้แล้วจะไม่ถูกเปลี่ยน ดำเนินการต่อหรือไม่?"
 
 #. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export.bank_payment_export_view_form
+msgid "Export Excel"
+msgstr "ออกไฟล์ Excel"
+
+#. module: finance_kmitl
+#: model:ir.actions.report,name:l10n_th_bank_payment_export.action_export_payment_xlsx
+msgid "Export Excel Payment"
+msgstr "ไฟล์ Excel รายการจ่ายเงิน"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export.field_bank_payment_export__export_line_ids
+msgid "Export Line"
+msgstr "รายการในไฟล์"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export.field_account_payment__export_status
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export.view_account_payment_search
+msgid "Export Status"
+msgstr "สถานะการออกไฟล์"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export.view_account_payment_search
+msgid "Export Status - Draft"
+msgstr "สถานะการออกไฟล์ - ร่าง"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export.view_account_payment_search
+msgid "Export Status - Exported"
+msgstr "สถานะการออกไฟล์ - ออกไฟล์แล้ว"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export.view_account_payment_search
+msgid "Export Status - To Export"
+msgstr "สถานะการออกไฟล์ - รอออกไฟล์"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.bank_payment_export_text_confirm_view_form
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.bank_payment_export_view_form_inherit
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export.bank_payment_export_view_form
+msgid "Export Text File"
+msgstr "ออกไฟล์ข้อความ (Text File)"
+
+#. module: finance_kmitl
 #: model:ir.model.fields.selection,name:l10n_th_bank_payment_export.selection__bank_payment_export__state__done
 #: model_terms:ir.ui.view,arch_db:finance_kmitl.bank_payment_export_view_search_inherit
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export.selection__account_payment__export_status__exported
 msgid "Exported"
 msgstr "ออกไฟล์แล้ว"
 
@@ -769,7 +914,19 @@ msgid "GL Account"
 msgstr "บัญชีแยกประเภท"
 
 #. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export.bank_payment_export_view_form
+msgid "Get All Payments"
+msgstr "ดึงรายการจ่ายทั้งหมด"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export.bank_payment_export_view_form
+msgid "Get a list of all payments that haven't been exported yet."
+msgstr "ดึงรายการจ่ายทั้งหมดที่ยังไม่ได้ออกไฟล์"
+
+#. module: finance_kmitl
 #: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_search
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export.bank_payment_export_view_search
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export.bank_payment_template_view_search
 msgid "Group By"
 msgstr "จัดกลุ่มตาม"
 
@@ -793,9 +950,19 @@ msgid "Handover Date"
 msgstr "วันที่มอบเช็ค"
 
 #. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export.bank_payment_export_view_form
+msgid "Information Export"
+msgstr "ข้อมูลการออกไฟล์"
+
+#. module: finance_kmitl
 #: model:ir.model.fields,field_description:finance_kmitl.field_account_payment__is_cheque_payment
 msgid "Is Cheque Payment"
 msgstr "จ่ายด้วยเช็ค"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export.field_bank_payment_export__is_required_effective_date
+msgid "Is Required Effective Date"
+msgstr "ต้องระบุวันที่มีผล"
 
 #. module: finance_kmitl
 #: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_form
@@ -818,6 +985,11 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_search
 msgid "Issued"
 msgstr "ออกเช็คแล้ว"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export.field_bank_payment_export_line__payment_journal_id
+msgid "Journal"
+msgstr "สมุดรายวัน"
 
 #. module: finance_kmitl
 #: code:addons/finance_kmitl/models/account_move_line.py:0
@@ -861,6 +1033,11 @@ msgid "Left"
 msgstr "ซ้าย"
 
 #. module: finance_kmitl
+#: model:ir.model.fields,help:l10n_th_bank_payment_export.field_account_payment__payment_export_id
+msgid "Link to Bank Payment Export"
+msgstr "เชื่อมโยงไปยังไฟล์ e-Payment"
+
+#. module: finance_kmitl
 #: model:ir.model.fields.selection,name:finance_kmitl.selection__cheque_register__cancel_reason__lost
 msgid "Lost"
 msgstr "เช็คหาย"
@@ -892,6 +1069,8 @@ msgstr "ติ๊กทุกแถวเป็นจ่ายสำเร็จ
 
 #. module: finance_kmitl
 #: model:ir.model.fields,field_description:finance_kmitl.field_cheque_layout__name
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export.field_bank_payment_export__name
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export.field_bank_payment_template__name
 msgid "Name"
 msgstr "ชื่อ"
 
@@ -1078,6 +1257,7 @@ msgstr "บัญชีธนาคารผู้ชำระเงิน"
 #: model_terms:ir.ui.view,arch_db:finance_kmitl.bank_payment_export_view_search_inherit
 #: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_form_inherit
 #: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_search_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_bank_payment_export_text_confirm__paying_account_id
 msgid "Paying Account"
 msgstr "หัวจ่าย"
 
@@ -1090,6 +1270,7 @@ msgstr "หัวจ่าย"
 
 #. module: finance_kmitl
 #: model:ir.model,name:finance_kmitl.model_account_payment
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export.field_bank_payment_export_line__payment_id
 msgid "Payment"
 msgstr "การเบิกจ่ายเงิน"
 
@@ -1097,6 +1278,12 @@ msgstr "การเบิกจ่ายเงิน"
 #: model:ir.ui.menu,name:finance_kmitl.menu_settings_payment_data
 msgid "Payment Data"
 msgstr "ข้อมูลการจ่าย"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export.field_account_payment__payment_export_id
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export.field_bank_payment_export_line__payment_export_id
+msgid "Payment Export"
+msgstr "ไฟล์ e-Payment"
 
 #. module: finance_kmitl
 #: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_form_inherit
@@ -1208,7 +1395,14 @@ msgid "Reference"
 msgstr "เลขที่อ้างอิง"
 
 #. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export.bank_payment_export_line_view_tree
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export.bank_payment_export_view_form
+msgid "Reject"
+msgstr "ตีกลับ"
+
+#. module: finance_kmitl
 #: model:ir.model.fields.selection,name:l10n_th_bank_payment_export.selection__bank_payment_export__state__reject
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export.bank_payment_export_view_search
 msgid "Rejected"
 msgstr "ตีกลับ"
 
@@ -1225,6 +1419,7 @@ msgstr "รายงาน"
 
 #. module: finance_kmitl
 #: model:ir.model.fields,field_description:finance_kmitl.field_bank_payment_export__export_line_count
+#: model:ir.model.fields,field_description:finance_kmitl.field_bank_payment_export_text_confirm__export_line_count
 msgid "Rows"
 msgstr "จำนวนแถว"
 
@@ -1244,6 +1439,11 @@ msgstr ""
 "กระดาษเป็นตัวตัดสิน — ตรวจเลขใบสุดท้ายด้านล่างกับเล่มเช็คในมือก่อนกด"
 
 #. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export.bank_payment_export_view_form
+msgid "Set to Draft"
+msgstr "กลับเป็นร่าง"
+
+#. module: finance_kmitl
 #: model:ir.ui.menu,name:finance_kmitl.menu_payment_settings
 msgid "Settings"
 msgstr "การตั้งค่า"
@@ -1260,6 +1460,9 @@ msgstr "เสียหายตอนพิมพ์"
 
 #. module: finance_kmitl
 #: model:ir.model.fields,field_description:finance_kmitl.field_cheque_register__state
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export.field_bank_payment_export__state
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export.field_bank_payment_export_line__state
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export.bank_payment_export_view_search
 msgid "Status"
 msgstr "สถานะ"
 
@@ -1282,6 +1485,17 @@ msgstr "ส่งอนุมัติที่เลือก"
 #: model:ir.model.fields.selection,name:finance_kmitl.selection__bank_payment_export_line__epayment_status__success
 msgid "Success"
 msgstr "สำเร็จ"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export.bank_payment_export_view_form
+msgid "System Configuration"
+msgstr "การตั้งค่าระบบ"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export.field_bank_payment_config__template_id
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export.field_bank_payment_export__template_id
+msgid "Template"
+msgstr "รูปแบบ"
 
 #. module: finance_kmitl
 #: code:addons/finance_kmitl/models/account_payment.py:0
@@ -1441,6 +1655,16 @@ msgstr ""
 "จึงไม่มีผู้รับรายที่สองได้รับเลขนี้"
 
 #. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export.bank_payment_export_view_form
+msgid "This operation cannot be undone. Are you sure to continue?"
+msgstr "การดำเนินการนี้ไม่สามารถย้อนกลับได้ ต้องการดำเนินการต่อหรือไม่?"
+
+#. module: finance_kmitl
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export.selection__account_payment__export_status__to_export
+msgid "To Export"
+msgstr "รอออกไฟล์"
+
+#. module: finance_kmitl
 #: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_search
 msgid "To Issue"
 msgstr "รอออกเช็ค"
@@ -1460,6 +1684,22 @@ msgstr "บน"
 #: model_terms:ir.ui.view,arch_db:finance_kmitl.bank_payment_export_create_view_form
 msgid "Total"
 msgstr "ยอดรวม"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export.field_bank_payment_export__total_amount
+msgid "Total Amount"
+msgstr "ยอดรวม"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_bank_payment_export_text_confirm__total_amount
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.bank_payment_export_view_form_inherit
+msgid "Total Transfer Amount"
+msgstr "ยอดโอนทั้งหมด"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export.bank_payment_export_view_form
+msgid "Transaction"
+msgstr "รายการ"
 
 #. module: finance_kmitl
 #: code:addons/finance_kmitl/models/bank_payment_export.py:0
@@ -1502,6 +1742,11 @@ msgstr "User การเงินจ่าย (Payment Out)"
 #: model:res.groups,name:finance_kmitl.group_finance_kmitl_user_in
 msgid "User การเงินรับ (Payment In)"
 msgstr "User การเงินรับ (Payment In)"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export.field_bank_payment_export_line__payment_partner_id
+msgid "Vendor"
+msgstr "ผู้รับเงิน"
 
 #. module: finance_kmitl
 #: model:ir.actions.act_window,name:finance_kmitl.action_vendor_clearing_vouchers
@@ -1608,6 +1853,7 @@ msgstr "ไฟล์ e-Payment"
 #: code:addons/finance_kmitl/models/account_payment.py:0
 #: model:ir.model.fields,field_description:finance_kmitl.field_bank_payment_export_confirm__payment_export_id
 #: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_form_inherit
+#: model:ir.model.fields,field_description:finance_kmitl.field_bank_payment_export_text_confirm__payment_export_id
 #, python-format
 msgid "e-Payment File"
 msgstr "ไฟล์ e-Payment"
@@ -1632,6 +1878,22 @@ msgstr "ทะเบียน e-Payment"
 #: model_terms:ir.ui.view,arch_db:finance_kmitl.bank_payment_export_confirm_view_form
 msgid "e.g. PV/2026/00014 bounced — account closed. Paid in cash on 20/08."
 msgstr "เช่น PV/2026/00014 โอนไม่สำเร็จ บัญชีปิด จ่ายเงินสดแทนเมื่อ 20/08"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,help:l10n_th_bank_payment_export.field_account_payment_register__is_export
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export.view_account_payment_register_form
+msgid "if checked, it means the money has already been sent to the bank."
+msgstr "หากเลือก หมายถึงได้ส่งเงินไปยังธนาคารแล้ว"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,help:l10n_th_bank_payment_export.field_account_payment__bank_payment_template_id
+msgid "it help default value from bank payment template"
+msgstr "ใช้กำหนดค่าเริ่มต้นจากรูปแบบการจ่ายเงินธนาคาร"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,help:l10n_th_bank_payment_export.field_account_payment__export_status
+msgid "it means status the money has already been sent to the bank."
+msgstr "สถานะว่าได้ส่งเงินไปยังธนาคารแล้วหรือยัง"
 
 #. module: finance_kmitl
 #: model:ir.model.fields.selection,name:finance_kmitl.selection__kmitl_payment_type__direction__outbound
@@ -2178,6 +2440,7 @@ msgstr "เลขที่ใบสำคัญ"
 
 #. module: finance_kmitl
 #: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_tree_kmitl
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export.field_bank_payment_export_line__payment_partner_bank_id
 msgid "Recipient Bank"
 msgstr "บัญชีธนาคารผู้รับ"
 
@@ -2228,6 +2491,7 @@ msgstr "เงินสด"
 
 #. module: finance_kmitl
 #: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_search_kmitl
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export.field_bank_payment_export_line__payment_date
 msgid "Date"
 msgstr "วันที่"
 
