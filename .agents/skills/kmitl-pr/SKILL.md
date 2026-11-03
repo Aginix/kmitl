@@ -17,6 +17,23 @@ Run the steps in order. Each step's result feeds the next: the branch name is us
 the assets branch, and the test output and screenshots go into the PR body. If the user
 lists only some steps, do just those and skip the others.
 
+## วิธีเรียกใช้
+
+Make the code change first, then call the skill from the same workspace:
+
+| คำสั่ง | สิ่งที่ทำ |
+| --- | --- |
+| `/kmitl-pr` | ครบทุกขั้น: เปลี่ยนชื่อ branch → เทส + แคปรูป → commit/push → อัปรูป → เปิด PR |
+| `/kmitl-pr ไม่ต้องเทส` | ข้ามขั้นที่ 2 (PR จะเขียนว่ายังไม่ได้เทส) |
+| `/kmitl-pr ใช้ฐาน ok_uat-20260930` | ระบุฐานข้อมูลที่จะ clone มาเทส |
+| `/kmitl-pr เทสหน้า <เมนู/รายงาน>` | บอกว่าจะให้เทสและแคปรูปหน้าไหน |
+| "เทสแล้วแปะรูปใน PR" | ใช้กับ PR ที่เปิดไปแล้ว: ทำเฉพาะขั้นที่ 2, 4 แล้วเพิ่มผลด้วย `gh pr comment` |
+| "commit แล้ว push แล้วเปิด PR" | ทำเฉพาะขั้นที่ 3–5 |
+
+You can also say it in plain words, e.g. "เปิด PR ให้หน่อย". If the user doesn't name a
+DB or a page to test, pick them from the change: the DB from `odoo_sandbox.sh dbs`,
+the page from the views/reports in the diff. State the choice in the PR.
+
 `SK` = this skill's base directory (printed by the skill loader).
 `T` = the odoo-real-db-test skill's `scripts` folder (`.agents/skills/odoo-real-db-test/scripts`).
 
