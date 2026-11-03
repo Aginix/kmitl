@@ -1,6 +1,6 @@
 {
     "name": "KMITL Project",
-    "version": "16.0.3.0.4",
+    "version": "16.0.3.0.5",
     "category": "Project",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",

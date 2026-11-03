@@ -2,7 +2,7 @@
     "name": "KMITL Project — Strategic Plan Alignment",
     "summary": "Adds แผนบริหารสถาบัน, ข้อตกลงการปฏิบัติงาน and "
     "แผนกลยุทธ์/แผนบริหารส่วนงาน to the project",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.0.1",
     "category": "Project",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
