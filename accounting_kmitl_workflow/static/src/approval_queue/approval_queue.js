@@ -50,7 +50,7 @@ export class ApprovalQueue extends Component {
             fiscalYearId: false,
             dateFrom: false,
             dateTo: false,
-            showAdvanced: false,
+            showSidebar: true,
             journals: [],
             partners: [],
             departments: [],
@@ -93,8 +93,9 @@ export class ApprovalQueue extends Component {
             activities: _t("Activities"),
             journals: _t("Journals"),
             partners: _t("Partners"),
-            moreFilters: _t("More filters"),
-            hideFilters: _t("Hide filters"),
+            filters: _t("Filters"),
+            clearFilters: _t("Clear Filters"),
+            selectedTotal: _t("Selected Total"),
         };
         onWillStart(async () => {
             this.companyId = this.company.currentCompany.id;
@@ -163,8 +164,18 @@ export class ApprovalQueue extends Component {
         this.loadMoves();
     }
 
-    toggleAdvanced() {
-        this.state.showAdvanced = !this.state.showAdvanced;
+    toggleSidebar() {
+        this.state.showSidebar = !this.state.showSidebar;
+    }
+
+    clearFilters() {
+        this.state.fiscalYearId = false;
+        this.state.dateFrom = false;
+        this.state.dateTo = false;
+        for (const key of Object.keys(FILTER_FIELDS)) {
+            this.state[key] = [];
+        }
+        this.loadMoves();
     }
 
     onSelectionChange(key, selected) {
@@ -264,6 +275,12 @@ export class ApprovalQueue extends Component {
             this.state.moves.length > 0 &&
             this.state.selectedIds.length === this.state.moves.length
         );
+    }
+
+    get selectedTotal() {
+        return this.state.moves
+            .filter((move) => this.isSelected(move.id))
+            .reduce((sum, move) => sum + (move.amount_total || 0), 0);
     }
 
     displayName(value) {

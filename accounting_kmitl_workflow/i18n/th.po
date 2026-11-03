@@ -355,18 +355,6 @@ msgstr "คู่ค้า"
 #. module: accounting_kmitl_workflow
 #. odoo-javascript
 #: code:addons/accounting_kmitl_workflow/static/src/approval_queue/approval_queue.js:0
-msgid "More filters"
-msgstr "ตัวกรองเพิ่มเติม"
-
-#. module: accounting_kmitl_workflow
-#. odoo-javascript
-#: code:addons/accounting_kmitl_workflow/static/src/approval_queue/approval_queue.js:0
-msgid "Hide filters"
-msgstr "ซ่อนตัวกรอง"
-
-#. module: accounting_kmitl_workflow
-#. odoo-javascript
-#: code:addons/accounting_kmitl_workflow/static/src/approval_queue/approval_queue.js:0
 msgid "Open"
 msgstr "เปิดเอกสาร"
 
@@ -410,3 +398,21 @@ msgstr "ส่งอนุมัติไม่สำเร็จ:"
 #: code:addons/accounting_kmitl_workflow/models/account_move.py:0
 msgid "Submit"
 msgstr "ส่งอนุมัติ"
+
+#. module: accounting_kmitl_workflow
+#. odoo-javascript
+#: code:addons/accounting_kmitl_workflow/static/src/approval_queue/approval_queue.js:0
+msgid "Filters"
+msgstr "ตัวกรอง"
+
+#. module: accounting_kmitl_workflow
+#. odoo-javascript
+#: code:addons/accounting_kmitl_workflow/static/src/approval_queue/approval_queue.js:0
+msgid "Clear Filters"
+msgstr "ล้างตัวกรอง"
+
+#. module: accounting_kmitl_workflow
+#. odoo-javascript
+#: code:addons/accounting_kmitl_workflow/static/src/approval_queue/approval_queue.js:0
+msgid "Selected Total"
+msgstr "ยอดรวมที่เลือก"
