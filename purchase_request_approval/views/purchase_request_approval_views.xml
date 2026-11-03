@@ -14,21 +14,21 @@
                 edit="0"
                 delete="0"
             >
-            <field name="name" string="PR Number" optional="show" />
-            <field
+                <field name="name" string="PR Number" optional="show" />
+                <field
                     name="active_sarabun_document_id"
                     string="Document Number"
                     optional="show"
                 />
-            <field name="title" optional="show" />
-            <field name="date_start" widget="date" optional="show" />
-            <field name="approval_date" widget="date" optional="show" />
-            <field name="estimated_cost" optional="show" />
-            <field name="procurement_type_id" optional="show" />
-            <field name="procurement_method_id" optional="show" />
+                <field name="title" optional="show" />
+                <field name="date_start" widget="date" optional="show" />
+                <field name="approval_date" widget="date" optional="show" />
+                <field name="estimated_cost" optional="show" />
+                <field name="procurement_type_id" optional="show" />
+                <field name="procurement_method_id" optional="show" />
 
-            <field name="activity_ids" widget="list_activity" optional="hide" />
-            <field
+                <field name="activity_ids" widget="list_activity" optional="hide" />
+                <field
                     name="state"
                     widget="badge"
                     decoration-success="state in ('approved')"
@@ -37,9 +37,13 @@
                     decoration-danger="state in ('cancelled', 'rejected')"
                     optional="show"
                 />
-            <field name="account_fiscal_year_id" optional="show" />
-            <field name="requesting_department_id" optional="show" />
-            <field name="requested_by" widget="many2one_avatar_user" optional="show" />
+                <field name="account_fiscal_year_id" optional="show" />
+                <field name="requesting_department_id" optional="show" />
+                <field
+                    name="requested_by"
+                    widget="many2one_avatar_user"
+                    optional="show"
+                />
             </tree>
         </field>
     </record>
@@ -169,8 +173,7 @@
                         attrs="{'invisible': [('sarabun_is_draft', '=', False)]}"
                     >
                         <i class="fa fa-pencil-square-o me-1" />
-                        หนังสือสารบรรณถูกสร้างแล้วแต่ยังไม่ได้ส่งออก (สถานะ: ร่าง)
-                        <button
+                        หนังสือสารบรรณถูกสร้างแล้วแต่ยังไม่ได้ส่งออก (สถานะ: ร่าง) <button
                             name="action_view_sarabun_documents"
                             type="object"
                             class="btn btn-sm btn-warning ms-2"
@@ -182,8 +185,9 @@
                         role="alert"
                         attrs="{'invisible': ['|', ('sarabun_has_live_document', '=', False), ('sarabun_is_draft', '=', True)]}"
                     >
-                        <i class="fa fa-paper-plane me-1" />
-                        สถานะการเดินหนังสือสารบรรณ: <field
+                        <i
+                            class="fa fa-paper-plane me-1"
+                        /> สถานะการเดินหนังสือสารบรรณ: <field
                             name="sarabun_state_label"
                             nolabel="1"
                             readonly="1"
@@ -192,29 +196,54 @@
                     </div>
                     <div class="oe_title" name="approval_title">
                         <h1 class="d-flex">
-                            <field name="name" readonly="1"/>
+                            <field name="name" readonly="1" />
                         </h1>
                     </div>
                     <group>
                         <group name="main_info" string="Main Information">
-                            <field name="active_sarabun_document_id" readonly="1"/>
-                            <field name="title" attrs="{'readonly': [('is_editable', '=', False)]}" />
-                            <field name="description" attrs="{'readonly': [('is_editable', '=', False)]}" />
+                            <field name="active_sarabun_document_id" readonly="1" />
+                            <field
+                                name="title"
+                                attrs="{'readonly': [('is_editable', '=', False)]}"
+                            />
+                            <field
+                                name="description"
+                                attrs="{'readonly': [('is_editable', '=', False)]}"
+                            />
                             <field name="date_start" invisible="1" />
-                            <field name="requested_by" widget="many2one_avatar_user" readonly="1"/>
+                            <field
+                                name="requested_by"
+                                widget="many2one_avatar_user"
+                                readonly="1"
+                            />
                             <field name="requesting_department_id" readonly="1" />
                         </group>
                         <group name="procurement_info" string="Procurement Information">
                             <field name="company_id" invisible="1" />
-                            <field name="procurement_type_id" attrs="{'readonly': [('is_editable', '=', False)]}" widget="selection" />
-                            <field name="procurement_method_id" attrs="{'readonly': [('is_editable', '=', False)]}" widget="selection" />
-                            <field name="account_fiscal_year_id" readonly="1"/>
+                            <field
+                                name="procurement_type_id"
+                                attrs="{'readonly': [('is_editable', '=', False)]}"
+                                widget="selection"
+                            />
+                            <field
+                                name="procurement_method_id"
+                                attrs="{'readonly': [('is_editable', '=', False)]}"
+                                widget="selection"
+                            />
+                            <field name="account_fiscal_year_id" readonly="1" />
                         </group>
-                        <group name="disbursement_info" string="Disbursement Information">
+                        <group
+                            name="disbursement_info"
+                            string="Disbursement Information"
+                        >
                             <field name="payment_type" readonly="1" />
                         </group>
                         <group name="vendor_info" string="Vendor Information">
-                            <field name="procurement_mode" widget="radio" readonly="1"/>
+                            <field
+                                name="procurement_mode"
+                                widget="radio"
+                                readonly="1"
+                            />
                             <field
                                 name="partner_id"
                                 attrs="{'readonly': [('is_editable', '=', False)], 'invisible': [('payment_type', '!=', 'direct')]}"
@@ -234,23 +263,29 @@
                     </group>
                     <group>
                         <group name="budget_info" string="Budget Information Section">
-                            <field name="budget_commitment_amount"
+                            <field
+                                name="budget_commitment_amount"
                                 readonly="1"
-                                attrs="{'invisible': [('budget_commitment_id', '=', False)]}"/>
+                                attrs="{'invisible': [('budget_commitment_id', '=', False)]}"
+                            />
                             <field
                                 name="budget_commitment_id"
-                                colspan="2" nolabel="1"
-                                widget="budget_commitment_info" readonly="1"
+                                colspan="2"
+                                nolabel="1"
+                                widget="budget_commitment_info"
+                                readonly="1"
                                 options="{'no_create': True, 'no_open': True}"
                             />
                         </group>
                     </group>
                     <group name="attachment_info" string="Attachment">
-                        <field name="attachment_ids"
+                        <field
+                            name="attachment_ids"
                             nolabel="1"
                             colspan="2"
                             widget="many2many_binary"
-                            context="{'default_res_model': 'purchase.request.approval'}"/>
+                            context="{'default_res_model': 'purchase.request.approval'}"
+                        />
                     </group>
                     <notebook>
                         <page name="lines" string="Products">
@@ -259,18 +294,34 @@
                                 attrs="{'readonly': [('is_editable', '=', False)]}"
                             >
                                 <tree editable="bottom">
-                                    <field name="currency_id" invisible="1"/>
-                                    <field name="product_id" readonly="1" optional="hide"/>
-                                    <field name="name" readonly="1"/>
-                                    <field name="product_qty"/>
-                                    <field name="uom_text" required="1"/>
-                                    <field name="price_unit"/>
-                                    <field name="product_uom_id" invisible="1"/>
-                                    <field name="tax_id" optional="hide"/>
-                                    <field name="price_subtotal" widget="monetary" invisible="1"/>
-                                    <field name="price_total" widget="monetary" invisible="1"/>
-                                    <field name="price_tax" widget="monetary" optional="hide"/>
-                                    <field name="estimated_cost" readonly="1"/>
+                                    <field name="currency_id" invisible="1" />
+                                    <field
+                                        name="product_id"
+                                        readonly="1"
+                                        optional="hide"
+                                    />
+                                    <field name="name" readonly="1" />
+                                    <field name="product_qty" />
+                                    <field name="uom_text" required="1" />
+                                    <field name="price_unit" />
+                                    <field name="product_uom_id" invisible="1" />
+                                    <field name="tax_id" optional="hide" />
+                                    <field
+                                        name="price_subtotal"
+                                        widget="monetary"
+                                        invisible="1"
+                                    />
+                                    <field
+                                        name="price_total"
+                                        widget="monetary"
+                                        invisible="1"
+                                    />
+                                    <field
+                                        name="price_tax"
+                                        widget="monetary"
+                                        optional="hide"
+                                    />
+                                    <field name="estimated_cost" readonly="1" />
                                 </tree>
                             </field>
                             <group class="oe_subtotal_footer oe_right">
@@ -376,6 +427,11 @@
                     name="filter_by_dept"
                     string="Requesting Department"
                     domain="[('requesting_department_id', '!=', False)]"
+                />
+                <filter
+                    name="under_central"
+                    string="Under Central"
+                    domain="[('requesting_department_id.code', 'in', ['08000','09000','10000','31000','31020','31030','31040','31050','32000','32020','32030','32040','33000','33030','33040','33050','33060','37000','39000','39010','39020','39030','39050','40000','40010','40020','40030','40040','42000','42010','42020','42030','42040','43000','46000','49000','49010','49020','49030','49040','49050','49060','49070','49080','50000','50010','50020','50030','50040','50050','50060','89000','89300','89310','89320','89330','89340','89350','89360','89370','89380','89390','89400','89401','89402','89403','89404','89405','89406','89407','89408','89410','89420','89430','89440','89450','99000','99040','99060','99070','99080'])]"
                 />
                 <separator />
                 <filter
