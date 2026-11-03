@@ -4,10 +4,7 @@
         id="report_kmitl_project_strategic_plan"
         inherit_id="kmitl_project.report_kmitl_project"
     >
-        <xpath
-            expr="//span[@t-out=&quot;o.fight_id.name or '-'&quot;]/.."
-            position="after"
-        >
+        <xpath expr="//div[@id='kmitl']/div[hasclass('item-content')]" position="inside">
             <div>แผนบริหารสถาบัน : <span
                     t-out="o.institute_admin_plan_id.name or '-'"
                 /></div>
