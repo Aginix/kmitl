@@ -26,6 +26,13 @@ msgstr "%s - โอนจากบัญชีออมทรัพย์"
 #. odoo-python
 #: code:addons/withholding_tax_remittance_kmitl/models/withholding_tax_remittance.py:0
 #, python-format
+msgid "%s remittance(s) reconciled."
+msgstr "กระทบยอดแล้ว %s ใบนำส่ง"
+
+#. module: withholding_tax_remittance_kmitl
+#. odoo-python
+#: code:addons/withholding_tax_remittance_kmitl/models/withholding_tax_remittance.py:0
+#, python-format
 msgid ""
 "A remittance for %(form)s period %(period)s funding source %(source)s "
 "already exists (%(name)s)."
@@ -551,6 +558,24 @@ msgid "RD Reference"
 msgstr "เลขอ้างอิงกรมสรรพากร"
 
 #. module: withholding_tax_remittance_kmitl
+#: model_terms:ir.ui.view,arch_db:withholding_tax_remittance_kmitl.view_withholding_tax_remittance_form
+#: model_terms:ir.ui.view,arch_db:withholding_tax_remittance_kmitl.view_withholding_tax_remittance_tree
+msgid "Reconcile"
+msgstr "กระทบยอด"
+
+#. module: withholding_tax_remittance_kmitl
+#: model:ir.model.fields,field_description:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__is_reconciled
+msgid "Reconciled"
+msgstr "กระทบยอดแล้ว"
+
+#. module: withholding_tax_remittance_kmitl
+#. odoo-python
+#: code:addons/withholding_tax_remittance_kmitl/models/withholding_tax_remittance.py:0
+#, python-format
+msgid "Reconciliation"
+msgstr "การกระทบยอด"
+
+#. module: withholding_tax_remittance_kmitl
 #: model_terms:ir.ui.view,arch_db:withholding_tax_remittance_kmitl.view_withholding_tax_remittance_search
 msgid "Ready to Post"
 msgstr "พร้อมยืนยัน"
@@ -789,6 +814,16 @@ msgstr "ข้อความเว็บไซต์"
 #: model:ir.model.fields,help:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__website_message_ids
 msgid "Website communication history"
 msgstr "ประวัติการสื่อสารทางเว็บไซต์"
+
+#. module: withholding_tax_remittance_kmitl
+#: model:ir.model.fields,help:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__is_reconciled
+msgid ""
+"Whether the WHT payable lines on this remittance's journal entry are "
+"reconciled against their source lines. Stays False when the WHT Payable "
+"Account has Allow Reconciliation off."
+msgstr ""
+"บรรทัดภาษีรอนำส่งของ JE ใบนำส่งนี้ถูกกระทบยอดกับบรรทัดต้นทางแล้วหรือไม่ "
+"จะเป็นเท็จเสมอถ้าบัญชีภาษีรอนำส่งยังไม่เปิด Allow Reconciliation"
 
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model,name:withholding_tax_remittance_kmitl.model_withholding_tax_cert

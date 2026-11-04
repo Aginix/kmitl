@@ -25,9 +25,19 @@ itself, which has no analytic fields of its own.
 **บัญชีออมทรัพย์ / บัญชีกระแสรายวัน** (`savings_account_id`,
 `current_account_id`): the cheque is drawn on the savings account, but the bank
 first moves the cheque amount into the current account and the cheque is then
-cleared from there. Both movements are booked, so both accounts reconcile
-against their statements: the current account is debited and credited the same
-amount (net zero) and the money genuinely leaves the savings account.
+cleared from there. Both movements are booked so both accounts can be checked
+against their statements: the current account is debited and credited the
+same amount (net zero) and the money genuinely leaves the savings account.
+KMITL does not reconcile against bank statements in the system at all — see
+root [ADR-0009](../docs/adr/0009-no-bank-reconciliation.md); "checked against"
+here means a human eyeballs the printed statement, not GL reconciliation.
+
+**กระทบยอด (reconcile)**: matching a debit line against a credit line on the
+*same* GL account so the pair's residual balance drops to zero — what
+`account.move.line.reconcile()` does, and what ADR-0004 now does between a
+remittance's WHT payable debit and its certificates' source WHT credit lines.
+_Avoid_: using this word for matching against a bank statement — สจล. does not
+do that in the system (root ADR-0009); เรียกอันนั้นว่า "ตรวจกับ statement" แทน.
 
 **Vendor Clearing** (ล้างเจ้าหนี้ / Vendor Clearing Vouchers):
 A **different, pre-existing** concept: settling a *vendor's* payable by paying
@@ -40,9 +50,15 @@ The accumulated credit on the withholding tax account (`account.withholding.tax.
 e.g. `2120000010` for PND1 or `2120000099` for PND53) owed to the Revenue
 Department. Booked automatically by `l10n_th_account_tax` every time a
 `withholding.tax.cert` line is created; never cleared by core or by the PND
-filing wizard. This module is the only thing that clears it, and it does so
-with a **plain journal entry**, deliberately not GL reconciliation — see
-[ADR-0001](./docs/adr/0001-wht-remittance-plain-je-no-reconcile.md).
+filing wizard. This module is the only thing that clears it, via
+`action_post`, and — since
+[ADR-0004](./docs/adr/0004-reconcile-wht-payable-on-post.md), which supersedes
+[ADR-0001](./docs/adr/0001-wht-remittance-plain-je-no-reconcile.md) — it also
+กระทบยอด the remittance's debit line against each certificate's source credit
+line whenever the account has Allow Reconciliation on, so the account's GL
+balance reflects only what is genuinely still owed. `remittance_id` remains
+the source of truth for "นำส่งแล้ว"; reconciliation is a GL-readability
+side effect of posting, not a new state.
 
 **Remittance Status** (`withholding.tax.cert.remit_state`):
 Computed, stored: `remitted` once the cert's `remittance_id` points at a
