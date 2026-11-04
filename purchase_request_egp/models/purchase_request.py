@@ -53,7 +53,13 @@ class PurchaseRequest(models.Model):
     @api.depends("estimated_cost")
     def _compute_is_egp(self):
         for rec in self:
-            rec.is_egp = rec.estimated_cost > 100000
+            if rec.estimated_cost > 100000:
+                rec.is_egp = True
+            elif rec._origin.estimated_cost > 100000:
+                # Auto-ticked by the threshold; release it once the cost drops
+                rec.is_egp = False
+            else:
+                rec.is_egp = rec.is_egp
 
     def _show_egp_create_purchase_order_button(self):
         for rec in self:
