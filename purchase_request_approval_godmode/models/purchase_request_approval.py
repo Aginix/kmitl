@@ -21,9 +21,6 @@ class PurchaseRequestApproval(models.Model):
         comodel_name="procurement.method",
         string="Procurement Method",
     )
-    payment_type = fields.Selection(
-        [("direct", "Direct paid"), ("advance", "Advance"), ("prepaid", "Prepaid")],
-    )
     tax_id = fields.Many2one(
         "account.tax",
         string="Tax",
