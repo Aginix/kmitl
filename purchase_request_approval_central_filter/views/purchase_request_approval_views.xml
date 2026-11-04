@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record
+        id="view_purchase_request_approval_search_central_filter"
+        model="ir.ui.view"
+    >
+        <field name="name">purchase.request.approval.search.central.filter</field>
+        <field name="model">purchase.request.approval</field>
+        <field
+            name="inherit_id"
+            ref="purchase_request_approval.view_purchase_request_approval_search"
+        />
+        <field name="arch" type="xml">
+            <filter name="filter_by_dept" position="after">
+                <filter
+                    name="under_central"
+                    string="Under Central"
+                    domain="[('requesting_department_id.code', 'in', ['08000','09000','10000','31000','31020','31030','31040','31050','32000','32020','32030','32040','33000','33030','33040','33050','33060','37000','39000','39010','39020','39030','39050','40000','40010','40020','40030','40040','42000','42010','42020','42030','42040','43000','46000','49000','49010','49020','49030','49040','49050','49060','49070','49080','50000','50010','50020','50030','50040','50050','50060','89000','89300','89310','89320','89330','89340','89350','89360','89370','89380','89390','89400','89401','89402','89403','89404','89405','89406','89407','89408','89410','89420','89430','89440','89450','99000','99040','99060','99070','99080'])]"
+                />
+            </filter>
+        </field>
+    </record>
+</odoo>
