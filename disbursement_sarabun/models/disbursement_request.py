@@ -185,6 +185,11 @@ class DisbursementRequest(models.Model):
     def _get_sarabun_body_template(self):
         return "disbursement_sarabun.report_disbursement_request_body"
 
+    def _get_sarabun_tail_template(self):
+        """Stage signatures (ADR-0002 rows) sign after the หนังสือ's head, so they
+        print below its signature."""
+        return "disbursement_pdf.report_disbursement_request_signature"
+
     def _get_sarabun_content(self):
         """The editable เนื้อหา, seeded once at submit: the opening paragraph,
         then the request's รายละเอียด. Edited on the หนังสือ from then on; the

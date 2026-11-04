@@ -389,3 +389,13 @@ class SarabunDocumentMixin(models.AbstractModel):
                 return "my_module.report_my_model_body"
         """
         return False
+
+    def _get_sarabun_tail_template(self):
+        """XML id of a QWeb fragment rendered live **after** the endorsement block,
+        or ``False`` (default).
+
+        Same no-source layout path and ``o`` as :meth:`_get_sarabun_body_template`,
+        for what the origin prints below the หนังสือ's signatures — e.g. stages
+        that sign after the หนังสือ is approved.
+        """
+        return False

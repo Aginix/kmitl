@@ -297,6 +297,12 @@
 
                 <!-- เกษียน trail + signature block(s) -->
                 <t t-call="agx_sarabun.sarabun_endorsement_block" />
+
+                <!-- ท้ายจากต้นเรื่อง (origin tail fragment) — what the origin
+                     prints below the signatures; empty unless it supplies a
+                     tail template. -->
+                <t t-set="origin_tail" t-value="doc._render_origin_tail()" />
+                <div t-if="origin_tail" t-out="origin_tail" />
             </div>
         </t>
     </template>
