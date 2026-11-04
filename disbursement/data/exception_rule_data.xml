@@ -55,17 +55,17 @@ if self.payment_type in ("advance", "prepaid") and not self.partner_type_id.is_i
         <field name="active" eval="True" />
     </record>
 
-    <!-- A taxed line must carry its WHT item. Checked on Submit rather than
-         as a required field so drafts and older requests still save.
-         Lines lose their taxes when has_tax is unticked, so no header check. -->
-    <record id="excep_disbursement_line_wht_required" model="exception.rule">
-        <field name="name">รายการที่มีภาษียังไม่ได้ระบุภาษีหัก ณ ที่จ่าย</field>
-        <field name="description">มีรายการที่เลือกภาษีแล้วแต่ยังไม่ได้ระบุภาษีหัก ณ ที่จ่าย (WHT) กรุณาระบุ WHT ในรายการให้ครบ</field>
+    <!-- On a request with has_tax ticked, every line must carry a tax
+         (VAT) or a WHT item, either one. Checked on Submit rather than as a
+         required field so drafts and older requests still save. -->
+    <record id="excep_disbursement_line_tax_required" model="exception.rule">
+        <field name="name">รายการยังไม่ได้ระบุภาษีหรือภาษีหัก ณ ที่จ่าย</field>
+        <field name="description">ใบขอเบิกนี้เลือกให้มีภาษี กรุณาระบุภาษี (Taxes) หรือภาษีหัก ณ ที่จ่าย (WHT) อย่างใดอย่างหนึ่งในทุกรายการ</field>
         <field name="sequence">13</field>
         <field name="model">disbursement.request.line</field>
         <field name="exception_type">by_py_code</field>
         <field name="code">
-if self.tax_ids and not self.wht_tax_id:
+if self.request_id.has_tax and not self.tax_ids and not self.wht_tax_id:
     failed = True
         </field>
         <field name="is_blocking" eval="True" />
