@@ -75,4 +75,15 @@
             </xpath>
         </field>
     </record>
+
+    <record id="view_disbursement_request_search" model="ir.ui.view">
+        <field name="name">disbursement.request.search (disbursement_budget)</field>
+        <field name="model">disbursement.request</field>
+        <field name="inherit_id" ref="disbursement.view_disbursement_request_search" />
+        <field name="arch" type="xml">
+            <field name="memo_number" position="after">
+                <field name="budget_commitment_id" />
+            </field>
+        </field>
+    </record>
 </odoo>
