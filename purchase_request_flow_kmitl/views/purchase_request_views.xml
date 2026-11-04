@@ -33,6 +33,19 @@
                     attrs="{'invisible': ['|', ('flow_is_owner', '=', False), '&amp;', ('state', 'not in', ['to_verify', 'to_verify_budget', 'to_approve', 'sent']), '|', ('state', 'not in', ['in_egp', 'in_progress']), ('egp_status', '!=', 'cancelled')]}"
                 />
             </xpath>
+            <!-- ไม่ใช้ใน flow นี้: ผู้ตรวจสอบดึงกลับไป to_verify (ตีกลับไปแบบร่างแทน)
+                 และ อนุมัติ / ปฏิเสธ ของ OCA (ผลอนุมัติ/ปฏิเสธมาจากหนังสือสารบรรณเท่านั้น) -->
+            <xpath expr="//button[@name='action_recall_to_verify']" position="attributes">
+                <attribute name="attrs">{'invisible': [(1, '=', 1)]}</attribute>
+            </xpath>
+            <xpath expr="//button[@name='button_approved']" position="attributes">
+                <attribute name="states" />
+                <attribute name="attrs">{'invisible': [(1, '=', 1)]}</attribute>
+            </xpath>
+            <xpath expr="//button[@name='button_rejected']" position="attributes">
+                <attribute name="states" />
+                <attribute name="attrs">{'invisible': [(1, '=', 1)]}</attribute>
+            </xpath>
             <!-- ส่งหนังสือใหม่: หนังสือถูกตีกลับ และ พ.1 จองงบใหม่แล้ว -->
             <xpath
                 expr="//button[@name='action_resend_to_sarabun']"
