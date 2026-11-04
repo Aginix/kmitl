@@ -330,7 +330,7 @@
                                     />
                                     <field
                                         name="wht_tax_id"
-                                        attrs="{'column_invisible': [('parent.has_tax', '=', False)]}"
+                                        attrs="{'column_invisible': [('parent.has_tax', '=', False)], 'required': [('tax_ids', '!=', [])]}"
                                     />
                                     <field
                                         name="analytic_distribution"
