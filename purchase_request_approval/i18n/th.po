@@ -1260,6 +1260,7 @@ msgstr "รวม"
 
 #. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__estimated_cost
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_search
 msgid "Total Estimated Cost"
 msgstr "มูลค่าประมาณการรวม"
 
@@ -1797,3 +1798,13 @@ msgstr "รายงานขอซื้อ/จ้าง (พจ.1)"
 #: model:ir.actions.act_window,help:purchase_request_approval.action_purchase_request_approval_my
 msgid "คุณยังไม่มีรายงานขอซื้อ/จ้าง (พจ.1) ที่สร้างเอง"
 msgstr "คุณยังไม่มีรายงานขอซื้อ/จ้าง (พจ.1) ที่สร้างเอง"
+
+#. module: purchase_request_approval
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_search
+msgid "PA Number"
+msgstr "เลขที่ใบพจ.1"
+
+#. module: purchase_request_approval
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_search
+msgid "Requested by"
+msgstr "ขอซื้อขอจ้างโดย"
