@@ -79,7 +79,7 @@
             <div class="row mb-2" t-if="partner_bank">
                 <div class="col">
                     ธนาคาร <span class="ms-2" t-out="partner_bank.bank_id.name"/>
-                    เลขที่บัญชี <span class="ms-2" t-out="o._get_masked_acc_number(partner_bank.acc_number)"/>
+                    เลขที่บัญชี <span class="ms-2" t-out="partner_bank.acc_number"/>
                 </div>
             </div>
             <table border="0" class="table table-bordered table-sm" t-att-style="'' if partner_last else 'margin-bottom: 1rem'">
