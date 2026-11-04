@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_purchase_request_form" model="ir.ui.view">
+        <field name="name">purchase.request.form (Flow)</field>
+        <field name="model">purchase.request</field>
+        <field name="inherit_id" ref="purchase_request_kmitl.view_purchase_request_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <field name="flow_is_owner" invisible="1" />
+                <field name="sarabun_state" invisible="1" />
+                <field name="egp_status" invisible="1" />
+            </xpath>
+            <!-- ยกเลิก: แบบร่างเท่านั้น โดยผู้รับผิดชอบ/ผู้ดูแล พ.1 -->
+            <xpath expr="//button[@name='button_cancel']" position="attributes">
+                <attribute name="states" />
+                <attribute name="string">ยกเลิก</attribute>
+                <attribute name="class">btn-danger</attribute>
+                <attribute
+                    name="attrs"
+                >{'invisible': ['|', ('state', '!=', 'draft'), ('flow_is_owner', '=', False)]}</attribute>
+            </xpath>
+            <!-- Reset เดิมถูกแทนด้วย กลับแบบร่าง (ต้องใส่เหตุผล) — แสดงทุกขั้น
+                 กดแล้วระบบตรวจว่าหนังสือเป็นร่าง/รอการแก้ไข หรือ e-GP ถูกยกเลิก -->
+            <xpath expr="//button[@name='button_draft']" position="attributes">
+                <attribute name="attrs">{'invisible': [(1, '=', 1)]}</attribute>
+            </xpath>
+            <xpath expr="//button[@name='button_draft']" position="after">
+                <button
+                    name="action_open_flow_wizard"
+                    string="กลับแบบร่าง"
+                    type="object"
+                    context="{'flow_mode': 'recall'}"
+                    attrs="{'invisible': ['|', ('flow_is_owner', '=', False), '&amp;', ('state', 'not in', ['to_verify', 'to_verify_budget', 'to_approve', 'sent']), '|', ('state', 'not in', ['in_egp', 'in_progress']), ('egp_status', '!=', 'cancelled')]}"
+                />
+            </xpath>
+            <!-- ไม่ใช้ใน flow นี้: ผู้ตรวจสอบดึงกลับไป to_verify (ตีกลับไปแบบร่างแทน)
+                 และ อนุมัติ / ปฏิเสธ ของ OCA (ผลอนุมัติ/ปฏิเสธมาจากหนังสือสารบรรณเท่านั้น) -->
+            <xpath expr="//button[@name='action_recall_to_verify']" position="attributes">
+                <attribute name="attrs">{'invisible': [(1, '=', 1)]}</attribute>
+            </xpath>
+            <xpath expr="//button[@name='button_approved']" position="attributes">
+                <attribute name="states" />
+                <attribute name="attrs">{'invisible': [(1, '=', 1)]}</attribute>
+            </xpath>
+            <xpath expr="//button[@name='button_rejected']" position="attributes">
+                <attribute name="states" />
+                <attribute name="attrs">{'invisible': [(1, '=', 1)]}</attribute>
+            </xpath>
+            <!-- ส่งหนังสือใหม่: หนังสือถูกตีกลับ และ พ.1 จองงบใหม่แล้ว -->
+            <xpath
+                expr="//button[@name='action_resend_to_sarabun']"
+                position="attributes"
+            >
+                <attribute name="states" />
+                <attribute name="string">ส่งหนังสือใหม่</attribute>
+                <attribute
+                    name="attrs"
+                >{'invisible': ['|', ('state', '!=', 'to_approve'), ('sarabun_state', '!=', 'returned')]}</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_egp_in_progress']" position="after">
+                <button
+                    name="action_open_flow_wizard"
+                    string="บันทึก e-GP ถูกยกเลิก"
+                    type="object"
+                    class="btn-danger"
+                    context="{'flow_mode': 'egp_cancel'}"
+                    attrs="{'invisible': ['|', '|', ('is_egp', '=', False), ('state', 'not in', ['in_egp', 'in_progress']), ('egp_status', 'not in', ['waiting', 'in_progress'])]}"
+                    groups="purchase.group_purchase_user"
+                />
+            </xpath>
+        </field>
+    </record>
+</odoo>

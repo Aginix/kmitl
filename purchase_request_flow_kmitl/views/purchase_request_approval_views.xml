@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_purchase_request_approval_form" model="ir.ui.view">
+        <field name="name">purchase.request.approval.form (Flow)</field>
+        <field name="model">purchase.request.approval</field>
+        <field
+            name="inherit_id"
+            ref="purchase_request_approval.view_purchase_request_approval_form"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <field name="sarabun_state" invisible="1" />
+            </xpath>
+            <!-- แบบร่างเหลือแค่ สร้างหนังสือ / ส่งหนังสือใหม่ / ยกเลิก -->
+            <xpath
+                expr="//button[@name='action_open_return_cancel_wizard']"
+                position="attributes"
+            >
+                <attribute name="states" />
+                <attribute name="attrs">{'invisible': [(1, '=', 1)]}</attribute>
+            </xpath>
+            <xpath expr="//button[@name='button_draft']" position="attributes">
+                <attribute name="states" />
+                <attribute name="attrs">{'invisible': [(1, '=', 1)]}</attribute>
+            </xpath>
+            <xpath expr="//button[@name='button_draft'][2]" position="attributes">
+                <attribute name="states" />
+                <attribute name="attrs">{'invisible': [(1, '=', 1)]}</attribute>
+            </xpath>
+            <xpath
+                expr="//button[@name='action_resend_to_sarabun']"
+                position="attributes"
+            >
+                <attribute name="states" />
+                <attribute name="string">ส่งหนังสือใหม่</attribute>
+                <attribute
+                    name="attrs"
+                >{'invisible': ['|', ('state', '!=', 'draft'), ('sarabun_state', '!=', 'returned')]}</attribute>
+            </xpath>
+            <!-- ยกเลิกได้เฉพาะแบบร่าง · อนุมัติแล้วต้องกลับแบบร่างก่อน -->
+            <xpath expr="//button[@name='button_cancel']" position="after">
+                <button
+                    name="action_open_flow_draft_wizard"
+                    string="กลับแบบร่าง"
+                    type="object"
+                    states="approved"
+                    groups="purchase.group_purchase_user"
+                />
+            </xpath>
+            <xpath expr="//button[@name='button_cancel']" position="attributes">
+                <attribute name="states">draft</attribute>
+                <attribute name="string">ยกเลิก</attribute>
+                <attribute name="class">btn-danger</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>

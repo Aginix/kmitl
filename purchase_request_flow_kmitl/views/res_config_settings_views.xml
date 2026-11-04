@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.form (PR Flow)</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="purchase.res_config_settings_view_form_purchase" />
+        <field name="arch" type="xml">
+            <xpath expr="//div[@data-key='purchase']" position="inside">
+                <h2>ขอให้จัดหา (พ.1)</h2>
+                <div class="row mt16 o_settings_container" name="pr_flow_settings">
+                    <div class="col-12 col-lg-6 o_setting_box">
+                        <div class="o_setting_right_pane">
+                            <label for="pa_auto_creator_id" />
+                            <div class="text-muted">
+                                ชื่อผู้สร้าง พจ.1 ที่ระบบสร้างให้อัตโนมัติเมื่อหนังสือ พ.1 เสร็จสิ้น (ว่างไว้ = OdooBot)
+                            </div>
+                            <div class="mt8">
+                                <field name="pa_auto_creator_id" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>
