@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Type reader (READ ONLY, ADR-0021): a member of the type's reader groups
+         reads every non-draft หนังสือ of that type in one of their OUs — like a
+         follower, without being on the Route (no Incoming / activity). Additive
+         group rules: ADR-0013 rules stay untouched. -->
+    <record id="sarabun_document_type_reader_rule" model="ir.rule">
+        <field name="name">Sarabun Document: Type Reader in OU (read)</field>
+        <field name="model_id" ref="agx_sarabun.model_sarabun_document" />
+        <field name="groups" eval="[(4, ref('agx_sarabun.group_sarabun_user'))]" />
+        <field name="domain_force">[
+            ('state', '!=', 'draft'),
+            ('type_id.reader_group_ids', 'in', user.groups_id.ids),
+            ('operating_unit_id', 'in', user.operating_unit_ids.ids)
+        ]</field>
+        <field name="perm_read" eval="True" />
+        <field name="perm_write" eval="False" />
+        <field name="perm_create" eval="False" />
+        <field name="perm_unlink" eval="False" />
+    </record>
+    <record id="sarabun_routing_step_type_reader_rule" model="ir.rule">
+        <field name="name">Sarabun Routing Step: Type Reader in OU (read)</field>
+        <field name="model_id" ref="agx_sarabun.model_sarabun_routing_step" />
+        <field name="groups" eval="[(4, ref('agx_sarabun.group_sarabun_user'))]" />
+        <field name="domain_force">[
+            ('document_id.state', '!=', 'draft'),
+            ('document_id.type_id.reader_group_ids', 'in', user.groups_id.ids),
+            ('document_id.operating_unit_id', 'in', user.operating_unit_ids.ids)
+        ]</field>
+        <field name="perm_read" eval="True" />
+        <field name="perm_write" eval="False" />
+        <field name="perm_create" eval="False" />
+        <field name="perm_unlink" eval="False" />
+    </record>
+    <record id="sarabun_step_recipient_type_reader_rule" model="ir.rule">
+        <field name="name">Sarabun Step Recipient: Type Reader in OU (read)</field>
+        <field name="model_id" ref="agx_sarabun.model_sarabun_step_recipient" />
+        <field name="groups" eval="[(4, ref('agx_sarabun.group_sarabun_user'))]" />
+        <field name="domain_force">[
+            ('document_id.state', '!=', 'draft'),
+            ('document_id.type_id.reader_group_ids', 'in', user.groups_id.ids),
+            ('document_id.operating_unit_id', 'in', user.operating_unit_ids.ids)
+        ]</field>
+        <field name="perm_read" eval="True" />
+        <field name="perm_write" eval="False" />
+        <field name="perm_create" eval="False" />
+        <field name="perm_unlink" eval="False" />
+    </record>
+    <record id="sarabun_routing_step_activity_type_reader_rule" model="ir.rule">
+        <field name="name">Sarabun Step↔Activity Link: Type Reader in OU (read)</field>
+        <field name="model_id" ref="agx_sarabun.model_sarabun_routing_step_activity" />
+        <field name="groups" eval="[(4, ref('agx_sarabun.group_sarabun_user'))]" />
+        <field name="domain_force">[
+            ('step_id.document_id.state', '!=', 'draft'),
+            ('step_id.document_id.type_id.reader_group_ids', 'in', user.groups_id.ids),
+            ('step_id.document_id.operating_unit_id', 'in', user.operating_unit_ids.ids)
+        ]</field>
+        <field name="perm_read" eval="True" />
+        <field name="perm_write" eval="False" />
+        <field name="perm_create" eval="False" />
+        <field name="perm_unlink" eval="False" />
+    </record>
+</odoo>

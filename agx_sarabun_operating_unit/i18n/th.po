@@ -1,0 +1,31 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* agx_sarabun_operating_unit
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-04 00:00+0000\n"
+"PO-Revision-Date: 2026-11-04 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: agx_sarabun_operating_unit
+#: model:ir.model.fields,field_description:agx_sarabun_operating_unit.field_sarabun_document__operating_unit_id
+#: model_terms:ir.ui.view,arch_db:agx_sarabun_operating_unit.view_sarabun_document_search
+msgid "Operating Unit"
+msgstr "หน่วยงาน (OU)"
+
+#. module: agx_sarabun_operating_unit
+#: model:ir.model.fields,help:agx_sarabun_operating_unit.field_sarabun_document__operating_unit_id
+msgid ""
+"Snapshot at creation: the origin record's OU, else the creator's default OU."
+" Scopes the type-reader access (ADR-0021)."
+msgstr ""
+"กำหนดตอนสร้างหนังสือ: ใช้ OU ของเอกสารต้นทาง ถ้าไม่มีใช้ OU หลักของผู้สร้าง "
+"ใช้จำกัดขอบเขตผู้อ่านตามประเภทหนังสือ (ADR-0021)"
