@@ -26,6 +26,11 @@ msgid "Action Needed"
 msgstr ""
 
 #. module: partner_type_kmitl
+#: model:ir.model.fields,field_description:partner_type_kmitl.field_res_partner_type__active
+msgid "Active"
+msgstr "ใช้งาน"
+
+#. module: partner_type_kmitl
 #: model:ir.model.fields,field_description:partner_type_kmitl.field_res_partner_type__activity_ids
 msgid "Activities"
 msgstr ""
@@ -44,6 +49,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:partner_type_kmitl.field_res_partner_type__activity_type_icon
 msgid "Activity Type Icon"
 msgstr ""
+
+#. module: partner_type_kmitl
+#: model_terms:ir.ui.view,arch_db:partner_type_kmitl.res_partner_type_form
+#: model_terms:ir.ui.view,arch_db:partner_type_kmitl.res_partner_type_search
+msgid "Archived"
+msgstr "เก็บถาวร"
 
 #. module: partner_type_kmitl
 #: model:ir.model.fields,field_description:partner_type_kmitl.field_res_partner_type__message_attachment_count
@@ -254,6 +265,11 @@ msgstr "ประเภทคู่ค้า"
 #: model:ir.model.fields,field_description:partner_type_kmitl.field_res_partner_type__activity_user_id
 msgid "Responsible User"
 msgstr "ผู้รับผิดชอบ"
+
+#. module: partner_type_kmitl
+#: model:ir.model.fields,field_description:partner_type_kmitl.field_res_partner_type__sequence
+msgid "Sequence"
+msgstr "ลำดับ"
 
 #. module: partner_type_kmitl
 #: model:ir.model.fields,help:partner_type_kmitl.field_res_partner_type__activity_state
