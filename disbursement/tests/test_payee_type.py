@@ -141,6 +141,29 @@ class TestPayeeType(TwoApproverCommon):
         dr.action_submit()
         self.assertEqual(dr.state, "submitted")
 
+    def test_wht_under_threshold_warns_on_submit(self):
+        """A non-company payee's WHT must exceed 10,000; not blocking."""
+        wht_account = self.env["account.account"].create({
+            "code": "X152000",
+            "name": "WHT",
+            "account_type": "asset_current",
+            "wht_account": True,
+        })
+        wht = self.env["account.withholding.tax"].create(
+            {"name": "WHT 1%", "account_id": wht_account.id, "amount": 1}
+        )
+        dr = self._draft(self.partner)
+        dr.line_ids.wht_tax_id = wht
+        dr.action_submit()
+        self.assertEqual(dr.state, "draft")
+        self.assertIn(
+            self.env.ref("disbursement.excep_disbursement_line_wht_minimum"),
+            dr.exception_ids,
+        )
+        dr.action_ignore_exceptions()
+        dr.action_submit()
+        self.assertEqual(dr.state, "submitted")
+
     def test_submitted_line_keeps_its_bank(self):
         dr = self._draft(self.partner)
         dr.action_submit()

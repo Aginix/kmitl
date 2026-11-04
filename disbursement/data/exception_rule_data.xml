@@ -54,4 +54,22 @@ if self.payment_type in ("advance", "prepaid") and not self.partner_type_id.is_i
         <field name="is_blocking" eval="True" />
         <field name="active" eval="True" />
     </record>
+
+    <!-- With มีภาษี ticked, each withheld line's WHT should exceed the
+         threshold of the request's payee type: 500 for a company, 10,000
+         otherwise. Not blocking: an exception manager may ignore it. -->
+    <record id="excep_disbursement_line_wht_minimum" model="exception.rule">
+        <field name="name">ยอดภาษีหัก ณ ที่จ่ายต่ำกว่าเกณฑ์</field>
+        <field name="description">มีรายการที่ยอดภาษีหัก ณ ที่จ่ายไม่เกินเกณฑ์ (บริษัท 500 บาท, อื่น ๆ 10,000 บาท) กรุณาตรวจสอบการเลือกมีภาษี</field>
+        <field name="sequence">13</field>
+        <field name="model">disbursement.request.line</field>
+        <field name="exception_type">by_py_code</field>
+        <field name="code">
+threshold = 500 if self.request_id.partner_type_id.company_type == "company" else 10000
+if self.request_id.has_tax and self.wht_tax_id and self.amount_wht &lt;= threshold:
+    failed = True
+        </field>
+        <field name="is_blocking" eval="False" />
+        <field name="active" eval="True" />
+    </record>
 </odoo>
