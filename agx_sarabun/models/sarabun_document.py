@@ -1407,11 +1407,19 @@ class SarabunDocument(models.Model):
         (ADR-0015), or ``""``. The origin supplies the template via
         :meth:`_get_sarabun_body_template`; it is rendered live with the origin as
         ``o`` (in Thai), so authoritative numbers always match the record."""
+        return self._render_origin_fragment("_get_sarabun_body_template")
+
+    def _render_origin_tail(self):
+        """Markup of the origin's live fragment printed after the endorsement
+        block (:meth:`_get_sarabun_tail_template`), or ``""``."""
+        return self._render_origin_fragment("_get_sarabun_tail_template")
+
+    def _render_origin_fragment(self, hook):
         self.ensure_one()
         origin = self._get_origin_record()
-        if not origin or not hasattr(origin, "_get_sarabun_body_template"):
+        if not origin or not hasattr(origin, hook):
             return ""
-        template = origin._get_sarabun_body_template()
+        template = getattr(origin, hook)()
         if not template:
             return ""
         return (

@@ -123,9 +123,6 @@
                 </tbody>
             </table>
         </t>
-
-        <!-- Stage signatures (ADR-0002 rows), above the หนังสือ's head signature. -->
-        <t t-call="disbursement_pdf.report_disbursement_request_signature"/>
     </template>
 
     <!-- ============================================================
