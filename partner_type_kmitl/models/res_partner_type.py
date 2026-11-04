@@ -7,8 +7,11 @@ class ResPartnerType(models.Model):
     _name = 'res.partner.type'
     _description = 'Partner Type'
     _inherit = ['mail.thread', 'mail.activity.mixin']
+    _order = 'sequence, id'
 
     name = fields.Char(string='Name', required=True, tracking=True)
+    sequence = fields.Integer(default=10)
+    active = fields.Boolean(default=True, tracking=True)
     company_type = fields.Selection(
         selection=[('person', 'Individual'), ('company', 'Company')],
         string='Company Type', required=True, tracking=True,
