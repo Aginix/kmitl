@@ -142,7 +142,7 @@ class TestPayeeType(TwoApproverCommon):
         self.assertEqual(dr.state, "submitted")
 
     def test_wht_under_threshold_warns_on_submit(self):
-        """A non-company payee's WHT must exceed 10,000; not blocking."""
+        """A withheld non-company line must exceed 10,000; not blocking."""
         wht_account = self.env["account.account"].create({
             "code": "X152000",
             "name": "WHT",
