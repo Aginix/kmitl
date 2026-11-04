@@ -26,6 +26,8 @@ lifts the OU scope.
   type whose OU is one of theirs. Read-only on the หนังสือ and on its Route (step,
   recipient, step↔activity rules alongside), exactly like a follower; never enters
   `reached_user_ids`, so no Incoming entry and no activity.
+  They browse these under a menu **หนังสือของหน่วยงาน** (non-draft หนังสือ of
+  their reader types), hidden from users who read no type.
 - **Access all OUs** (`agx_sarabun_operating_unit_access_all`):
   `group_all_ou_sarabun_document` adds the same rules **without** the OU term. The user
   must still be a type reader.

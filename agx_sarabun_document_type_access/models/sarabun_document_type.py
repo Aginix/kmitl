@@ -1,4 +1,4 @@
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class SarabunDocumentType(models.Model):
@@ -13,3 +13,13 @@ class SarabunDocumentType(models.Model):
         help="Members may read (never edit) every non-draft หนังสือ of this type "
         "whose Operating Unit is one of theirs. Empty = route-based access only.",
     )
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        self.env["ir.ui.menu"].clear_caches()
+        return super().create(vals_list)
+
+    def write(self, vals):
+        if "reader_group_ids" in vals or "active" in vals:
+            self.env["ir.ui.menu"].clear_caches()
+        return super().write(vals)

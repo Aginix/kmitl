@@ -1,5 +1,6 @@
 from odoo.exceptions import AccessError
 from odoo.tests.common import tagged
+from odoo.tools.safe_eval import safe_eval
 
 from .common import TypeReaderCommon
 
@@ -56,3 +57,20 @@ class TestTypeReader(TypeReaderCommon):
         self.assertTrue(self._can_read(doc, self.user_a))  # sender
         self.assertTrue(self._can_read(doc, self.user_b))  # reached
         self.assertTrue(self._can_read(doc, self.non_reader))  # follower
+
+    def _menu_visible(self, user):
+        menu = self.env.ref(
+            "agx_sarabun_document_type_access.menu_sarabun_document_unit"
+        )
+        return menu.id in self.env["ir.ui.menu"].with_user(user)._visible_menu_ids()
+
+    def test_unit_documents_menu(self):
+        """หนังสือของหน่วยงาน lists the reader's types only; hidden from non-readers."""
+        doc = self._sent_doc()
+        action = self.env.ref(
+            "agx_sarabun_document_type_access.action_sarabun_document_unit"
+        )
+        domain = safe_eval(action.domain, {"uid": self.reader.id})
+        self.assertIn(doc, self.Doc.with_user(self.reader).search(domain))
+        self.assertTrue(self._menu_visible(self.reader))
+        self.assertFalse(self._menu_visible(self.non_reader))

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- หนังสือของหน่วยงาน (ADR-0021): every non-draft หนังสือ of a type the user
+         reads; the type-reader rules scope it to the user's OUs (or all OUs). -->
+    <record id="action_sarabun_document_unit" model="ir.actions.act_window">
+        <field name="name">Unit Documents</field>
+        <field name="res_model">sarabun.document</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="agx_sarabun.view_sarabun_document_search" />
+        <field
+            name="view_ids"
+            eval="[(5, 0, 0),
+                      (0, 0, {'view_mode': 'tree', 'view_id': ref('agx_sarabun.view_sarabun_document_tree')}),
+                      (0, 0, {'view_mode': 'form', 'view_id': ref('agx_sarabun.view_sarabun_document_form')})]"
+        />
+        <field name="domain">[
+            ('state', '!=', 'draft'),
+            ('type_id.reader_group_ids.users', 'in', uid)
+        ]</field>
+        <field name="context">{'create': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No หนังสือ of your unit yet</p>
+            <p
+            >Every sent หนังสือ of the document types you may read, in your Operating Units.</p>
+        </field>
+    </record>
+
+    <menuitem
+        id="menu_sarabun_document_unit"
+        name="Unit Documents"
+        parent="agx_sarabun.menu_sarabun_root"
+        action="action_sarabun_document_unit"
+        sequence="15"
+    />
+</odoo>

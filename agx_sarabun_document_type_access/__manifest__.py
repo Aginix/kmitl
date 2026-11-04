@@ -12,6 +12,7 @@
     "data": [
         "security/security.xml",
         "views/sarabun_document_type_views.xml",
+        "views/sarabun_document_views.xml",
     ],
     "application": False,
     "installable": True,

@@ -16,6 +16,13 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: agx_sarabun_document_type_access
+#: model_terms:ir.actions.act_window,help:agx_sarabun_document_type_access.action_sarabun_document_unit
+msgid ""
+"Every sent หนังสือ of the document types you may read, in your Operating "
+"Units."
+msgstr "หนังสือที่ส่งแล้วทุกฉบับของประเภทที่ท่านมีสิทธิ์อ่าน ใน OU ของท่าน"
+
+#. module: agx_sarabun_document_type_access
 #: model:ir.model.fields,help:agx_sarabun_document_type_access.field_sarabun_document_type__reader_group_ids
 msgid ""
 "Members may read (never edit) every non-draft หนังสือ of this type whose "
@@ -26,6 +33,11 @@ msgstr ""
 "เห็นตามเส้นทางเท่านั้น"
 
 #. module: agx_sarabun_document_type_access
+#: model_terms:ir.actions.act_window,help:agx_sarabun_document_type_access.action_sarabun_document_unit
+msgid "No หนังสือ of your unit yet"
+msgstr "ยังไม่มีหนังสือของหน่วยงาน"
+
+#. module: agx_sarabun_document_type_access
 #: model:ir.model.fields,field_description:agx_sarabun_document_type_access.field_sarabun_document_type__reader_group_ids
 msgid "Reader Groups (by OU)"
 msgstr "กลุ่มผู้มีสิทธิ์อ่าน (ตาม OU)"
@@ -34,3 +46,9 @@ msgstr "กลุ่มผู้มีสิทธิ์อ่าน (ตาม 
 #: model_terms:ir.ui.view,arch_db:agx_sarabun_document_type_access.view_sarabun_document_type_form
 msgid "Readers"
 msgstr "ผู้มีสิทธิ์อ่าน"
+
+#. module: agx_sarabun_document_type_access
+#: model:ir.actions.act_window,name:agx_sarabun_document_type_access.action_sarabun_document_unit
+#: model:ir.ui.menu,name:agx_sarabun_document_type_access.menu_sarabun_document_unit
+msgid "Unit Documents"
+msgstr "หนังสือของหน่วยงาน"
