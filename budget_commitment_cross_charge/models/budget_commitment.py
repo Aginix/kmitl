@@ -325,7 +325,14 @@ class BudgetCommitment(models.Model):
         """An owner's budget committer holds write on the slip for the dialog
         fields only, and only inside the owner's windows — no Budget User
         rights (ADR-0020)."""
-        if not self.env.su and not self.env.user.has_group("budget.group_budget_user"):
+        if (
+            not self.env.su
+            and not self.env.user.has_group("budget.group_budget_user")
+            and not self.env.user.has_group(
+                "purchase_request_budget.group_purchase_request_budget_commit"
+            )
+            and not self.env.user.has_group("agx_approval.group_approval_budget_commit")
+        ):
             if set(vals) - self._SPLIT_DIALOG_FIELDS:
                 raise AccessError(
                     _("แก้ไขได้เฉพาะรหัสงบ มิติ และรายการจองงบประมาณ (ถัวจ่าย) ของใบจอง")
