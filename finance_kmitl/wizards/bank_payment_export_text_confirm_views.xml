@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="bank_payment_export_text_confirm_view_form" model="ir.ui.view">
+        <field name="name">bank.payment.export.text.confirm.form</field>
+        <field name="model">bank.payment.export.text.confirm</field>
+        <field name="arch" type="xml">
+            <form string="Confirm Export Text File">
+                <field name="payment_export_id" invisible="1" />
+                <field name="currency_id" invisible="1" />
+                <div class="alert alert-warning" role="alert">Check the amount before exporting. This operation cannot be undone.</div>
+                <group>
+                    <field name="paying_account_id" />
+                    <field name="effective_date" />
+                    <field name="export_line_count" />
+                    <field name="total_amount" class="fw-bold fs-4" />
+                </group>
+                <footer>
+                    <!-- close="1": the export answers with a download URL, which
+                         opens in its own window and leaves the dialog standing.
+                         Closing it hands back to the form's own reload, so the
+                         file shows as exported without a page refresh. -->
+                    <button
+                        name="action_export"
+                        string="Export Text File"
+                        type="object"
+                        class="btn-primary"
+                        close="1"
+                    />
+                    <button string="Cancel" class="btn-secondary" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>
