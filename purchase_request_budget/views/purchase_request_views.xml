@@ -99,24 +99,28 @@
                     string="รหัสงบประมาณ"
                     attrs="{'invisible': [('budget_commitment_id', '=', False)]}"
                 >
-                    <field name="budget_commitment_state" invisible="1" />
-                    <field
-                        name="budget_commitment_id"
-                        colspan="2"
-                        nolabel="1"
-                        widget="budget_commitment_info"
-                        readonly="1"
-                        options="{'no_create': True, 'no_open': True}"
-                    />
-                    <field
-                        name="budget_committed_by"
-                        attrs="{'invisible': [('budget_committed_by', '=', False)]}"
-                        options="{'no_open': True}"
-                    />
-                    <field
-                        name="date_budget_committed"
-                        attrs="{'invisible': [('date_budget_committed', '=', False)]}"
-                    />
+                    <group name="budget_commitment_info_card">
+                        <field name="budget_commitment_state" invisible="1" />
+                        <field
+                            name="budget_commitment_id"
+                            colspan="2"
+                            nolabel="1"
+                            widget="budget_commitment_info"
+                            readonly="1"
+                            options="{'no_create': True, 'no_open': True}"
+                        />
+                    </group>
+                    <group name="budget_commitment_info_meta">
+                        <field
+                            name="budget_committed_by"
+                            attrs="{'invisible': [('budget_committed_by', '=', False)]}"
+                            options="{'no_open': True}"
+                        />
+                        <field
+                            name="date_budget_committed"
+                            attrs="{'invisible': [('date_budget_committed', '=', False)]}"
+                        />
+                    </group>
                 </group>
 
                 <!-- Budget selection UI: reserved to ผู้ตรวจสอบ พ.1 and ผู้จองงบประมาณ
@@ -142,15 +146,19 @@
                     <field name="analytic_distribution" invisible="1" />
                     <field name="reservation_commitment_domain" invisible="1" />
 
-                    <field
-                        name="reservation_commitment_id"
-                        colspan="2"
-                        widget="budget_commitment_info"
-                        domain="reservation_commitment_domain"
-                        options="{'no_create': True, 'no_open': True}"
-                        attrs="{'invisible': ['|', '&amp;', ('budget_selection_mode', '=', 'normal'), ('reservation_commitment_id', '=', False), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', 'not in', ['cancel', 'draft'])], 'readonly': [('is_budget_editable', '=', False)]}"
-                        placeholder="เลือกใบจองงบประมาณที่จะหยิบไปใช้"
-                    />
+                    <group colspan="2" name="reservation_commitment_picker">
+                        <group>
+                            <field
+                                name="reservation_commitment_id"
+                                colspan="2"
+                                widget="budget_commitment_info"
+                                domain="reservation_commitment_domain"
+                                options="{'no_create': True, 'no_open': True}"
+                                attrs="{'invisible': ['|', '&amp;', ('budget_selection_mode', '=', 'normal'), ('reservation_commitment_id', '=', False), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', 'not in', ['cancel', 'draft'])], 'readonly': [('is_budget_editable', '=', False)]}"
+                                placeholder="เลือกใบจองงบประมาณที่จะหยิบไปใช้"
+                            />
+                        </group>
+                    </group>
 
                     <!-- Entered directly, no chart picker (root ADR-0010):
                          completeness and availability are checked at Reserve. -->
