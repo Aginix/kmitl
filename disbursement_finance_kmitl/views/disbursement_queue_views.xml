@@ -79,7 +79,7 @@
                     type="object"
                     string="Authorize"
                     icon="fa-check-circle"
-                    confirm="Authorize this disbursement? The payment vouchers will be raised and numbered for every payee at once, ready to go to the bank."
+                    confirm="Authorize this disbursement?"
                     attrs="{'invisible': [('can_authorize_payment', '=', False)]}"
                     groups="disbursement_finance_kmitl.group_disbursement_payment_authorizer"
                 />

@@ -188,19 +188,36 @@ class DisbursementRequest(models.Model):
                 "sequence": 70,
                 "module": "disbursement_finance_kmitl",
             },
+            {
+                "code": "disbursement.create_payment",
+                "name": _lt("Create Payment"),
+                "kind": "act",
+                "group": FINANCE_GROUP,
+                "sequence": 75,
+                "module": "disbursement_finance_kmitl",
+            },
         ]
 
     can_authorize_payment = fields.Boolean(compute="_compute_payment_acts")
+    can_create_payment = fields.Boolean(compute="_compute_payment_acts")
     can_edit_payment_subject = fields.Boolean(compute="_compute_payment_acts")
 
     @api.depends("state", "bill_ids.state", "payment_ids.state", "payment_authorizer_id")
     @api.depends_context("uid")
     def _compute_payment_acts(self):
         for rec in self:
-            # Once authorized, Create Payment is the way back in: authorizing
+            # Once authorized, Create Payment is the next press: authorizing
             # again would only re-stamp and fan the To-pay Todo out twice.
             rec.can_authorize_payment = not rec.payment_authorizer_id and (
                 rec._disbursement_act_offered("disbursement.authorize_payment")
+            )
+            # Hidden as soon as the request has a voucher, cancelled or not: a
+            # cancelled voucher still holds its payment line, so pressing again
+            # would only fail. Deleting the voucher frees the line and the press.
+            rec.can_create_payment = (
+                bool(rec.payment_authorizer_id)
+                and not rec.payment_ids
+                and rec._disbursement_act_offered("disbursement.create_payment")
             )
             # The subject is the auditor's to choose, until a voucher exists.
             rec.can_edit_payment_subject = rec._payment_subject_editable() and not any(
@@ -420,13 +437,11 @@ class DisbursementRequest(models.Model):
     # happens, the visit log what did)
     # ------------------------------------------------------------------
     def action_authorize(self):
-        """The authorization act, which raises the vouchers.
+        """The authorization act: stamps and signs, and makes the money payable.
 
-        The authorisation is what makes the money payable, so it is also what
-        issues the ใบสำคัญจ่าย: the finance office finds them numbered and
-        confirmed for the bank, ready to go straight into an e-payment file,
-        instead of a request they must first turn into payments one press per
-        payee. See ADR-0006.
+        It does not raise the vouchers. The finance office does that with its own
+        press, Create Payment (``action_create_payment``), at its own station.
+        See ADR-0006 (superseded in part).
         """
         for record in self:
             record._disbursement_check_act("disbursement.authorize_payment")
@@ -438,43 +453,7 @@ class DisbursementRequest(models.Model):
             )
             record._stamp_signature("payment_authorize")
             record._schedule_payment_todo(TO_PAY_ACTIVITY, FINANCE_GROUP)
-            record._try_create_payments()
             record._disbursement_act_done("disbursement.authorize_payment")
-        return True
-
-    def _try_create_payments(self):
-        """Raise the vouchers without letting a failure undo the authorisation.
-
-        What can go wrong here is a banking coordinate — a payee with no account,
-        a หัวจ่าย naming no bank — and none of it is the authorizer's to fix or to
-        be stopped by. So the request is authorized either way: the reason goes in
-        the chatter, the finance office's Todo stays where it is, and Create
-        Payment is the way back in once the coordinate is corrected.
-
-        The savepoint is what keeps a failed batch from taking the state write
-        with it (same pattern as ``_payment_batch``); the message is posted
-        outside it, or it would be rolled back too.
-
-        Runs sudo because raising the vouchers is a system derivation: the
-        authorizer holds no accounting rights, exactly as the accounting user who
-        posts the last bill holds none on the payment lines ``_ensure_payment_lines``
-        makes for them (ADR-0003). The finance office's own press keeps its own
-        identity — a voucher they create is created by them.
-        """
-        self.ensure_one()
-        try:
-            with self.env.cr.savepoint():
-                self.sudo()._create_payments()
-        except (UserError, ValidationError) as error:
-            self.env.invalidate_all()
-            self.message_post(
-                body=_(
-                    "The payment vouchers could not be raised: %s Correct it, "
-                    "then use Create Payment.",
-                    error.args and error.args[0] or _("error"),
-                ),
-                subtype_xmlid="mail.mt_note",
-            )
         return True
 
     def action_confirm_paid(self):
@@ -702,16 +681,16 @@ class DisbursementRequest(models.Model):
     # Payment creation (finance)
     # ------------------------------------------------------------------
     def action_create_payment(self):
-        """The finance office's way back in when the authorisation raised nothing.
+        """The finance office raises the vouchers of an authorized request.
 
-        Normally the vouchers already exist by the time the request reaches them —
-        authorising it is what raises them (ADR-0006). This is what is left for
-        the cases where it could not: a banking coordinate that was wrong at the
-        time, a request authorized before this was built, or a batch that was
-        cancelled and is wanted again.
+        A press of its own, separate from the authorisation: one numbered voucher
+        per payee, confirmed for the bank. Offered once, while the request has no
+        voucher at all (``can_create_payment``).
         """
         self.ensure_one()
+        self._disbursement_check_act("disbursement.create_payment")
         payments = self._create_payments()
+        self._disbursement_act_done("disbursement.create_payment")
         return {
             "type": "ir.actions.act_window",
             "name": _("Payments"),
