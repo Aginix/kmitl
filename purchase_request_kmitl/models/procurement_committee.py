@@ -55,6 +55,7 @@ class ProcurementCommittee(models.Model):
             ("chairman", "Chairman"),
             ("committee", "Committee"),
             ("secretary", "Secretary"),
+            ("deputy_secretary", "Deputy Secretary"),
         ],
         string="Role",
         required=True,
@@ -62,6 +63,7 @@ class ProcurementCommittee(models.Model):
             "chairman": "set default",
             "committee": "set default",
             "secretary": "set default",
+            "deputy_secretary": "set default",
         },
         default="committee",
     )

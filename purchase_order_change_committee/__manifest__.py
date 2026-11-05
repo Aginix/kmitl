@@ -1,6 +1,6 @@
 {
     "name": "Purchase Order Change Committee",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.0.1",
     "summary": "Allow editing committee members on PO via change tracking",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",

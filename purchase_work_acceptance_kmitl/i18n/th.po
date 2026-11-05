@@ -279,6 +279,12 @@ msgstr "สิ่งของที่ต้องส่งมอบ"
 msgid "Department"
 msgstr "หน่วยงาน"
 
+#. module: purchase_work_acceptance_kmitl
+#: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__work_acceptance_committee__approve_role__deputy_secretary
+#: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__work_acceptance_committee_wizard_line__approve_role__deputy_secretary
+msgid "Deputy Secretary"
+msgstr "กรรมการและรองเลขานุการ"
+
 #. modules: purchase_work_acceptance, purchase_work_acceptance_kmitl
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance_line__name
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.view_work_acceptance_form_gov
