@@ -14,7 +14,8 @@ import {registry} from "@web/core/registry";
  * takes it over from the native stage. Optional hooks:
  * `leave(attachment, page)` runs when the viewer moves away from the file or
  * closes; `decorateThumbnail(attachment, thumbnail)` may add to its button
- * in the thumbnail strip.
+ * in the thumbnail strip; `rotate(attachment, page, degrees)` turns the
+ * shown file and enables the rotate buttons for it.
  */
 export const photoviewerRenderers = registry.category("agx_photoviewer.renderers");
 
@@ -167,6 +168,16 @@ function showItem(viewer, state) {
                 {once: true}
             );
         });
+        // The rotate buttons and shortcuts turn the shown file through its
+        // renderer; images keep the native rotation.
+        const rotate = viewer.rotate;
+        viewer.rotate = (degrees) => {
+            if (!state.current) {
+                return rotate.call(viewer, degrees);
+            }
+            const {item, page} = state.current;
+            item.renderer.rotate?.(item.attachment, page, degrees);
+        };
         modal.on("keydown", (ev) => {
             if (ev.key === "Escape") {
                 // Keep Odoo's hotkeys from also closing a dialog below.
@@ -190,6 +201,7 @@ function showItem(viewer, state) {
         return;
     }
     modal.addClass("o_agx_photoviewer_embed");
+    modal.toggleClass("o_agx_photoviewer_rotatable", Boolean(item.renderer.rotate));
     // Each file renders in its own page: a late render of a file the user
     // already left only touches a detached page.
     const page = document.createElement("div");
@@ -239,6 +251,16 @@ export function openPhotoViewer(attachments, current) {
             0
         ),
         headerToolbar: ["download", "maximize", "close"],
+        footerToolbar: [
+            "zoomIn",
+            "zoomOut",
+            "prev",
+            "fullscreen",
+            "next",
+            "actualSize",
+            "rotateLeft",
+            "rotateRight",
+        ],
         customButtons: {download: downloadButton},
         // Files need a stable, roomy modal; images alone fit the modal to
         // the picture. The initial size doubles as the minimum size, so it

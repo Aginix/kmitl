@@ -157,6 +157,11 @@ const renderers = {
     pdf: {
         match: matchFile(["application/pdf"], ["pdf"]),
         render: renderPdf,
+        rotate(attachment, page, degrees) {
+            page.querySelector("iframe")?.contentWindow.PDFViewerApplication?.rotatePages(
+                degrees
+            );
+        },
     },
     video: {
         match: matchFile(

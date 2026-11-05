@@ -127,6 +127,9 @@ function decorateThumbnail(attachment, thumbnail) {
 export class AnnotationEditor {
     constructor(attachment, page) {
         this.page = page;
+        // Clockwise rotation of the view, in degrees; kept when another
+        // revision is shown in the same place. Marks stay in page coordinates.
+        this.rotation = 0;
         this.reset(attachment);
     }
 
@@ -396,11 +399,13 @@ export class AnnotationEditor {
 
     buildSheet(sheet) {
         sheet.element = htmlElement("div", "o_agx_annotation_sheet");
-        sheet.element.style.aspectRatio = `1 / ${sheet.ratio}`;
+        // The page and its marks, turned together by the rotation.
+        sheet.content = htmlElement("div", "o_agx_annotation_sheet_content");
+        sheet.element.append(sheet.content);
         if (sheet.image) {
             sheet.image.className = "o_agx_annotation_source";
             sheet.image.draggable = false;
-            sheet.element.append(sheet.image);
+            sheet.content.append(sheet.image);
         }
         sheet.layer = svgElement("svg", {
             class: "o_agx_annotation_layer",
@@ -410,15 +415,63 @@ export class AnnotationEditor {
         sheet.layer.addEventListener("pointerdown", (ev) =>
             this.onPointerDown(ev, sheet)
         );
-        sheet.element.append(sheet.layer);
+        sheet.content.append(sheet.layer);
+        this.rotateSheet(sheet);
+    }
+
+    /**
+     * Give the sheet the size of the turned page and turn its content, which
+     * keeps the size of the page, around its middle.
+     */
+    rotateSheet(sheet) {
+        const turned = this.rotation % 180 !== 0;
+        sheet.element.style.aspectRatio = turned ? `${sheet.ratio}` : `1 / ${sheet.ratio}`;
+        sheet.content.style.width = turned ? `${100 / sheet.ratio}%` : "";
+        sheet.content.style.height = turned ? `${100 * sheet.ratio}%` : "";
+        sheet.content.style.transform = `translate(-50%, -50%) rotate(${this.rotation}deg)`;
+    }
+
+    /**
+     * Rotate every page of the view by `degrees` (a multiple of 90); the file
+     * and its marks are not changed.
+     */
+    rotate(degrees) {
+        this.rotation = (this.rotation + degrees + 360) % 360;
+        for (const sheet of this.sheets) {
+            if (sheet.element) {
+                this.rotateSheet(sheet);
+            }
+        }
+        if (this.popover) {
+            this.placePopover();
+        }
+        this.renderVisibleSheets();
+    }
+
+    /**
+     * Where the page point [x, y] shows in the rotated view, as fractions of
+     * the sheet; `inverse` maps a shown point back onto the page.
+     */
+    turn([x, y], inverse = false) {
+        const rotation = inverse ? (360 - this.rotation) % 360 : this.rotation;
+        switch (rotation) {
+            case 90:
+                return [1 - y, x];
+            case 180:
+                return [1 - x, 1 - y];
+            case 270:
+                return [y, 1 - x];
+        }
+        return [x, y];
     }
 
     async renderSheet(sheet) {
         if (!sheet.pdfPage) {
             return;
         }
+        // The content keeps the page's own width whatever the rotation.
         const width = Math.min(
-            Math.round(sheet.element.clientWidth * window.devicePixelRatio),
+            Math.round(sheet.content.clientWidth * window.devicePixelRatio),
             Math.floor(Math.sqrt(MAX_CANVAS_PIXELS / sheet.ratio))
         );
         if (!width || (sheet.renderedWidth && sheet.renderedWidth >= width * 0.95)) {
@@ -456,7 +509,7 @@ export class AnnotationEditor {
             }
             sheet.canvas?.remove();
             sheet.canvas = canvas;
-            sheet.element.prepend(canvas);
+            sheet.content.prepend(canvas);
             sheet.renderedWidth = width;
         } finally {
             sheet.rendering = false;
@@ -752,10 +805,12 @@ export class AnnotationEditor {
     }
 
     point(ev, sheet, rect = sheet.layer.getBoundingClientRect()) {
-        return [
-            round(clamp((ev.clientX - rect.left) / rect.width)),
-            round(clamp((ev.clientY - rect.top) / rect.height)),
-        ];
+        // The rect of the rotated layer is the sheet as shown.
+        const [x, y] = this.turn(
+            [(ev.clientX - rect.left) / rect.width, (ev.clientY - rect.top) / rect.height],
+            true
+        );
+        return [round(clamp(x)), round(clamp(y))];
     }
 
     onPointerDown(ev, sheet) {
@@ -1112,15 +1167,20 @@ export class AnnotationEditor {
         this.popover = null;
     }
 
+    /**
+     * Put the open popover by the point it was opened at, as shown.
+     */
+    placePopover() {
+        const {x, y} = this.popoverGeometry;
+        const [left, top] = this.turn([x, y]);
+        this.popover.style.left = `${left * 100}%`;
+        this.popover.style.top = `${top * 100}%`;
+        this.popover.classList.toggle("o_agx_annotation_popover_left", left > 0.6);
+    }
+
     openComment(sheet, annotation) {
         this.closePopover();
         const popover = htmlElement("div", "o_agx_annotation_popover");
-        popover.style.left = `${annotation.geometry.x * 100}%`;
-        popover.style.top = `${annotation.geometry.y * 100}%`;
-        popover.classList.toggle(
-            "o_agx_annotation_popover_left",
-            annotation.geometry.x > 0.6
-        );
         popover.addEventListener("pointerdown", (ev) => ev.stopPropagation());
         popover.addEventListener("keydown", (ev) => {
             // Keep the viewer's arrow / Escape shortcuts out of the text.
@@ -1130,6 +1190,8 @@ export class AnnotationEditor {
             }
         });
         this.popover = popover;
+        this.popoverGeometry = annotation.geometry;
+        this.placePopover();
         sheet.element.append(popover);
         if (annotation.id) {
             this.showComment(annotation);
@@ -1331,6 +1393,9 @@ photoviewerRenderers.add(
         leave(attachment, page) {
             editors.get(page)?.leave();
             editors.delete(page);
+        },
+        rotate(attachment, page, degrees) {
+            editors.get(page)?.rotate(degrees);
         },
         decorateThumbnail,
     },
