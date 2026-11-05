@@ -6,7 +6,7 @@
         <field name="inherit_id" ref="disbursement.view_disbursement_request_tree" />
         <field name="arch" type="xml">
             <field name="amount_total" position="after">
-                <field name="has_cheque" />
+                <field name="has_cheque" optional="hide" />
             </field>
         </field>
     </record>
