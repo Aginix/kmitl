@@ -23,10 +23,10 @@
                             t-options="{'widget': 'date'}"
                         />
                     </td>
-                    <!-- Only this loan's lines of the request. -->
+                    <!-- What the request cleared of this loan: its lines, once ตัดงบ. -->
                     <td class="text-end">
                         <span
-                            t-out="sum(request.line_ids.filtered(lambda l: l.advance_payment_id == loan).mapped('price_total'))"
+                            t-out="sum(request.line_ids.filtered(lambda l: l.advance_payment_id == loan).mapped('price_total')) if request.budget_consumed_amount else 0"
                             t-options="{'widget': 'monetary', 'display_currency': request.currency_id}"
                         />
                     </td>

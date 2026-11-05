@@ -307,7 +307,9 @@ class DisbursementRequestLine(models.Model):
             if not line.partner_id:
                 raise ValidationError(_("Partner is required on each line."))
             if not line.partner_type_id:
-                raise ValidationError(_("Payee type is required on each line."))
+                raise ValidationError(
+                    _("Set a payee type on %s.") % line.partner_id.display_name
+                )
 
     # -------------------------------------------------------------------------
     # WHT methods

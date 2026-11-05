@@ -619,13 +619,6 @@ msgid "Payee Type"
 msgstr "ประเภทผู้รับเงิน"
 
 #. module: disbursement
-#. odoo-python
-#: code:addons/disbursement/models/disbursement_request_line.py:0
-#, python-format
-msgid "Payee type is required on each line."
-msgstr "ต้องระบุประเภทผู้รับเงินในทุกบรรทัด"
-
-#. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__payee_display
 msgid "Payees"
 msgstr "ผู้รับเงิน"
@@ -749,6 +742,13 @@ msgstr "ส่งคืนผู้จัดทำเพื่อแก้ไข
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request_line__sequence
 msgid "Sequence"
 msgstr "ลำดับ"
+
+#. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_request_line.py:0
+#, python-format
+msgid "Set a payee type on %s."
+msgstr "กรุณาระบุประเภทผู้รับเงินของ %s"
 
 #. module: disbursement
 #: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__settlement_stage__settled

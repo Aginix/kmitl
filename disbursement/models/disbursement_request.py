@@ -435,7 +435,9 @@ class DisbursementRequest(models.Model):
                 rec.payee_display += " +%d" % (len(partners) - 1)
 
     @api.depends_context("lang")
-    @api.depends("line_ids.payment_type", "line_ids.partner_type_id")
+    @api.depends(
+        "line_ids.display_type", "line_ids.payment_type", "line_ids.partner_type_id"
+    )
     def _compute_type_display(self):
         Line = self.env["disbursement.request.line"]
         labels = dict(Line._fields["payment_type"]._description_selection(self.env))
