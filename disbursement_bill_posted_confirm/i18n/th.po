@@ -72,3 +72,8 @@ msgstr "ขั้นตอน"
 #, python-format
 msgid "These bills are not posted yet: %s"
 msgstr "ใบตั้งหนี้เหล่านี้ยังไม่ผ่านรายการ: %s"
+
+#. module: disbursement_bill_posted_confirm
+#: code:addons/disbursement_bill_posted_confirm/models/disbursement_request_signature.py:0
+msgid "Payable Recorded"
+msgstr "ลงบัญชีตั้งเจ้าหนี้"

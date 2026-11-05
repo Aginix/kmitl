@@ -81,3 +81,8 @@ msgstr "ผู้ตรวจสอบการเบิกจ่าย"
 #, python-format
 msgid "Post the bills first."
 msgstr "กรุณาตั้งหนี้ให้เสร็จก่อน"
+
+#. module: disbursement_payment_audit
+#: code:addons/disbursement_payment_audit/models/disbursement_request_signature.py:0
+msgid "Payment Audited"
+msgstr "ตรวจจ่าย"

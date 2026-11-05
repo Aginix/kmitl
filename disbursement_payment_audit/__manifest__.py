@@ -4,7 +4,7 @@
     "name": "Disbursement Payment Audit",
     "summary": "The ตรวจจ่าย act: the payment auditor checks a billed request's "
     "payees before authorization",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.1.0",
     "category": "Disbursement",
     "license": "LGPL-3",
     "author": "KMITL",

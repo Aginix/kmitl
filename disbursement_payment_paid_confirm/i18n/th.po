@@ -79,3 +79,8 @@ msgstr "ผู้รับเงินเหล่านี้ยังไม่
 #, python-format
 msgid "These vouchers are not paid yet: %s"
 msgstr "ใบสำคัญจ่ายเหล่านี้ยังไม่ได้จ่าย: %s"
+
+#. module: disbursement_payment_paid_confirm
+#: code:addons/disbursement_payment_paid_confirm/models/disbursement_request_signature.py:0
+msgid "Payment Processed By"
+msgstr "ผู้ทำรายการจ่าย"

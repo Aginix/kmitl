@@ -4,7 +4,7 @@
     "name": "Disbursement Bill Posted Confirmation",
     "summary": "The ตั้งหนี้ act: the accounting officer confirms that every bill "
     "of a disbursement request is posted",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.1.0",
     "category": "Disbursement",
     "license": "LGPL-3",
     "author": "KMITL",
