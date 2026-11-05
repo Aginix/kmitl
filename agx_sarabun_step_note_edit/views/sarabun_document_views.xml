@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_sarabun_document_form_step_note_edit" model="ir.ui.view">
+        <field name="name">sarabun.document.form.step.note.edit</field>
+        <field name="model">sarabun.document</field>
+        <field name="inherit_id" ref="agx_sarabun.view_sarabun_document_form" />
+        <field name="arch" type="xml">
+            <!-- Row button: correct an acted step's comment — works on a read-only
+                 Route (circulating or completed), unlike the step dialog. -->
+            <xpath
+                expr="//field[@name='routing_step_ids']/tree/field[@name='note']"
+                position="after"
+            >
+                <field name="can_edit_note" invisible="1" />
+                <button
+                    name="action_open_note_wizard"
+                    type="object"
+                    icon="fa-commenting-o"
+                    title="แก้ไขความเห็น"
+                    groups="agx_sarabun_step_note_edit.group_sarabun_step_note_edit"
+                    attrs="{'invisible': [('can_edit_note', '=', False)]}"
+                />
+            </xpath>
+            <!-- Show the comment in the step dialog (read-only; edited via the row
+                 button above). -->
+            <xpath
+                expr="//field[@name='routing_step_ids']/form/group[@name='timeline']"
+                position="after"
+            >
+                <group
+                    string="ความเห็น (Comment)"
+                    attrs="{'invisible': [('note', '=', False)]}"
+                >
+                    <field name="note" nolabel="1" colspan="2" readonly="1" />
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>
