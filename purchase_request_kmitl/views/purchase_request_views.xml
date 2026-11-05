@@ -34,7 +34,15 @@
                 <field name="requesting_department_id" optional="show" />
             </xpath>
             <xpath expr="//field[@name='estimated_cost']" position="attributes">
-                <attribute name="optional">show</attribute>
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='estimated_cost']" position="after">
+                <field
+                    name="amount_total"
+                    string="Total Estimated Cost"
+                    widget="monetary"
+                    optional="show"
+                />
             </xpath>
             <xpath expr="//field[@name='main_exception_id']" position="attributes">
                 <attribute name="optional">hide</attribute>
