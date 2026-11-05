@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="purchase_request_vat_wizard_view_form" model="ir.ui.view">
+        <field name="name">purchase.request.vat.wizard.form</field>
+        <field name="model">purchase.request.vat.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Edit VAT">
+                <div class="alert alert-warning" role="alert">
+                    <i class="fa fa-exclamation-triangle me-1" />
+                    <strong>Please note:</strong>
+                    changing the VAT from the system-calculated amount is the
+                    responsibility of the person making the change.
+                    Kindly verify the new amount against the supporting documents
+                    before confirming.
+                </div>
+                <group>
+                    <field name="request_id" invisible="1" />
+                    <field name="currency_id" invisible="1" />
+                    <field name="amount_tax_computed" />
+                    <field name="amount_tax_new" />
+                </group>
+                <footer>
+                    <button
+                        name="action_confirm"
+                        type="object"
+                        string="Confirm"
+                        class="btn-primary"
+                    />
+                    <button
+                        name="action_reset"
+                        type="object"
+                        string="Use Computed VAT"
+                        class="btn-secondary"
+                    />
+                    <button special="cancel" string="Cancel" class="btn-secondary" />
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>
