@@ -671,16 +671,21 @@ export class AnnotationEditor {
         this.drawButton.classList.toggle("btn-light", !drawing);
         this.toolsGroup.classList.toggle("d-none", !drawing);
         this.updateToolClass();
-        this.redrawHandles();
+        if (this.tool === "resize") {
+            this.redrawHandles();
+        }
     }
 
     setTool(tool) {
+        const resizing = [this.tool, tool].includes("resize");
         this.tool = tool;
         for (const [name, element] of Object.entries(this.toolButtons)) {
             element.classList.toggle("active", name === tool);
         }
         this.updateToolClass();
-        this.redrawHandles();
+        if (resizing) {
+            this.redrawHandles();
+        }
     }
 
     /**
@@ -948,7 +953,11 @@ export class AnnotationEditor {
                     UNITS *
                     sheet.ratio,
                 r: HANDLE_RADIUS,
-                cursor: cx === cy ? "nwse-resize" : "nesw-resize",
+                // A quarter turn swaps the diagonals.
+                cursor:
+                    (cx === cy) === (this.rotation % 2 === 0)
+                        ? "nwse-resize"
+                        : "nesw-resize",
             })
         );
     }
@@ -977,7 +986,13 @@ export class AnnotationEditor {
                       ...annotation.geometry,
                       size: round(
                           Math.max(
-                              clamp(2 * Math.max(mx - x, (my - y) * sheet.ratio)),
+                              clamp(
+                                  2 *
+                                      Math.max(
+                                          Math.abs(mx - x),
+                                          Math.abs(my - y) * sheet.ratio
+                                      )
+                              ),
                               MIN_BOX
                           )
                       ),
@@ -990,7 +1005,9 @@ export class AnnotationEditor {
                   };
             if (stamp || (next.w > MIN_BOX && next.h > MIN_BOX)) {
                 geometry = next;
-                const preview = this.shape({...annotation, geometry}, sheet, new Map());
+                const resized = {...annotation, geometry};
+                const preview = this.shape(resized, sheet, new Map());
+                preview.append(...this.handles(resized, sheet));
                 shape.replaceWith(preview);
                 shape = preview;
             }

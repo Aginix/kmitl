@@ -216,6 +216,8 @@ function leaveItem(state) {
     }
 }
 
+let lastViewerId = 0;
+
 /**
  * Open `current` in the viewer, navigating through the `attachments` in order.
  */
@@ -260,12 +262,19 @@ export function openPhotoViewer(attachments, current) {
     });
     // The viewer looks like a page of its own: the browser's Back button (or
     // gesture) closes it instead of leaving the screen behind it.
-    history.pushState({agxPhotoviewer: true}, "");
-    const onPopState = () => viewer.close();
+    // Increasing ids: Back closes only the viewers opened after the entry
+    // returned to, when several are open.
+    const id = (lastViewerId = Math.max(Date.now(), lastViewerId + 1));
+    history.pushState({agxPhotoviewer: id}, "");
+    const onPopState = (ev) => {
+        if (!(ev.state?.agxPhotoviewer >= id)) {
+            viewer.close();
+        }
+    };
     window.addEventListener("popstate", onPopState);
     state.unbindBack = () => {
         window.removeEventListener("popstate", onPopState);
-        if (history.state?.agxPhotoviewer) {
+        if (history.state?.agxPhotoviewer === id) {
             // Closed by other means: drop the entry pushed above.
             history.back();
         }
