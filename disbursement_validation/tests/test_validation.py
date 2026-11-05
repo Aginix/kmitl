@@ -45,7 +45,7 @@ class TestValidation(TwoApproverCommon):
         self.assertFalse(dr.verifier_id)
 
     def test_cannot_validate_a_draft(self):
-        dr = self.DR.create({"partner_type_id": self.partner.partner_type_id.id})
+        dr = self.DR.create({})
         with self.assertRaises(UserError):
             dr.with_user(self.officer).action_validate()
 

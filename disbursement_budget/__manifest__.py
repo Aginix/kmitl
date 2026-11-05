@@ -3,7 +3,7 @@
 {
     "name": "Disbursement Budget",
     "summary": "Consume the linked budget commitment as the disbursement request's own act",
-    "version": "16.0.1.4.0",
+    "version": "16.0.1.5.0",
     "category": "Disbursement",
     "license": "LGPL-3",
     "author": "KMITL",

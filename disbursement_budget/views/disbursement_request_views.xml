@@ -71,7 +71,7 @@
                  automatically, so the whole column is hidden and only
                  ordinary disbursements pick an account by hand. -->
             <xpath expr="//field[@name='line_ids']/tree/field[@name='account_id']" position="attributes">
-                <attribute name="attrs">{'column_invisible': [('parent.is_line_account_locked', '=', True)], 'required': [('parent.is_line_account_locked', '=', False)]}</attribute>
+                <attribute name="attrs">{'column_invisible': [('parent.is_line_account_locked', '=', True)], 'required': [('parent.is_line_account_locked', '=', False), ('display_type', '=', False)]}</attribute>
             </xpath>
         </field>
     </record>

@@ -51,23 +51,6 @@ class DisbursementRequest(models.Model):
         tracking=True,
     )
 
-    # Every payee on the lines must be of this type (ประเภทผู้รับเงิน); the
-    # payees themselves live on the lines only.
-    partner_type_id = fields.Many2one(
-        comodel_name="res.partner.type",
-        string="Payee Type",
-        required=True,
-        tracking=True,
-        index=True,
-        ondelete="restrict",
-    )
-
-    # Loaded on the form so มีภาษี can be locked for a company payee type.
-    partner_type_company_type = fields.Selection(
-        related="partner_type_id.company_type",
-        string="Payee Company Type",
-    )
-
     payee_display = fields.Char(
         string="Payees",
         compute="_compute_payee_display",
@@ -80,20 +63,17 @@ class DisbursementRequest(models.Model):
         tracking=True,
     )
 
-    payment_type = fields.Selection(
-        selection=[
-            ("direct", "Direct paid"),
-            ("advance", "Advance"),
-            ("prepaid", "Prepaid"),
-        ],
+    # Summaries of the lines' ประเภทการจ่ายเงิน / ประเภทผู้รับเงิน (ADR 0009).
+    payment_type_display = fields.Char(
         string="Payment Type",
-        default="direct",
-        tracking=True,
+        compute="_compute_type_display",
+    )
+    payee_type_display = fields.Char(
+        string="Payee Type",
+        compute="_compute_type_display",
     )
 
-    # Whether the request pays money out to its payees. An advance (เงินยืม)
-    # books spending already paid out of a loan: no payment method, no bank
-    # account.
+    # Whether any line pays money out to its payee.
     pays_out = fields.Boolean(compute="_compute_pays_out")
 
     # เลขที่หนังสือ: stamped by disbursement_sarabun when e-Saraban issues the
@@ -152,6 +132,7 @@ class DisbursementRequest(models.Model):
         comodel_name="disbursement.request.line",
         inverse_name="request_id",
         string="WHT Lines",
+        domain=[("display_type", "=", False)],
         readonly=True,
         copy=False,
     )
@@ -453,42 +434,42 @@ class DisbursementRequest(models.Model):
             if len(partners) > 1:
                 rec.payee_display += " +%d" % (len(partners) - 1)
 
-    @api.onchange("partner_type_id")
-    def _onchange_partner_type_id(self):
-        mismatched = self.line_ids.partner_id.filtered(
-            lambda p: p.partner_type_id != self.partner_type_id
-        )
-        if self.partner_type_id and mismatched:
-            return {
-                "warning": {
-                    "title": _("Payee type changed"),
-                    "message": _(
-                        "These payees are not of type %(type)s and must be "
-                        "changed before submitting: %(names)s"
-                    )
-                    % {
-                        "type": self.partner_type_id.display_name,
-                        "names": ", ".join(mismatched.mapped("display_name")),
-                    },
-                }
-            }
+    @api.depends_context("lang")
+    @api.depends(
+        "line_ids.display_type", "line_ids.payment_type", "line_ids.partner_type_id"
+    )
+    def _compute_type_display(self):
+        for rec in self:
+            lines = rec._product_lines()
+            rec.payment_type_display = rec._payment_type_labels(lines)
+            rec.payee_type_display = ", ".join(
+                lines.partner_type_id.mapped("display_name")
+            )
+
+    def _payment_type_labels(self, lines):
+        """The payment types of ``lines`` as their labels, e.g. "จ่ายตรง, สำรองจ่าย"."""
+        field = self.env["disbursement.request.line"]._fields["payment_type"]
+        labels = dict(field._description_selection(self.env))
+        keys = lines.filtered(lambda ln: not ln.display_type).mapped("payment_type")
+        return ", ".join(labels.get(key, key) for key in dict.fromkeys(keys))
+
+    def _product_lines(self):
+        """The lines that pay something, without section and note rows."""
+        return self.line_ids.filtered(lambda ln: not ln.display_type)
+
+    def _has_sections(self):
+        """Whether the lines hold a section or note row: the print then follows
+        the lines' order instead of grouping them by payee."""
+        self.ensure_one()
+        return any(self.line_ids.mapped("display_type"))
 
     # -------------------------------------------------------------------------
     # Taxable (มีภาษี)
     # -------------------------------------------------------------------------
-    @api.onchange("payment_type", "partner_type_id")
-    def _onchange_has_tax_default(self):
-        """A company starts out taxed; an advance or a prepayment starts out
-        untaxed (the user may tick it back)."""
-        if self.partner_type_id.company_type == "company":
-            self.has_tax = True
-        elif self.payment_type in ("advance", "prepaid"):
-            self.has_tax = False
-
-    @api.depends("payment_type")
+    @api.depends("line_ids.pays_out")
     def _compute_pays_out(self):
         for rec in self:
-            rec.pays_out = rec.payment_type != "advance"
+            rec.pays_out = any(rec.line_ids.mapped("pays_out"))
 
     @api.onchange("has_tax")
     def _onchange_has_tax(self):
@@ -498,21 +479,10 @@ class DisbursementRequest(models.Model):
     def _clear_untaxed_lines(self):
         """Keep programmatic creates/writes consistent with ``has_tax``."""
         lines = self.filtered(lambda r: not r.has_tax).line_ids.filtered(
-            lambda l: l.tax_ids or l.wht_tax_id
+            lambda ln: ln.tax_ids or ln.wht_tax_id
         )
         if lines:
             lines.write({"tax_ids": [(5, 0, 0)], "wht_tax_id": False})
-
-    @api.model
-    def _get_payee_type(self, partner):
-        """The type a request paying ``partner`` must carry — for bridges that
-        raise a request from a single-vendor document."""
-        if not partner.partner_type_id:
-            raise UserError(
-                _("Set a payee type on %s before raising a disbursement request.")
-                % partner.display_name
-            )
-        return partner.partner_type_id
 
     def _get_source_document(self):
         """The document this request was raised from (PO, PA, AR …), or an
@@ -631,7 +601,7 @@ class DisbursementRequest(models.Model):
     def _compute_amount_all(self):
         """Aggregate amounts from lines with tax calculation (mirrors PO logic)"""
         for request in self:
-            request_lines = request.line_ids
+            request_lines = request._product_lines()
 
             # Check company rounding method
             if request.company_id.tax_calculation_rounding_method == "round_globally":
@@ -667,7 +637,7 @@ class DisbursementRequest(models.Model):
         """Prepare detailed tax display information (mirrors PO logic)"""
         for request in self:
             request.tax_totals = self.env["account.tax"]._prepare_tax_totals(
-                [x._convert_to_tax_base_line_dict() for x in request.line_ids],
+                [x._convert_to_tax_base_line_dict() for x in request._product_lines()],
                 request.currency_id,
             )
 
@@ -675,13 +645,15 @@ class DisbursementRequest(models.Model):
     def _onchange_analytic_distribution(self):
         """When change analytic_distribution set analytic distribution on all request lines"""
         if self.analytic_distribution:
-            self.line_ids.update({"analytic_distribution": self.analytic_distribution})
+            self._product_lines().update(
+                {"analytic_distribution": self.analytic_distribution}
+            )
 
     def _inverse_analytic_distribution(self):
         """When set analytic_distribution set analytic distribution on all request lines"""
         for request in self:
             if request.analytic_distribution:
-                request.line_ids.write(
+                request._product_lines().write(
                     {"analytic_distribution": request.analytic_distribution}
                 )
 
@@ -690,7 +662,7 @@ class DisbursementRequest(models.Model):
         for record in self:
             if record.state != "draft":
                 raise UserError(_("Only draft requests can be submitted."))
-            if not record.line_ids:
+            if not record._product_lines():
                 raise UserError(
                     _(
                         "Cannot submit a disbursement request with no lines. "

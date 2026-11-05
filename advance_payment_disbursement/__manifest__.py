@@ -1,7 +1,7 @@
 {
     "name": "Advance Payment - Disbursement Bridge",
-    "summary": "ใบเบิกชดใช้เงินยืม: an advance disbursement request clears its loan",
-    "version": "16.0.1.0.0",
+    "summary": "รายการชดใช้เงินยืม: an advance disbursement request line clears its loan",
+    "version": "16.0.2.0.0",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",

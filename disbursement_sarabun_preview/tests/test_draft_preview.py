@@ -13,7 +13,6 @@ class TestDraftPreview(TwoApproverCommon):
     def _draft(self):
         dr = self.DR.create(
             {
-                "partner_type_id": self.partner.partner_type_id.id,
                 "line_ids": [
                     (
                         0,

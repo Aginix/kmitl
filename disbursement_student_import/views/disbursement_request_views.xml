@@ -13,7 +13,7 @@
                     string="Import Students"
                     type="object"
                     icon="fa-file-excel-o"
-                    attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('is_student_payee', '=', False)]}"
+                    attrs="{'invisible': [('state', '!=', 'draft')]}"
                 />
             </xpath>
             <xpath

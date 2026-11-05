@@ -11,7 +11,7 @@ class DisbursementRequestLine(models.Model):
         string="Partner Is Internal Staff",
     )
 
-    @api.depends("partner_id.partner_type_id.is_internal")
+    @api.depends("partner_type_id.is_internal")
     def _compute_partner_is_internal(self):
         for line in self:
-            line.partner_is_internal = bool(line.partner_id.partner_type_id.is_internal)
+            line.partner_is_internal = bool(line.partner_type_id.is_internal)

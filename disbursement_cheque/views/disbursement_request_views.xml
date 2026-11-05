@@ -11,7 +11,7 @@
             >
                 <field
                     name="payment_method"
-                    attrs="{'required': [('parent.pays_out', '=', True)], 'column_invisible': [('parent.pays_out', '=', False)]}"
+                    attrs="{'required': [('pays_out', '=', True)], 'invisible': [('pays_out', '=', False)], 'column_invisible': [('parent.pays_out', '=', False)]}"
                 />
             </xpath>
             <xpath
@@ -20,7 +20,7 @@
             >
                 <attribute
                     name="attrs"
-                >{'invisible': [('payment_method', '=', 'cheque')], 'column_invisible': [('parent.pays_out', '=', False)]}</attribute>
+                >{'invisible': ['|', ('payment_method', '=', 'cheque'), ('pays_out', '=', False)], 'column_invisible': [('parent.pays_out', '=', False)]}</attribute>
             </xpath>
         </field>
     </record>

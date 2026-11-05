@@ -27,7 +27,6 @@ class TestDisbursementLedgerConsume(BudgetLedgerCommon):
     def _request(self, commitment, amount):
         dr = self.env["disbursement.request"].create(
             {
-                "partner_type_id": self.partner.partner_type_id.id,
                 "line_ids": [
                     (
                         0,

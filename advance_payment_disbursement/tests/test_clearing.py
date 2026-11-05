@@ -7,8 +7,8 @@ from odoo.tests.common import TransactionCase, tagged
 
 @tagged("post_install", "-at_install")
 class TestClearing(TransactionCase):
-    """A ใบเบิกชดใช้เงินยืม (advance request) clears its loan at ตัดงบ
-    (advance_payment ADR-0032)."""
+    """A รายการชดใช้เงินยืม (advance line) clears its loan at ตัดงบ
+    (advance_payment ADR-0032, disbursement ADR-0009)."""
 
     @classmethod
     def setUpClass(cls):
@@ -65,25 +65,25 @@ class TestClearing(TransactionCase):
         loan.action_start()
         return loan
 
-    def _request(self, loan, amount):
+    def _line(self, loan, amount, partner=None):
+        return (
+            0,
+            0,
+            {
+                "payment_type": "advance" if loan else "direct",
+                "advance_payment_id": loan.id if loan else False,
+                "account_id": self.expense_account.id,
+                "name": "line",
+                "amount": amount,
+                "partner_id": (partner or self.partner).id,
+            },
+        )
+
+    def _request(self, loan, amount, extra_lines=()):
         return self.DR.create(
             {
-                "payment_type": "advance",
-                "advance_payment_id": loan.id,
                 "operating_unit_id": self.ou.id,
-                "partner_type_id": self.partner.partner_type_id.id,
-                "line_ids": [
-                    (
-                        0,
-                        0,
-                        {
-                            "account_id": self.expense_account.id,
-                            "name": "line",
-                            "amount": amount,
-                            "partner_id": self.partner.id,
-                        },
-                    )
-                ],
+                "line_ids": [self._line(loan, amount)] + list(extra_lines),
             }
         )
 
@@ -128,12 +128,12 @@ class TestClearing(TransactionCase):
     def test_requester_reads_the_loan_figures(self):
         loan = self._loan()
         request = self._request(loan, 100.0).with_user(self.dr_user)
-        self.assertEqual(request.advance_payment_amount_remaining, 1000.0)
-        self.assertEqual(request.advance_payment_employee_id, self.employee)
+        self.assertEqual(request.line_ids.advance_payment_amount_remaining, 1000.0)
+        self.assertEqual(request.line_ids.advance_payment_id, loan)
 
     def test_submit_requires_a_loan(self):
         request = self._request(self._loan(), 100.0)
-        request.advance_payment_id = False
+        request.line_ids.advance_payment_id = False
         with self.assertRaises(UserError):
             request.action_submit()
 
@@ -143,13 +143,15 @@ class TestClearing(TransactionCase):
         with self.assertRaises(ValidationError):
             request.line_ids.partner_id = other
 
-    def test_loan_only_on_an_advance_request(self):
+    def test_loan_only_on_an_advance_line(self):
         loan = self._loan()
         request = self._request(loan, 100.0)
         with self.assertRaises(ValidationError):
-            request.payment_type = "direct"
+            request.line_ids.payment_type = "direct"
         # On the form, switching away from advance drops the loan.
-        draft = self.DR.new({"payment_type": "direct", "advance_payment_id": loan.id})
+        draft = self.env["disbursement.request.line"].new(
+            {"payment_type": "direct", "advance_payment_id": loan.id}
+        )
         draft._onchange_payment_type_advance_payment()
         self.assertFalse(draft.advance_payment_id)
 
@@ -201,6 +203,47 @@ class TestClearing(TransactionCase):
         loan.write({"state": "done"})
         request.action_cancel()
         self.assertEqual(loan.state, "done")
+
+    def test_each_loan_is_cleared_by_its_own_lines(self):
+        """Two loans and a direct line in one request: each loan is cleared by
+        its own lines only, and the bills split per loan."""
+        Users = self.env["res.users"].with_context(no_reset_password=True)
+        other_user = Users.create(
+            {"name": "Borrower 2", "login": "apd_borrower2", "email": "b2@apd.test"}
+        )
+        other_employee = self.env["hr.employee"].create(
+            {"name": "Borrower 2", "user_id": other_user.id}
+        )
+        loan = self._loan(amount=300.0)
+        other_loan = self.env["advance.payment"].create(
+            {
+                "employee_id": other_employee.id,
+                "loan_amount": 500.0,
+                "loan_type_id": self.loan_type.id,
+                "loan_reason": "Test",
+                "operating_unit_id": self.ou.id,
+            }
+        )
+        other_loan.write({"state": "approved"})
+        other_loan.action_start()
+        vendor = self.env["res.partner"].create({"name": "APD Vendor"})
+        request = self._request(
+            loan,
+            100.0,
+            extra_lines=[
+                self._line(other_loan, 200.0, other_employee.work_contact_id),
+                self._line(loan, 50.0),
+                self._line(False, 1000.0, vendor),
+            ],
+        )
+        self.assertTrue(request.pays_out)
+        keys = {line._bill_group_key() for line in request.line_ids}
+        self.assertEqual(len(keys), 3)
+        with self._consumable():
+            request.action_consume_budget()
+        self.assertEqual(loan.actual_expense_amount, 150.0)
+        self.assertEqual(other_loan.actual_expense_amount, 200.0)
+        self.assertEqual(loan.disbursement_request_ids, request)
 
     def test_any_consume_path_clears(self):
         """The rector's approval consumes without the consume act: whatever

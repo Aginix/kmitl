@@ -199,9 +199,6 @@ class PurchaseRequestApproval(models.Model):
     def _prepare_disbursement_request_vals(self):
         return {
             "purchase_request_approval_id": self.id,
-            "partner_type_id": self.env["disbursement.request"]
-            ._get_payee_type(self.partner_id)
-            .id,
             "line_ids": [
                 Command.create(
                     {

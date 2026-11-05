@@ -25,24 +25,16 @@ msgid "Activity"
 msgstr "ด้าน/แผนงาน/กิจกรรม"
 
 #. module: disbursement_payment_subject_rule
-#: model:ir.model.fields.selection,name:disbursement_payment_subject_rule.selection__disbursement_payment_subject_rule__payment_type__advance
-msgid "Advance"
-msgstr "เงินยืม"
-
-#. module: disbursement_payment_subject_rule
 #: model_terms:ir.actions.act_window,help:disbursement_payment_subject_rule.action_disbursement_payment_subject_rule
-msgid "Create a rule to pick the payment subject of a disbursement request automatically"
+msgid ""
+"Create a rule to pick the payment subject of a disbursement request "
+"automatically"
 msgstr "สร้างกฎเพื่อเลือกเรื่องที่จ่ายของใบเบิกเงินโดยอัตโนมัติ"
 
 #. module: disbursement_payment_subject_rule
 #: model:ir.model.fields,field_description:disbursement_payment_subject_rule.field_disbursement_payment_subject_rule__department_analytic_id
 msgid "Department"
 msgstr "ส่วนงาน"
-
-#. module: disbursement_payment_subject_rule
-#: model:ir.model.fields.selection,name:disbursement_payment_subject_rule.selection__disbursement_payment_subject_rule__payment_type__direct
-msgid "Direct paid"
-msgstr "จ่ายตรง"
 
 #. module: disbursement_payment_subject_rule
 #: model:ir.model,name:disbursement_payment_subject_rule.model_disbursement_payment_subject_rule
@@ -56,8 +48,19 @@ msgstr "กองทุน"
 
 #. module: disbursement_payment_subject_rule
 #: model_terms:ir.actions.act_window,help:disbursement_payment_subject_rule.action_disbursement_payment_subject_rule
-msgid "Leave a criterion empty to match any value. Rules are matched top to bottom and the first match wins; a rule on a parent department, fund or activity covers all of its children."
-msgstr "เว้นเงื่อนไขว่างไว้เพื่อให้จับคู่ได้ทุกค่า กฎจะถูกจับคู่จากบนลงล่าง โดยกฎแรกที่ตรงเป็นผู้ชนะ กฎที่ตั้งบนส่วนงาน/กองทุน/กิจกรรมระดับแม่จะครอบคลุมระดับลูกทั้งหมด"
+msgid ""
+"Leave a criterion empty to match any value. Rules are matched top to bottom "
+"and the first match wins; a rule on a parent department, fund or activity "
+"covers all of its children."
+msgstr ""
+"เว้นเงื่อนไขว่างไว้เพื่อให้จับคู่ได้ทุกค่า กฎจะถูกจับคู่จากบนลงล่าง "
+"โดยกฎแรกที่ตรงเป็นผู้ชนะ "
+"กฎที่ตั้งบนส่วนงาน/กองทุน/กิจกรรมระดับแม่จะครอบคลุมระดับลูกทั้งหมด"
+
+#. module: disbursement_payment_subject_rule
+#: model:ir.model.fields,field_description:disbursement_payment_subject_rule.field_disbursement_payment_subject_rule__partner_type_id
+msgid "Payee Type"
+msgstr "ประเภทผู้รับเงิน"
 
 #. module: disbursement_payment_subject_rule
 #: model:ir.model.fields,field_description:disbursement_payment_subject_rule.field_disbursement_payment_subject_rule__payment_subject_id
@@ -77,16 +80,6 @@ msgid "Payment Type"
 msgstr "ประเภทการจ่ายเงิน"
 
 #. module: disbursement_payment_subject_rule
-#: model:ir.model.fields,field_description:disbursement_payment_subject_rule.field_disbursement_payment_subject_rule__partner_type_id
-msgid "Payee Type"
-msgstr "ประเภทผู้รับเงิน"
-
-#. module: disbursement_payment_subject_rule
-#: model:ir.model.fields.selection,name:disbursement_payment_subject_rule.selection__disbursement_payment_subject_rule__payment_type__prepaid
-msgid "Prepaid"
-msgstr "สำรองจ่าย"
-
-#. module: disbursement_payment_subject_rule
 #: model:ir.model.fields,field_description:disbursement_payment_subject_rule.field_disbursement_payment_subject_rule__sequence
 msgid "Sequence"
 msgstr "ลำดับ"
@@ -98,5 +91,9 @@ msgstr "แหล่งเงิน"
 
 #. module: disbursement_payment_subject_rule
 #: model_terms:ir.actions.act_window,help:disbursement_payment_subject_rule.action_disbursement_payment_subject_rule
-msgid "The subject is filled in once the bills are posted, only when none has been chosen yet, and the auditor can still change it."
-msgstr "ระบบจะเติมเรื่องที่จ่ายให้เมื่อบันทึกบัญชีใบแจ้งหนี้ครบ เฉพาะใบที่ยังไม่ได้เลือก และผู้ตรวจจ่ายยังเปลี่ยนเองได้"
+msgid ""
+"The subject is filled in once the bills are posted, only when none has been "
+"chosen yet, and the auditor can still change it."
+msgstr ""
+"ระบบจะเติมเรื่องที่จ่ายให้เมื่อบันทึกบัญชีใบแจ้งหนี้ครบ "
+"เฉพาะใบที่ยังไม่ได้เลือก และผู้ตรวจจ่ายยังเปลี่ยนเองได้"

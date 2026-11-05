@@ -8,11 +8,12 @@ class DisbursementRequest(models.Model):
 
     is_student_payee = fields.Boolean(compute="_compute_is_student_payee")
 
-    @api.depends("partner_type_id")
+    # Any line pays a student: the form then suggests the Excel import.
+    @api.depends("line_ids.partner_type_id")
     def _compute_is_student_payee(self):
         student_type = self.env.ref("partner_type_kmitl.partner_type_student")
         for request in self:
-            request.is_student_payee = request.partner_type_id == student_type
+            request.is_student_payee = student_type in request.line_ids.partner_type_id
 
     def action_open_student_import(self):
         self.ensure_one()

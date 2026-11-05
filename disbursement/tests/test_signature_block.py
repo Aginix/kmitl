@@ -103,7 +103,6 @@ class TestSignatureBlock(TransactionCase):
 
     def _make_signed_dr(self):
         dr = self.DR.create({
-            "partner_type_id": self.partner.partner_type_id.id,
             "line_ids": [(0, 0, {
                 "account_id": self.expense_account.id,
                 "name": "line",

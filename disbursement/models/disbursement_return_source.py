@@ -122,7 +122,7 @@ class DisbursementReturnSourceMixin(models.AbstractModel):
         if self.disbursement_return_note:
             dr.note = plaintext2html(self.disbursement_return_note)
         if self.disbursement_return_bank_id:
-            dr.line_ids.write(
+            dr._product_lines().write(
                 {"partner_bank_id": self.disbursement_return_bank_id.id}
             )
         self._disbursement_copy_evidence(dr)

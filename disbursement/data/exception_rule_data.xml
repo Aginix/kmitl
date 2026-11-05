@@ -5,16 +5,16 @@
          partner is re-typed or loses an account later, and the user can open
          the partner from the line to fix it. -->
 
-    <!-- Every payee must be of the request's ประเภทผู้รับเงิน — e.g. the header
-         type was changed after the lines were entered. -->
+    <!-- Every payee must be of its line's ประเภทผู้รับเงิน — e.g. the type was
+         changed after the payee was picked. -->
     <record id="excep_disbursement_line_partner_type" model="exception.rule">
-        <field name="name">ผู้รับเงินไม่ตรงกับประเภทผู้รับเงินของใบขอเบิก</field>
-        <field name="description">มีรายการที่ผู้รับเงินไม่ได้เป็นประเภทผู้รับเงินตามที่ระบุบนใบขอเบิก กรุณาเปลี่ยนผู้รับเงินหรือประเภทผู้รับเงินให้ตรงกัน</field>
+        <field name="name">ผู้รับเงินไม่ตรงกับประเภทผู้รับเงินของรายการ</field>
+        <field name="description">มีรายการที่ผู้รับเงินไม่ได้เป็นประเภทผู้รับเงินตามที่ระบุบนรายการ กรุณาเปลี่ยนผู้รับเงินหรือประเภทผู้รับเงินให้ตรงกัน</field>
         <field name="sequence">10</field>
         <field name="model">disbursement.request.line</field>
         <field name="exception_type">by_py_code</field>
         <field name="code">
-if self.partner_id.partner_type_id != self.request_id.partner_type_id:
+if not self.display_type and self.partner_id.partner_type_id != self.partner_type_id:
     failed = True
         </field>
         <field name="is_blocking" eval="True" />
@@ -39,16 +39,16 @@ if self.partner_id and not self.partner_bank_id and self._requires_partner_bank(
         <field name="active" eval="True" />
     </record>
 
-    <!-- เงินยืม and สำรองจ่าย are paid to internal staff only. Checked on the
-         header type: the line rule above keeps every payee of that type. -->
+    <!-- เงินยืม and สำรองจ่าย lines pay internal staff only
+         (``_requires_internal_payee``). -->
     <record id="excep_disbursement_advance_internal_payee" model="exception.rule">
         <field name="name">เงินยืม/สำรองจ่าย ต้องจ่ายให้บุคลากรภายใน</field>
-        <field name="description">ประเภทการจ่ายเงินเป็นเงินยืมหรือสำรองจ่าย กรุณาเลือกประเภทผู้รับเงินเป็นบุคลากรภายใน</field>
+        <field name="description">มีรายการที่ประเภทการจ่ายเงินเป็นเงินยืมหรือสำรองจ่าย กรุณาเลือกประเภทผู้รับเงินของรายการเป็นบุคลากรภายใน</field>
         <field name="sequence">12</field>
-        <field name="model">disbursement.request</field>
+        <field name="model">disbursement.request.line</field>
         <field name="exception_type">by_py_code</field>
         <field name="code">
-if self.payment_type in ("advance", "prepaid") and not self.partner_type_id.is_internal:
+if not self.display_type and self._requires_internal_payee() and not self.partner_type_id.is_internal:
     failed = True
         </field>
         <field name="is_blocking" eval="True" />

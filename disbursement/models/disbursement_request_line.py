@@ -23,6 +23,39 @@ class DisbursementRequestLine(models.Model):
         default=10,
     )
 
+    # A section or note row (as on a sales order): a free heading, never paid.
+    display_type = fields.Selection(
+        selection=[
+            ("line_section", "Section"),
+            ("line_note", "Note"),
+        ],
+        default=False,
+    )
+
+    # ประเภทการจ่ายเงิน; add-ons extend it by selection_add and the hooks below.
+    payment_type = fields.Selection(
+        selection=[
+            ("direct", "Direct paid"),
+            ("prepaid", "Prepaid"),
+        ],
+        string="Payment Type",
+        default="direct",
+    )
+
+    pays_out = fields.Boolean(compute="_compute_pays_out")
+
+    # ประเภทผู้รับเงิน: a snapshot of the payee's type, editable to narrow the
+    # payee picker; a mismatch is caught by an exception rule on submit.
+    partner_type_id = fields.Many2one(
+        comodel_name="res.partner.type",
+        string="Payee Type",
+        compute="_compute_partner_type_id",
+        store=True,
+        readonly=False,
+        index=True,
+        ondelete="restrict",
+    )
+
     # Not required: filled from the account when left blank.
     name = fields.Text(
         string="Description",
@@ -69,7 +102,6 @@ class DisbursementRequestLine(models.Model):
     account_id = fields.Many2one(
         comodel_name="account.account",
         string="Account",
-        required=True,
         domain="[('company_id', '=', company_id), ('deprecated', '=', False)]",
     )
 
@@ -88,13 +120,11 @@ class DisbursementRequestLine(models.Model):
         store=True,
     )
 
-    # Only payees of the request's type are offered; a mismatch (e.g. the
-    # header type changed afterwards) is caught by an exception rule on submit.
     partner_id = fields.Many2one(
         comodel_name="res.partner",
         string="Partner",
         ondelete="restrict",
-        domain="[('partner_type_id', '=', parent.partner_type_id)]",
+        domain="[('partner_type_id', '=', partner_type_id)] if partner_type_id else []",
     )
 
     partner_bank_id = fields.Many2one(
@@ -133,6 +163,56 @@ class DisbursementRequestLine(models.Model):
         store=True,
         currency_field="currency_id",
     )
+
+    # Section and note rows carry no account nor payment type (cf. sale).
+    _sql_constraints = [
+        (
+            "accountable_required_fields",
+            "CHECK(display_type IS NOT NULL"
+            " OR (account_id IS NOT NULL AND payment_type IS NOT NULL))",
+            "Missing required fields on a disbursement request line.",
+        ),
+    ]
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get("display_type"):
+                vals.update(account_id=False, amount=0, payment_type=False)
+        return super().create(vals_list)
+
+    # -------------------------------------------------------------------------
+    # Payment type hooks
+    # -------------------------------------------------------------------------
+    def _pays_out(self):
+        """Whether this line pays money out to its payee (hook)."""
+        self.ensure_one()
+        return True
+
+    def _requires_internal_payee(self):
+        """Whether this line may only pay internal staff (hook)."""
+        self.ensure_one()
+        return self.payment_type == "prepaid"
+
+    def _default_taxable(self):
+        """Whether this line starts out taxed (hook)."""
+        self.ensure_one()
+        return self.payment_type == "direct"
+
+    def _bill_group_key(self):
+        """Lines sharing this key land on the same bill (hook)."""
+        self.ensure_one()
+        return (self.partner_id, self.payment_type)
+
+    @api.depends("display_type", "payment_type")
+    def _compute_pays_out(self):
+        for line in self:
+            line.pays_out = not line.display_type and line._pays_out()
+
+    @api.depends("partner_id")
+    def _compute_partner_type_id(self):
+        for line in self:
+            line.partner_type_id = line.partner_id.partner_type_id
 
     @api.depends("price_subtotal", "wht_tax_id", "wht_tax_id.amount")
     def _compute_amount_wht(self):
@@ -191,7 +271,7 @@ class DisbursementRequestLine(models.Model):
         "partner_id",
         "partner_id.bank_ids",
         "request_id.company_id",
-        "request_id.pays_out",
+        "pays_out",
     )
     def _compute_line_partner_bank_id(self):
         for line in self:
@@ -202,7 +282,7 @@ class DisbursementRequestLine(models.Model):
             request = line.request_id
             if request.state not in (False, "draft") and not request.can_edit_lines:
                 line.partner_bank_id = line.partner_bank_id
-            elif line.partner_id and request.pays_out:
+            elif line.partner_id and line.pays_out:
                 banks = line.partner_id.bank_ids.filtered(
                     lambda b: (
                         not b.company_id or b.company_id == line.request_id.company_id
@@ -217,24 +297,31 @@ class DisbursementRequestLine(models.Model):
 
     def _requires_partner_bank(self):
         """Whether this payee is paid into a bank account (hook: e.g. a
-        cheque payee needs none). A request that pays no money out needs none."""
+        cheque payee needs none). A line that pays no money out needs none."""
         self.ensure_one()
-        return self.request_id.pays_out
+        return self.pays_out
 
-    @api.constrains("partner_id")
+    @api.constrains("partner_id", "partner_type_id", "display_type")
     def _check_line_partner_required(self):
-        for line in self:
+        for line in self.filtered(lambda ln: not ln.display_type):
             if not line.partner_id:
                 raise ValidationError(_("Partner is required on each line."))
+            if not line.partner_type_id:
+                raise ValidationError(
+                    _("Set a payee type on %s.") % line.partner_id.display_name
+                )
 
     # -------------------------------------------------------------------------
     # WHT methods
     # -------------------------------------------------------------------------
-    @api.depends("partner_id.partner_type_id.wht_tax_id", "request_id.has_tax")
+    @api.depends("partner_type_id.wht_tax_id", "request_id.has_tax", "payment_type")
     def _compute_wht_tax_id(self):
         for line in self:
             line.wht_tax_id = (
-                line.request_id.has_tax and line.partner_id.partner_type_id.wht_tax_id
+                not line.display_type
+                and line.request_id.has_tax
+                and line._default_taxable()
+                and line.partner_type_id.wht_tax_id
             )
 
     # -------------------------------------------------------------------------

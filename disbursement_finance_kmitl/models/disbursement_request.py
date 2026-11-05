@@ -48,10 +48,13 @@ class DisbursementRequest(models.Model):
         string="Payment Subject",
         copy=False,
         tracking=True,
-        help="What this disbursement is for, which is what decides the paying "
-        "account (หัวจ่าย) each payee is served from. Chosen once by the "
-        "auditor; individual payees can still be moved onto another account.",
+        help="Sets the payment subject of every payee not chosen by hand: what "
+        "the disbursement is for decides the paying account (หัวจ่าย) each "
+        "payee is served from. Individual payees can still be given another "
+        "subject or moved onto another account.",
     )
+    # A payee still to pay has no subject: shown as a reminder on the form.
+    payment_subject_missing = fields.Boolean(compute="_compute_payment_subject_missing")
     payment_auto_match = fields.Boolean(
         related="payment_subject_id.auto_match_payee_bank",
         string="Auto-match by Payee's Bank",
@@ -229,6 +232,14 @@ class DisbursementRequest(models.Model):
                     activity_xmlid, user_id=user.id, note=rec.name or ""
                 )
 
+    @api.depends("payment_line_ids.payment_subject_id", "payment_line_ids.payment_id")
+    def _compute_payment_subject_missing(self):
+        for rec in self:
+            rec.payment_subject_missing = any(
+                not line.payment_subject_id and not line.payment_id
+                for line in rec.payment_line_ids
+            )
+
     def write(self, vals):
         res = super().write(vals)
         # A new subject re-derives every row it is allowed to.
@@ -297,7 +308,8 @@ class DisbursementRequest(models.Model):
         self._apply_subject_defaults(self.payment_line_ids)
 
     def _apply_subject_defaults(self, lines):
-        """Derive the paying account of every row the subject still owns.
+        """Give every row not chosen by hand the request's subject, then derive
+        the paying account of every row its subject still owns.
 
         Rows a person picked by hand (``manual``) and rows a payment already
         owns are left alone — both already carry a decision that re-deriving
@@ -310,21 +322,23 @@ class DisbursementRequest(models.Model):
         the editability guard on the row is untouched by this.
         """
         self.ensure_one()
-        subject = self.payment_subject_id
         for line in lines.sudo():
-            if line.payment_id or line.paying_account_match == "manual":
+            if line.payment_id:
                 continue
-            if not subject:
-                continue
-            account, match = subject._paying_account_with_match(
-                line.partner_bank_id.bank_id
-            )
-            line.write(
-                {
-                    "paying_account_id": account.id if account else False,
-                    "paying_account_match": match if account else False,
-                }
-            )
+            vals = {}
+            subject = line.payment_subject_id
+            if self.payment_subject_id and not line.payment_subject_manual:
+                subject = self.payment_subject_id
+                if subject != line.payment_subject_id:
+                    vals["payment_subject_id"] = subject.id
+            if subject and line.paying_account_match != "manual":
+                account, match = subject._paying_account_with_match(
+                    line.partner_bank_id.bank_id
+                )
+                vals["paying_account_id"] = account.id if account else False
+                vals["paying_account_match"] = match if account else False
+            if vals:
+                line.write(vals)
         return True
 
     def _payable_payment_lines(self):
@@ -350,16 +364,18 @@ class DisbursementRequest(models.Model):
         be able to see.
         """
         self.ensure_one()
-        if not self.payment_subject_id:
-            raise UserError(
-                _(
-                    "Choose the payment subject before auditing: it is what decides "
-                    "which account each payee is paid from."
-                )
-            )
         lines = self._payable_payment_lines()
         if not lines:
             raise UserError(_("There is no posted unpaid bill to pay on this request."))
+        no_subject = lines.filtered(lambda line: not line.payment_subject_id)
+        if no_subject:
+            raise UserError(
+                _(
+                    "Choose the payment subject before auditing: it is what decides "
+                    "which account each payee is paid from. Missing for: %s."
+                )
+                % ", ".join(no_subject.mapped("partner_id.display_name"))
+            )
         no_account = lines.filtered(lambda line: not line.paying_account_id)
         if no_account:
             raise UserError(
@@ -790,7 +806,7 @@ class DisbursementRequest(models.Model):
                 "partner_type": "supplier",
                 # Why this voucher leaves the account it leaves: the subject is
                 # what chose the payee's หัวจ่าย, so it travels with it.
-                "kmitl_payment_subject_id": self.payment_subject_id.id,
+                "kmitl_payment_subject_id": line.payment_subject_id.id,
                 "ref": _("%s - %s", self.name, bill.name),
                 "analytic_distribution": bill.analytic_distribution,
             }

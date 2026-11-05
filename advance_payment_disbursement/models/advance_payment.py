@@ -5,12 +5,18 @@ from odoo.osv import expression
 class AdvancePayment(models.Model):
     _inherit = "advance.payment"
 
-    # ใบเบิกชดใช้เงินยืม clearing this loan (ADR-0032).
-    disbursement_request_ids = fields.One2many(
-        comodel_name="disbursement.request",
+    # รายการชดใช้เงินยืม clearing this loan (ADR-0032, disbursement ADR-0009).
+    disbursement_request_line_ids = fields.One2many(
+        comodel_name="disbursement.request.line",
         inverse_name="advance_payment_id",
-        string="ใบเบิกชดใช้เงินยืม",
+        string="รายการชดใช้เงินยืม",
         readonly=True,
+    )
+
+    disbursement_request_ids = fields.Many2many(
+        comodel_name="disbursement.request",
+        string="ใบขอเบิก",
+        compute="_compute_disbursement_request_ids",
     )
 
     disbursement_request_count = fields.Integer(
@@ -21,7 +27,7 @@ class AdvancePayment(models.Model):
     # requests are listed from a sudo render, and only those who may read
     # requests get the smart button.
     disbursement_request_html = fields.Html(
-        string="ใบเบิกชดใช้เงินยืม",
+        string="ใบขอเบิก",
         compute="_compute_disbursement_request_html",
         sanitize=False,
     )
@@ -29,6 +35,11 @@ class AdvancePayment(models.Model):
     can_view_disbursement_requests = fields.Boolean(
         compute="_compute_can_view_disbursement_requests"
     )
+
+    @api.depends("disbursement_request_line_ids.request_id")
+    def _compute_disbursement_request_ids(self):
+        for rec in self:
+            rec.disbursement_request_ids = rec.disbursement_request_line_ids.request_id
 
     @api.depends("disbursement_request_ids")
     def _compute_disbursement_request_count(self):
@@ -41,7 +52,7 @@ class AdvancePayment(models.Model):
             rec.disbursement_request_html = (
                 self.env["ir.qweb"]._render(
                     "advance_payment_disbursement.disbursement_request_table",
-                    {"requests": requests},
+                    {"requests": requests, "loan": rec.sudo()},
                 )
                 if requests
                 else False
@@ -58,21 +69,25 @@ class AdvancePayment(models.Model):
         self.ensure_one()
         return {
             "type": "ir.actions.act_window",
-            "name": _("ใบเบิกชดใช้เงินยืม"),
+            "name": _("ใบขอเบิก"),
             "res_model": "disbursement.request",
             "view_mode": "tree,form",
-            "domain": [("advance_payment_id", "=", self.id)],
+            "domain": [("line_ids.advance_payment_id", "=", self.id)],
             "context": {"create": False},
         }
 
     def _sync_cleared_amount(self, request):
-        """ส่งใช้คืน = what the linked requests consumed (ตัดงบ). Paid off →
+        """ส่งใช้คืน = this loan's lines on consumed (ตัดงบ) requests. Paid off →
         the loan closes itself; a cancelled request that leaves something
         owed again reopens it. Run as sudo: the system records ส่งใช้คืน
         (advance_payment's write guard), and the state moves bypass the loan
         officer/admin gates of action_close/action_reopen."""
         for rec in self:
-            cleared = sum(rec.disbursement_request_ids.mapped("budget_consumed_amount"))
+            cleared = sum(
+                rec.disbursement_request_line_ids.filtered(
+                    lambda ln: ln.request_id.budget_consumed_amount
+                ).mapped("price_total")
+            )
             # Only money given back reopens: cancelling a request that
             # cleared nothing must not reopen a loan the officer closed.
             given_back = (

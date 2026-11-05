@@ -23,8 +23,12 @@
                             t-options="{'widget': 'date'}"
                         />
                     </td>
+                    <!-- What the request cleared of this loan: its lines, once ตัดงบ. -->
                     <td class="text-end">
-                        <span t-field="request.budget_consumed_amount" />
+                        <span
+                            t-out="sum(request.line_ids.filtered(lambda l: l.advance_payment_id == loan).mapped('price_total')) if request.budget_consumed_amount else 0"
+                            t-options="{'widget': 'monetary', 'display_currency': request.currency_id}"
+                        />
                     </td>
                     <td>
                         <span t-field="request.state" />
@@ -50,7 +54,7 @@
                 >
                     <field
                         name="disbursement_request_count"
-                        string="ใบเบิกชดใช้เงินยืม"
+                        string="ใบขอเบิก"
                         widget="statinfo"
                     />
                 </button>
@@ -58,7 +62,7 @@
             <group name="amount_summary" position="after">
                 <group
                     name="disbursement_requests"
-                    string="ใบเบิกชดใช้เงินยืม"
+                    string="ใบขอเบิก"
                     attrs="{'invisible': [('disbursement_request_count', '=', 0)]}"
                 >
                     <field name="disbursement_request_html" nolabel="1" colspan="2" />

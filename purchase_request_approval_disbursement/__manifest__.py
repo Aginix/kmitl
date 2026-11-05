@@ -1,6 +1,6 @@
 {
     "name": "Purchase Request Approval Disbursement",
-    "version": "16.0.1.1.4",
+    "version": "16.0.1.2.0",
     "summary": """ Purchase Request Approval Disbursement Summary """,
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",

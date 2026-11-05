@@ -34,7 +34,6 @@ class TestPayeeBankWizard(TwoApproverCommon):
     def _request(self, partner):
         return self.DR.with_user(self.requester).create(
             {
-                "partner_type_id": partner.partner_type_id.id,
                 "line_ids": [
                     (0, 0, {"account_id": self.expense_account.id, "amount": 100.0, "partner_id": partner.id})
                 ],

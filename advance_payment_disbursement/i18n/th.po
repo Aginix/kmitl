@@ -15,11 +15,27 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #. module: advance_payment_disbursement
+#: model:ir.model.fields.selection,name:advance_payment_disbursement.selection__disbursement_request_line__payment_type__advance
+msgid "Advance"
+msgstr "เงินยืม"
+
+#. module: advance_payment_disbursement
+#. odoo-python
+#: code:addons/advance_payment_disbursement/models/disbursement_request_line.py:0
+#, python-format
+msgid ""
+"Disbursement request lines of payment type Advance exist: they cannot be re-"
+"typed silently."
+msgstr ""
+"มีรายการใบขอเบิกประเภทการจ่ายเงินเป็นเงินยืมอยู่ "
+"จึงเปลี่ยนประเภทโดยอัตโนมัติไม่ได้"
+
+#. module: advance_payment_disbursement
 #. odoo-python
 #: code:addons/advance_payment_disbursement/models/disbursement_request.py:0
 #, python-format
-msgid "An advance request must name the loan (เลขที่สัญญายืมเงิน) it clears."
-msgstr "ใบเบิกชดใช้เงินยืมต้องระบุเลขที่สัญญายืมเงินที่จะชดใช้"
+msgid "Every Advance line must name the loan (เลขที่สัญญายืมเงิน) it clears."
+msgstr "รายการเงินยืมทุกรายการต้องระบุเลขที่สัญญายืมเงินที่จะชดใช้"
 
 #. module: advance_payment_disbursement
 #. odoo-python
@@ -30,29 +46,29 @@ msgstr "สัญญายืมเงิน %(loan)s ไม่อยู่ใ�
 
 #. module: advance_payment_disbursement
 #. odoo-python
+#: code:addons/advance_payment_disbursement/models/disbursement_request_line.py:0
+#, python-format
+msgid "Only a line of payment type Advance may name a loan."
+msgstr "ระบุสัญญายืมเงินได้เฉพาะรายการประเภทการจ่ายเงิน เงินยืม เท่านั้น"
+
+#. module: advance_payment_disbursement
+#. odoo-python
 #: code:addons/advance_payment_disbursement/models/disbursement_request.py:0
 #, python-format
-msgid "Only a request of payment type Advance may name a loan."
-msgstr "ระบุสัญญายืมเงินได้เฉพาะใบขอเบิกประเภทจ่าย เงินยืม เท่านั้น"
+msgid ""
+"The lines clearing loan %(loan)s total %(amount)s, more than it still owes "
+"(%(remaining)s)."
+msgstr ""
+"รายการชดใช้สัญญายืมเงิน %(loan)s รวม %(amount)s เกินยอดคงเหลือ "
+"(%(remaining)s)"
 
 #. module: advance_payment_disbursement
 #. odoo-python
 #: code:addons/advance_payment_disbursement/models/disbursement_request_line.py:0
 #, python-format
 msgid ""
-"The payee of a request clearing loan %(loan)s must be its borrower, "
+"The payee of a line clearing loan %(loan)s must be its borrower, "
 "%(borrower)s."
 msgstr ""
-"ผู้รับเงินของใบเบิกชดใช้เงินยืม %(loan)s ต้องเป็นผู้ยืม %(borrower)s "
+"ผู้รับเงินของรายการชดใช้สัญญายืมเงิน %(loan)s ต้องเป็นผู้ยืม %(borrower)s "
 "เท่านั้น"
-
-#. module: advance_payment_disbursement
-#. odoo-python
-#: code:addons/advance_payment_disbursement/models/disbursement_request.py:0
-#, python-format
-msgid ""
-"The request amount %(amount)s exceeds what loan %(loan)s still owes "
-"(%(remaining)s)."
-msgstr ""
-"ยอดใบขอเบิก %(amount)s เกินยอดคงเหลือของสัญญายืมเงิน %(loan)s "
-"(%(remaining)s)"

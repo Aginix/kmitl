@@ -13,7 +13,7 @@
                     attrs="{'invisible': [('is_paper_import', '=', False)]}"
                 >Paper Import</div>
             </xpath>
-            <field name="payment_type" position="after">
+            <field name="payment_type_display" position="after">
                 <!-- One of the two survives per user: only the paper import
                      group sees the checkbox; everyone else only gets the
                      badge, which still needs the field in the view. -->

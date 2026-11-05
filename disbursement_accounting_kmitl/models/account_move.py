@@ -77,6 +77,17 @@ class AccountMove(models.Model):
 class AccountMoveLine(models.Model):
     _inherit = "account.move.line"
 
+    # The request line this bill line was made from (ADR 0009): its payment
+    # type and payee type follow the bill.
+    disbursement_request_line_id = fields.Many2one(
+        comodel_name="disbursement.request.line",
+        string="Disbursement Request Line",
+        ondelete="set null",
+        index="btree_not_null",
+        copy=False,
+        readonly=True,
+    )
+
     def action_open_move(self):
         self.ensure_one()
         return {

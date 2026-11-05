@@ -51,7 +51,6 @@ class TestDirectClaimBudget(BudgetLedgerCommon):
     def _claim(self, amount):
         dr = self.env["disbursement.request"].create(
             {
-                "partner_type_id": self.partner.partner_type_id.id,
                 "is_direct_claim": True,
                 "memo_number": "อว 7201/1",
                 "sign_date": "2026-10-01",

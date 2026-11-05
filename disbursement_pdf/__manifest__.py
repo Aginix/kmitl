@@ -3,7 +3,7 @@
 {
     "name": "Disbursement PDF",
     "summary": "Print the standalone disbursement request (ใบขอเบิกเงิน) PDF",
-    "version": "16.0.1.2.1",
+    "version": "16.0.1.3.0",
     "category": "Disbursement",
     "license": "LGPL-3",
     "author": "KMITL",

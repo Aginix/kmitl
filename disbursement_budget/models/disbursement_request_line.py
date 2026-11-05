@@ -13,7 +13,11 @@ class DisbursementRequestLine(models.Model):
     def create(self, vals_list):
         Request = self.env["disbursement.request"]
         for vals in vals_list:
-            if not vals.get("account_id") and vals.get("request_id"):
+            if (
+                not vals.get("account_id")
+                and vals.get("request_id")
+                and not vals.get("display_type")
+            ):
                 request = Request.browse(vals["request_id"])
                 account = request._budget_account_default_account()
                 vals["account_id"] = account.id
@@ -51,7 +55,7 @@ class DisbursementRequestLine(models.Model):
     # list), so the row opens on the budget code's own account.
     @api.onchange("account_id")
     def _onchange_default_budget_account(self):
-        if self.account_id:
+        if self.account_id or self.display_type:
             return
         self.account_id = self.request_id._budget_account_default_account()
         if not self.name:

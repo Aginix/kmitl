@@ -3,7 +3,7 @@
 {
     "name": "Disbursement Paper Import",
     "summary": "Flag disbursement requests that were keyed in from paper",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.1.0",
     "category": "Disbursement",
     "license": "LGPL-3",
     "author": "KMITL",

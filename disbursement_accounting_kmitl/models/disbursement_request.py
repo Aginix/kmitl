@@ -183,28 +183,23 @@ class DisbursementRequest(models.Model):
         return bills
 
     def _create_bills(self):
-        """Group lines by partner, create one bill per partner.
-
-        Every disbursement request pays a name list (multi-partner), so bills
-        are always split per recipient partner.
-        """
+        """One bill per ``_bill_group_key()`` of the lines (partner and payment
+        type in core; add-ons extend it). Section and note rows are skipped."""
         self.ensure_one()
-        partner_lines = {}
-        for line in self.line_ids:
-            partner_lines.setdefault(
-                line.partner_id,
-                self.env["disbursement.request.line"],
-            )
-            partner_lines[line.partner_id] |= line
+        group_lines = {}
+        for line in self._product_lines():
+            key = line._bill_group_key()
+            group_lines.setdefault(key, self.env["disbursement.request.line"])
+            group_lines[key] |= line
 
         bills = self.env["account.move"]
-        for partner, lines in partner_lines.items():
+        for lines in group_lines.values():
             invoice_lines = [
                 Command.create(self._prepare_bill_line_vals(line)) for line in lines
             ]
             partner_bank = lines[0].partner_bank_id
             bill = self.env["account.move"].create(
-                self._prepare_bill_vals(partner, partner_bank, invoice_lines)
+                self._prepare_bill_vals(lines[0].partner_id, partner_bank, invoice_lines)
             )
             bills |= bill
         return bills
@@ -239,6 +234,7 @@ class DisbursementRequest(models.Model):
             "tax_ids": [Command.set(line.tax_ids.ids)],
             "wht_tax_id": line.wht_tax_id.id,
             "analytic_distribution": line.analytic_distribution,
+            "disbursement_request_line_id": line.id,
         }
 
     # ------------------------------------------------------------------

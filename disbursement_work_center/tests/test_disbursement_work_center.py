@@ -57,7 +57,6 @@ class TestDisbursementWorkCenter(TwoApproverCommon):
         """Signed for real: unlike ``_make_signed_dr`` it enters the circuit."""
         dr = self.DR.create(
             {
-                "partner_type_id": self.partner.partner_type_id.id,
                 "line_ids": [
                     (
                         0,
