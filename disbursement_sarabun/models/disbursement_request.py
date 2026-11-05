@@ -18,6 +18,51 @@ class DisbursementRequest(models.Model):
             f"ขออนุมัติเบิกเงิน{source_name} {department_name} ประจำปีงบประมาณ พ.ศ. {fy_name}"
         )
 
+    def _stamp_signature(self, step):
+        """Re-render once per stamp, not once for the archive and again for the row."""
+        signature = super(
+            DisbursementRequest, self.with_context(sarabun_defer_refreeze=True)
+        )._stamp_signature(step)
+        self._refreeze_sarabun_signed_pdf()
+        return signature
+
+    def _refreeze_sarabun_signed_pdf(self):
+        """Re-render the frozen ฉบับลงนาม of each completed หนังสือ.
+
+        The PDF is frozen the moment the head signs, before any later stage
+        acts; a stage signature added or archived after that must still reach it.
+        Same steps as ``agx_sarabun_pdf_regenerate.action_regenerate_signed_pdf``
+        (not a dependency, so copied) minus its manager-group check.
+        """
+        # sudo: the freeze is a system act on a read-only record (as at completion).
+        documents = self.active_sarabun_document_id.sudo().filtered(
+            lambda d: d.state == "completed" and d.is_frozen
+        )
+        if not documents:
+            return
+        # The render must see the signature row just added or archived.
+        self.invalidate_recordset(["signature_ids"])
+        Attachment = self.env["ir.attachment"].sudo()
+        for doc in documents:
+            attached = [("res_model", "=", doc._name), ("res_id", "=", doc.id)]
+            frozen = Attachment.search(attached + [("res_field", "=", "signed_pdf")])
+            # The visible copy carries the very same bytes: match by checksum.
+            old_copies = Attachment.search(
+                attached
+                + [
+                    ("res_field", "=", False),
+                    ("checksum", "in", frozen.mapped("checksum")),
+                ]
+            )
+            # Keep the real freeze time: a re-render is not a re-sign.
+            signed_at = doc.signed_at
+            doc.write(
+                {"signed_pdf": False, "signed_pdf_filename": False, "signed_at": False}
+            )
+            old_copies.unlink()
+            doc._freeze_signed_copy()
+            doc.signed_at = signed_at
+
     def _prepare_sarabun_document_vals(self):
         vals = super()._prepare_sarabun_document_vals()
         vals["addressee"] = "อธิการบดี"
@@ -139,6 +184,11 @@ class DisbursementRequest(models.Model):
 
     def _get_sarabun_body_template(self):
         return "disbursement_sarabun.report_disbursement_request_body"
+
+    def _get_sarabun_tail_template(self):
+        """Stage signatures (ADR-0002 rows) sign after the หนังสือ's head, so they
+        print below its signature."""
+        return "disbursement_pdf.report_disbursement_request_signature"
 
     def _get_sarabun_content(self):
         """The editable เนื้อหา, seeded once at submit: the opening paragraph,

@@ -480,6 +480,7 @@ def _create_pr_with_line(
 
 def _run_non_egp_flow(env, pr, admin_user, department):
     """Run non-EGP flow: PR → Sarabun → PA → Sarabun → PO."""
+    pr.button_to_approve()  # ตรวจสอบ: to_verify → to_verify_budget
     pr.action_reserve_budget()
     _logger.info("PR %s budget reserved, state=%s", pr.name, pr.state)
 
@@ -499,6 +500,7 @@ def _run_non_egp_flow(env, pr, admin_user, department):
 
 def _run_egp_flow(env, pr, admin_user, department):
     """Run EGP flow: PR → Sarabun → egp_in_progress → PO (no PA)."""
+    pr.button_to_approve()  # ตรวจสอบ: to_verify → to_verify_budget
     pr.action_reserve_budget()
     _logger.info("PR %s budget reserved, state=%s", pr.name, pr.state)
 

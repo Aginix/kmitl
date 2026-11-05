@@ -79,7 +79,7 @@
             <div class="row mb-2" t-if="partner_bank">
                 <div class="col">
                     ธนาคาร <span class="ms-2" t-out="partner_bank.bank_id.name"/>
-                    เลขที่บัญชี <span class="ms-2" t-out="o._get_masked_acc_number(partner_bank.acc_number)"/>
+                    เลขที่บัญชี <span class="ms-2" t-out="partner_bank.acc_number"/>
                 </div>
             </div>
             <table border="0" class="table table-bordered table-sm" t-att-style="'' if partner_last else 'margin-bottom: 1rem'">
@@ -136,6 +136,10 @@
                 <t t-set="header_title" t-value="'ใบขอเบิก'"/>
                 <!-- The DR number prints in the body's budget table, not the corner. -->
                 <t t-set="header_code" t-value="False"/>
+                <div t-if="report_type == 'pdf'" class="footer"
+                     style="text-align: right; font-family: 'THSarabunNew'; font-size: 14pt;">
+                    Page <t t-translation="off"><span class="page"/>/<span class="topage"/></t>
+                </div>
                 <t t-call="agx_sarabun.sarabun_document_layout"/>
             </t>
         </t>

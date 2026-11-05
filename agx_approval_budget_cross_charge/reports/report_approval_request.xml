@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- ถัวจ่าย: the letter lists every code of the reservation with its
+         amount, so its signers see the split they approve (ADR-0011). -->
+    <template
+        id="report_approval_request_budget"
+        inherit_id="agx_approval.report_approval_request_budget"
+    >
+        <xpath
+            expr="//tr[hasclass('o_field_budget_account_id')]//span[@t-field='o.budget_account_id']"
+            position="attributes"
+        >
+            <attribute name="t-if">not o._cross_charge_split_lines()</attribute>
+        </xpath>
+        <xpath
+            expr="//tr[hasclass('o_field_budget_account_id')]//span[@t-field='o.budget_account_id']"
+            position="after"
+        >
+            <div t-foreach="o._cross_charge_split_lines()" t-as="split_line">
+                <span t-out="split_line['account']" />
+                <span t-if="split_line['primary']">(รหัสหลัก)</span>
+                <span t-out="split_line['amount']" />
+            </div>
+        </xpath>
+    </template>
+</odoo>

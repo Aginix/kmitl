@@ -2,7 +2,7 @@
 
 {
     "name": "Disbursement ↔ KMITL Accounting Bridge",
-    "version": "16.0.1.3.1",
+    "version": "16.0.1.4.0",
     "category": "KMITL/Accounting",
     "summary": "DR ↔ Bill: enable vendor bill creation from disbursement "
     "requests and pipeline status sync",
@@ -20,6 +20,7 @@
         "views/disbursement_request_views.xml",
         "views/account_move_views.xml",
         "views/account_move_line_views.xml",
+        "report/account_move_voucher_portrait_templates.xml",
     ],
     "installable": True,
     "auto_install": False,

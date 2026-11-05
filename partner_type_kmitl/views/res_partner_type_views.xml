@@ -7,6 +7,7 @@
         <field name="model">res.partner.type</field>
         <field name="arch" type="xml">
             <tree string="Partner Types">
+                <field name="sequence" widget="handle"/>
                 <field name="name"/>
                 <field name="company_type"/>
                 <field name="is_internal"/>
@@ -31,6 +32,8 @@
                             <field name="partner_count" widget="statinfo" string="คู่ค้า"/>
                         </button>
                     </div>
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
+                    <field name="active" invisible="1"/>
                     <div class="oe_title">
                         <h1>
                             <field name="name" placeholder="e.g., Retail Customer"/>
@@ -62,6 +65,8 @@
                 <field name="company_type"/>
                 <filter name="person" string="Individual" domain="[('company_type', '=', 'person')]"/>
                 <filter name="company" string="Company" domain="[('company_type', '=', 'company')]"/>
+                <separator/>
+                <filter name="inactive" string="Archived" domain="[('active', '=', False)]"/>
             </search>
         </field>
     </record>

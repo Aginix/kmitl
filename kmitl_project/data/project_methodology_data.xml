@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- วิธีดำเนินการ choices; อื่น ๆ stays last and unlocks the detail field
+         (kmitl.project.methodology_other). -->
+
+    <record id="lecture" model="project.methodology">
+        <field name="name">บรรยาย</field>
+        <field name="sequence">10</field>
+    </record>
+
+    <record id="lecture_practice" model="project.methodology">
+        <field name="name">บรรยายเชิงปฏิบัติการ</field>
+        <field name="sequence">20</field>
+    </record>
+
+    <record id="exhibition" model="project.methodology">
+        <field name="name">นิทรรศการ</field>
+        <field name="sequence">30</field>
+    </record>
+
+    <record id="methodology_other" model="project.methodology">
+        <field name="name">อื่น ๆ</field>
+        <field name="sequence">1000</field>
+    </record>
+
+</odoo>

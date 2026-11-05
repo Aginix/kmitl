@@ -1541,7 +1541,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:kmitl_project.selection__budget_account__project_type__activity
 #: model:ir.model.fields.selection,name:kmitl_project.selection__kmitl_project__project_type__activity
 #: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_search
-msgid "กิจกรรม (งบประจำ)"
+msgid "กิจกรรมงบประจำ"
 msgstr ""
 
 #. module: kmitl_project
@@ -2542,7 +2542,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:kmitl_project.selection__budget_account__project_type__project
 #: model:ir.model.fields.selection,name:kmitl_project.selection__kmitl_project__project_type__project
 #: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_search
-msgid "โครงการ (งบประจำ)"
+msgid "โครงการงบประจำ"
 msgstr ""
 
 #. module: kmitl_project

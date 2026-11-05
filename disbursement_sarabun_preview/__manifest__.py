@@ -14,11 +14,6 @@
     "data": [
         "views/disbursement_request_views.xml",
     ],
-    "assets": {
-        "web.assets_backend": [
-            "disbursement_sarabun_preview/static/src/js/draft_preview.esm.js",
-        ],
-    },
     "installable": True,
     "auto_install": True,
 }

@@ -229,7 +229,9 @@
                             />
                             <!-- Unlisted bank account (ADR-0022): the three
                                  declared fields stand in for bank_id until the
-                                 loan officer creates the account at verify. -->
+                                 loan officer creates the account at verify; the
+                                 tick stays, and bank_id shows beside them once
+                                 set, past draft. -->
                             <field
                                 name="use_unlisted_bank"
                                 attrs="{'readonly': ['|', ('state', 'not in', ['draft', 'to_verify']), '&amp;', ('state', '!=', 'draft'), ('is_loan_officer', '=', False)]}"
@@ -237,9 +239,9 @@
                             <field
                                 name="bank_id"
                                 domain="[('partner_id', '=', partner_id)]"
-                                widget="selection"
+                                options="{'no_create': True, 'no_open': True}"
                                 attrs="{
-                                    'invisible': [('use_unlisted_bank', '=', True)],
+                                    'invisible': [('use_unlisted_bank', '=', True), '|', ('state', '=', 'draft'), ('bank_id', '=', False)],
                                     'required': [('use_unlisted_bank', '=', False)],
                                     'readonly': ['|', ('state', 'not in', ['draft', 'to_verify', 'to_director', 'to_approve', 'approved']), '&amp;', ('state', '!=', 'draft'), ('is_loan_officer', '=', False)]
                                 }"
@@ -333,6 +335,13 @@
                                 name="endorser_id"
                                 attrs="{'readonly': ['&amp;', ('state', '!=', 'draft'), ('is_manager', '=', False)]}"
                             />
+                            <div
+                                class="text-muted"
+                                colspan="2"
+                                attrs="{'invisible': [('state', '!=', 'draft')]}"
+                            >
+                                เลือกชื่อหัวหน้าส่วนงาน เช่น คณบดีหรือเทียบเท่า (ผู้อำนวยการสำนัก)
+                            </div>
                             <field
                                 name="date_endorsed"
                                 attrs="{'invisible': [('date_endorsed', '=', False)]}"

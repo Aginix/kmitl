@@ -2,7 +2,7 @@
     "name": "Advance Payment - Budget Commitment",
     "summary": "Cap borrowing at the source's ใบจองงบประมาณ and charge the "
     "disbursement voucher to its dimensions",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.1.0",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
@@ -10,6 +10,7 @@
         "advance_payment",
         "advance_payment_exception",
         "budget",
+        "finance_kmitl_voucher_budget_code",
     ],
     "data": [
         "data/exception_rule_data.xml",

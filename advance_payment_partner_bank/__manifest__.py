@@ -2,7 +2,7 @@
     "name": "Advance Payment - Borrower Bank Account",
     "summary": "Loan officer turns a borrower's unlisted bank account into a "
     "real one at verification",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.1.0",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
