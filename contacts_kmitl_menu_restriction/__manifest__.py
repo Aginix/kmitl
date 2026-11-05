@@ -10,6 +10,7 @@
     ],
     "data": [
         "security/contacts_security.xml",
+        "security/ir.model.access.csv",
         "views/menu.xml",
     ],
     "installable": True,

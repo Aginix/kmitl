@@ -1,0 +1,27 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* contacts_kmitl_menu_restriction
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: contacts_kmitl_menu_restriction
+#: model:res.groups,name:contacts_kmitl_menu_restriction.group_can_access_contacts_app
+msgid "Can Access Contacts App"
+msgstr "เข้าถึงแอปคู่ค้าได้"
+
+#. module: contacts_kmitl_menu_restriction
+#: model:res.groups,name:contacts_kmitl_menu_restriction.group_can_edit_contacts
+msgid "Can Edit Contacts"
+msgstr "เพิ่ม/แก้ไขข้อมูลคู่ค้าได้"
+
+#. module: contacts_kmitl_menu_restriction
+#: model:res.groups,name:contacts_kmitl_menu_restriction.group_can_edit_contact_bank
+msgid "Can Edit Contact Bank Accounts"
+msgstr "เพิ่ม/แก้ไขบัญชีธนาคารของคู่ค้าได้"
