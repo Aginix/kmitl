@@ -207,7 +207,7 @@ class DisbursementRequest(models.Model):
     def _compute_payment_acts(self):
         for rec in self:
             # Once authorized, Create Payment is the next press: authorizing
-            # again would only re-stamp and fan the To-pay Todo out twice.
+            # again would only re-stamp.
             rec.can_authorize_payment = not rec.payment_authorizer_id and (
                 rec._disbursement_act_offered("disbursement.authorize_payment")
             )
@@ -439,9 +439,10 @@ class DisbursementRequest(models.Model):
     def action_authorize(self):
         """The authorization act: stamps and signs, and makes the money payable.
 
-        It does not raise the vouchers. The finance office does that with its own
-        press, Create Payment (``action_create_payment``), at its own station.
-        See ADR-0006 (superseded in part).
+        It does not raise the vouchers, and it schedules no To-pay Todo: the
+        request reaching the finance office's station is what tells them, and
+        they raise the vouchers there with Create Payment
+        (``action_create_payment``). See ADR-0006 (superseded in part).
         """
         for record in self:
             record._disbursement_check_act("disbursement.authorize_payment")
@@ -452,7 +453,6 @@ class DisbursementRequest(models.Model):
                 }
             )
             record._stamp_signature("payment_authorize")
-            record._schedule_payment_todo(TO_PAY_ACTIVITY, FINANCE_GROUP)
             record._disbursement_act_done("disbursement.authorize_payment")
         return True
 
@@ -528,6 +528,7 @@ class DisbursementRequest(models.Model):
         for record in self.filtered(lambda rec: rec.settlement_stage == "settled"):
             if record.activity_ids.filtered(lambda a: a.activity_type_id == book):
                 continue
+            # Closes the To-pay Todo of requests authorized before it was dropped.
             record.activity_feedback([TO_PAY_ACTIVITY])
             # One Todo for the request, because the request is the document KMITL
             # navigates by — not twelve for twelve payees.
