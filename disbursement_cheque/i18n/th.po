@@ -24,6 +24,7 @@ msgstr "จ่ายเช็ค"
 
 #. module: disbursement_cheque
 #: model:ir.model.fields,field_description:disbursement_cheque.field_disbursement_request__has_cheque
+#: model_terms:ir.ui.view,arch_db:disbursement_cheque.view_disbursement_request_search
 msgid "Cheque Payment"
 msgstr "มีจ่ายเช็ค"
 
