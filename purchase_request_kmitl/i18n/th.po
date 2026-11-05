@@ -200,6 +200,11 @@ msgid "Department"
 msgstr "หน่วยงาน"
 
 #. module: purchase_request_kmitl
+#: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__procurement_committee__approve_role__deputy_secretary
+msgid "Deputy Secretary"
+msgstr "กรรมการและรองเลขานุการ"
+
+#. module: purchase_request_kmitl
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_procurement_method__description
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_procurement_type__description
 msgid "Description"
