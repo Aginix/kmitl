@@ -24,7 +24,7 @@
             <!-- อ้างอิงใบขออนุมัติ (agx_approval ADR-0010): naming the request
                  prefills the header; fixed once the ใบขอเบิก leaves draft. -->
             <xpath
-                expr="//group[@name='disbursement_information']/field[@name='payment_type']"
+                expr="//group[@name='disbursement_information']/field[@name='payment_type_display']"
                 position="before"
             >
                 <field

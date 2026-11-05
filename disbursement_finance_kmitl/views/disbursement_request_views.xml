@@ -240,6 +240,7 @@
                 />
                 <field name="can_authorize_payment" invisible="1" />
                 <field name="can_edit_payment_subject" invisible="1" />
+                <field name="payment_subject_missing" invisible="1" />
             </xpath>
 
             <!-- การจ่ายเงิน — one row per payee, from the first posted bill.
@@ -263,7 +264,7 @@
                          carries the reminder instead. -->
                     <div class="alert alert-warning mb-2" role="alert"
                          attrs="{'invisible': ['|', ('can_edit_payment_subject', '=', False),
-                                                     ('payment_subject_id', '!=', False)]}">
+                                                     ('payment_subject_missing', '=', False)]}">
                         <i class="fa fa-exclamation-triangle me-1" />
                         <span>Choose the payment subject before auditing: it is what decides which account each payee is paid from.</span>
                     </div>
@@ -300,6 +301,17 @@
                         >
                             <field name="allowed_paying_account_ids" invisible="1" />
                             <field name="partner_id" readonly="1" />
+                            <!-- force_save: the provenance is readonly (see below). -->
+                            <field
+                                name="payment_subject_id"
+                                options="{'no_create': True}"
+                                attrs="{'readonly': ['|', ('payment_id', '!=', False), ('parent.can_edit_payment_subject', '=', False)]}"
+                            />
+                            <field
+                                name="payment_subject_manual"
+                                invisible="1"
+                                force_save="1"
+                            />
                             <field
                                 name="partner_bank_id"
                                 options="{'no_create': True}"

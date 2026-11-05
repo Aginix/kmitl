@@ -117,7 +117,6 @@ class TestDisbursementAssignment(TransactionCase):
         department = department or self.dept_child
         partners = partners or [partner or self.partner_a]
         vals = {
-            "partner_type_id": partners[0].partner_type_id.id,
             "line_ids": [
                 (
                     0,
@@ -228,13 +227,14 @@ class TestDisbursementAssignment(TransactionCase):
         dr_b = self._make_dr(partner=self.partner_b)
         self.assertEqual(dr_b.assigned_to, self.officer_b)
 
-    def test_mixed_partner_types_cannot_be_submitted(self):
-        self.Rule.create({"user_id": self.officer_b.id})
-        # A request pays one payee type: a line of another type blocks the
-        # submit, so the request never reaches assignment.
-        dr = self._make_dr(partners=[self.partner_a, self.partner_b], sign=False)
-        self.assertEqual(dr.state, "draft")
-        self.assertFalse(dr.assigned_to)
+    def test_mixed_partner_types_match_only_wildcard_rules(self):
+        self.Rule.create(
+            {"user_id": self.officer_a.id, "partner_type_id": self.pt_a.id}
+        )
+        self.Rule.create({"user_id": self.officer_b.id, "sequence": 20})
+        # Lines of several payee types: no single type to key on.
+        dr = self._make_dr(partners=[self.partner_a, self.partner_b])
+        self.assertEqual(dr.assigned_to, self.officer_b)
 
     def test_no_rule_leaves_unassigned(self):
         dr = self._make_dr()

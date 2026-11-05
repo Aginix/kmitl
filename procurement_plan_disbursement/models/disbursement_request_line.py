@@ -12,3 +12,12 @@ class DisbursementRequestLine(models.Model):
     # override — no compute — so it merges cleanly with other
     # budget-account-expense bridges.
     account_id = fields.Many2one(required=False)
+
+    # Same relaxation for core's SQL check: only the payment type is required.
+    _sql_constraints = [
+        (
+            "accountable_required_fields",
+            "CHECK(display_type IS NOT NULL OR payment_type IS NOT NULL)",
+            "Missing required fields on a disbursement request line.",
+        ),
+    ]

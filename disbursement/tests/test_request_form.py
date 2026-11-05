@@ -19,7 +19,6 @@ class TestRequestForm(TwoApproverCommon):
         dr = self.DR.create(
             dict(
                 {
-                    "partner_type_id": self.partner.partner_type_id.id,
                     "line_ids": [
                         (
                             0,
@@ -72,7 +71,6 @@ class TestRequestForm(TwoApproverCommon):
             }
         )
         form = Form(self.DR)
-        form.partner_type_id = self.partner.partner_type_id
         form.account_fiscal_year_id = fiscal_year
         form.source_analytic_id = self.source
         form.department_analytic_id = self.dept
@@ -93,13 +91,12 @@ class TestRequestForm(TwoApproverCommon):
 
 @tagged("post_install", "-at_install")
 class TestTaxable(TwoApproverCommon):
-    """มีภาษี covers VAT and WHT; a company payee type is always taxed."""
+    """มีภาษี covers VAT and WHT; each line starts out taxed by its payment
+    type."""
 
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.company_type = cls.env.ref("partner_type_kmitl.partner_type_company")
-        cls.person_type = cls.env.ref("partner_type_kmitl.partner_type_other")
         cls.vat = cls.env["account.tax"].create(
             {
                 "name": "VAT 7% (test)",
@@ -108,28 +105,20 @@ class TestTaxable(TwoApproverCommon):
             }
         )
 
-    def test_advance_defaults_untaxed_unless_company(self):
-        # Onchange behaviour only — never saved.
-        form = Form(self.DR)
-        form.partner_type_id = self.person_type
-        self.assertTrue(form.has_tax)
-        form.payment_type = "advance"
-        self.assertFalse(form.has_tax)
-        form.partner_type_id = self.company_type
-        self.assertTrue(form.has_tax)
+    def test_prepaid_line_starts_untaxed(self):
+        Line = self.env["disbursement.request.line"]
+        self.assertTrue(Line.new({"payment_type": "direct"})._default_taxable())
+        self.assertFalse(Line.new({"payment_type": "prepaid"})._default_taxable())
 
-    def test_company_may_be_untaxed(self):
-        # A company still starts out taxed, but the user may untick it.
-        form = Form(self.DR)
-        form.partner_type_id = self.company_type
-        self.assertTrue(form.has_tax)
-        dr = self.DR.create({"partner_type_id": self.company_type.id, "has_tax": False})
+    def test_request_may_be_untaxed(self):
+        # Taxed by default, but the user may untick it.
+        self.assertTrue(Form(self.DR).has_tax)
+        dr = self.DR.create({"has_tax": False})
         self.assertFalse(dr.has_tax)
 
     def test_untaxed_request_clears_line_taxes(self):
         dr = self.DR.create(
             {
-                "partner_type_id": self.person_type.id,
                 "line_ids": [
                     (
                         0,

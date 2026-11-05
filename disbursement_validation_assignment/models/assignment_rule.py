@@ -99,10 +99,10 @@ class DisbursementAssignmentRule(models.Model):
             ]
             domain.append((field, "in", ancestors + [False]))
         # Every request pays a name list, so there is no single header partner
-        # to key on. Match partner-type rules only when all line partners share
-        # one partner type; otherwise fall back to the partner-type-agnostic
+        # to key on. Match partner-type rules only when all lines share one
+        # payee type; otherwise fall back to the partner-type-agnostic
         # (wildcard) rules to avoid unpredictable routing.
-        line_ptypes = request.line_ids.mapped("partner_id.partner_type_id")
+        line_ptypes = request.line_ids.partner_type_id
         ptype = line_ptypes if len(line_ptypes) == 1 else line_ptypes.browse()
         domain.append(
             ("partner_type_id", "in", ptype.ids + [False])

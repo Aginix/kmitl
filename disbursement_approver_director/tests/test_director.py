@@ -36,7 +36,7 @@ class TestDirector(TwoApproverCommon):
         self.assertFalse(dr.finance_approver_id)
 
     def test_cannot_approve_a_draft(self):
-        dr = self.DR.create({"partner_type_id": self.partner.partner_type_id.id})
+        dr = self.DR.create({})
         with self.assertRaises(UserError):
             dr.with_user(self.finance).action_approve_finance()
 

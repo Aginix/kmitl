@@ -1,6 +1,4 @@
-# -*- coding: utf-8 -*-
 from odoo import Command, _, api, fields, models
-from odoo.exceptions import UserError, ValidationError
 
 
 class PurchaseOrder(models.Model):
@@ -73,9 +71,6 @@ class PurchaseOrder(models.Model):
     def _prepare_disbursement_request_vals(self):
         vals = {
             "purchase_id": self.id,
-            "partner_type_id": self.env["disbursement.request"]
-            ._get_payee_type(self.partner_id)
-            .id,
             "line_ids": [
                 Command.create({
                     **line._prepare_disbursement_request_line_vals(),

@@ -74,7 +74,7 @@
                         <div class="row">
                             <div class="col">
                                 วิธีการจ่ายเงิน:
-                                <span class="ms-2" t-field="o.payment_type"/>
+                                <span class="ms-2" t-out="o.payment_type_display"/>
                             </div>
                         </div>
 
@@ -113,8 +113,10 @@
 
                         <div class="my-4"/>
 
+                        <!-- Lines under their sections, with subtotals (ADR 0009) -->
+                        <t t-if="o._has_sections()" t-call="disbursement_pdf.report_disbursement_request_sections"/>
                         <!-- Line items grouped by partner (name list) -->
-                        <t>
+                        <t t-else="">
                             <t t-set="partners" t-value="o.line_ids.mapped('partner_id')"/>
                             <t t-set="global_row_no" t-value="1"/>
                             <t t-foreach="partners" t-as="partner">
@@ -204,6 +206,84 @@
                 </t>
             </t>
         </t>
+    </template>
+
+    <!-- ============================================================
+         Sectioned lines (disbursement ADR-0009): the lines in their order, each
+         section heading followed by its lines and their subtotal. Expects `o`;
+         `with_totals` appends the request's totals (the หนังสือ body).
+         ============================================================ -->
+    <template id="report_disbursement_request_sections">
+        <t t-set="row_no" t-value="1"/>
+        <t t-set="section_subtotal" t-value="0"/>
+        <t t-set="in_section" t-value="False"/>
+        <table border="0" class="table table-bordered table-sm mb-4">
+            <thead>
+                <tr>
+                    <th class="text-center" style="width: 8%">ลำดับ</th>
+                    <th class="text-center" style="width: 30%">ผู้รับเงิน</th>
+                    <th class="text-center">รายละเอียด</th>
+                    <th class="text-end" style="width: 20%">จำนวนเงิน</th>
+                </tr>
+            </thead>
+            <tbody>
+                <t t-foreach="o.line_ids" t-as="line">
+                    <t t-if="line.display_type == 'line_section'">
+                        <tr t-if="in_section">
+                            <td class="text-end" colspan="3">รวม</td>
+                            <td class="text-end" t-out="'{0:,.2f} ฿'.format(section_subtotal)"/>
+                        </tr>
+                        <tr>
+                            <td colspan="4"><strong t-out="line.name"/></td>
+                        </tr>
+                        <t t-set="section_subtotal" t-value="0"/>
+                        <t t-set="in_section" t-value="True"/>
+                    </t>
+                    <tr t-elif="line.display_type == 'line_note'">
+                        <td colspan="4" style="white-space: pre-wrap"><em t-out="line.name"/></td>
+                    </tr>
+                    <t t-else="">
+                        <tr>
+                            <td class="text-center" t-out="row_no"/>
+                            <td>
+                                <span t-out="line.partner_id.name"/>
+                                <t t-if="line.partner_bank_id">
+                                    <br/><span t-out="line.partner_bank_id.bank_id.name"/>
+                                    <span t-out="line.partner_bank_id.acc_number"/>
+                                </t>
+                            </td>
+                            <td style="white-space: pre-wrap"><t t-out="line.name"/><t t-if="line.note"><br/>หมายเหตุ: <t t-out="line.note"/></t></td>
+                            <td class="text-end" t-out="'{0:,.2f} ฿'.format(line.price_subtotal)"/>
+                        </tr>
+                        <t t-set="row_no" t-value="row_no + 1"/>
+                        <t t-set="section_subtotal" t-value="section_subtotal + line.price_subtotal"/>
+                    </t>
+                </t>
+                <tr t-if="in_section">
+                    <td class="text-end" colspan="3">รวม</td>
+                    <td class="text-end" t-out="'{0:,.2f} ฿'.format(section_subtotal)"/>
+                </tr>
+                <t t-if="with_totals">
+                    <t t-set="amount_words" t-value="'(%s)' % o.currency_id.with_context({'lang': 'th_TH'}).amount_to_text(o.amount_total)"/>
+                    <tr t-if="o.amount_tax">
+                        <td class="text-center" colspan="3">ราคาก่อนรวมภาษีมูลค่าเพิ่ม</td>
+                        <td class="text-end" t-out="'{0:,.2f} ฿'.format(o.amount_untaxed)"/>
+                    </tr>
+                    <tr t-if="o.amount_tax">
+                        <td class="text-center" colspan="3">ภาษีมูลค่าเพิ่ม (VAT 7%)</td>
+                        <td class="text-end" t-out="'{0:,.2f} ฿'.format(o.amount_tax)"/>
+                    </tr>
+                    <tr>
+                        <td class="text-center" colspan="3">
+                            <t t-if="o.amount_tax">ราคาสุทธิ</t>
+                            <t t-else="">รวมเป็นเงิน</t>
+                            <t t-out="amount_words"/>
+                        </td>
+                        <td class="text-end" t-out="'{0:,.2f} ฿'.format(o.amount_total)"/>
+                    </tr>
+                </t>
+            </tbody>
+        </table>
     </template>
 
     <!-- ============================================================

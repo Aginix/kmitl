@@ -17,7 +17,7 @@
         <p>
             <span class="oe-tabs" style="width: 40px;">&#9;</span>
             วิธีการจ่ายเงิน:
-            <u><strong><span t-field="o.payment_type"/></strong></u>
+            <u><strong><span t-out="o.payment_type_display"/></strong></u>
         </p>
         <t t-set="source_document" t-value="o.sudo()._get_source_document()"/>
         <p t-if="source_document">
@@ -65,10 +65,14 @@
             </tbody>
         </table>
 
+        <!-- Lines under their sections + Totals (ADR 0009) -->
+        <t t-if="o._has_sections()" t-call="disbursement_pdf.report_disbursement_request_sections">
+            <t t-set="with_totals" t-value="True"/>
+        </t>
         <!-- Line Items Grouped by Partner + Totals -->
         <t t-set="partners" t-value="o.line_ids.mapped('partner_id')"/>
         <t t-set="global_row_no" t-value="1"/>
-        <t t-foreach="partners" t-as="partner">
+        <t t-if="not o._has_sections()" t-foreach="partners" t-as="partner">
             <div class="row mt-3 mb-2">
                 <div class="col">
                     <strong>ผู้รับเงิน: <span t-out="partner.name"/></strong>

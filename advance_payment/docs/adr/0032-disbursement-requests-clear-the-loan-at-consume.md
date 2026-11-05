@@ -32,3 +32,10 @@ searched as sudo — a requester needs no right on loans.
   like any request. A request with "Consumes Budget" off clears nothing.
 - Returned cash (ใบเสร็จ) is still not linked: a loan with leftover cash needs the loan
   officer's manual close.
+
+## Amendment (disbursement ADR-0009)
+
+The loan moved from the request to its line: a เงินยืม **line** (รายการชดใช้เงินยืม) names
+its loan, and one request may clear several loans next to lines paid otherwise.
+ส่งใช้คืน is the sum of the loan's own lines (`price_total`) on consumed requests; the
+consume check compares those lines, not the request's total, with คงเหลือ.

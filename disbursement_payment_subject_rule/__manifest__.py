@@ -4,7 +4,7 @@
     "name": "Disbursement Payment Subject Rules",
     "summary": "Pick a disbursement request's payment subject (เรื่องที่จ่าย) "
     "automatically by rules",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.1.0",
     "category": "KMITL/Finance",
     "website": "https://www.kmitl.ac.th",
     "license": "LGPL-3",

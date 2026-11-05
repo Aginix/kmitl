@@ -11,7 +11,8 @@ business (`disbursement_wc`); how far the money has got is the **settlement stag
 
 **Disbursement Request** (DR, ใบขอเบิก):
 The document requesting a disbursement. Always pays a name list (multi-partner);
-one line per payee, all of one **payee type**. Tracked as `disbursement.request`.
+its lines mix freely — each names its own payee, **payee type** and **payment
+type**, and may be grouped under **sections**. Tracked as `disbursement.request`.
 _Avoid_: Payment (that is the downstream document), Voucher.
 
 **Payee** (ผู้รับเงิน):
@@ -24,10 +25,25 @@ change is logged on the payee's chatter with its old and new values.
 _Avoid_: Partner of the request, Vendor (only some payees are vendors).
 
 **Payee type** (ประเภทผู้รับเงิน):
-The one partner type (บริษัท / บุคลากรภายใน / นักศึกษา / อื่น ๆ) every payee on a
-request belongs to, chosen on the request. A source document paying several
-types becomes one request per type.
-_Avoid_: Partner type single/multi (the retired header switch).
+The partner type (บริษัท / บุคลากรภายใน / นักศึกษา / อื่น ๆ) of a line's payee,
+chosen per line: it follows the payee when picked, and narrows the payee picker
+when typed first. A request may mix types; a payee no longer of its line's type
+is caught on submit (ADR 0009).
+_Avoid_: Partner type single/multi (the retired header switch), one request per
+payee type (retired).
+
+**Payment type** (ประเภทการจ่ายเงิน):
+How a line is paid — จ่ายตรง (direct), สำรองจ่าย (prepaid), เงินยืม (advance, added by
+`advance_payment_disbursement`) … — chosen per line and extensible by add-ons. It
+decides whether the line pays money out, whether it must go to internal staff,
+whether it starts taxed, and which bill it lands on (ADR 0009).
+_Avoid_: วิธีการจ่ายเงิน as a header field (the request only prints a summary).
+
+**Section** (หัวข้อ):
+A free heading (or note) row grouping the lines below it, as on a sales order.
+It carries no business meaning: no payee, no amount, never billed. The printed
+request shows section headers and subtotals when any section exists.
+_Avoid_: Group, category.
 
 **Source document** (เอกสารต้นทาง):
 The document a request was raised from — a purchase order, a purchase request
@@ -63,13 +79,14 @@ _Avoid_: จ่ายตรง / Direct paid (that is the **payment type** — p
 the payee rather than as an advance or a prepayment), Stand-alone request (a
 request without budget control at all).
 
-**Advance clearing request** (ใบเบิกชดใช้เงินยืม):
-A request of payment type เงินยืม. It names one ค้างชำระ advance-payment
-agreement of its operating unit, its only payee is that loan's borrower, and it
-pays no money out — no payment method, no bank account. Its ตัดงบประมาณ act
-clears the loan by the consumed amount (`advance_payment_disbursement`,
-advance_payment ADR-0032).
-_Avoid_: ใบเบิกเงินยืม (sounds like paying the loan out), advance DR.
+**Advance clearing line** (รายการชดใช้เงินยืม):
+A line of payment type เงินยืม. It names one ค้างชำระ advance-payment agreement
+of the request's operating unit, its payee is that loan's borrower, and it pays
+no money out — no payment method, no bank account. A request may hold several,
+clearing several loans; its ตัดงบประมาณ act clears each loan by the total of its
+own lines (`advance_payment_disbursement`, advance_payment ADR-0032, ADR 0009).
+_Avoid_: ใบเบิกชดใช้เงินยืม (the whole request is no longer of one type),
+ใบเบิกเงินยืม (sounds like paying the loan out), advance DR.
 
 **Memo number** (เลขที่หนังสือ):
 The number of the official memo (หนังสือบันทึกข้อความ) authorising the request.
@@ -80,9 +97,9 @@ is the request's own `DR/<yy>/…`).
 
 **Taxable** (มีภาษี):
 Whether the request's lines carry taxes at all — VAT and withholding tax alike.
-A request paid to a company (บริษัท) is always taxable; an advance or a
-prepayment starts out not taxable. A request that is not taxable has no taxes
-on any line.
+The switch is per request (default on); each line starts out taxed or not by its
+payment type (a direct line is, an advance or a prepayment line is not). A
+request that is not taxable has no taxes on any line.
 _Avoid_: VAT flag (it covers withholding tax too).
 
 **Stand-alone request** (ใบขอเบิกแบบอิสระ):

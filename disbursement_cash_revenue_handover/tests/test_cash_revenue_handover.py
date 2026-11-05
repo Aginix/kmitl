@@ -147,7 +147,6 @@ class TestCashRevenueHandover(TransactionCase):
         request = self.env["disbursement.request"].create(
             {
                 "date": "2026-01-15",
-                "partner_type_id": payees[0].partner_type_id.id,
                 "analytic_distribution": distribution,
                 "line_ids": [
                     (

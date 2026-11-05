@@ -79,7 +79,7 @@ class TestStudentImport(TransactionCase):
         return (
             self.env["disbursement.request"]
             .with_user(self.requester)
-            .create({"partner_type_id": self.student_type.id, **vals})
+            .create(vals)
         )
 
     def _check(self, request, rows, found=None):
@@ -149,6 +149,8 @@ class TestStudentImport(TransactionCase):
         self.assertEqual(new.name, "นายใหม่ ใจดี")
         self.assertEqual(new.student_code, "65010002")
         self.assertEqual(new.partner_type_id, self.student_type)
+        self.assertEqual(lines.partner_type_id, self.student_type)
+        self.assertTrue(request.is_student_payee)
         self.assertEqual(lines[1].partner_bank_id.acc_number, "0222222222")
         self.assertEqual(lines[2].partner_id, self.known)
         self.assertEqual(lines[2].partner_bank_id.bank_id, self.scb)
@@ -213,9 +215,9 @@ class TestStudentImport(TransactionCase):
         self.assertEqual(request.line_ids.partner_id, manual)
         self.assertEqual(manual.student_code, "65010009")
 
-    def test_only_draft_student_requests(self):
-        other_type = self.env.ref("partner_type_kmitl.partner_type_other")
-        request = self._request(partner_type_id=other_type.id)
+    def test_only_draft_requests(self):
+        request = self._request()
         self.assertFalse(request.is_student_payee)
+        request.state = "cancel"
         with self.assertRaises(UserError):
             self._check(request, [["64010001", 100, "", "", "", ""]])

@@ -41,8 +41,8 @@ class KmitlPaymentSubject(models.Model):
 
     Not to be confused with ``kmitl.payment.type`` (ประเภทธุรกรรม — the
     counterpart side: what the money *is*) nor with
-    ``disbursement.request.payment_type`` (direct/advance/prepaid, inherited from
-    the approval request).
+    ``disbursement.request.line.payment_type`` (direct/advance/prepaid, per
+    request line).
     """
 
     _name = "kmitl.payment.subject"

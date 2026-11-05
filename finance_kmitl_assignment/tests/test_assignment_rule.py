@@ -136,21 +136,6 @@ class TestFinanceAssignment(TransactionCase):
             vals["payment_method_line_id"] = paying_account.id
         return vals
 
-    def _make_request(self, subject):
-        """A disbursement request carrying nothing but its payment subject.
-
-        The rules read only the subject off the request, so it is left in
-        ``draft`` without lines: everything that makes a request payable belongs
-        to the workflow tests in ``disbursement_finance_kmitl``.
-        """
-        return self.env["disbursement.request"].create(
-            {
-                "date": fields.Date.today(),
-                "partner_type_id": self.pt_a.id,
-                "payment_subject_id": subject.id,
-            }
-        )
-
     def _make_payment(
         self,
         source=None,
@@ -158,7 +143,7 @@ class TestFinanceAssignment(TransactionCase):
         partner=None,
         create_as=None,
         paying_account=None,
-        request=None,
+        subject=None,
     ):
         """A voucher filled in on the form: the dimension fields are written."""
         vals = self._payment_vals(
@@ -167,8 +152,9 @@ class TestFinanceAssignment(TransactionCase):
             partner or self.partner_a,
             paying_account=paying_account,
         )
-        if request:
-            vals["disbursement_request_id"] = request.id
+        if subject:
+            # Carried from the payee's payment line, as a disbursement does.
+            vals["kmitl_payment_subject_id"] = subject.id
         payments = self.Payment
         if create_as:
             payments = payments.with_user(create_as)
@@ -331,13 +317,13 @@ class TestFinanceAssignment(TransactionCase):
             {"user_id": self.officer_a.id, "payment_subject_id": self.subject_a.id}
         )
         self.Rule.create({"user_id": self.officer_b.id})
-        for_a = self._make_payment(request=self._make_request(self.subject_a))
+        for_a = self._make_payment(subject=self.subject_a)
         self.assertEqual(for_a.assigned_to, self.officer_a)
-        for_b = self._make_payment(request=self._make_request(self.subject_b))
+        for_b = self._make_payment(subject=self.subject_b)
         self.assertEqual(for_b.assigned_to, self.officer_b)
 
     def test_payment_without_a_request_matches_blank_subject_only(self):
-        """A voucher keyed in by hand has no request, so no subject to route by."""
+        """A voucher keyed in by hand has no subject to route by."""
         self.Rule.create(
             {
                 "user_id": self.officer_a.id,

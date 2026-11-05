@@ -162,10 +162,8 @@ class DisbursementStudentImport(models.TransientModel):
     # -------------------------------------------------------------------------
     def _check_request(self):
         request = self.request_id
-        if request.state != "draft" or not request.is_student_payee:
-            raise UserError(
-                _("Students can only be imported into a draft request paying students.")
-            )
+        if request.state != "draft":
+            raise UserError(_("Students can only be imported into a draft request."))
         request.check_access_rights("write")
         request.check_access_rule("write")
         return request
@@ -369,6 +367,7 @@ class DisbursementStudentImport(models.TransientModel):
                     0,
                     {
                         "partner_id": partner.id,
+                        "partner_type_id": student_type.id,
                         "name": row.description or self.account_id.name,
                         "amount": row.amount,
                         "partner_bank_id": account.id,

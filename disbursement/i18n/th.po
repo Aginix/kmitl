@@ -95,9 +95,19 @@ msgid "Activity"
 msgstr "กิจกรรม"
 
 #. module: disbursement
-#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__payment_type__advance
-msgid "Advance"
-msgstr "เงินยืม"
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+msgid "Add a line"
+msgstr "เพิ่มรายการ"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+msgid "Add a note"
+msgstr "เพิ่มหมายเหตุ"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+msgid "Add a section"
+msgstr "เพิ่มหัวข้อ"
 
 #. module: disbursement
 #: model:ir.actions.act_window,name:disbursement.action_disbursement_request
@@ -271,7 +281,7 @@ msgid "Description"
 msgstr "รายละเอียด"
 
 #. module: disbursement
-#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__payment_type__direct
+#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request_line__payment_type__direct
 msgid "Direct paid"
 msgstr "จ่ายตรง"
 
@@ -357,6 +367,11 @@ msgstr "ชื่อคนเบิก"
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_return_request_wizard__display_name
 msgid "Display Name"
 msgstr "ชื่อ"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request_line__display_type
+msgid "Display Type"
+msgstr "ประเภทการแสดงผล"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__attachment_ids
@@ -452,6 +467,11 @@ msgid "Memo Number"
 msgstr "เลขที่หนังสือ"
 
 #. module: disbursement
+#: model:ir.model.constraint,message:disbursement.constraint_disbursement_request_line_accountable_required_fields
+msgid "Missing required fields on a disbursement request line."
+msgstr "บรรทัดใบขอเบิกยังระบุข้อมูลที่จำเป็นไม่ครบ"
+
+#. module: disbursement
 #: model:ir.actions.act_window,name:disbursement.action_disbursement_request_my
 #: model:ir.ui.menu,name:disbursement.menu_disbursement_request_my
 msgid "My Disbursement Requests"
@@ -479,6 +499,7 @@ msgstr "ยังไม่ตั้งหนี้"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request_line__note
+#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request_line__display_type__line_note
 msgid "Note"
 msgstr "หมายเหตุ"
 
@@ -591,22 +612,18 @@ msgid "Payee"
 msgstr "ผู้รับเงิน"
 
 #. module: disbursement
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__partner_type_company_type
-msgid "Payee Company Type"
-msgstr "ลักษณะประเภทผู้รับเงิน"
-
-#. module: disbursement
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__partner_type_id
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__payee_type_display
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request_line__partner_type_id
 #: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
 msgid "Payee Type"
 msgstr "ประเภทผู้รับเงิน"
 
 #. module: disbursement
 #. odoo-python
-#: code:addons/disbursement/models/disbursement_request.py:0
+#: code:addons/disbursement/models/disbursement_request_line.py:0
 #, python-format
-msgid "Payee type changed"
-msgstr "เปลี่ยนประเภทผู้รับเงิน"
+msgid "Payee type is required on each line."
+msgstr "ต้องระบุประเภทผู้รับเงินในทุกบรรทัด"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__payee_display
@@ -614,12 +631,19 @@ msgid "Payees"
 msgstr "ผู้รับเงิน"
 
 #. module: disbursement
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__payment_type
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__payment_type_display
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request_line__payment_type
 msgid "Payment Type"
 msgstr "ประเภทการจ่ายเงิน"
 
 #. module: disbursement
-#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__payment_type__prepaid
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__pays_out
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request_line__pays_out
+msgid "Pays Out"
+msgstr "จ่ายเงินออก"
+
+#. module: disbursement
+#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request_line__payment_type__prepaid
 msgid "Prepaid"
 msgstr "สำรองจ่าย"
 
@@ -700,6 +724,11 @@ msgid "Returned to Source"
 msgstr "ถูกตีกลับไปต้นเรื่อง"
 
 #. module: disbursement
+#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request_line__display_type__line_section
+msgid "Section"
+msgstr "หัวข้อ"
+
+#. module: disbursement
 #: model:ir.model,name:disbursement.model_disbursement_return_request_wizard
 msgid "Send Back Disbursement Request for Correction"
 msgstr "ส่งคืนผู้จัดทำใบขอเบิกเพื่อแก้ไข"
@@ -720,13 +749,6 @@ msgstr "ส่งคืนผู้จัดทำเพื่อแก้ไข
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request_line__sequence
 msgid "Sequence"
 msgstr "ลำดับ"
-
-#. module: disbursement
-#. odoo-python
-#: code:addons/disbursement/models/disbursement_request.py:0
-#, python-format
-msgid "Set a payee type on %s before raising a disbursement request."
-msgstr "กรุณาระบุประเภทผู้รับเงินของ %s ก่อนสร้างใบขอเบิก"
 
 #. module: disbursement
 #: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__settlement_stage__settled

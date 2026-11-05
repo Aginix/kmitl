@@ -20,22 +20,34 @@ msgstr ""
 #. odoo-python
 #: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
 #, python-format
-msgid "%s has vouchers with blocking exceptions. Open the entry and submit it there to see them."
-msgstr "%s มีใบสำคัญที่ติดข้อยกเว้น กรุณาเปิดรายการบันทึกบัญชีแล้วส่งอนุมัติที่นั่นเพื่อดูรายละเอียด"
+msgid ""
+"%s has vouchers with blocking exceptions. Open the entry and submit it there"
+" to see them."
+msgstr ""
+"%s มีใบสำคัญที่ติดข้อยกเว้น "
+"กรุณาเปิดรายการบันทึกบัญชีแล้วส่งอนุมัติที่นั่นเพื่อดูรายละเอียด"
 
 #. module: disbursement_finance_kmitl
 #. odoo-python
 #: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
 #, python-format
-msgid "%s names no bank account, so the e-payment file would carry no sending account. Set it in Finance ▸ Settings ▸ Paying Accounts."
-msgstr "%s ยังไม่ได้ระบุบัญชีธนาคาร ไฟล์ e-Payment จึงจะไม่มีบัญชีต้นทาง กรุณาตั้งค่าที่ การเงิน ▸ ตั้งค่า ▸ หัวจ่าย"
+msgid ""
+"%s names no bank account, so the e-payment file would carry no sending "
+"account. Set it in Finance ▸ Settings ▸ Paying Accounts."
+msgstr ""
+"%s ยังไม่ได้ระบุบัญชีธนาคาร ไฟล์ e-Payment จึงจะไม่มีบัญชีต้นทาง "
+"กรุณาตั้งค่าที่ การเงิน ▸ ตั้งค่า ▸ หัวจ่าย"
 
 #. module: disbursement_finance_kmitl
 #. odoo-python
 #: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
 #, python-format
-msgid "%s names no bank account, so there is no cheque book to draw on. Set it in Finance ▸ Settings ▸ Paying Accounts."
-msgstr "%s ไม่ได้ระบุบัญชีธนาคาร จึงไม่มีเล่มเช็คให้สั่งจ่าย ตั้งค่าได้ที่ การเงิน ▸ ตั้งค่า ▸ หัวจ่าย"
+msgid ""
+"%s names no bank account, so there is no cheque book to draw on. Set it in "
+"Finance ▸ Settings ▸ Paying Accounts."
+msgstr ""
+"%s ไม่ได้ระบุบัญชีธนาคาร จึงไม่มีเล่มเช็คให้สั่งจ่าย ตั้งค่าได้ที่ การเงิน ▸"
+" ตั้งค่า ▸ หัวจ่าย"
 
 #. module: disbursement_finance_kmitl
 #. odoo-python
@@ -51,15 +63,21 @@ msgstr "ใบตั้งหนี้หนึ่งใบสามารถม
 
 #. module: disbursement_finance_kmitl
 #: model:mail.activity.type,summary:disbursement_finance_kmitl.mail_activity_dr_to_pay
-msgid "A disbursement request was authorized and its vouchers are ready — put them in an e-payment file and confirm the payment"
-msgstr "ใบขอเบิกได้รับอนุมัติเบิกจ่ายและออกใบสำคัญจ่ายเรียบร้อยแล้ว — กรุณาใส่ไฟล์ e-Payment แล้วยืนยันจ่ายสำเร็จ"
+msgid ""
+"A disbursement request was authorized and its vouchers are ready — put them "
+"in an e-payment file and confirm the payment"
+msgstr ""
+"ใบขอเบิกได้รับอนุมัติเบิกจ่ายและออกใบสำคัญจ่ายเรียบร้อยแล้ว — กรุณาใส่ไฟล์ "
+"e-Payment แล้วยืนยันจ่ายสำเร็จ"
 
 #. module: disbursement_finance_kmitl
 #: model_terms:ir.actions.act_window,help:disbursement_finance_kmitl.action_dr_audit_queue
 msgid ""
 "A request has payment lines once the accounting office has posted\n"
 "                its bills: the payment subject and the audit are done on them."
-msgstr "ใบขอเบิกมีรายการจ่ายเงินเมื่อบัญชีตั้งหนี้เสร็จ: เลือกเรื่องที่จ่ายและตรวจจ่ายบนรายการเหล่านั้น"
+msgstr ""
+"ใบขอเบิกมีรายการจ่ายเงินเมื่อบัญชีตั้งหนี้เสร็จ: "
+"เลือกเรื่องที่จ่ายและตรวจจ่ายบนรายการเหล่านั้น"
 
 #. module: disbursement_finance_kmitl
 #: model:ir.model.fields,field_description:disbursement_finance_kmitl.field_disbursement_payment_line__allowed_paying_account_ids
@@ -96,8 +114,12 @@ msgstr "อนุมัติที่เลือก"
 #. module: disbursement_finance_kmitl
 #: model_terms:ir.ui.view,arch_db:disbursement_finance_kmitl.view_disbursement_request_form_inherit_finance
 #: model_terms:ir.ui.view,arch_db:disbursement_finance_kmitl.view_disbursement_request_queue_tree
-msgid "Authorize this disbursement? The payment vouchers will be raised and numbered for every payee at once, ready to go to the bank."
-msgstr "ยืนยันอนุมัติให้เบิกจ่ายเงินตามใบขอเบิกนี้? ระบบจะออกใบสำคัญจ่ายพร้อมเลขที่ให้ทุกผู้รับเงินทันที และพร้อมส่งธนาคาร"
+msgid ""
+"Authorize this disbursement? The payment vouchers will be raised and "
+"numbered for every payee at once, ready to go to the bank."
+msgstr ""
+"ยืนยันอนุมัติให้เบิกจ่ายเงินตามใบขอเบิกนี้? "
+"ระบบจะออกใบสำคัญจ่ายพร้อมเลขที่ให้ทุกผู้รับเงินทันที และพร้อมส่งธนาคาร"
 
 #. module: disbursement_finance_kmitl
 #: model_terms:ir.ui.view,arch_db:disbursement_finance_kmitl.view_disbursement_request_search_inherit_finance
@@ -154,21 +176,41 @@ msgstr "ไม่สามารถยกเลิกได้: ใบจ่า�
 #: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
 #, python-format
 msgid "Cannot cancel: there are payment(s) in progress. Remove them first."
-msgstr "ไม่สามารถยกเลิกได้: มีใบจ่ายเงินที่ยังดำเนินการอยู่ กรุณาลบใบจ่ายเงินก่อน"
+msgstr ""
+"ไม่สามารถยกเลิกได้: มีใบจ่ายเงินที่ยังดำเนินการอยู่ กรุณาลบใบจ่ายเงินก่อน"
 
 #. module: disbursement_finance_kmitl
 #. odoo-python
 #: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
 #, python-format
-msgid "Cannot create new payment: existing payment(s) %s are still in progress. Cancel them first before creating a new one."
-msgstr "ไม่สามารถสร้างใบจ่ายเงินใหม่ได้: ใบจ่ายเงิน %s ยังดำเนินการอยู่ กรุณายกเลิกก่อนสร้างใหม่"
+msgid ""
+"Cannot create new payment: existing payment(s) %s are still in progress. "
+"Cancel them first before creating a new one."
+msgstr ""
+"ไม่สามารถสร้างใบจ่ายเงินใหม่ได้: ใบจ่ายเงิน %s ยังดำเนินการอยู่ "
+"กรุณายกเลิกก่อนสร้างใหม่"
+
+#. module: disbursement_finance_kmitl
+#. odoo-python
+#: model_terms:ir.ui.view,arch_db:disbursement_finance_kmitl.view_disbursement_request_form
+#, python-format
+msgid ""
+"Choose the payment subject before auditing: it is what decides which account"
+" each payee is paid from."
+msgstr ""
+"กรุณาเลือกเรื่องที่จ่ายก่อนตรวจสอบ "
+"เพราะเป็นตัวกำหนดว่าผู้รับแต่ละรายจะจ่ายจากหัวจ่ายใด"
 
 #. module: disbursement_finance_kmitl
 #. odoo-python
 #: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
 #, python-format
-msgid "Choose the payment subject before auditing: it is what decides which account each payee is paid from."
-msgstr "กรุณาเลือกเรื่องที่จ่ายก่อนตรวจสอบ เพราะเป็นตัวกำหนดว่าผู้รับแต่ละรายจะจ่ายจากหัวจ่ายใด"
+msgid ""
+"Choose the payment subject before auditing: it is what decides which account"
+" each payee is paid from. Missing for: %s."
+msgstr ""
+"กรุณาเลือกเรื่องที่จ่ายก่อนตรวจสอบ "
+"เพราะเป็นตัวกำหนดว่าผู้รับแต่ละรายจะจ่ายจากหัวจ่ายใด ยังไม่ได้เลือกให้: %s"
 
 #. module: disbursement_finance_kmitl
 #: model:ir.model.fields.selection,name:disbursement_finance_kmitl.selection__disbursement_payment_line__paying_account_match__manual
@@ -364,7 +406,8 @@ msgstr "บันทึกบัญชีได้เฉพาะใบขอเ
 #. odoo-python
 #: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
 #, python-format
-msgid "Partial payment is not supported. Bill(s) %s are already partially paid."
+msgid ""
+"Partial payment is not supported. Bill(s) %s are already partially paid."
 msgstr "ระบบไม่รองรับการจ่ายเงินบางส่วน ใบตั้งหนี้ %s จ่ายเงินไปแล้วบางส่วน"
 
 #. module: disbursement_finance_kmitl
@@ -391,15 +434,23 @@ msgstr "ใบจ่ายเงิน"
 #. odoo-python
 #: code:addons/disbursement_finance_kmitl/models/account_move.py:0
 #, python-format
-msgid "Payment %(payment)s cannot be posted: the disbursement request %(dr)s is not confirmed paid by finance yet."
-msgstr "ใบสำคัญจ่าย %(payment)s ยังลงบัญชีไม่ได้: ใบขอเบิก %(dr)s ยังไม่ได้รับการยืนยันจ่ายสำเร็จจากฝ่ายการเงิน"
+msgid ""
+"Payment %(payment)s cannot be posted: the disbursement request %(dr)s is not"
+" confirmed paid by finance yet."
+msgstr ""
+"ใบสำคัญจ่าย %(payment)s ยังลงบัญชีไม่ได้: ใบขอเบิก %(dr)s "
+"ยังไม่ได้รับการยืนยันจ่ายสำเร็จจากฝ่ายการเงิน"
 
 #. module: disbursement_finance_kmitl
 #. odoo-python
 #: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
 #, python-format
-msgid "Payment <a href=\"%(link)s\" target=\"_blank\">%(name)s</a> created for %(partner)s."
-msgstr "สร้างใบจ่ายเงิน <a href=\"%(link)s\" target=\"_blank\">%(name)s</a> สำหรับ %(partner)s เรียบร้อยแล้ว"
+msgid ""
+"Payment <a href=\"%(link)s\" target=\"_blank\">%(name)s</a> created for "
+"%(partner)s."
+msgstr ""
+"สร้างใบจ่ายเงิน <a href=\"%(link)s\" target=\"_blank\">%(name)s</a> สำหรับ "
+"%(partner)s เรียบร้อยแล้ว"
 
 #. module: disbursement_finance_kmitl
 #: model:ir.model.fields,field_description:disbursement_finance_kmitl.field_disbursement_request__payment_authorize_date
@@ -446,8 +497,14 @@ msgstr "สถานะการจ่ายเงิน"
 
 #. module: disbursement_finance_kmitl
 #: model:ir.model.fields,field_description:disbursement_finance_kmitl.field_disbursement_request__payment_subject_id
+#: model:ir.model.fields,field_description:disbursement_finance_kmitl.field_disbursement_payment_line__payment_subject_id
 msgid "Payment Subject"
 msgstr "เรื่องที่จ่าย"
+
+#. module: disbursement_finance_kmitl
+#: model:ir.model.fields,field_description:disbursement_finance_kmitl.field_disbursement_request__payment_subject_missing
+msgid "Payment Subject Missing"
+msgstr "ยังไม่ได้เลือกเรื่องที่จ่าย"
 
 #. module: disbursement_finance_kmitl
 #. odoo-python
@@ -477,7 +534,9 @@ msgstr "บัญชีธนาคารผู้รับ"
 msgid ""
 "Requests the finance office has paid in full, waiting for the\n"
 "                accounting maker to submit their payment vouchers."
-msgstr "ใบขอเบิกที่การเงินจ่ายเงินครบทุกรายการแล้ว รอผู้จัดทำส่งใบสำคัญจ่ายเข้าอนุมัติบัญชี"
+msgstr ""
+"ใบขอเบิกที่การเงินจ่ายเงินครบทุกรายการแล้ว "
+"รอผู้จัดทำส่งใบสำคัญจ่ายเข้าอนุมัติบัญชี"
 
 #. module: disbursement_finance_kmitl
 #: model:ir.actions.act_window,name:disbursement_finance_kmitl.action_dr_audit_queue
@@ -490,7 +549,9 @@ msgstr "ใบขอเบิกที่มีรายการจ่ายเ
 msgid ""
 "Requests with payment lines and no voucher yet: the authorization\n"
 "                is what raises the payment vouchers."
-msgstr "ใบขอเบิกที่มีรายการจ่ายเงินแต่ยังไม่มีใบสำคัญจ่าย: การอนุมัติจ่ายคือสิ่งที่ออกใบสำคัญจ่าย"
+msgstr ""
+"ใบขอเบิกที่มีรายการจ่ายเงินแต่ยังไม่มีใบสำคัญจ่าย: "
+"การอนุมัติจ่ายคือสิ่งที่ออกใบสำคัญจ่าย"
 
 #. module: disbursement_finance_kmitl
 #: model:ir.actions.act_window,name:disbursement_finance_kmitl.action_dr_authorize_queue
@@ -500,8 +561,17 @@ msgstr "ใบขอเบิกที่ยังไม่มีใบสำค
 
 #. module: disbursement_finance_kmitl
 #: model:ir.module.category,description:disbursement_finance_kmitl.module_category_disbursement_payment
-msgid "Roles for the post-bill payment-execution workflow (audit → authorize → pay → clear)"
-msgstr "บทบาทสำหรับขั้นตอนการจ่ายเงินหลังตั้งหนี้ (ตรวจสอบ → อนุมัติ → จ่ายเงิน → ล้างหนี้)"
+msgid ""
+"Roles for the post-bill payment-execution workflow (audit → authorize → pay "
+"→ clear)"
+msgstr ""
+"บทบาทสำหรับขั้นตอนการจ่ายเงินหลังตั้งหนี้ (ตรวจสอบ → อนุมัติ → จ่ายเงิน → "
+"ล้างหนี้)"
+
+#. module: disbursement_finance_kmitl
+#: model:ir.model.fields,field_description:disbursement_finance_kmitl.field_disbursement_payment_line__payment_subject_manual
+msgid "Subject Chosen by Hand"
+msgstr "เลือกเรื่องที่จ่ายเอง"
 
 #. module: disbursement_finance_kmitl
 #: model_terms:ir.ui.view,arch_db:disbursement_finance_kmitl.view_disbursement_request_queue_tree
@@ -509,14 +579,26 @@ msgid "Submit Selected"
 msgstr "ส่งอนุมัติที่เลือก"
 
 #. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
+#, python-format
+msgid "The disbursement must be authorized before creating the payment."
+msgstr "ต้องอนุมัติเบิกจ่ายก่อนจึงจะสร้างใบจ่ายได้"
+
+#. module: disbursement_finance_kmitl
 #: model:mail.activity.type,summary:disbursement_finance_kmitl.mail_activity_dr_to_book
-msgid "The finance office paid a disbursement request — book its payment vouchers"
-msgstr "ฝ่ายการเงินจ่ายเงินตามใบขอเบิกนี้ครบแล้ว — กรุณาบันทึกบัญชีใบสำคัญจ่าย"
+msgid ""
+"The finance office paid a disbursement request — book its payment vouchers"
+msgstr ""
+"ฝ่ายการเงินจ่ายเงินตามใบขอเบิกนี้ครบแล้ว — กรุณาบันทึกบัญชีใบสำคัญจ่าย"
 
 #. module: disbursement_finance_kmitl
 #: model:ir.model.fields,help:disbursement_finance_kmitl.field_disbursement_payment_line__partner_bank_id
-msgid "The payee's account the money is transferred into. Defaulted from the bill; it is what the payment and the bank export carry."
-msgstr "บัญชีของผู้รับเงินที่เงินโอนเข้า ค่าเริ่มต้นมาจากใบตั้งหนี้ และเป็นบัญชีที่ใบจ่ายเงินและไฟล์ e-Payment ใช้"
+msgid ""
+"The payee's account the money is transferred into. Defaulted from the bill; "
+"it is what the payment and the bank export carry."
+msgstr ""
+"บัญชีของผู้รับเงินที่เงินโอนเข้า ค่าเริ่มต้นมาจากใบตั้งหนี้ "
+"และเป็นบัญชีที่ใบจ่ายเงินและไฟล์ e-Payment ใช้"
 
 #. module: disbursement_finance_kmitl
 #. odoo-python
@@ -529,23 +611,45 @@ msgstr "รายการจ่ายเงินของ %(payee)s แก้�
 #. odoo-python
 #: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
 #, python-format
-msgid "The payment vouchers could not be raised: %s Correct it, then use Create Payment."
+msgid ""
+"The payment vouchers could not be raised: %s Correct it, then use Create "
+"Payment."
 msgstr "ออกใบสำคัญจ่ายไม่สำเร็จ: %s กรุณาแก้ไขแล้วกดปุ่มสร้างใบจ่ายเงิน"
 
 #. module: disbursement_finance_kmitl
 #: model:ir.model.fields,help:disbursement_finance_kmitl.field_disbursement_payment_line__paying_account_match
-msgid "The provenance of the paying account, so the payees that fell to the fallback can be spotted and double-checked. Picking the account by hand marks the row as chosen manually."
-msgstr "ที่มาของหัวจ่ายที่ได้ เพื่อให้เห็นและตรวจสอบซ้ำผู้รับเงินที่ตกไปใช้บัญชีสำรอง การเลือกบัญชีเองจะทำเครื่องหมายแถวนั้นว่าเลือกด้วยมือ"
+msgid ""
+"The provenance of the paying account, so the payees that fell to the "
+"fallback can be spotted and double-checked. Picking the account by hand "
+"marks the row as chosen manually."
+msgstr ""
+"ที่มาของหัวจ่ายที่ได้ "
+"เพื่อให้เห็นและตรวจสอบซ้ำผู้รับเงินที่ตกไปใช้บัญชีสำรอง "
+"การเลือกบัญชีเองจะทำเครื่องหมายแถวนั้นว่าเลือกด้วยมือ"
 
 #. module: disbursement_finance_kmitl
 #: model:ir.model.fields,help:disbursement_finance_kmitl.field_bank_payment_export__disbursement_request_ids
-msgid "The ใบขอเบิก this file pays. A file is assembled from vouchers, and a voucher is one payee's slice of a request — so one file commonly spans several requests, and one request whose payees bank at four places produces four files."
-msgstr "ใบขอเบิกที่ไฟล์นี้จ่าย ไฟล์ประกอบขึ้นจากใบสำคัญจ่าย และใบสำคัญจ่ายหนึ่งใบคือส่วนของผู้รับเงินหนึ่งรายในใบขอเบิก ไฟล์หนึ่งไฟล์จึงมักคร่อมหลายใบขอเบิก และใบขอเบิกที่ผู้รับเงินใช้ธนาคารต่างกันสี่แห่งก็จะได้สี่ไฟล์"
+msgid ""
+"The ใบขอเบิก this file pays. A file is assembled from vouchers, and a "
+"voucher is one payee's slice of a request — so one file commonly spans "
+"several requests, and one request whose payees bank at four places produces "
+"four files."
+msgstr ""
+"ใบขอเบิกที่ไฟล์นี้จ่าย ไฟล์ประกอบขึ้นจากใบสำคัญจ่าย "
+"และใบสำคัญจ่ายหนึ่งใบคือส่วนของผู้รับเงินหนึ่งรายในใบขอเบิก "
+"ไฟล์หนึ่งไฟล์จึงมักคร่อมหลายใบขอเบิก "
+"และใบขอเบิกที่ผู้รับเงินใช้ธนาคารต่างกันสี่แห่งก็จะได้สี่ไฟล์"
 
 #. module: disbursement_finance_kmitl
 #: model:ir.model.fields,help:disbursement_finance_kmitl.field_bank_payment_export_line__disbursement_request_id
-msgid "The ใบขอเบิก this payee's voucher was raised for. Shown per row because a file commonly carries several requests, and the header's own trail can only name one."
-msgstr "ใบขอเบิกที่ใบสำคัญจ่ายของผู้รับเงินรายนี้ออกให้ แสดงเป็นรายบรรทัดเพราะไฟล์หนึ่งไฟล์มักแบกหลายใบขอเบิก ส่วนหัวเอกสารจึงบอกเลขที่ได้เพียงใบเดียว"
+msgid ""
+"The ใบขอเบิก this payee's voucher was raised for. Shown per row because a "
+"file commonly carries several requests, and the header's own trail can only "
+"name one."
+msgstr ""
+"ใบขอเบิกที่ใบสำคัญจ่ายของผู้รับเงินรายนี้ออกให้ "
+"แสดงเป็นรายบรรทัดเพราะไฟล์หนึ่งไฟล์มักแบกหลายใบขอเบิก "
+"ส่วนหัวเอกสารจึงบอกเลขที่ได้เพียงใบเดียว"
 
 #. module: disbursement_finance_kmitl
 #. odoo-python
@@ -558,22 +662,34 @@ msgstr "ใบขอเบิกนี้ไม่มีใบตั้งหน
 #. odoo-python
 #: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
 #, python-format
-msgid "These payees are paid by transfer but have no bank account: %s. Add one, or move them onto a cheque or cash paying account."
-msgstr "ผู้รับเหล่านี้จ่ายด้วยเงินโอนแต่ยังไม่มีบัญชีธนาคาร: %s กรุณาเพิ่มบัญชี หรือย้ายไปหัวจ่ายแบบเช็คหรือเงินสด"
+msgid ""
+"These payees are paid by transfer but have no bank account: %s. Add one, or "
+"move them onto a cheque or cash paying account."
+msgstr ""
+"ผู้รับเหล่านี้จ่ายด้วยเงินโอนแต่ยังไม่มีบัญชีธนาคาร: %s กรุณาเพิ่มบัญชี "
+"หรือย้ายไปหัวจ่ายแบบเช็คหรือเงินสด"
 
 #. module: disbursement_finance_kmitl
 #. odoo-python
 #: code:addons/disbursement_finance_kmitl/models/account_payment.py:0
 #, python-format
-msgid "These payments go out in an e-payment file, so they are confirmed by closing that file rather than one by one: %s."
-msgstr "ใบจ่ายเหล่านี้ออกไปในไฟล์ e-Payment จึงยืนยันด้วยการปิดไฟล์นั้น ไม่ใช่ยืนยันรายใบ: %s"
+msgid ""
+"These payments go out in an e-payment file, so they are confirmed by closing"
+" that file rather than one by one: %s."
+msgstr ""
+"ใบจ่ายเหล่านี้ออกไปในไฟล์ e-Payment จึงยืนยันด้วยการปิดไฟล์นั้น "
+"ไม่ใช่ยืนยันรายใบ: %s"
 
 #. module: disbursement_finance_kmitl
 #. odoo-python
 #: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
 #, python-format
-msgid "These payments have not left in an e-payment file yet: %s. Put them in a file and mark it done before confirming the payment."
-msgstr "ใบจ่ายเหล่านี้ยังไม่ได้ส่งออกไปกับไฟล์ e-Payment: %s กรุณาสร้างไฟล์และปิดงานไฟล์ให้เรียบร้อยก่อนยืนยันจ่ายสำเร็จ"
+msgid ""
+"These payments have not left in an e-payment file yet: %s. Put them in a "
+"file and mark it done before confirming the payment."
+msgstr ""
+"ใบจ่ายเหล่านี้ยังไม่ได้ส่งออกไปกับไฟล์ e-Payment: %s "
+"กรุณาสร้างไฟล์และปิดงานไฟล์ให้เรียบร้อยก่อนยืนยันจ่ายสำเร็จ"
 
 #. module: disbursement_finance_kmitl
 #: model_terms:ir.ui.view,arch_db:disbursement_finance_kmitl.view_disbursement_request_form_inherit_finance
@@ -593,15 +709,25 @@ msgstr "จำนวนเงินที่ธนาคารจ่ายออ
 
 #. module: disbursement_finance_kmitl
 #: model:ir.model.fields,help:disbursement_finance_kmitl.field_disbursement_payment_line__allowed_paying_account_ids
-msgid "What the paying account may be set to, so the subject's policy is enforced while choosing instead of rejected afterwards."
-msgstr "ค่าที่หัวจ่ายสามารถตั้งได้ เพื่อบังคับตามนโยบายของเรื่องที่จ่ายตั้งแต่ตอนเลือก แทนที่จะถูกปฏิเสธภายหลัง"
+msgid ""
+"What the paying account may be set to, so the subject's policy is enforced "
+"while choosing instead of rejected afterwards."
+msgstr ""
+"ค่าที่หัวจ่ายสามารถตั้งได้ "
+"เพื่อบังคับตามนโยบายของเรื่องที่จ่ายตั้งแต่ตอนเลือก แทนที่จะถูกปฏิเสธภายหลัง"
 
 #. module: disbursement_finance_kmitl
 #: model:ir.model.fields,help:disbursement_finance_kmitl.field_account_bank_statement_line__payment_disbursement_request_id
 #: model:ir.model.fields,help:disbursement_finance_kmitl.field_account_move__payment_disbursement_request_id
 #: model:ir.model.fields,help:disbursement_finance_kmitl.field_account_payment__payment_disbursement_request_id
-msgid "Which ใบขอเบิก this payment voucher's entry belongs to. The accounting office corrects the booking on the entry, not on the payment, so this is where they can get back to the request the money was paid on."
-msgstr "ใบสำคัญจ่ายนี้เป็นของใบขอเบิกใด ห้องบัญชีแก้ไขการบันทึกบัญชีบนรายการบันทึกบัญชี ไม่ใช่บนใบสำคัญจ่าย จึงต้องตามกลับไปยังใบขอเบิกได้จากที่นี่"
+msgid ""
+"Which ใบขอเบิก this payment voucher's entry belongs to. The accounting "
+"office corrects the booking on the entry, not on the payment, so this is "
+"where they can get back to the request the money was paid on."
+msgstr ""
+"ใบสำคัญจ่ายนี้เป็นของใบขอเบิกใด "
+"ห้องบัญชีแก้ไขการบันทึกบัญชีบนรายการบันทึกบัญชี ไม่ใช่บนใบสำคัญจ่าย "
+"จึงต้องตามกลับไปยังใบขอเบิกได้จากที่นี่"
 
 #. module: disbursement_finance_kmitl
 #: model:ir.model.fields,field_description:disbursement_finance_kmitl.field_disbursement_payment_line__amount_wht
@@ -619,48 +745,6 @@ msgstr "ข้อผิดพลาด"
 
 #. module: disbursement_finance_kmitl
 #. odoo-python
-#: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
-#, python-format
-msgid "จ่ายแล้ว %s/%s"
-msgstr "จ่ายแล้ว %s/%s"
-
-#. module: disbursement_finance_kmitl
-#: model_terms:ir.actions.act_window,help:disbursement_finance_kmitl.action_disbursement_request_finance
-msgid "ยังไม่มีใบขอเบิกที่ตั้งหนี้แล้ว"
-msgstr "ยังไม่มีใบขอเบิกที่ตั้งหนี้แล้ว"
-
-#. module: disbursement_finance_kmitl
-#: model_terms:ir.actions.act_window,help:disbursement_finance_kmitl.action_disbursement_payment_authorized
-msgid "ยังไม่มีใบขอเบิกที่อนุมัติเบิกจ่ายแล้ว"
-msgstr "ยังไม่มีใบขอเบิกที่อนุมัติเบิกจ่ายแล้ว"
-
-#. module: disbursement_finance_kmitl
-#: model:ir.ui.menu,name:disbursement_finance_kmitl.menu_finance_payment_authorized
-msgid "รายการที่อนุมัติแล้ว"
-msgstr "รายการที่อนุมัติแล้ว"
-
-#. module: disbursement_finance_kmitl
-#: model_terms:ir.actions.act_window,help:disbursement_finance_kmitl.action_disbursement_payment_authorized
-msgid "รายการนี้เก็บประวัติใบขอเบิกที่ผ่านการอนุมัติเบิกจ่าย และอยู่ต่อไปหลังจ่ายเงินและล้างหนี้แล้ว"
-msgstr "รายการนี้เก็บประวัติใบขอเบิกที่ผ่านการอนุมัติเบิกจ่าย และอยู่ต่อไปหลังจ่ายเงินและล้างหนี้แล้ว"
-
-#. module: disbursement_finance_kmitl
-#: model:ir.model.fields,help:disbursement_finance_kmitl.field_disbursement_payment_line__payment_method_id
-msgid "วิธีจ่าย — a property of the chosen paying account rather than a second choice, so the two cannot contradict each other."
-msgstr "วิธีจ่าย — เป็นคุณสมบัติของหัวจ่ายที่เลือกไว้ ไม่ใช่ตัวเลือกที่สอง จึงไม่มีทางขัดแย้งกันเอง"
-
-#. module: disbursement_finance_kmitl
-#: model:ir.model.fields,help:disbursement_finance_kmitl.field_disbursement_payment_line__paying_account_id
-msgid "หัวจ่าย — the account the money leaves from, which names the payment method too. Defaulted from the request's payment subject (the account at the payee's own bank when the subject auto-matches)."
-msgstr "หัวจ่าย — บัญชีที่เงินจ่ายออก ซึ่งเป็นตัวกำหนดวิธีจ่ายไปด้วย ค่าเริ่มต้นมาจากเรื่องที่จ่ายของใบขอเบิก (เป็นบัญชีที่ตรงธนาคารผู้รับ เมื่อเรื่องที่จ่ายตั้งให้จับคู่อัตโนมัติ)"
-
-#. module: disbursement_finance_kmitl
-#: model_terms:ir.actions.act_window,help:disbursement_finance_kmitl.action_disbursement_request_finance
-msgid "ใบขอเบิกจะมาปรากฏที่นี่เมื่อบัญชีตั้งหนี้เสร็จ และอยู่ต่อไปตลอดจนล้างหนี้"
-msgstr "ใบขอเบิกจะมาปรากฏที่นี่เมื่อบัญชีตั้งหนี้เสร็จ และอยู่ต่อไปตลอดจนล้างหนี้"
-
-#. module: disbursement_finance_kmitl
-#. odoo-python
 #: code:addons/disbursement_finance_kmitl/models/disbursement_payment_line.py:0
 #, python-format
 msgid "its payment %s already exists."
@@ -674,7 +758,56 @@ msgid "the request is cancelled."
 msgstr "ใบขอเบิกถูกยกเลิกแล้ว"
 
 #. module: disbursement_finance_kmitl
+#. odoo-python
 #: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
 #, python-format
-msgid "The disbursement must be authorized before creating the payment."
-msgstr "ต้องอนุมัติเบิกจ่ายก่อนจึงจะสร้างใบจ่ายได้"
+msgid "จ่ายแล้ว %s/%s"
+msgstr ""
+
+#. module: disbursement_finance_kmitl
+#: model_terms:ir.actions.act_window,help:disbursement_finance_kmitl.action_disbursement_request_finance
+msgid "ยังไม่มีใบขอเบิกที่ตั้งหนี้แล้ว"
+msgstr ""
+
+#. module: disbursement_finance_kmitl
+#: model_terms:ir.actions.act_window,help:disbursement_finance_kmitl.action_disbursement_payment_authorized
+msgid "ยังไม่มีใบขอเบิกที่อนุมัติเบิกจ่ายแล้ว"
+msgstr ""
+
+#. module: disbursement_finance_kmitl
+#: model:ir.ui.menu,name:disbursement_finance_kmitl.menu_finance_payment_authorized
+msgid "รายการที่อนุมัติแล้ว"
+msgstr ""
+
+#. module: disbursement_finance_kmitl
+#: model_terms:ir.actions.act_window,help:disbursement_finance_kmitl.action_disbursement_payment_authorized
+msgid ""
+"รายการนี้เก็บประวัติใบขอเบิกที่ผ่านการอนุมัติเบิกจ่าย "
+"และอยู่ต่อไปหลังจ่ายเงินและล้างหนี้แล้ว"
+msgstr ""
+
+#. module: disbursement_finance_kmitl
+#: model:ir.model.fields,help:disbursement_finance_kmitl.field_disbursement_payment_line__payment_method_id
+msgid ""
+"วิธีจ่าย — a property of the chosen paying account rather than a second "
+"choice, so the two cannot contradict each other."
+msgstr ""
+"วิธีจ่าย — เป็นคุณสมบัติของหัวจ่ายที่เลือกไว้ ไม่ใช่ตัวเลือกที่สอง "
+"จึงไม่มีทางขัดแย้งกันเอง"
+
+#. module: disbursement_finance_kmitl
+#: model:ir.model.fields,help:disbursement_finance_kmitl.field_disbursement_payment_line__paying_account_id
+msgid ""
+"หัวจ่าย — the account the money leaves from, which names the payment method "
+"too. Defaulted from the row's payment subject (the account at the payee's "
+"own bank when the subject auto-matches)."
+msgstr ""
+"หัวจ่าย — บัญชีที่เงินจ่ายออก ซึ่งเป็นตัวกำหนดวิธีจ่ายไปด้วย "
+"ค่าเริ่มต้นมาจากเรื่องที่จ่ายของรายการ (เป็นบัญชีที่ตรงธนาคารผู้รับ "
+"เมื่อเรื่องที่จ่ายตั้งให้จับคู่อัตโนมัติ)"
+
+#. module: disbursement_finance_kmitl
+#: model_terms:ir.actions.act_window,help:disbursement_finance_kmitl.action_disbursement_request_finance
+msgid ""
+"ใบขอเบิกจะมาปรากฏที่นี่เมื่อบัญชีตั้งหนี้เสร็จ และอยู่ต่อไปตลอดจนล้างหนี้"
+msgstr ""

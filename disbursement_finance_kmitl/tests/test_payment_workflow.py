@@ -98,7 +98,6 @@ class TestPaymentWorkflow(TransactionCase):
         return self.env["disbursement.request"].create(
             {
                 "date": "2026-01-15",
-                "partner_type_id": payees[0].partner_type_id.id,
                 "analytic_distribution": self.distribution,
                 "line_ids": [
                     (
@@ -418,6 +417,63 @@ class TestPaymentWorkflow(TransactionCase):
             set(request.payment_ids.mapped("kmitl_payment_subject_id")),
             {self.subject_auto},
         )
+
+    def test_a_payee_keeps_the_subject_chosen_by_hand(self):
+        """The request's subject sets every row but the ones picked by hand;
+        each voucher carries its own row's subject (ADR 0009)."""
+        request = self._billed_request(
+            [self.payee_ktb, self.payee_other], self.subject_fixed
+        )
+        by_payee = {line.partner_id: line for line in request.payment_line_ids}
+        by_payee[self.payee_other].write(
+            {
+                "payment_subject_id": self.subject_auto.id,
+                "payment_subject_manual": True,
+            }
+        )
+        request.payment_subject_id = self.subject_fixed
+        self.assertEqual(by_payee[self.payee_ktb].payment_subject_id, self.subject_fixed)
+        self.assertEqual(by_payee[self.payee_other].payment_subject_id, self.subject_auto)
+        request.action_authorize()
+        self.assertEqual(
+            {p.partner_id: p.kmitl_payment_subject_id for p in request.payment_ids},
+            {
+                self.payee_ktb: self.subject_fixed,
+                self.payee_other: self.subject_auto,
+            },
+        )
+
+    def test_bills_split_by_payment_type_and_skip_sections(self):
+        request = self._make_request([self.payee_ktb])
+        line = request.line_ids
+        request.write(
+            {
+                "line_ids": [
+                    (0, 0, {"display_type": "line_section", "name": "Section"}),
+                    (
+                        0,
+                        0,
+                        {
+                            "partner_id": self.payee_ktb.id,
+                            "name": "Prepaid",
+                            "amount": 500.0,
+                            "payment_type": "prepaid",
+                            "account_id": self.expense_account.id,
+                        },
+                    ),
+                ]
+            }
+        )
+        bills = request._create_bills()
+        self.assertEqual(len(bills), 2)
+        self.assertEqual(
+            bills.invoice_line_ids.disbursement_request_line_id,
+            request.line_ids.filtered(lambda ln: not ln.display_type),
+        )
+        direct_bill = bills.filtered(
+            lambda b: line in b.invoice_line_ids.disbursement_request_line_id
+        )
+        self.assertEqual(direct_bill.amount_untaxed, 1000.0)
 
     def test_banking_coordinates_freeze_once_the_payment_exists(self):
         request = self._billed_request([self.payee_ktb], self.subject_fixed)

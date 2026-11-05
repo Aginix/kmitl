@@ -65,6 +65,19 @@ class DisbursementPaymentLine(models.Model):
         store=True,
     )
 
+    # เรื่องที่จ่าย of this payee (ADR 0009): follows the request's subject (its
+    # "set all") or a subject rule, unless picked here by hand (``manual``).
+    payment_subject_id = fields.Many2one(
+        comodel_name="kmitl.payment.subject",
+        string="Payment Subject",
+        copy=False,
+    )
+    payment_subject_manual = fields.Boolean(
+        string="Subject Chosen by Hand",
+        copy=False,
+        readonly=True,
+    )
+
     # ------------------------------------------------------------------
     # Banking coordinates (set by the auditor, correctable by finance)
     # ------------------------------------------------------------------
@@ -82,7 +95,7 @@ class DisbursementPaymentLine(models.Model):
         domain="[('id', 'in', allowed_paying_account_ids)]",
         copy=False,
         help="หัวจ่าย — the account the money leaves from, which names the "
-        "payment method too. Defaulted from the request's payment subject (the "
+        "payment method too. Defaulted from the row's payment subject (the "
         "account at the payee's own bank when the subject auto-matches).",
     )
     payment_method_id = fields.Many2one(
@@ -171,7 +184,7 @@ class DisbursementPaymentLine(models.Model):
     # ------------------------------------------------------------------
     # Derivation
     # ------------------------------------------------------------------
-    @api.depends("request_id.payment_subject_id.allowed_paying_account_ids")
+    @api.depends("payment_subject_id.allowed_paying_account_ids")
     def _compute_allowed_paying_account_ids(self):
         """A subject that lists allowed accounts narrows the choice to them; a
         subject that lists none allows every paying account.
@@ -183,7 +196,7 @@ class DisbursementPaymentLine(models.Model):
             _paying_account_domain(self)
         )
         for line in self:
-            allowed = line.request_id.payment_subject_id.allowed_paying_account_ids
+            allowed = line.payment_subject_id.allowed_paying_account_ids
             line.allowed_paying_account_ids = allowed or every
 
     @api.onchange("paying_account_id")
@@ -196,6 +209,12 @@ class DisbursementPaymentLine(models.Model):
         for line in self:
             line.paying_account_match = "manual" if line.paying_account_id else False
 
+    @api.onchange("payment_subject_id")
+    def _onchange_payment_subject_id(self):
+        """A hand-picked subject no longer follows the request's."""
+        for line in self:
+            line.payment_subject_manual = bool(line.payment_subject_id)
+
     @api.onchange("partner_bank_id")
     def _onchange_partner_bank_id(self):
         """Re-derive the paying account when the payee's bank changes.
@@ -206,7 +225,7 @@ class DisbursementPaymentLine(models.Model):
         already carry a decision.
         """
         for line in self:
-            subject = line.request_id.payment_subject_id
+            subject = line.payment_subject_id
             if not subject.auto_match_payee_bank:
                 continue
             if line.paying_account_match == "manual":
@@ -306,4 +325,9 @@ class DisbursementPaymentLine(models.Model):
                         ),
                     )
                 )
-        return super().write(vals)
+        res = super().write(vals)
+        # A new subject re-derives the paying account it owns.
+        if "payment_subject_id" in vals and "paying_account_id" not in vals:
+            for line in self:
+                line.request_id._apply_subject_defaults(line)
+        return res

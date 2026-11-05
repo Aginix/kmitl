@@ -1,7 +1,6 @@
-# -*- coding: utf-8 -*-
 {
     'name': 'Purchase Order Disbursement',
-    'version': '16.0.1.1.2',
+    'version': '16.0.1.2.0',
     'summary': """ Purchase Order Disbursement Summary """,
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",

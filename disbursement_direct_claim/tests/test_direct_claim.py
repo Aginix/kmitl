@@ -19,7 +19,6 @@ class TestDirectClaim(TwoApproverCommon):
         dr = self.DR.create(
             dict(
                 {
-                    "partner_type_id": self.partner.partner_type_id.id,
                     "line_ids": [
                         (
                             0,
@@ -128,13 +127,12 @@ class TestDirectClaim(TwoApproverCommon):
         with self.assertRaises(AccessError):
             self.DR.with_user(plain).create(
                 {
-                    "partner_type_id": self.partner.partner_type_id.id,
                     "is_direct_claim": True,
                 }
             )
         with self.assertRaises(AccessError):
             self.DR.with_user(plain).with_context(default_is_direct_claim=True).create(
-                {"partner_type_id": self.partner.partner_type_id.id}
+                {}
             )
         dr = self._draft()
         with self.assertRaises(AccessError):

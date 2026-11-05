@@ -147,16 +147,15 @@ class FinanceAssignmentRule(models.Model):
         domain.append(
             ("paying_account_id", "in", payment.payment_method_line_id.ids + [False])
         )
-        # The subject (เรื่องที่จ่าย) is the one criterion recorded a step back:
-        # it is picked on the disbursement request, which is what the หัวจ่าย of
-        # every payee is derived from. A voucher keyed in by hand has no request
-        # and so no subject, which leaves it to the rules that keep this
-        # criterion blank -- the same wildcard the others mean by being empty.
+        # The subject (เรื่องที่จ่าย) is the one the voucher's payee was paid
+        # under (its payment line's, carried in the create values). A voucher
+        # keyed in by hand has none, which leaves it to the rules that keep
+        # this criterion blank -- the same wildcard the others mean by being empty.
         domain.append(
             (
                 "payment_subject_id",
                 "in",
-                payment.disbursement_request_id.payment_subject_id.ids + [False],
+                payment.kmitl_payment_subject_id.ids + [False],
             )
         )
         return self.search(domain, limit=1)

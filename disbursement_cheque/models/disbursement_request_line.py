@@ -8,7 +8,7 @@ class DisbursementRequestLine(models.Model):
     _inherit = "disbursement.request.line"
 
     # Requester-side only: finance still picks หัวจ่าย at audit. Blank on a
-    # request that pays no money out (an advance).
+    # line that pays no money out (an advance).
     payment_method = fields.Selection(
         [("transfer", "Bank Transfer"), ("cheque", "Cheque")],
         compute="_compute_payment_method",
@@ -16,18 +16,18 @@ class DisbursementRequestLine(models.Model):
         readonly=False,
     )
 
-    @api.depends("request_id.pays_out")
+    @api.depends("pays_out")
     def _compute_payment_method(self):
         for line in self:
-            if not line.request_id.pays_out:
+            if not line.pays_out:
                 line.payment_method = False
             elif not line.payment_method:
                 line.payment_method = "transfer"
 
-    @api.constrains("payment_method", "request_id")
+    @api.constrains("payment_method", "payment_type", "display_type")
     def _check_payment_method(self):
         for line in self:
-            if line.request_id.pays_out and not line.payment_method:
+            if line.pays_out and not line.payment_method:
                 raise ValidationError(_("Payment method is required on each line."))
 
     @api.depends("payment_method")

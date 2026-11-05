@@ -1,5 +1,7 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 
+from unittest.mock import patch
+
 from odoo.exceptions import ValidationError
 from odoo.tests.common import tagged
 
@@ -13,7 +15,6 @@ class TestCheque(TwoApproverCommon):
     def _draft(self):
         dr = self.DR.create(
             {
-                "partner_type_id": self.partner.partner_type_id.id,
                 "line_ids": [
                     (
                         0,
@@ -55,16 +56,19 @@ class TestCheque(TwoApproverCommon):
         dr.line_ids.payment_method = "transfer"
         self.assertTrue(dr.line_ids.partner_bank_id)
 
-    def test_advance_request_has_no_payment_method(self):
-        """An advance pays no money out: blank method, no account needed."""
+    def test_line_paying_nothing_out_has_no_payment_method(self):
+        """A line that pays no money out (an advance): blank method, no
+        account needed."""
         dr = self._draft()
-        self.assertEqual(dr.line_ids.payment_method, "transfer")
-        dr.payment_type = "advance"
-        self.assertFalse(dr.line_ids.payment_method)
-        self.assertFalse(dr.line_ids.partner_bank_id)
-        self.assertFalse(dr.line_ids._requires_partner_bank())
-        dr.payment_type = "direct"
-        self.assertEqual(dr.line_ids.payment_method, "transfer")
+        line = dr.line_ids
+        self.assertEqual(line.payment_method, "transfer")
+        with patch.object(type(line), "_pays_out", lambda self: False):
+            line.payment_type = "prepaid"
+            self.assertFalse(line.payment_method)
+            self.assertFalse(line.partner_bank_id)
+            self.assertFalse(line._requires_partner_bank())
+        line.payment_type = "direct"
+        self.assertEqual(line.payment_method, "transfer")
 
     def test_paying_request_requires_a_payment_method(self):
         dr = self._draft()

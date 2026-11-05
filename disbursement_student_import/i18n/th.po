@@ -318,9 +318,8 @@ msgstr "นักศึกษา"
 #. module: disbursement_student_import
 #: code:addons/disbursement_student_import/wizards/disbursement_student_import.py:0
 #, python-format
-msgid "Students can only be imported into a draft request paying students."
-msgstr ""
-"นำเข้ารายชื่อนักศึกษาได้เฉพาะใบขอเบิกสถานะร่างที่ประเภทผู้รับเงินเป็นนักศึกษา"
+msgid "Students can only be imported into a draft request."
+msgstr "นำเข้ารายชื่อนักศึกษาได้เฉพาะใบขอเบิกสถานะร่าง"
 
 #. module: disbursement_student_import
 #: code:addons/disbursement_student_import/wizards/disbursement_student_import.py:0

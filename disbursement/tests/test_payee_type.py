@@ -9,8 +9,8 @@ from .test_two_approver import TwoApproverCommon
 
 @tagged("post_install", "-at_install")
 class TestPayeeType(TwoApproverCommon):
-    """Payees live on the lines, all of the header's payee type, each with a
-    bank account; the fiscal year is chosen on the request."""
+    """Payees live on the lines, each with its own payee type, payment type
+    and bank account (ADR 0009); the fiscal year is chosen on the request."""
 
     @classmethod
     def setUpClass(cls):
@@ -22,15 +22,18 @@ class TestPayeeType(TwoApproverCommon):
             "bank_ids": [(0, 0, {"acc_number": "9876543210"})],
         })
 
-    def _draft(self, partner, **vals):
+    def _line(self, partner, **vals):
+        return (0, 0, {
+            "account_id": self.expense_account.id,
+            "name": "line",
+            "amount": 100.0,
+            "partner_id": partner.id,
+            **vals,
+        })
+
+    def _draft(self, partner, line_vals=None, extra_lines=(), **vals):
         dr = self.DR.create({
-            "partner_type_id": self.partner.partner_type_id.id,
-            "line_ids": [(0, 0, {
-                "account_id": self.expense_account.id,
-                "name": "line",
-                "amount": 100.0,
-                "partner_id": partner.id,
-            })],
+            "line_ids": [self._line(partner, **(line_vals or {}))] + list(extra_lines),
             **vals,
         })
         dr.analytic_distribution = {
@@ -41,8 +44,14 @@ class TestPayeeType(TwoApproverCommon):
         }
         return dr
 
+    def test_line_type_follows_the_payee(self):
+        dr = self._draft(self.student)
+        self.assertEqual(dr.line_ids.partner_type_id, self.student_type)
+        self.assertEqual(dr.payee_type_display, self.student_type.display_name)
+
     def test_payee_of_another_type_blocks_submit(self):
         dr = self._draft(self.student)
+        dr.line_ids.partner_type_id = self.partner.partner_type_id
         dr.action_submit()
         self.assertEqual(dr.state, "draft")
         self.assertIn(
@@ -50,8 +59,8 @@ class TestPayeeType(TwoApproverCommon):
             dr.exception_ids,
         )
 
-    def test_advance_to_external_payee_blocks_submit(self):
-        dr = self._draft(self.partner, payment_type="advance")
+    def test_prepaid_to_external_payee_blocks_submit(self):
+        dr = self._draft(self.partner, line_vals={"payment_type": "prepaid"})
         dr.action_submit()
         self.assertEqual(dr.state, "draft")
         self.assertIn(
@@ -66,9 +75,40 @@ class TestPayeeType(TwoApproverCommon):
             "partner_type_id": staff_type.id,
             "bank_ids": [(0, 0, {"acc_number": "4445556667"})],
         })
+        dr = self._draft(staff, line_vals={"payment_type": "prepaid"})
+        dr.action_submit()
+        self.assertEqual(dr.state, "submitted")
+
+    def test_one_request_mixes_payees_and_payment_types(self):
+        staff_type = self.env.ref("partner_type_kmitl.partner_type_employee")
+        staff = self.env["res.partner"].create({
+            "name": "Staff",
+            "partner_type_id": staff_type.id,
+            "bank_ids": [(0, 0, {"acc_number": "4445556668"})],
+        })
         dr = self._draft(
-            staff, payment_type="prepaid", partner_type_id=staff_type.id
+            self.partner,
+            extra_lines=[self._line(staff, payment_type="prepaid")],
         )
+        self.assertEqual(
+            set(dr.line_ids.mapped("payment_type")), {"direct", "prepaid"}
+        )
+        self.assertIn(",", dr.payment_type_display)
+        dr.action_submit()
+        self.assertEqual(dr.state, "submitted")
+
+    def test_section_row_is_never_paid(self):
+        dr = self._draft(
+            self.partner,
+            extra_lines=[(0, 0, {"display_type": "line_section", "name": "Food"})],
+        )
+        section = dr.line_ids.filtered("display_type")
+        self.assertFalse(section.account_id)
+        self.assertFalse(section.payment_type)
+        self.assertFalse(section.pays_out)
+        self.assertEqual(dr._product_lines(), dr.line_ids - section)
+        self.assertEqual(dr.amount_total, 100.0)
+        self.assertTrue(dr._has_sections())
         dr.action_submit()
         self.assertEqual(dr.state, "submitted")
 
@@ -98,13 +138,6 @@ class TestPayeeType(TwoApproverCommon):
         )
         self.assertEqual(dr.line_ids.partner_bank_id, chosen)
 
-    def test_changing_type_warns_about_mismatched_payees(self):
-        dr = self._draft(self.partner)
-        dr.partner_type_id = self.student_type
-        result = dr._onchange_partner_type_id()
-        self.assertIn(self.partner.display_name, result["warning"]["message"])
-        # The warning does not clear the lines; submit still guards them.
-        self.assertEqual(dr.line_ids.partner_id, self.partner)
 
     def test_payee_search_and_display(self):
         dr = self._draft(self.partner)
