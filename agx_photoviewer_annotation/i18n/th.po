@@ -137,6 +137,12 @@ msgstr "ตำแหน่ง"
 
 #. module: agx_photoviewer_annotation
 #. odoo-javascript
+#: code:addons/agx_photoviewer_annotation/static/src/js/annotation_renderer.js:0
+msgid "Go to page"
+msgstr "ไปยังหน้า"
+
+#. module: agx_photoviewer_annotation
+#. odoo-javascript
 #: model:ir.model.fields.selection,name:agx_photoviewer_annotation.selection__ir_attachment_annotation__kind__highlight
 #: code:addons/agx_photoviewer_annotation/static/src/js/annotation_renderer.js:0
 msgid "Highlight"
@@ -186,6 +192,24 @@ msgstr "ปากกา"
 #: code:addons/agx_photoviewer_annotation/static/src/js/annotation_renderer.js:0
 msgid "Rectangle"
 msgstr "กรอบสี่เหลี่ยม"
+
+#. module: agx_photoviewer_annotation
+#. odoo-javascript
+#: code:addons/agx_photoviewer_annotation/static/src/js/annotation_renderer.js:0
+msgid "Resize my marks"
+msgstr "ปรับขนาดรอยขีดเขียนของฉัน"
+
+#. module: agx_photoviewer_annotation
+#. odoo-javascript
+#: code:addons/agx_photoviewer_annotation/static/src/js/annotation_renderer.js:0
+msgid "Rotate left"
+msgstr "หมุนซ้าย"
+
+#. module: agx_photoviewer_annotation
+#. odoo-javascript
+#: code:addons/agx_photoviewer_annotation/static/src/js/annotation_renderer.js:0
+msgid "Rotate right"
+msgstr "หมุนขวา"
 
 #. module: agx_photoviewer_annotation
 #. odoo-javascript

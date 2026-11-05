@@ -500,7 +500,7 @@ patch(AnnotationEditor.prototype, "agx_photoviewer_change_request", {
         const top =
             sheet.element.getBoundingClientRect().top -
             this.scroll.getBoundingClientRect().top +
-            annotation.geometry.y * sheet.element.clientHeight;
+            this.display(annotation.geometry)[1] * sheet.element.clientHeight;
         this.scroll.scrollTop += top - this.scroll.clientHeight / 3;
         this.openComment(sheet, annotation);
     },
