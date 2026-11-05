@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="ir_ui_view_change_log_view_tree" model="ir.ui.view">
+        <field name="name">ir.ui.view.change.log.tree</field>
+        <field name="model">ir.ui.view.change.log</field>
+        <field name="arch" type="xml">
+            <tree
+                decoration-muted="state in ('done', 'ignored', 'reverted')"
+                decoration-danger="state == 'pending' and reset_on_upgrade"
+            >
+                <field name="create_date" string="Date" />
+                <field name="create_uid" string="By" widget="many2one_avatar_user" />
+                <field name="operation" />
+                <field name="view_name" />
+                <field name="view_xmlid" optional="show" />
+                <field name="model" optional="show" />
+                <field name="element" optional="show" />
+                <field name="reset_on_upgrade" />
+                <field
+                    name="state"
+                    widget="badge"
+                    decoration-warning="state == 'pending'"
+                    decoration-success="state == 'done'"
+                />
+            </tree>
+        </field>
+    </record>
+
+    <record id="ir_ui_view_change_log_view_form" model="ir.ui.view">
+        <field name="name">ir.ui.view.change.log.form</field>
+        <field name="model">ir.ui.view.change.log</field>
+        <field name="arch" type="xml">
+            <form create="0">
+                <header>
+                    <button
+                        name="action_done"
+                        type="object"
+                        string="Mark Ported to Code"
+                        class="btn-primary"
+                        attrs="{'invisible': [('state', '!=', 'pending')]}"
+                    />
+                    <button
+                        name="action_ignore"
+                        type="object"
+                        string="Ignore"
+                        attrs="{'invisible': [('state', '!=', 'pending')]}"
+                    />
+                    <button
+                        name="action_revert_hide"
+                        type="object"
+                        string="Revert (show again)"
+                        confirm="Delete the view created by the inspector?"
+                        attrs="{'invisible': ['|', '|', ('state', '!=', 'pending'), ('operation', '!=', 'hide'), ('view_id', '=', False)]}"
+                    />
+                    <button
+                        name="action_reset_pending"
+                        type="object"
+                        string="Back to To Port"
+                        attrs="{'invisible': [('state', 'in', ('pending', 'reverted'))]}"
+                    />
+                    <field name="state" widget="statusbar" statusbar_visible="pending,done" />
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button
+                            name="action_open_view"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-code"
+                            string="View"
+                            attrs="{'invisible': [('view_id', '=', False)]}"
+                        />
+                    </div>
+                    <div
+                        class="alert alert-danger"
+                        role="alert"
+                        attrs="{'invisible': ['|', ('reset_on_upgrade', '=', False), ('state', '!=', 'pending')]}"
+                    >
+                        This view comes from a module file: the next upgrade of
+                        that module overwrites this change. Port it to code first.
+                    </div>
+                    <group>
+                        <group>
+                            <field name="operation" />
+                            <field name="view_id" />
+                            <field name="view_name" />
+                            <field name="view_xmlid" />
+                            <field name="arch_fs" />
+                        </group>
+                        <group>
+                            <field name="create_date" string="Date" />
+                            <field name="create_uid" string="By" />
+                            <field name="model" />
+                            <field name="parent_xmlid" />
+                            <field name="element" attrs="{'invisible': [('element', '=', False)]}" />
+                            <field name="target_xpath" attrs="{'invisible': [('target_xpath', '=', False)]}" />
+                            <field name="reset_on_upgrade" />
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Diff" name="diff">
+                            <field name="arch_diff" nolabel="1" />
+                        </page>
+                        <page
+                            string="XML to Port"
+                            name="snippet"
+                            attrs="{'invisible': [('xml_snippet', '=', False)]}"
+                        >
+                            <field
+                                name="xml_snippet"
+                                nolabel="1"
+                                widget="ace"
+                                options="{'mode': 'xml'}"
+                                readonly="1"
+                            />
+                        </page>
+                        <page string="Before / After" name="raw">
+                            <group>
+                                <field name="arch_before" widget="ace" options="{'mode': 'xml'}" readonly="1" />
+                                <field name="arch_after" widget="ace" options="{'mode': 'xml'}" readonly="1" />
+                            </group>
+                        </page>
+                        <page string="Note" name="note">
+                            <field name="note" nolabel="1" />
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="ir_ui_view_change_log_view_search" model="ir.ui.view">
+        <field name="name">ir.ui.view.change.log.search</field>
+        <field name="model">ir.ui.view.change.log</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="view_name" />
+                <field name="view_xmlid" />
+                <field name="model" />
+                <field name="element" />
+                <field name="create_uid" />
+                <filter name="pending" string="To Port" domain="[('state', '=', 'pending')]" />
+                <filter
+                    name="reset_on_upgrade"
+                    string="Overwritten on Upgrade"
+                    domain="[('reset_on_upgrade', '=', True)]"
+                />
+                <separator />
+                <filter name="create_date" string="Date" date="create_date" />
+                <group expand="0" string="Group By">
+                    <filter name="group_state" string="Status" context="{'group_by': 'state'}" />
+                    <filter name="group_model" string="Model" context="{'group_by': 'model'}" />
+                    <filter name="group_operation" string="Operation" context="{'group_by': 'operation'}" />
+                    <filter name="group_user" string="By" context="{'group_by': 'create_uid'}" />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="ir_ui_view_change_log_action" model="ir.actions.act_window">
+        <field name="name">View Change Log</field>
+        <field name="res_model">ir.ui.view.change.log</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'search_default_pending': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No manual view change yet</p>
+            <p>
+                Views created, edited or deleted from the database (Edit View,
+                View Origin Inspector...) are listed here so they can be ported
+                to code before the next deploy.
+            </p>
+        </field>
+    </record>
+
+    <menuitem
+        id="ir_ui_view_change_log_menu"
+        action="ir_ui_view_change_log_action"
+        parent="base.next_id_2"
+        groups="base.group_no_one"
+        sequence="3"
+    />
+</odoo>

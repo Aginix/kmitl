@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+    <t t-name="web_view_origin_inspector.ViewOriginDialog" owl="1">
+        <Dialog title="title" size="'xl'" contentClass="'o_view_origin_dialog'">
+            <p class="text-muted">
+                Model <code t-esc="props.result.model" />
+                · View <code t-esc="props.result.view.xml_id or props.result.view.name" />
+            </p>
+            <div t-if="!props.result.occurrences.length" class="alert alert-warning">
+                Not found in this view. It may come from a separate sub-view
+                (e.g. a list view loaded for a one2many) or be rendered by JavaScript.
+            </div>
+            <div
+                t-foreach="props.result.occurrences"
+                t-as="occ"
+                t-key="occ_index"
+                class="card mb-3"
+                t-att-class="{'border-primary': occ.matched}"
+            >
+                <div class="card-header d-flex align-items-center gap-2">
+                    <span t-if="occ.matched" class="badge bg-primary">Clicked</span>
+                    <span t-if="!occ.present" class="badge bg-secondary">No longer in the view</span>
+                    <code class="flex-grow-1" t-esc="occ.xpath or (props.result.tag + ' ' + props.result.name)" />
+                    <t t-if="occ.present">
+                        <button class="btn btn-sm btn-secondary" t-on-click="() => this.copy(occ.xpath)">
+                            Copy XPath
+                        </button>
+                        <button class="btn btn-sm btn-secondary" t-on-click="() => this.copy(occ.snippet)">
+                            Copy Hide XML
+                        </button>
+                        <button class="btn btn-sm btn-danger" t-on-click="() => this.hide(occ)">
+                            Hide Now
+                        </button>
+                    </t>
+                </div>
+                <table class="table table-sm mb-0">
+                    <thead>
+                        <tr>
+                            <th>Source View</th>
+                            <th>Module</th>
+                            <th>Priority</th>
+                            <th>What it did</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="occ.events" t-as="ev" t-key="ev_index">
+                            <td>
+                                <a href="#" t-on-click.prevent="() => this.openView(ev.view.id)" t-esc="ev.view.xml_id or ev.view.name" />
+                                <div class="small text-muted" t-esc="ev.view.arch_fs" />
+                            </td>
+                            <td t-esc="ev.view.module" />
+                            <td>
+                                <t t-esc="ev.view.priority" />
+                                <span t-if="ev.view.mode === 'primary'" class="text-muted"> (primary)</span>
+                            </td>
+                            <td>
+                                <span class="badge" t-att-class="kinds[ev.kind][1]" t-esc="kinds[ev.kind][0]" />
+                                <ul t-if="ev.changes.length" class="mb-0 small">
+                                    <li t-foreach="ev.changes" t-as="change" t-key="change.attr">
+                                        <code t-esc="change.attr" />:
+                                        <del t-if="change.old" t-esc="change.old" />
+                                        →
+                                        <span t-esc="change.new or '∅'" />
+                                    </li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div t-if="occ.present" class="card-footer small">
+                    <div>Result: <code t-esc="formatAttrs(occ.attrs)" /></div>
+                    <div t-if="occ.depends.length">
+                        A module overriding it should depend on:
+                        <code t-esc="occ.depends.join(', ')" />
+                    </div>
+                </div>
+            </div>
+            <t t-set-slot="footer">
+                <button class="btn btn-primary" t-on-click="props.close">Close</button>
+            </t>
+        </Dialog>
+    </t>
+</templates>
