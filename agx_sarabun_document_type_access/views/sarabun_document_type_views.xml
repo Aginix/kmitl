@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_sarabun_document_type_form" model="ir.ui.view">
+        <field name="name">sarabun.document.type.form.type_access</field>
+        <field name="model">sarabun.document.type</field>
+        <field name="inherit_id" ref="agx_sarabun.view_sarabun_document_type_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='description']/.." position="before">
+                <group string="Readers">
+                    <field name="reader_group_ids" widget="many2many_tags" />
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>
