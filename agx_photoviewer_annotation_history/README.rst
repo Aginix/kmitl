@@ -2,7 +2,7 @@
 Photo Viewer - Annotation History
 ==================================
 
-Adds a **History** panel to the annotation toolbar of
+Adds a **History** panel (open from the start) to the annotation toolbar of
 ``agx_photoviewer_annotation``: every visit in which someone added, changed or
 removed marks on a file is listed, newest first, with who and when.
 

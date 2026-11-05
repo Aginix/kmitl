@@ -2,7 +2,7 @@
     "name": "Photo Viewer - Annotation History",
     "summary": "Browse the changes made to the annotations of a file and see "
     "each one drawn on the page",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.0.1",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "development_status": "Beta",

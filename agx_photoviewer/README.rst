@@ -11,6 +11,8 @@ bundled in ``static/lib/photoviewer``).
 * Files that cannot be rendered open too, with a "not supported" message
   naming the file type; the Download button stays available.
 * Chatter: clicking an attachment opens the viewer.
+* The viewer takes one entry of the browser history: Back (or the back gesture)
+  closes it, so it behaves like a page of its own.
 * The previous / next buttons walk through all the previewable attachments of
   the list, images and files alike, and a thumbnail strip above the footer
   jumps straight to any of them. The modal can be resized freely.
