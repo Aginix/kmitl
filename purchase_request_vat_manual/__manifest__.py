@@ -5,7 +5,11 @@
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
     "summary": "Allow editing the computed VAT amount on purchase requests",
-    "depends": ["purchase_request_price_tax_included"],
+    "depends": [
+        "purchase_request_price_tax_included",
+        "purchase_request_approval_disbursement",
+        "disbursement_accounting_kmitl",
+    ],
     "data": [
         "security/ir.model.access.csv",
         "wizard/purchase_request_vat_wizard_views.xml",

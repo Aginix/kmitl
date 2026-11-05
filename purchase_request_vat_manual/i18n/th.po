@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-05 08:39+0000\n"
-"PO-Revision-Date: 2026-11-05 08:39+0000\n"
+"POT-Creation-Date: 2026-11-05 10:12+0000\n"
+"PO-Revision-Date: 2026-11-05 10:12+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -59,6 +59,25 @@ msgstr "สร้างเมื่อ"
 #: model:ir.model.fields,field_description:purchase_request_vat_manual.field_purchase_request_vat_wizard__currency_id
 msgid "Currency"
 msgstr "สกุลเงิน"
+
+#. module: purchase_request_vat_manual
+#: model:ir.model.fields,help:purchase_request_vat_manual.field_disbursement_request__amount_tax_adjustment
+msgid ""
+"Difference between the VAT edited on the purchase request and the computed "
+"VAT. Applied to the vendor bill."
+msgstr "ส่วนต่างระหว่างภาษีมูลค่าเพิ่มที่แก้ไขในใบขอซื้อกับค่าที่ระบบคำนวณ นำไปปรับในใบแจ้งหนี้ผู้ขาย"
+
+#. module: purchase_request_vat_manual
+#: model:ir.model.fields,help:purchase_request_vat_manual.field_purchase_request_approval__amount_tax_adjustment
+msgid ""
+"Difference between the VAT edited on the purchase request and the computed "
+"VAT. Carried to the disbursement request."
+msgstr "ส่วนต่างระหว่างภาษีมูลค่าเพิ่มที่แก้ไขในใบขอซื้อกับค่าที่ระบบคำนวณ ส่งต่อไปยังใบขอเบิก"
+
+#. module: purchase_request_vat_manual
+#: model:ir.model,name:purchase_request_vat_manual.model_disbursement_request
+msgid "Disbursement Request"
+msgstr "ใบขอเบิก"
 
 #. module: purchase_request_vat_manual
 #: model:ir.model.fields,field_description:purchase_request_vat_manual.field_purchase_request_vat_wizard__display_name
@@ -113,7 +132,12 @@ msgstr "ภาษีมูลค่าเพิ่มใหม่"
 #. module: purchase_request_vat_manual
 #: model:ir.model,name:purchase_request_vat_manual.model_purchase_request
 msgid "Purchase Request"
-msgstr "ใบขอซื้อ"
+msgstr "คำขอซื้อขอจ้าง"
+
+#. module: purchase_request_vat_manual
+#: model:ir.model,name:purchase_request_vat_manual.model_purchase_request_approval
+msgid "Purchase Request Approval"
+msgstr "รายงานขอซื้อ/จ้าง (พจ.1)"
 
 #. module: purchase_request_vat_manual
 #: model:ir.model.fields,field_description:purchase_request_vat_manual.field_purchase_request_vat_wizard__request_id
@@ -133,6 +157,12 @@ msgstr "จำนวนภาษีมูลค่าเพิ่มต้อง
 #: model_terms:ir.ui.view,arch_db:purchase_request_vat_manual.purchase_request_vat_wizard_view_form
 msgid "Use Computed VAT"
 msgstr "ใช้ค่าที่ระบบคำนวณ"
+
+#. module: purchase_request_vat_manual
+#: model:ir.model.fields,field_description:purchase_request_vat_manual.field_disbursement_request__amount_tax_adjustment
+#: model:ir.model.fields,field_description:purchase_request_vat_manual.field_purchase_request_approval__amount_tax_adjustment
+msgid "VAT Adjustment"
+msgstr "ส่วนปรับภาษีมูลค่าเพิ่ม"
 
 #. module: purchase_request_vat_manual
 #: model:ir.model.fields,help:purchase_request_vat_manual.field_purchase_request__amount_tax_manual

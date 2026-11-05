@@ -1,5 +1,6 @@
 from odoo import _, api, fields, models
-from odoo.tools.misc import formatLang
+
+from .tax_adjustment import apply_tax_adjustment
 
 
 class PurchaseRequest(models.Model):
@@ -47,20 +48,32 @@ class PurchaseRequest(models.Model):
         res = super()._compute_tax_totals()
         for record in self.filtered(lambda r: r._has_manual_tax()):
             tax_totals = record.tax_totals
-            groups = [g for gs in tax_totals["groups_by_subtotal"].values() for g in gs]
-            if not groups:
-                continue
-            currency = record.currency_id or record.company_id.currency_id
-            groups[0]["tax_group_amount"] = record.amount_tax_manual
-            groups[0]["formatted_tax_group_amount"] = formatLang(
-                self.env, record.amount_tax_manual, currency_obj=currency
+            computed = sum(
+                g["tax_group_amount"]
+                for gs in tax_totals["groups_by_subtotal"].values()
+                for g in gs
             )
-            tax_totals["amount_total"] = record.amount_total
-            tax_totals["formatted_amount_total"] = formatLang(
-                self.env, record.amount_total, currency_obj=currency
+            record.tax_totals = apply_tax_adjustment(
+                self.env,
+                tax_totals,
+                record.amount_tax_manual - computed,
+                record.amount_total,
+                record.currency_id or record.company_id.currency_id,
             )
-            record.tax_totals = tax_totals
         return res
+
+    def _get_amount_tax_adjustment(self):
+        """Difference between the manual VAT and the computed VAT, carried
+        to the documents created from this request."""
+        self.ensure_one()
+        if not self._has_manual_tax():
+            return 0.0
+        return self.amount_tax_manual - self._get_computed_amount_tax()
+
+    def _prepare_approval_vals(self):
+        vals = super()._prepare_approval_vals()
+        vals["amount_tax_adjustment"] = self._get_amount_tax_adjustment()
+        return vals
 
     @api.onchange("line_ids", "tax_id")
     def _onchange_reset_amount_tax_manual(self):
