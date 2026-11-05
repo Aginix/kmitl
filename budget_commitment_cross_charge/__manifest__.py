@@ -1,7 +1,7 @@
 {
     "name": "Budget Commitment Cross-charge",
     "summary": "ถัวจ่าย: reserve one ใบจองงบประมาณ across several budget codes",
-    "version": "16.0.1.0.1",
+    "version": "16.0.1.0.2",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "development_status": "Beta",

@@ -1,16 +1,16 @@
 /** @odoo-module **/
 
-import { registry } from "@web/core/registry";
-import { useService } from "@web/core/utils/hooks";
-import { Many2OneField } from "@web/views/fields/many2one/many2one_field";
-import { onWillStart, onWillUpdateProps, useState } from "@odoo/owl";
+import {registry} from "@web/core/registry";
+import {useService} from "@web/core/utils/hooks";
+import {Many2OneField} from "@web/views/fields/many2one/many2one_field";
+import {onWillStart, onWillUpdateProps, useState} from "@odoo/owl";
 
 // A reservation is picked by *what it is for*, but a Many2one shows one line of
 // text — so a user choosing a ใบจองงบประมาณ to draw down could not tell whether
 // the code, the dimensions or the leftover matched their document. This widget
 // keeps the standard Many2one picker and renders the selected reservation's
-// details underneath it: budget code, all four financial dimensions, fiscal year
-// and the amounts (วงเงินอนุมัติ / ผูกพันแล้ว / คงเหลือให้ผูกพัน).
+// details underneath it: the financial dimensions, budget code and the amounts
+// (จำนวนเงิน / คงเหลือ), with a link opening the reservation in a new tab.
 //
 // Everything displayed comes from budget.commitment.get_reservation_info() as
 // label/value rows, so labels, translations and money formatting live
@@ -20,12 +20,15 @@ export class BudgetCommitmentInfoField extends Many2OneField {
     setup() {
         super.setup();
         this.orm = useService("orm");
-        this.info = useState({ data: null });
+        this.info = useState({data: null});
         onWillStart(() => this.loadInfo(this.commitmentId(this.props)));
         // A reload (e.g. after the reservation dialog closes) hands a new value
         // array even for the same slip: refetch then, not on every re-render.
         onWillUpdateProps((nextProps) =>
-            this.loadInfo(this.commitmentId(nextProps), nextProps.value !== this.props.value)
+            this.loadInfo(
+                this.commitmentId(nextProps),
+                nextProps.value !== this.props.value
+            )
         );
     }
 
@@ -51,21 +54,14 @@ export class BudgetCommitmentInfoField extends Many2OneField {
         this.info.data = data || null;
     }
 
-    /**
-     * "[code] a / b / leaf" → {code, leaf, path: "a / b"}. A value without a
-     * "[code]" prefix or " / " separators comes back as the leaf alone.
-     */
-    splitName(value) {
-        let rest = value || "";
-        let code = "";
-        const match = rest.match(/^\[([^\]]+)\]\s*(.*)$/s);
-        if (match) {
-            code = match[1];
-            rest = match[2];
-        }
-        const segments = rest.split(" / ");
-        const leaf = segments.pop();
-        return { code, leaf, path: segments.join(" / ") };
+    /** "[code] complete name" → {code, name}. */
+    splitCode(value) {
+        const match = (value || "").match(/^\[([^\]]+)\]\s*(.*)$/s);
+        return match ? {code: match[1], name: match[2]} : {code: "", name: value};
+    }
+
+    commitmentUrl() {
+        return `/web#id=${this.info.data.id}&model=budget.commitment&view_type=form`;
     }
 }
 
