@@ -19,11 +19,19 @@
         border-bottom: 1px solid rgba(0, 0, 0, 0.32);
     }
 
-    // Only the navigation buttons make sense for a file.
+    // Only the navigation buttons, and the rotate ones when the renderer can
+    // rotate, make sense for a file.
     .photoviewer-footer {
         border-top: 1px solid rgba(0, 0, 0, 0.2);
 
-        .photoviewer-button:not(.photoviewer-button-prev):not(.photoviewer-button-next) {
+        .photoviewer-button:not(.photoviewer-button-prev):not(.photoviewer-button-next):not(.photoviewer-button-rotateLeft):not(.photoviewer-button-rotateRight) {
+            display: none;
+        }
+    }
+
+    &:not(.o_agx_photoviewer_rotatable) .photoviewer-footer {
+        .photoviewer-button-rotateLeft,
+        .photoviewer-button-rotateRight {
             display: none;
         }
     }
@@ -33,12 +41,19 @@
     }
 
     &.o_agx_photoviewer_single {
-        .photoviewer-footer {
+        .photoviewer-button-prev,
+        .photoviewer-button-next {
             display: none;
         }
 
-        .o_agx_photoviewer_content {
-            bottom: 0;
+        &:not(.o_agx_photoviewer_rotatable) {
+            .photoviewer-footer {
+                display: none;
+            }
+
+            .o_agx_photoviewer_content {
+                bottom: 0;
+            }
         }
     }
 

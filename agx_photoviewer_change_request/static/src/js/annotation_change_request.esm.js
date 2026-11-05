@@ -497,10 +497,11 @@ patch(AnnotationEditor.prototype, "agx_photoviewer_change_request", {
         if (!sheet) {
             return;
         }
+        const [, y] = this.turn([annotation.geometry.x, annotation.geometry.y]);
         const top =
             sheet.element.getBoundingClientRect().top -
             this.scroll.getBoundingClientRect().top +
-            annotation.geometry.y * sheet.element.clientHeight;
+            y * sheet.element.clientHeight;
         this.scroll.scrollTop += top - this.scroll.clientHeight / 3;
         this.openComment(sheet, annotation);
     },

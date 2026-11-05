@@ -105,6 +105,15 @@
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
 }
 
+// The page as uploaded, rotated around the middle of the sheet (inline style).
+.o_agx_annotation_sheet_content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+}
+
 .o_agx_annotation_source,
 .o_agx_annotation_layer {
     position: absolute;
