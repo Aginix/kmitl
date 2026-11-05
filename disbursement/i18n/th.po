@@ -962,3 +962,28 @@ msgstr "หัก ณ ที่จ่าย"
 #, python-format
 msgid "You do not hold the role this act requires."
 msgstr "คุณไม่มีบทบาทที่การกระทำนี้ต้องการ"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request_signature__step_action
+msgid "Duty"
+msgstr "หน้าที่"
+
+#. module: disbursement
+#: model:ir.model.fields,help:disbursement.field_disbursement_request_signature__step_action
+msgid "The duty word printed above the signature, e.g. Approved."
+msgstr "คำบอกหน้าที่ที่พิมพ์เหนือลายเซ็น เช่น อนุมัติ"
+
+#. module: disbursement
+#: code:addons/disbursement/models/disbursement_request_signature.py:0
+msgid "Verified"
+msgstr "ตรวจสอบ"
+
+#. module: disbursement
+#: code:addons/disbursement/models/disbursement_request_signature.py:0
+msgid "For Consideration"
+msgstr "เพื่อโปรดพิจารณา"
+
+#. module: disbursement
+#: code:addons/disbursement/models/disbursement_request_signature.py:0
+msgid "Approved"
+msgstr "อนุมัติ"

@@ -1,6 +1,6 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 
-from odoo import fields, models
+from odoo import _, fields, models
 
 
 class DisbursementRequestSignature(models.Model):
@@ -12,3 +12,6 @@ class DisbursementRequestSignature(models.Model):
         selection_add=[("payment_audit", "Payment Auditor"), ("payment_authorize",)],
         ondelete={"payment_audit": "cascade"},
     )
+
+    def _step_actions(self):
+        return dict(super()._step_actions(), payment_audit=_("Payment Audited"))

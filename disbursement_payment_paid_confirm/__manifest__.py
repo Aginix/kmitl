@@ -4,7 +4,7 @@
     "name": "Disbursement Payment Paid Confirmation",
     "summary": "The ยืนยันจ่ายสำเร็จ act: the finance officer confirms that every "
     "payee of a disbursement request has been paid",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.1.0",
     "category": "Disbursement",
     "license": "LGPL-3",
     "author": "KMITL",

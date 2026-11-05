@@ -1,6 +1,6 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
 
 
 class DisbursementRequestSignature(models.Model):
@@ -70,6 +70,28 @@ class DisbursementRequestSignature(models.Model):
         help="What the report prints: the snapshot, or the signer's current "
         "employee signature when the snapshot is empty.",
     )
+
+    step_action = fields.Char(
+        string="Duty",
+        compute="_compute_step_action",
+        help="The duty word printed above the signature, e.g. Approved.",
+    )
+
+    def _step_actions(self):
+        """Duty word printed above each step's signature. Bridges that add a
+        step add its word here too."""
+        return {
+            "verify": _("Verified"),
+            "finance_approve": _("For Consideration"),
+            "rector_approve": _("Approved"),
+        }
+
+    @api.depends("step")
+    @api.depends_context("lang")
+    def _compute_step_action(self):
+        actions = self._step_actions()
+        for record in self:
+            record.step_action = actions.get(record.step) or False
 
     @api.depends("signed_signature", "signed_by_id")
     def _compute_signature_image(self):
