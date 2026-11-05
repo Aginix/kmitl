@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_partner_form_smart_button_kmitl" model="ir.ui.view">
+        <field name="name">res.partner.form.smart.button.kmitl</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button
+                    name="action_view_disbursement_requests"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-money"
+                    groups="disbursement.group_disbursement_user"
+                    attrs="{'invisible': [('disbursement_request_count', '=', 0)]}"
+                >
+                    <field
+                        name="disbursement_request_count"
+                        widget="statinfo"
+                        string="ใบขอเบิก"
+                    />
+                </button>
+                <button
+                    name="action_view_advance_payments"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-handshake-o"
+                    groups="advance_payment.group_advance_payment_own_only"
+                    attrs="{'invisible': [('advance_payment_count', '=', 0)]}"
+                >
+                    <field
+                        name="advance_payment_count"
+                        widget="statinfo"
+                        string="สัญญาเงินยืม"
+                    />
+                </button>
+                <button
+                    name="action_view_withholding_tax_certs"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-percent"
+                    groups="account.group_account_invoice"
+                    attrs="{'invisible': [('withholding_tax_cert_count', '=', 0)]}"
+                >
+                    <field
+                        name="withholding_tax_cert_count"
+                        widget="statinfo"
+                        string="ใบหัก ณ ที่จ่าย"
+                    />
+                </button>
+                <button
+                    name="action_view_purchase_request_approvals"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-shopping-cart"
+                    groups="purchase_request.group_purchase_request_user,purchase_request_kmitl.group_purchase_request_user_all"
+                    attrs="{'invisible': [('purchase_request_approval_count', '=', 0)]}"
+                >
+                    <field
+                        name="purchase_request_approval_count"
+                        widget="statinfo"
+                        string="รายงานขอซื้อ/จ้าง"
+                    />
+                </button>
+                <button
+                    name="action_view_work_acceptances"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-check-square"
+                    groups="purchase.group_purchase_user"
+                    attrs="{'invisible': [('work_acceptance_count', '=', 0)]}"
+                >
+                    <field
+                        name="work_acceptance_count"
+                        widget="statinfo"
+                        string="ใบตรวจรับ"
+                    />
+                </button>
+                <button
+                    name="action_view_purchase_guarantees"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-shield"
+                    groups="purchase.group_purchase_user,account.group_account_invoice"
+                    attrs="{'invisible': [('purchase_guarantee_count', '=', 0)]}"
+                >
+                    <field
+                        name="purchase_guarantee_count"
+                        widget="statinfo"
+                        string="หลักประกัน"
+                    />
+                </button>
+            </xpath>
+        </field>
+    </record>
+</odoo>
