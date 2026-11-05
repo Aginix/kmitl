@@ -439,16 +439,19 @@ class DisbursementRequest(models.Model):
         "line_ids.display_type", "line_ids.payment_type", "line_ids.partner_type_id"
     )
     def _compute_type_display(self):
-        Line = self.env["disbursement.request.line"]
-        labels = dict(Line._fields["payment_type"]._description_selection(self.env))
         for rec in self:
             lines = rec._product_lines()
-            rec.payment_type_display = ", ".join(
-                labels.get(key, key) for key in dict.fromkeys(lines.mapped("payment_type"))
-            )
+            rec.payment_type_display = rec._payment_type_labels(lines)
             rec.payee_type_display = ", ".join(
                 lines.partner_type_id.mapped("display_name")
             )
+
+    def _payment_type_labels(self, lines):
+        """The payment types of ``lines`` as their labels, e.g. "จ่ายตรง, สำรองจ่าย"."""
+        field = self.env["disbursement.request.line"]._fields["payment_type"]
+        labels = dict(field._description_selection(self.env))
+        keys = lines.filtered(lambda ln: not ln.display_type).mapped("payment_type")
+        return ", ".join(labels.get(key, key) for key in dict.fromkeys(keys))
 
     def _product_lines(self):
         """The lines that pay something, without section and note rows."""

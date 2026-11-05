@@ -22,6 +22,17 @@
         </xpath>
     </template>
 
+    <!-- Sectioned lines: วิธีจ่าย under the line's payment type. -->
+    <template
+        id="report_disbursement_request_sections"
+        inherit_id="disbursement_pdf.report_disbursement_request_sections"
+    >
+        <xpath expr="//td[hasclass('o_dr_line_payment')]/span" position="after">
+            <div t-if="line.payment_method == 'cheque'">วิธีจ่าย: จ่ายเช็ค</div>
+            <div t-elif="line.payment_method == 'transfer'">วิธีจ่าย: โอนเงิน</div>
+        </xpath>
+    </template>
+
     <template
         id="report_disbursement_request_body"
         inherit_id="disbursement_sarabun.report_disbursement_request_body"
