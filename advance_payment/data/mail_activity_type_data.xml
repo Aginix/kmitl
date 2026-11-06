@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <!-- One To-Do type per step that waits on a named person
+         (advance.payment WORKFLOW_ACTIVITY_TYPES). Each one clears when the
+         step is taken (done) or the request leaves the step (dropped). -->
+    <record id="mail_activity_type_endorse" model="mail.activity.type">
+        <field name="name">เห็นชอบคำขอยืมเงิน</field>
+        <field name="summary">คำขอยืมเงินรอผู้บังคับบัญชาเห็นชอบ</field>
+        <field name="res_model">advance.payment</field>
+        <field name="icon">fa-thumbs-up</field>
+        <field name="delay_count">0</field>
+    </record>
+    <record id="mail_activity_type_verify" model="mail.activity.type">
+        <field name="name">ตรวจสอบคำขอยืมเงิน</field>
+        <field name="summary">คำขอยืมเงินรอเจ้าหน้าที่งานเงินยืมตรวจสอบ</field>
+        <field name="res_model">advance.payment</field>
+        <field name="icon">fa-search</field>
+        <field name="delay_count">0</field>
+    </record>
+    <record id="mail_activity_type_director_review" model="mail.activity.type">
+        <field name="name">พิจารณาคำขอยืมเงิน</field>
+        <field name="summary">คำขอยืมเงินรอผู้อำนวยการสำนักงานคลังพิจารณา</field>
+        <field name="res_model">advance.payment</field>
+        <field name="icon">fa-gavel</field>
+        <field name="delay_count">0</field>
+    </record>
+    <record id="mail_activity_type_approve" model="mail.activity.type">
+        <field name="name">อนุมัติคำขอยืมเงิน</field>
+        <field name="summary">คำขอยืมเงินรอผู้มีอำนาจอนุมัติ</field>
+        <field name="res_model">advance.payment</field>
+        <field name="icon">fa-check-circle</field>
+        <field name="delay_count">0</field>
+    </record>
+    <record id="mail_activity_type_payment_voucher" model="mail.activity.type">
+        <field name="name">สร้างใบสำคัญจ่ายเงินยืม</field>
+        <field name="summary">เงินยืมอนุมัติแล้ว รอสร้างใบสำคัญจ่าย</field>
+        <field name="res_model">advance.payment</field>
+        <field name="icon">fa-money</field>
+        <field name="delay_count">0</field>
+    </record>
+</odoo>

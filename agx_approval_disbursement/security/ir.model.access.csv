@@ -1,3 +1,8 @@
 id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
 access_disbursement_request_approval_own,disbursement.request approval own (read),disbursement.model_disbursement_request,agx_approval.group_approval_own,1,0,0,0
 access_disbursement_request_line_approval_own,disbursement.request.line approval own (read),disbursement.model_disbursement_request_line,agx_approval.group_approval_own,1,0,0,0
+access_dr_approval_expense_user,disbursement.request.approval.expense user,model_disbursement_request_approval_expense,disbursement.group_disbursement_user,1,1,1,1
+access_dr_approval_expense_head,disbursement.request.approval.expense head,model_disbursement_request_approval_expense,disbursement.group_disbursement_head,1,1,1,0
+access_dr_approval_expense_officer,disbursement.request.approval.expense officer,model_disbursement_request_approval_expense,disbursement.group_disbursement_officer,1,1,1,0
+access_dr_approval_expense_manager,disbursement.request.approval.expense manager,model_disbursement_request_approval_expense,disbursement.group_disbursement_manager,1,1,1,1
+access_dr_approval_expense_own,disbursement.request.approval.expense own (read),model_disbursement_request_approval_expense,agx_approval.group_approval_own,1,0,0,0

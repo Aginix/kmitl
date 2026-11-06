@@ -235,11 +235,13 @@
                             <group>
                                 <group name="project_execution" string="การดำเนินโครงการ">
                                     <field name="methodology_ids" widget="many2many_checkboxes" />
-                                    <field name="methodology_detail" string="รายละเอียด" />
+                                    <field name="methodology_other" invisible="1" />
+                                    <field name="methodology_detail" string="รายละเอียด" attrs="{'invisible': [('methodology_other', '=', False)]}" />
                                 </group>
                                 <group name="monitoring_evaluation_tools" string="วิธีการ/เครื่องมือติดตามและประเมินผล">
                                     <field name="evaluation_ids" widget="many2many_checkboxes" string="วิธีการ" />
-                                    <field name="evaluation_detail" string="รายละเอียด" />
+                                    <field name="evaluation_other" invisible="1" />
+                                    <field name="evaluation_detail" string="รายละเอียด" attrs="{'invisible': [('evaluation_other', '=', False)]}" />
                                 </group>
                             </group>
                             <group name="goals_outputs_outcomes" string="เป้าหมาย ผลผลิต และผลลัพธ์">
@@ -342,8 +344,8 @@
                 <separator />
                 <filter name="my_projects" string="My Projects" domain="[('creating_user_id', '=', uid)]" />
                 <separator />
-                <filter name="project_type_project" string="โครงการ (งบประจำ)" domain="[('project_type', '=', 'project')]" />
-                <filter name="project_type_activity" string="กิจกรรม (งบประจำ)" domain="[('project_type', '=', 'activity')]" />
+                <filter name="project_type_project" string="โครงการงบประจำ" domain="[('project_type', '=', 'project')]" />
+                <filter name="project_type_activity" string="กิจกรรมงบประจำ" domain="[('project_type', '=', 'activity')]" />
                 <filter name="project_type_strategic" string="โครงการยุทธศาสตร์" domain="[('project_type', '=', 'strategic_project')]" />
                 <separator />
                 <filter name="state_draft" string="Draft" domain="[('state', '=', 'draft')]" />

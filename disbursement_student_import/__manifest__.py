@@ -4,7 +4,7 @@
     "name": "Disbursement Student List Import",
     "summary": "Add many students to a disbursement request from one Excel list "
     "(scholarships, teaching-assistant pay)",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.0.1",
     "category": "Disbursement",
     "license": "LGPL-3",
     "author": "KMITL",

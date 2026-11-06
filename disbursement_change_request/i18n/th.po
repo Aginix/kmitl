@@ -1,0 +1,27 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* disbursement_change_request
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-27 00:00+0000\n"
+"PO-Revision-Date: 2026-10-27 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: disbursement_change_request
+#: model:ir.model.fields.selection,name:disbursement_change_request.selection__exception_rule__method__disbursement_request_check_outstanding_change_requests
+msgid "Disbursement Request: no outstanding change request on validation"
+msgstr "ใบขอเบิก: ไม่มีข้อแก้ไขที่ค้างอยู่เมื่อตรวจสอบ"
+
+#. module: disbursement_change_request
+#: model:ir.model.fields,field_description:disbursement_change_request.field_disbursement_request__change_request_count
+msgid "Outstanding Change Requests"
+msgstr "ข้อแก้ไขที่ค้างอยู่"

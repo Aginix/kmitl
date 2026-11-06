@@ -40,7 +40,7 @@
                         type="object"
                         string="Send"
                         class="oe_highlight"
-                        attrs="{'invisible': [('state', 'not in', ('draft', 'returned'))]}"
+                        attrs="{'invisible': [('is_editable', '=', False)]}"
                     />
                     <button
                         name="action_act_on_my_step"
@@ -109,7 +109,7 @@
                          hidden once approved (completed) so the inline PDF is the focus. -->
                     <group
                         name="classification"
-                        attrs="{'invisible': [('state', '=', 'completed')]}"
+                        attrs="{'invisible': ['|', ('state', '=', 'completed'), ('is_editable', '=', False)]}"
                     >
                       <group>
                         <!-- Locked once set to an origin-only type: such a หนังสือ is
@@ -131,7 +131,7 @@
                          small register field like on the real document. -->
                     <group
                         name="registry_block"
-                        attrs="{'invisible': [('state', '=', 'completed')]}"
+                        attrs="{'invisible': ['|', ('state', '=', 'completed'), ('is_editable', '=', False)]}"
                     >
                         <!-- readonly is set per-field: a `readonly` attrs on the <group>
                              is NOT propagated to child fields by Odoo 16 (each node's
@@ -166,11 +166,11 @@
                             <!-- เลขที่หนังสือ sits with ที่ (same concern) — manual compose only. -->
                             <field
                                 name="numbering_mode"
-                                attrs="{'invisible': ['|', ('kind', '=', 'from_record'), ('state', 'not in', ('draft', 'returned'))]}"
+                                attrs="{'invisible': ['|', ('kind', '=', 'from_record'), ('is_editable', '=', False)]}"
                             />
                             <field
                                 name="reserved_number_id"
-                                attrs="{'invisible': ['|', '|', ('kind', '=', 'from_record'), ('state', 'not in', ('draft', 'returned')), ('numbering_mode', '!=', 'reserved')]}"
+                                attrs="{'invisible': ['|', '|', ('kind', '=', 'from_record'), ('is_editable', '=', False), ('numbering_mode', '!=', 'reserved')]}"
                             />
                         </group>
                     </group>

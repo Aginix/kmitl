@@ -1,9 +1,11 @@
 /** @odoo-module **/
 
 import { registry } from "@web/core/registry";
-import { useService } from "@web/core/utils/hooks";
+import { useBus, useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
-import { Component, useState, onWillStart } from "@odoo/owl";
+import { SearchModel } from "@web/search/search_model";
+import { SearchPanel } from "@web/search/search_panel/search_panel";
+import { Component, useState, useSubEnv, onWillStart } from "@odoo/owl";
 import { MultiRecordSelect } from "./multi_record_select";
 
 const MOVE_FIELDS = [
@@ -24,13 +26,9 @@ const MOVE_FIELDS = [
 const LINE_FIELDS = ["account_id", "name", "debit", "credit"];
 
 // Filter buckets backed by the MultiRecordSelect widget -> move field.
+// Journal, dimensions, submitter and partner type live in the search panel.
 const FILTER_FIELDS = {
-    journals: "journal_id",
     partners: "partner_id",
-    departments: "department_analytic_id",
-    sources: "source_analytic_id",
-    funds: "fund_analytic_id",
-    activities: "activity_analytic_id",
 };
 
 export class ApprovalQueue extends Component {
@@ -38,8 +36,16 @@ export class ApprovalQueue extends Component {
         this.orm = useService("orm");
         this.action = useService("action");
         this.notification = useService("notification");
-        this.company = useService("company");
         this.fiscalYears = [];
+        // Odoo's own search model drives the left search panel (sections come
+        // from the <searchpanel> of the search view passed in action params).
+        this.searchModel = new SearchModel(this.env, {
+            user: useService("user"),
+            orm: this.orm,
+            view: useService("view"),
+        });
+        useSubEnv({ searchModel: this.searchModel });
+        useBus(this.searchModel, "update", () => this.loadMoves());
         this.state = useState({
             loading: true,
             moves: [],
@@ -50,13 +56,7 @@ export class ApprovalQueue extends Component {
             fiscalYearId: false,
             dateFrom: false,
             dateTo: false,
-            showAdvanced: false,
-            journals: [],
             partners: [],
-            departments: [],
-            sources: [],
-            funds: [],
-            activities: [],
         });
         // All UI labels go through _t so they are extracted for i18n.
         this.labels = {
@@ -87,17 +87,16 @@ export class ApprovalQueue extends Component {
             fiscalYear: _t("Fiscal Year"),
             dateFrom: _t("Date From"),
             dateTo: _t("Date To"),
-            departments: _t("Departments"),
-            sources: _t("Sources"),
-            funds: _t("Funds"),
-            activities: _t("Activities"),
-            journals: _t("Journals"),
             partners: _t("Partners"),
-            moreFilters: _t("More filters"),
-            hideFilters: _t("Hide filters"),
+            selectedTotal: _t("Selected Total"),
         };
         onWillStart(async () => {
-            this.companyId = this.company.currentCompany.id;
+            await this.searchModel.load({
+                resModel: "account.move",
+                searchViewId: this.props.action.params.search_view_id,
+                domain: this.filterDomain,
+                display: { controlPanel: false },
+            });
             this.fiscalYears = await this.orm.searchRead(
                 "account.fiscal.year",
                 [],
@@ -108,7 +107,8 @@ export class ApprovalQueue extends Component {
         });
     }
 
-    get domain() {
+    // Queue + filter-bar domain; the search model adds the panel selections.
+    get filterDomain() {
         const domain = [["workflow_state", "=", "to_approve"]];
         if (this.state.dateFrom) {
             domain.push(["date", ">=", this.state.dateFrom]);
@@ -129,7 +129,7 @@ export class ApprovalQueue extends Component {
         this.state.loading = true;
         this.state.moves = await this.orm.searchRead(
             "account.move",
-            this.domain,
+            this.searchModel.domain,
             MOVE_FIELDS,
             { order: "date desc, id desc" }
         );
@@ -141,6 +141,12 @@ export class ApprovalQueue extends Component {
         this.state.loading = false;
     }
 
+    async refresh() {
+        // Reload the panel counters too; its "update" reloads the moves.
+        await this.searchModel.reload({ domain: this.filterDomain });
+        this.searchModel.trigger("update");
+    }
+
     // ------------------------------------------------------------------
     // Filters
     // ------------------------------------------------------------------
@@ -150,27 +156,23 @@ export class ApprovalQueue extends Component {
         const fy = this.fiscalYears.find((f) => f.id === id);
         this.state.dateFrom = fy ? fy.date_from : false;
         this.state.dateTo = fy ? fy.date_to : false;
-        this.loadMoves();
+        this.refresh();
     }
 
     onDateFromChange(ev) {
         this.state.dateFrom = ev.target.value || false;
-        this.loadMoves();
+        this.refresh();
     }
 
     onDateToChange(ev) {
         this.state.dateTo = ev.target.value || false;
-        this.loadMoves();
-    }
-
-    toggleAdvanced() {
-        this.state.showAdvanced = !this.state.showAdvanced;
+        this.refresh();
     }
 
     onSelectionChange(key, selected) {
         if (Object.prototype.hasOwnProperty.call(FILTER_FIELDS, key)) {
             this.state[key] = selected;
-            this.loadMoves();
+            this.refresh();
         }
     }
 
@@ -213,7 +215,7 @@ export class ApprovalQueue extends Component {
     async approve(move) {
         await this.orm.call("account.move", "action_approve", [[move.id]]);
         this.notification.add(_t("Approved"), { type: "success" });
-        await this.loadMoves();
+        await this.refresh();
     }
 
     async reject(move) {
@@ -222,7 +224,7 @@ export class ApprovalQueue extends Component {
             "action_open_reject_wizard",
             [[move.id]]
         );
-        this.action.doAction(action, { onClose: () => this.loadMoves() });
+        this.action.doAction(action, { onClose: () => this.refresh() });
     }
 
     async approveSelected() {
@@ -237,7 +239,7 @@ export class ApprovalQueue extends Component {
         if (action) {
             await this.action.doAction(action);
         }
-        await this.loadMoves();
+        await this.refresh();
     }
 
     toggleSelect(moveId) {
@@ -266,6 +268,12 @@ export class ApprovalQueue extends Component {
         );
     }
 
+    get selectedTotal() {
+        return this.state.moves
+            .filter((move) => this.isSelected(move.id))
+            .reduce((sum, move) => sum + (move.amount_total || 0), 0);
+    }
+
     displayName(value) {
         // Many2one searchRead value is [id, display_name] or false.
         return Array.isArray(value) ? value[1] : "";
@@ -290,7 +298,7 @@ export class ApprovalQueue extends Component {
 }
 
 ApprovalQueue.template = "accounting_kmitl_workflow.ApprovalQueue";
-ApprovalQueue.components = { MultiRecordSelect };
+ApprovalQueue.components = { MultiRecordSelect, SearchPanel };
 ApprovalQueue.props = ["*"];
 
 registry

@@ -5,12 +5,17 @@
         <field name="model">disbursement.request</field>
         <field name="inherit_id" ref="disbursement.view_disbursement_request_form" />
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='line_ids']/tree/field[@name='partner_bank_id']" position="after">
+            <xpath
+                expr="//field[@name='line_ids']/tree/field[@name='partner_bank_id']"
+                position="after"
+            >
                 <button
                     name="action_open_partner_bank_wizard"
                     type="object"
                     icon="fa-university"
+                    string="Bank Accounts"
                     title="Bank Accounts"
+                    class="btn-secondary btn-sm"
                     attrs="{'invisible': [('parent.state', '!=', 'draft')]}"
                 />
             </xpath>

@@ -18,6 +18,51 @@ class DisbursementRequest(models.Model):
             f"ขออนุมัติเบิกเงิน{source_name} {department_name} ประจำปีงบประมาณ พ.ศ. {fy_name}"
         )
 
+    def _stamp_signature(self, step):
+        """Re-render once per stamp, not once for the archive and again for the row."""
+        signature = super(
+            DisbursementRequest, self.with_context(sarabun_defer_refreeze=True)
+        )._stamp_signature(step)
+        self._refreeze_sarabun_signed_pdf()
+        return signature
+
+    def _refreeze_sarabun_signed_pdf(self):
+        """Re-render the frozen ฉบับลงนาม of each completed หนังสือ.
+
+        The PDF is frozen the moment the head signs, before any later stage
+        acts; a stage signature added or archived after that must still reach it.
+        Same steps as ``agx_sarabun_pdf_regenerate.action_regenerate_signed_pdf``
+        (not a dependency, so copied) minus its manager-group check.
+        """
+        # sudo: the freeze is a system act on a read-only record (as at completion).
+        documents = self.active_sarabun_document_id.sudo().filtered(
+            lambda d: d.state == "completed" and d.is_frozen
+        )
+        if not documents:
+            return
+        # The render must see the signature row just added or archived.
+        self.invalidate_recordset(["signature_ids"])
+        Attachment = self.env["ir.attachment"].sudo()
+        for doc in documents:
+            attached = [("res_model", "=", doc._name), ("res_id", "=", doc.id)]
+            frozen = Attachment.search(attached + [("res_field", "=", "signed_pdf")])
+            # The visible copy carries the very same bytes: match by checksum.
+            old_copies = Attachment.search(
+                attached
+                + [
+                    ("res_field", "=", False),
+                    ("checksum", "in", frozen.mapped("checksum")),
+                ]
+            )
+            # Keep the real freeze time: a re-render is not a re-sign.
+            signed_at = doc.signed_at
+            doc.write(
+                {"signed_pdf": False, "signed_pdf_filename": False, "signed_at": False}
+            )
+            old_copies.unlink()
+            doc._freeze_signed_copy()
+            doc.signed_at = signed_at
+
     def _prepare_sarabun_document_vals(self):
         vals = super()._prepare_sarabun_document_vals()
         vals["addressee"] = "อธิการบดี"
@@ -25,6 +70,31 @@ class DisbursementRequest(models.Model):
 
     def _sarabun_submit_guard(self):
         return self.state == "submitted"
+
+    def action_submit_to_sarabun(self):
+        """Also carry the request's เอกสารแนบ onto the หนังสือ as สิ่งที่ส่งมาด้วย."""
+        action = super().action_submit_to_sarabun()
+        if action and action.get("res_id"):
+            document = self.env["sarabun.document"].browse(action["res_id"])
+            self._copy_attachments_to_sarabun(document)
+        return action
+
+    def _copy_attachments_to_sarabun(self, document):
+        """Copy the request's attachments onto the หนังสือ as enclosures. Copied
+        (not merely referenced) with ``res_model=sarabun.document`` so a Route
+        recipient without rights on the request can still open them — the หนังสือ's
+        ACL governs. Seeded once at submit; the drafter then manages enclosures on
+        the หนังสือ itself."""
+        self.ensure_one()
+        enclosures = self.env["ir.attachment"]
+        for attachment in self.attachment_ids:
+            enclosures |= attachment.sudo().copy(
+                {"res_model": "sarabun.document", "res_id": document.id}
+            )
+        if enclosures:
+            document.sudo().write(
+                {"enclosure_attachment_ids": [(4, a.id) for a in enclosures]}
+            )
 
     # A requester may now reset or cancel before approval: not while its
     # หนังสือ is still in e-Saraban, which would leave it routing for nothing.
@@ -114,6 +184,11 @@ class DisbursementRequest(models.Model):
 
     def _get_sarabun_body_template(self):
         return "disbursement_sarabun.report_disbursement_request_body"
+
+    def _get_sarabun_tail_template(self):
+        """Stage signatures (ADR-0002 rows) sign after the หนังสือ's head, so they
+        print below its signature."""
+        return "disbursement_pdf.report_disbursement_request_signature"
 
     def _get_sarabun_content(self):
         """The editable เนื้อหา, seeded once at submit: the opening paragraph,

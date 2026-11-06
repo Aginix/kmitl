@@ -4,7 +4,7 @@
     "name": "Disbursement Payee Bank Accounts",
     "summary": "Manage a payee's bank accounts (add / edit inline) from a draft "
     "disbursement request",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.0.1",
     "category": "Disbursement",
     "license": "LGPL-3",
     "author": "KMITL",

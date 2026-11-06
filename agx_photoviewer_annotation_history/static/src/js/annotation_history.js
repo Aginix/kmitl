@@ -110,6 +110,8 @@ patch(AnnotationEditor.prototype, "agx_photoviewer_annotation_history", {
         this._super(...arguments);
         this.historyPanel = htmlElement("div", "o_agx_annotation_history d-none");
         this.body.append(this.historyPanel);
+        // Open from the start: the Changes are what a reviewer comes for.
+        this.toggleHistory();
     },
 
     canAnnotate() {

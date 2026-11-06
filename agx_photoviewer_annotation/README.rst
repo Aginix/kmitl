@@ -10,6 +10,11 @@ an image or a PDF inside the photo viewer of ``agx_photoviewer``.
   rectangle, comment, eraser (own marks), colours and undo. On a touch screen
   one finger annotates and two fingers scroll and pinch-zoom the pages; a palm
   resting on the screen while a stylus draws is ignored.
+* The **Resize** tool shows a grip on the author's own ✓ / ✗ stamps, highlights
+  and rectangles to drag to the size wanted.
+* The pages turn left or right by quarter turns (the marks follow; the file and
+  its export are untouched), and a PDF shows ``page / pages`` with a field to
+  jump to a page.
 * Each mark is saved as soon as it is drawn, in ``ir.attachment.annotation``;
   the file itself is never modified (``docs/adr/0001``). Everyone who can read
   the attachment sees all marks and may add some; only the author changes or

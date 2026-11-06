@@ -101,7 +101,9 @@
                 t-field="o.procurement_method_id"
             /> เลขที่ <span
                 t-field="o.request_id"
-            /> ลงวันที่ 3 กรกฎาคม พ.ศ. 2568
+            /> ลงวันที่ <span
+                t-out="o.format_date_thai(o.request_id.date_approved)"
+            />
             ได้รับอนุมัติหลักการและงบประมาณ <span
                 t-out="o.product_id.name"
             />
@@ -234,7 +236,7 @@
             </li>
         </ol>
         <div class="my-4" />
-        <p style="text-indent: 6em"> 1.1 ตาม อนุมัติให้จัดซื้อ <span
+        <p style="text-indent: 6em"> ตาม อนุมัติให้จัดซื้อ <span
                 t-field="o.product_id.name"
             /> จำนวน <t t-out="len(o.line_ids)"/> รายการ ด้วยวิธี<span
                 t-field="o.payment_type"
@@ -272,6 +274,8 @@
                         <t t-set="idx" t-value="idx + 1" />
                         <li><t t-esc="idx" />. <t
                                 t-esc="committee.name"
+                            /> <span
+                                t-esc="committee._fields['approve_role'].convert_to_export(committee.approve_role, committee)"
                             /></li>
                     </t>
                 </ul>
@@ -309,6 +313,9 @@
         <li> ขออนุมัติแต่งตั้งคณะกรรมการตรวจรับพัสดุ ดังต่อไปนี้ <ol>
                 <li t-foreach="o.work_acceptance_committee_ids" t-as="committee">
                     <span t-field="committee.employee_id" />
+                    <span
+                        t-esc="committee._fields['approve_role'].convert_to_export(committee.approve_role, committee)"
+                    />
                 </li>
             </ol>
         </li>

@@ -1,10 +1,33 @@
-from odoo import api, models
+from odoo import api, fields, models
 
 
 class AdvancePayment(models.Model):
     _name = "advance.payment"
     _inherit = ["advance.payment", "base.exception"]
     _order = "main_exception_id asc, name desc, id desc"
+
+    # Read by excep_one_active_agreement (ADR-0001, a borrowing rule since
+    # ADR-0030). Searched under sudo: an own-only borrower cannot see the
+    # other agreement, and neither can the endorser the rule runs as.
+    has_other_active_agreement = fields.Boolean(
+        compute="_compute_has_other_active_agreement",
+        help="Technical flag read by the one-active-agreement exception rule.",
+    )
+
+    @api.depends("employee_id", "state")
+    def _compute_has_other_active_agreement(self):
+        for rec in self:
+            rec.has_other_active_agreement = bool(
+                rec.employee_id
+                and self.sudo().search_count(
+                    [
+                        ("employee_id", "=", rec.employee_id.id),
+                        ("state", "in", self.ACTIVE_STATES),
+                        ("id", "!=", rec._origin.id),
+                    ],
+                    limit=1,
+                )
+            )
 
     @api.model
     def _reverse_field(self):
@@ -32,12 +55,11 @@ class AdvancePayment(models.Model):
     def action_submit(self):
         """Stop a draft at the exceptions popup; super submits the rest.
 
-        The permission and one-active checks run first, as they did before
-        the split, so a request that may not be submitted at all says so
-        instead of listing its exceptions."""
+        The permission check runs first, as it did before the split, so a
+        request that may not be submitted at all says so instead of listing
+        its exceptions."""
         self._check_submit_permission()
         for rec in self.filtered(lambda r: r.state == "draft"):
-            rec._check_one_active_agreement()
             if not rec.ignore_exception and rec.detect_exceptions():
                 return rec._popup_exceptions()
         return super().action_submit()

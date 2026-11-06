@@ -27,7 +27,18 @@ but only with acts their role already entitles them to. Membership **narrows, ne
 grants**: it says "this document at this desk is yours", while the role says "you may
 do this kind of act at all". A station with no members is open to everyone holding the
 role. Members also forward, divert and send back the documents at their station.
-_Avoid_: owner, assignee, approver (a role)
+_Avoid_: owner, approver (a role)
+
+**ผู้รับผิดชอบงาน (Assignee)**: The one person of a station handling a document there.
+Membership says **who may** act, the assignee says **who is** acting: when a station
+has one, only they act and move the document, and the other members must claim it first.
+Cleared when the document leaves the station. A station whose rules pick nobody has no
+assignee, and every member may act as before. _Avoid_: owner, approver
+
+**มอบให้ฉัน (Claim)**: A member of the station taking the document over from its
+assignee, or taking it up when it has none. Not a lock: it is one button press, and the
+chatter keeps who held the document and when. A Station Administrator may also hand the
+document to any member. _Avoid_: take ownership, lock
 
 **Route (เส้นทางมาตรฐาน) / Route line**: The ordered chain of stations the documents of
 one model normally pass through, configured once rather than written in code, and read
@@ -40,7 +51,12 @@ them when there are several. A station appears at most once per route. _Avoid_: 
 candidate station of a route line takes the document, evaluated when the document
 arrives at that line. Rules of one document type are tried in order; the first match
 wins. A station with an operating unit only takes documents of that unit. _Avoid_:
-assignment rule (that picks a person)
+assignment rule (that picks a person, not a station)
+
+**กฎมอบหมาย (Assignment Rule)**: A condition on a document type, set on a station, that
+picks the **assignee** among its members when the document arrives there. The first
+rule that matches wins; a rule for someone no longer responsible at the station is
+skipped. Separate from the routing rule, which picks the station. _Avoid_: routing rule
 
 **ส่งต่อ (Forward)**: Handing the document to the **next station on the route**; out of
 the last station it leaves the circuit. _Avoid_: approve, submit (those are acts;
@@ -91,8 +107,9 @@ else is responsible.
 - A **route** belongs to one area and one document model, and has ordered **lines**; a
   line has one or more candidate **stations**.
 - A **station** has many **Members**, **allowed** and **required acts**, **editable
-  parts** and **routing rules**, and at most one Operating Unit.
-- A document is at one station; each stay is a **visit**.
+  parts**, **routing rules** and **assignment rules**, and at most one Operating Unit.
+- A document is at one station; each stay is a **visit**, and within it at most one
+  **assignee**.
 
 ## Example dialogue
 

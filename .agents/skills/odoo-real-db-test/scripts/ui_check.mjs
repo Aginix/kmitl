@@ -29,12 +29,10 @@ const args = Object.fromEntries(
 const url = (args.url || "http://127.0.0.1:18069").replace(/\/$/, "");
 const shot = args.shot || "ui_check.png";
 
-// The headless shell this playwright-core version expects; otherwise the newest
-// one already cached (macOS ~/Library/Caches, Linux ~/.cache) so a teammate who
-// installed Playwright for another project doesn't need a second download.
-function findChromium() {
-  const own = chromium.executablePath();
-  if (existsSync(own)) return own;
+// Any headless shell already cached (macOS ~/Library/Caches, Linux ~/.cache),
+// newest build first, so a teammate who installed Playwright for another
+// project can run this before downloading the one playwright-core expects.
+function findCachedShell() {
   const roots = [
     process.env.PLAYWRIGHT_BROWSERS_PATH,
     join(homedir(), "Library/Caches/ms-playwright"),
@@ -42,9 +40,8 @@ function findChromium() {
   ].filter((r) => r && existsSync(r));
   for (const root of roots) {
     const dirs = readdirSync(root)
-      .filter((d) => d.startsWith("chromium_headless_shell-"))
-      .sort()
-      .reverse();
+      .filter((d) => /^chromium_headless_shell-\d+$/.test(d))
+      .sort((a, b) => Number(b.split("-")[1]) - Number(a.split("-")[1]));
     for (const d of dirs) {
       for (const sub of readdirSync(join(root, d))) {
         for (const exe of ["chrome-headless-shell", "headless_shell"]) {
@@ -57,19 +54,28 @@ function findChromium() {
   return undefined;
 }
 
-const executablePath = args.chrome || findChromium();
-if (!executablePath) {
-  console.error(
-    "No Playwright chromium found. Run: node " +
-      "<skill>/scripts/node_modules/playwright-core/cli.js install chromium-headless-shell" +
-      " (or pass --chrome <path>)."
-  );
-  process.exit(2);
+// Prefer the headless shell this playwright-core version expects.
+async function launchBrowser() {
+  if (args.chrome) return chromium.launch({executablePath: args.chrome});
+  try {
+    return await chromium.launch();
+  } catch (e) {
+    // Only a missing browser warrants the fallback; surface real launch errors.
+    if (!/Executable doesn't exist/.test(e.message)) throw e;
+    const executablePath = findCachedShell();
+    if (executablePath) return chromium.launch({executablePath});
+    console.error(
+      "No Playwright chromium found. Run: node " +
+        "<skill>/scripts/node_modules/playwright-core/cli.js install chromium-headless-shell" +
+        " (or pass --chrome <path>)."
+    );
+    process.exit(2);
+  }
 }
 
 const report = [];
 const log = (...parts) => report.push(parts.join(" "));
-const browser = await chromium.launch({executablePath});
+const browser = await launchBrowser();
 const page = await browser.newPage({viewport: {width: 1600, height: 1000}});
 page.on("pageerror", (e) => log("PAGEERROR", e.message));
 page.on("console", (m) => m.type() === "error" && log("CONSOLE.ERROR", m.text()));

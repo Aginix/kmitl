@@ -74,9 +74,10 @@ class KmitlProject(models.Model):
             .sudo()
             .search_count(
                 [
-                    # Not just draft/submitted: verify/e-Saraban bridges add
-                    # to_verify, sent and returned on the way to posting.
-                    ("state", "not in", ("posted", "cancelled", "rejected")),
+                    # Not just submitted: verify/e-Saraban bridges add
+                    # to_verify, sent and returned on the way to posting. A
+                    # draft has not been sent yet, so it holds nothing.
+                    ("state", "not in", ("draft", "posted", "cancelled", "rejected")),
                     (
                         "line_ids.kmitl_project_analytic_id",
                         "=",

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+    <t t-name="web_domain_selector_record.DomainSelectorRecordField" owl="1">
+        <div class="o_ds_value_cell">
+            <t t-if="isRecordValue(props)">
+                <div t-if="isMulti" class="o_domain_leaf_value_input">
+                    <t t-foreach="ids" t-as="id" t-key="id">
+                        <span class="badge rounded-pill o_ds_record_tag">
+                            <img t-if="avatar(id)" t-att-src="avatar(id)" class="o_ds_record_avatar" alt="" />
+                            <t t-esc="displayName(id)" /> <i
+                                class="o_domain_leaf_value_remove_tag_button fa fa-times"
+                                role="img"
+                                aria-label="Remove tag"
+                                title="Remove tag"
+                                t-on-click="() => this.removeId(id)"
+                            />
+                        </span>
+                    </t>
+                </div>
+                <img t-if="!isMulti and ids.length and avatar(ids[0])" t-att-src="avatar(ids[0])" class="o_ds_record_avatar o_ds_record_avatar_input" alt="" />
+                <AutoComplete
+                    value="inputValue"
+                    sources="sources"
+                    onSelect.bind="onSelect"
+                    autoSelect="true"
+                    resetOnSelect="isMulti"
+                />
+            </t>
+            <DomainSelectorFieldInput t-else="" t-props="props" />
+        </div>
+    </t>
+
+    <t t-name="web_domain_selector_record.DomainSelectorRecordValue" owl="1">
+        <t t-foreach="values" t-as="value" t-key="value_index">
+            <span class="o_domain_leaf_value text-primary">
+                <img t-if="avatar(value)" t-att-src="avatar(value)" class="o_ds_record_avatar" alt="" />
+                <t t-esc="displayName(value)" />
+            </span>
+            <t t-if="!value_last"> or </t>
+        </t>
+    </t>
+
+    <t t-name="web_domain_selector_record.RecordOption" owl="1">
+        <img t-if="option.avatar" t-att-src="option.avatar" class="o_ds_record_avatar" alt="" />
+        <t t-esc="option.label" />
+    </t>
+
+    <t t-inherit="web.DomainSelectorLeafNode" t-inherit-mode="extension" owl="1">
+        <xpath expr="//t[@t-elif=&quot;typeof props.node.operands[1] === 'number'&quot;]" position="before">
+            <t t-elif="fieldInfo.relation and (typeof props.node.operands[1] === 'number' or Array.isArray(props.node.operands[1]))">
+                <span class="o_domain_leaf_operator"> <t t-esc="displayedOperator" /></span>
+                <DomainSelectorRecordValue resModel="fieldInfo.relation" value="props.node.operands[1]" />
+            </t>
+        </xpath>
+    </t>
+
+</templates>

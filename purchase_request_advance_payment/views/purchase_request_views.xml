@@ -6,8 +6,9 @@
         <field name="inherit_id" ref="purchase_request.view_purchase_request_form"/>
         <field name="priority">200</field>
         <field name="arch" type="xml">
-            <!-- Smart button. No create button: a loan is made in the advance
-                 payment app by picking this request. -->
+            <!-- Smart button only. No create button, and nothing on the request
+                 waits on a loan: borrowing happens in the advance payment app
+                 (advance_payment ADR-0029). -->
             <xpath expr="//div[@name='button_box']" position="inside">
                 <button name="action_view_advance_payment"
                     type="object"

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- วิธีการ/เครื่องมือติดตามและประเมินผล choices; อื่น ๆ stays last and
+         unlocks the detail field (kmitl.project.evaluation_other). -->
+
+    <record id="survey" model="project.evaluation">
+        <field name="name">แบบสำรวจ/สอบถามความคิดเห็น</field>
+        <field name="sequence">10</field>
+    </record>
+
+    <record id="test" model="project.evaluation">
+        <field name="name">แบบทดสอบ</field>
+        <field name="sequence">20</field>
+    </record>
+
+    <record id="evaluation_other" model="project.evaluation">
+        <field name="name">อื่น ๆ</field>
+        <field name="sequence">1000</field>
+    </record>
+
+</odoo>

@@ -28,7 +28,9 @@ upfront.
     context): give a ใบขอซื้อ (พ.1) its **แหล่งงบประมาณ** — reserve anew from the
     ผังงบประมาณ, or draw the reservation of a โครงการ or a แผนจัดซื้อจัดจ้าง. Each
     bridge owns its own answer; a source-less ใบจองงบประมาณ is not an option here
-    (budget ADR-0015).
+    (budget ADR-0015). With the add-on `purchase_request_budget_cross_charge`,
+    reserving anew opens the ใบจองงบประมาณ itself as a dialog, where ถัวจ่าย codes are
+    added to its Reservation Split (`budget_commitment_cross_charge`, budget ADR-0020).
 - [Budget Support Request](./budget_support_request/CONTEXT.md) — a requesting unit's
   application for central to allocate budget onto its own `department` dimension
   (ขอรับการสนับสนุนงบประมาณ); routed for approval through e-Saraban, then **fulfilled**
@@ -44,9 +46,11 @@ upfront.
   revenue** (`account.move.line`, income types) row by row; each row carries two
   independent selectors because the budget chart and the CoA have no stored link.
 - [Procurement Plan](./procurement_plan/CONTEXT.md) — annual procurement planning; a
-  plan stands on its own (budget-free core), optionally reserves budget when verified,
-  and may originate from a posted appropriation. Realised through one purchase request;
-  its installments (งวด) track actual disbursement (see the Disbursement bridge below).
+  plan stands on its own (budget-free core), optionally reserves the budget it has
+  received when verified, and may originate from a posted appropriation. Realised through
+  one or more purchase requests, closed by hand; no per-plan approval — the unit's annual
+  plan is what is published (procurement_plan ADR-0002). Its installments (งวด) track
+  actual disbursement (see the Disbursement bridge below).
 - [Procurement Plan — Disbursement](./procurement_plan_disbursement/CONTEXT.md) —
   tracking-only bridge that manually links each งวด (`procurement.plan.payment`) to the
   disbursement request paying it, so the plan can compare planned งวด against budget
@@ -83,7 +87,9 @@ upfront.
 - [Approval Request (Expense Plan)](./agx_approval/CONTEXT.md) — expense-approval form
   reframed as proposing an _expense plan_ (what is planned to be spent + who is
   involved); the payee is deliberately **not** on the plan — the recipient is settled
-  later at disbursement. Routed for approval through e-Saraban.
+  later at disbursement. Routed for approval through e-Saraban. With the add-on
+  `agx_approval_budget_cross_charge`, ยืนยันงบประมาณ opens the ใบจองงบประมาณ as a
+  dialog for ถัวจ่าย, like the พ.1 (`agx_approval` ADR-0011, budget ADR-0020).
 - [Approval ↔ Disbursement Bridge](./agx_approval_disbursement/CONTEXT.md) — links an
   Approval Request to the Disbursement Request it is billed into; returning a
   disbursement keeps it intact (at `signed`) and bounces the approval request to
@@ -109,7 +115,8 @@ upfront.
   post-bill payment-execution phase of a disbursement request (audit → authorize → pay →
   clear); owns the payee-level **รายการจ่ายเงิน** and keeps apart the several records
   that all sound like "what this payment is" (เรื่องที่จ่าย, ประเภทธุรกรรม,
-  ลักษณะการจ่าย, หัวจ่าย, วิธีจ่าย, ใบสำคัญ).
+  ลักษณะการจ่าย, หัวจ่าย, วิธีจ่าย, ใบสำคัญ). The ตรวจจ่าย act is its own module,
+  `disbursement_payment_audit`.
 - [Cash & Revenue Handover](./disbursement_cash_revenue_handover/CONTEXT.md) — the
   **โอนเงินและรายได้** entry that re-recognises centrally-held government-budget cash
   and revenue under the dimensions of the unit actually spending it; the first bridge in
@@ -172,6 +179,13 @@ upfront.
   an activity, every step lands in the chatter, and its author (or someone on their
   behalf) closes it. Opt-in
   per model through a mixin.
+- [Related Documents](./agx_related_document/CONTEXT.md) — a record cites other
+  documents (in-system or not) as supporting evidence: kinds configured by admins,
+  a snapshot row per citation, opened under the reader's own rights, and an automatic
+  ถูกอ้างอิงโดย list on the cited model. Opt-in per model through a mixin; consumers are
+  thin bridges (`budget_support_request_related_document`,
+  `budget_transfer_related_document`, `advance_payment_related_document`,
+  `agx_related_document_sarabun`).
 - [Photo Viewer — Annotation History](./agx_photoviewer_annotation_history/CONTEXT.md) —
   a side panel listing who added, changed or removed marks on a file in each visit, and
   drawing the layer as any of those Changes left it.
@@ -197,11 +211,15 @@ upfront.
 - **Budget → Procurement Plan**: posting a `budget.appropriation` line creates a
   `procurement.plan` and reserves its `budget.commitment` for the full amount
   (ADR-0005).
-- **Procurement Plan → Budget**: the plan's single purchase request, and the
-  disbursement requests that flow from its purchase order, draw that one shared
-  commitment down (obligate+consume per DR) (ADR-0004, ADR-0006). The disbursements are
-  created and operated on the PO, not the plan; the plan only **tracks** them, linking
-  each งวด to its DR by hand (`procurement_plan_disbursement`).
+- **Procurement Plan → Budget**: the plan reserves what it has **received** at its own
+  dimension (procurement_plan ADR-0003), not its วงเงินตามแผน. Its purchase requests —
+  many, capped at that received budget (procurement_plan ADR-0004, superseding budget ADR-0006's
+  one-active rule) — and the disbursement requests that flow from their purchase orders
+  draw that one shared commitment down (obligate+consume per DR) (budget ADR-0004). The plan is
+  closed by hand once nothing is open, returning the unspent reservation (คืนจอง); it
+  never auto-closes (procurement_plan ADR-0005). The disbursements are created and
+  operated on the PO, not the plan; the plan only **tracks** them, linking each งวด to
+  its DR by hand (`procurement_plan_disbursement`).
 - **Budget → KMITL Project**: posting an appropriation on an `is_project` budget code
   leaves the pool _floating_ — it does **not** auto-create a project or reserve
   (contrast Procurement Plan). งานแผน then **allocates** a slice into the project's own

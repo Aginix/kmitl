@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="work_center_assignment_rule_view_form" model="ir.ui.view">
+        <field name="name">work.center.assignment.rule.form</field>
+        <field name="model">work.center.assignment.rule</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="work_center_id" options="{'no_create': True}" />
+                        <field name="area_model_ids" invisible="1" />
+                        <field name="model_id" options="{'no_create': True}" />
+                        <field name="model_name" invisible="1" />
+                        <field
+                            name="user_id"
+                            options="{'no_create': True}"
+                            widget="many2one_avatar_user"
+                        />
+                        <field name="sequence" />
+                    </group>
+                    <field
+                        name="domain"
+                        widget="domain"
+                        options="{'model': 'model_name', 'in_dialog': True}"
+                        attrs="{'invisible': [('model_name', '=', False)]}"
+                    />
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+</odoo>

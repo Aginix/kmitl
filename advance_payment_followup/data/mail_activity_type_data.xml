@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <!-- The weekly digest's reminder on the loan officer, one per debtor loan
+         due soon or overdue; closed once the loan drops out of scope. -->
+    <record id="mail_activity_type_followup" model="mail.activity.type">
+        <field name="name">ติดตามลูกหนี้เงินยืม</field>
+        <field name="summary">ลูกหนี้เงินยืมใกล้ครบกำหนดหรือเกินกำหนด</field>
+        <field name="res_model">advance.payment</field>
+        <field name="icon">fa-bell</field>
+        <field name="delay_count">0</field>
+    </record>
+</odoo>

@@ -183,6 +183,10 @@ class BudgetTransfer(models.Model):
         transfer would leave its 1:1 ``budget.move`` (and lines) orphaned in
         the ledger.
         """
+        if self.filtered(lambda t: t.state not in ("draft", "cancelled")):
+            raise UserError(
+                _("Only draft or cancelled budget transfers can be deleted.")
+            )
         moves = self.move_id
         res = super().unlink()
         moves.unlink()
@@ -283,6 +287,7 @@ class BudgetTransfer(models.Model):
             )
 
     @api.depends("state", "user_id")
+    @api.depends_context("uid")
     def _compute_button_visibility(self):
         is_manager = self.env.user.has_group("budget.group_budget_manager")
         is_admin = self.env.is_admin()
@@ -291,7 +296,9 @@ class BudgetTransfer(models.Model):
             transfer.show_submit_button = transfer.state == "draft" and (
                 transfer.user_id == user or is_admin
             )
-            transfer.show_approve_button = transfer.state == "submitted"
+            transfer.show_approve_button = transfer.state == "submitted" and (
+                is_manager or is_admin
+            )
             # Cancel (draft/submitted → cancelled), account.payment pattern.
             transfer.show_cancel_button = transfer.state in ("draft", "submitted")
             # Reset to Draft (account.payment pattern): pull a pending transfer
@@ -399,6 +406,8 @@ class BudgetTransfer(models.Model):
             self.env.user.has_group("budget.group_budget_user") or self.env.is_admin()
         ):
             raise UserError(_("Only Budget Users can submit transfers"))
+        if self.filtered(lambda t: t.state != "draft"):
+            raise UserError(_("Only draft transfers can be submitted."))
         self._validate_transfer_data()
         self._validate_budget_availability()
         self.write({"state": "submitted"})
@@ -408,13 +417,13 @@ class BudgetTransfer(models.Model):
         """Approve and immediately post — approval and posting are one step (no
         separate Post click). Records the approver, re-checks availability, then
         posts the delegated move."""
-        is_admin = self.env.is_admin()
-        if not (self.env.user.has_group("budget.group_budget_manager") or is_admin):
+        if not (
+            self.env.user.has_group("budget.group_budget_manager")
+            or self.env.is_admin()
+        ):
             raise UserError(_("Only Budget Managers can approve transfers"))
-        if not is_admin:
-            for transfer in self:
-                if transfer.user_id == self.env.user:
-                    raise UserError(_("You cannot approve your own budget transfer."))
+        if self.filtered(lambda t: t.state != "submitted"):
+            raise UserError(_("Only submitted transfers can be approved."))
         self.invalidate_recordset(
             ["has_sufficient_budget", "budget_validation_message"]
         )
@@ -437,6 +446,8 @@ class BudgetTransfer(models.Model):
             or self.env.is_admin()
         ):
             raise UserError(_("Only Budget Managers can post transfers"))
+        if self.filtered(lambda t: t.state != "submitted"):
+            raise UserError(_("Only submitted transfers can be posted."))
 
         self.invalidate_recordset(
             ["has_sufficient_budget", "budget_validation_message"]
@@ -465,8 +476,8 @@ class BudgetTransfer(models.Model):
         commitments._sync_state()
 
     def action_cancel(self):
-        if "posted" in self.mapped("state"):
-            raise UserError(_("Cannot cancel a posted transfer"))
+        if {"posted", "cancelled"} & set(self.mapped("state")):
+            raise UserError(_("Cannot cancel a posted or cancelled transfer"))
         for transfer in self:
             transfer.move_id.button_cancel()
         self.write({"state": "cancelled"})

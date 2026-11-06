@@ -1,6 +1,6 @@
 {
     "name": "Purchase Work Acceptance Kmitl",
-    "version": "16.0.1.2.0",
+    "version": "16.0.1.2.1",
     "summary": """ Purchase Work Acceptance Kmitl Summary """,
     "category": "KMITL",
     "author": "Aginix Technologies",

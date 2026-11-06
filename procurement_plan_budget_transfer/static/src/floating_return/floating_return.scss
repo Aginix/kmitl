@@ -1,0 +1,357 @@
+// โอนคืนงบลอย of a procurement plan — the same clean transfer wizard as KMITL
+// Project's (kmitl_project_budget_transfer), copied per procurement_plan ADR-0006.
+
+$ppfr-ink: #1f2937;
+$ppfr-muted: #6b7280;
+$ppfr-faint: #9ca3af;
+$ppfr-line: #e5e7eb;
+$ppfr-accent: $o-brand-primary;
+$ppfr-accent-soft: mix($o-brand-primary, #fff, 10%);
+$ppfr-danger: #b42318;
+$ppfr-warn: #92400e;
+$ppfr-radius: 10px;
+$ppfr-fs: $o-font-size-base; // backend root is 12px — size from the base font
+
+.o_ppfr {
+    color: $ppfr-ink;
+    padding: 4px 4px 0;
+    font-variant-numeric: tabular-nums;
+
+    .o_ppfr_kicker {
+        font-size: $ppfr-fs * 0.92;
+        color: $ppfr-muted;
+    }
+    .o_ppfr_title {
+        margin-top: 2px;
+        font-weight: 600;
+        font-size: $ppfr-fs * 1.15;
+        line-height: 1.4;
+    }
+}
+
+// --- stepper -------------------------------------------------------------
+.o_ppfr_steps {
+    display: flex;
+    justify-content: center;
+    gap: 28px;
+    margin-bottom: 24px;
+    font-size: $ppfr-fs;
+    color: $ppfr-faint;
+
+    .o_ppfr_step {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .o_ppfr_step_dot {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        border: 1px solid $ppfr-line;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: $ppfr-fs * 0.85;
+    }
+    .o_ppfr_step_on {
+        color: $ppfr-ink;
+        .o_ppfr_step_dot {
+            background: $ppfr-accent;
+            border-color: $ppfr-accent;
+            color: #fff;
+        }
+    }
+    .o_ppfr_step_ok .o_ppfr_step_dot {
+        background: $ppfr-accent-soft;
+        border-color: $ppfr-accent-soft;
+        color: $ppfr-accent;
+    }
+}
+
+// --- from → to -------------------------------------------------------------
+.o_ppfr_flow {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 36px minmax(0, 1fr);
+    align-items: stretch;
+}
+
+.o_ppfr_acct {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    padding: 16px 18px;
+    border: 1px solid $ppfr-line;
+    border-radius: $ppfr-radius;
+    background: #fff;
+
+    &.o_ppfr_acct_to {
+        border-color: $ppfr-accent;
+        background: linear-gradient(0deg, $ppfr-accent-soft, #fff 60%);
+    }
+    .o_ppfr_bal {
+        margin-top: auto;
+        padding-top: 14px;
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+    }
+    .o_ppfr_bal_label {
+        font-size: $ppfr-fs * 0.92;
+        color: $ppfr-muted;
+    }
+    .o_ppfr_bal_value {
+        font-size: $ppfr-fs * 1.5;
+        font-weight: 600;
+    }
+    .o_ppfr_after {
+        min-height: 18px;
+        text-align: right;
+        font-size: $ppfr-fs * 0.92;
+        color: $ppfr-muted;
+        b {
+            color: $ppfr-ink;
+            font-weight: 600;
+        }
+        &.o_ppfr_neg b {
+            color: $ppfr-danger;
+        }
+    }
+}
+
+.o_ppfr_arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $ppfr-faint;
+}
+
+// Complete-name dimension rows.
+.o_ppfr_dims {
+    display: grid;
+    grid-template-columns: 112px minmax(0, 1fr);
+    gap: 6px 12px;
+    margin: 12px 0 0;
+    font-size: $ppfr-fs * 0.92;
+    line-height: 1.5;
+
+    dt {
+        font-weight: 400;
+        color: $ppfr-faint;
+    }
+    dd {
+        margin: 0;
+        min-width: 0;
+    }
+    .o_ppfr_code,
+    .o_ppfr_anc {
+        color: $ppfr-muted;
+    }
+    .o_ppfr_code {
+        margin-right: 4px;
+    }
+}
+
+// --- amount -----------------------------------------------------------------
+.o_ppfr_amount {
+    max-width: 420px;
+    margin: 28px auto 0;
+    text-align: center;
+
+    label {
+        font-size: $ppfr-fs * 0.92;
+        font-weight: 400;
+        color: $ppfr-muted;
+    }
+    .o_ppfr_amount_field {
+        display: flex;
+        align-items: baseline;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 4px;
+        padding-bottom: 4px;
+        border-bottom: 1px solid $ppfr-line;
+
+        &:focus-within {
+            border-bottom: 2px solid $ppfr-accent;
+            padding-bottom: 3px;
+        }
+    }
+    .o_ppfr_currency {
+        font-size: $ppfr-fs * 1.5;
+        color: $ppfr-faint;
+    }
+    input {
+        min-width: 4ch;
+        max-width: 100%;
+        padding: 0;
+        border: 0;
+        outline: 0;
+        background: transparent;
+        text-align: left;
+        font-size: $ppfr-fs * 2.4;
+        font-weight: 600;
+        font-variant-numeric: tabular-nums;
+        color: $ppfr-ink;
+
+        &::placeholder {
+            color: #d1d5db;
+        }
+    }
+    .o_ppfr_hint {
+        min-height: 18px;
+        margin-top: 8px;
+        font-size: $ppfr-fs * 0.92;
+        color: $ppfr-muted;
+    }
+    &.o_ppfr_amount_bad {
+        .o_ppfr_amount_field {
+            border-bottom: 2px solid $ppfr-danger;
+            padding-bottom: 3px;
+        }
+        input,
+        .o_ppfr_hint {
+            color: $ppfr-danger;
+        }
+    }
+}
+
+.o_ppfr_note {
+    max-width: 420px;
+    margin: 16px auto 0;
+
+    .o_field_widget,
+    input {
+        width: 100%;
+    }
+}
+
+.o_ppfr_msg {
+    max-width: 420px;
+    margin: 12px auto 0;
+    text-align: center;
+    font-size: $ppfr-fs * 0.92;
+    color: $ppfr-muted;
+
+    &.o_ppfr_msg_warn {
+        color: $ppfr-warn;
+    }
+}
+
+// --- review & slip ------------------------------------------------------------
+.o_ppfr_sum {
+    max-width: 520px;
+    margin: 0 auto;
+}
+.o_ppfr_big {
+    text-align: center;
+
+    .o_ppfr_big_label {
+        font-size: $ppfr-fs * 0.92;
+        color: $ppfr-muted;
+    }
+    .o_ppfr_big_value {
+        margin-top: 2px;
+        font-size: $ppfr-fs * 2.5;
+        font-weight: 600;
+    }
+}
+.o_ppfr_rows {
+    margin-top: 22px;
+    border-top: 1px solid $ppfr-line;
+}
+.o_ppfr_row {
+    display: grid;
+    grid-template-columns: 120px minmax(0, 1fr);
+    gap: 16px;
+    padding: 11px 0;
+    border-bottom: 1px solid $ppfr-line;
+
+    .o_ppfr_row_label {
+        font-size: $ppfr-fs;
+        color: $ppfr-muted;
+    }
+    .o_ppfr_row_value {
+        text-align: right;
+        small {
+            display: block;
+            margin-top: 2px;
+            font-size: $ppfr-fs * 0.92;
+            color: $ppfr-faint;
+        }
+    }
+}
+.o_ppfr_callout {
+    margin-top: 18px;
+    text-align: center;
+    font-size: $ppfr-fs * 0.92;
+    color: $ppfr-muted;
+}
+
+.o_ppfr_icon {
+    width: 44px;
+    height: 44px;
+    margin: 0 auto 12px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: $ppfr-fs * 1.25;
+    background: #f3f4f6;
+    color: $ppfr-muted;
+
+    &.o_ppfr_icon_ok {
+        background: $ppfr-accent-soft;
+        color: $ppfr-accent;
+    }
+}
+
+// --- no / used-up pool -----------------------------------------------------------
+.o_ppfr_nopool {
+    max-width: 560px;
+    margin: 8px auto 0;
+    text-align: center;
+
+    h3 {
+        margin: 0;
+        font-size: $ppfr-fs * 1.25;
+        font-weight: 600;
+    }
+    p {
+        margin: 6px 0 0;
+        color: $ppfr-muted;
+        line-height: 1.6;
+    }
+    .o_ppfr_coord {
+        margin-top: 20px;
+        padding: 14px 18px;
+        border: 1px solid $ppfr-line;
+        border-radius: $ppfr-radius;
+        text-align: left;
+    }
+    .o_ppfr_next {
+        margin-top: 18px;
+        font-size: $ppfr-fs;
+        color: $ppfr-muted;
+    }
+}
+
+// --- small screens: stack top → bottom --------------------------------------------
+@include media-breakpoint-down(md) {
+    .o_ppfr_flow {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: auto 32px auto;
+    }
+    .o_ppfr_arrow i {
+        transform: rotate(90deg);
+    }
+    .o_ppfr_steps {
+        gap: 14px;
+        .o_ppfr_step_label {
+            display: none;
+        }
+    }
+    .o_ppfr_dims,
+    .o_ppfr_row {
+        grid-template-columns: 96px minmax(0, 1fr);
+    }
+}

@@ -99,6 +99,7 @@ class DisbursementPartnerBankWizard(models.TransientModel):
             request.line_ids.filtered(
                 lambda line, p=row.partner_id: line.partner_id == p
                 and not line.partner_bank_id
+                and line._requires_partner_bank()
             ).write({"partner_bank_id": bank.id})
         if log:
             request.message_post(

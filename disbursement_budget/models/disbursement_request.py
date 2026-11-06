@@ -312,8 +312,9 @@ class DisbursementRequest(models.Model):
         Opens the same ``budget.commitment.return.wizard`` the commitment uses,
         scoped to this DR's linked commitment, and stamps this DR as the source
         document on the posted return line. The wizard works on the whole
-        commitment (which may be shared across งวด), returning its full
-        unconsumed remainder — consistent with the manual, no-guard policy.
+        commitment (which may be shared across งวด), returning its unconsumed
+        remainder (all of it by default, or a typed part) — consistent with the
+        manual, no-guard policy.
         """
         self.ensure_one()
         commitment = self.budget_commitment_id

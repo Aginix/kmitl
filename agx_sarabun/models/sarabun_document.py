@@ -396,7 +396,8 @@ class SarabunDocument(models.Model):
     is_terminal = fields.Boolean(compute="_compute_state_flags")
     is_editable = fields.Boolean(
         compute="_compute_state_flags",
-        help="True while the หนังสือ may still be edited (draft or returned).",
+        help="True while the หนังสือ may still be edited (draft or returned) by its "
+        "ผู้จัดทำ (sender).",
     )
 
     # === Defaults ===
@@ -450,7 +451,8 @@ class SarabunDocument(models.Model):
                 doc.sudo().write({"enclosure_attachment_ids": commands})
 
     # === Computes ===
-    @api.depends("state")
+    @api.depends("state", "sender_user_id")
+    @api.depends_context("uid")
     def _compute_state_flags(self):
         for record in self:
             record.is_draft = record.state == "draft"
@@ -460,7 +462,11 @@ class SarabunDocument(models.Model):
             record.is_rejected = record.state == "rejected"
             record.is_cancelled = record.state == "cancelled"
             record.is_terminal = record.state in ("rejected", "cancelled")
-            record.is_editable = record.state in ("draft", "returned")
+            # Only the ผู้จัดทำ edits — a reader of a returned / pulled-back หนังสือ must not.
+            record.is_editable = (
+                record.state in ("draft", "returned")
+                and record.sender_user_id == self.env.user
+            )
 
     @api.depends("origin_model")
     def _compute_include_content(self):
@@ -1401,11 +1407,19 @@ class SarabunDocument(models.Model):
         (ADR-0015), or ``""``. The origin supplies the template via
         :meth:`_get_sarabun_body_template`; it is rendered live with the origin as
         ``o`` (in Thai), so authoritative numbers always match the record."""
+        return self._render_origin_fragment("_get_sarabun_body_template")
+
+    def _render_origin_tail(self):
+        """Markup of the origin's live fragment printed after the endorsement
+        block (:meth:`_get_sarabun_tail_template`), or ``""``."""
+        return self._render_origin_fragment("_get_sarabun_tail_template")
+
+    def _render_origin_fragment(self, hook):
         self.ensure_one()
         origin = self._get_origin_record()
-        if not origin or not hasattr(origin, "_get_sarabun_body_template"):
+        if not origin or not hasattr(origin, hook):
             return ""
-        template = origin._get_sarabun_body_template()
+        template = getattr(origin, hook)()
         if not template:
             return ""
         return (

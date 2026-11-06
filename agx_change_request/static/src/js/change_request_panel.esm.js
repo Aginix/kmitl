@@ -33,8 +33,8 @@ export function formatDate(value) {
 }
 
 /**
- * Show the steps just posted on a record's chatter and the activities just
- * scheduled.
+ * Show the steps just posted on a record's chatter, the activities just
+ * scheduled and its files' badges.
  */
 export async function refreshChatter(env, resModel, resId) {
     if (!env.services.messaging) {
@@ -46,7 +46,7 @@ export async function refreshChatter(env, resModel, resId) {
         model: resModel,
     });
     if (thread) {
-        thread.fetchData(["activities", "messages"]);
+        thread.fetchData(["activities", "attachments", "messages"]);
     }
 }
 
@@ -83,9 +83,10 @@ export class AssigneePicker extends Component {
                         limit: 8,
                     });
                     const ids = this.selectedIds();
+                    // Not `id`: AutoComplete overwrites it with its own counter.
                     return users
                         .filter(([id]) => !ids.includes(id))
-                        .map(([id, name]) => ({id, label: name}));
+                        .map(([id, name]) => ({userId: id, label: name}));
                 },
             },
         ];
@@ -96,7 +97,7 @@ export class AssigneePicker extends Component {
     }
 
     onSelect(option) {
-        this.add({id: option.id, name: option.label});
+        this.add({id: option.userId, name: option.label});
     }
 
     remove(user) {

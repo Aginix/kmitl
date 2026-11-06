@@ -17,6 +17,7 @@ class SarabunStepActWizard(models.TransientModel):
     step_id = fields.Many2one("sarabun.routing.step", required=True, readonly=True)
     document_id = fields.Many2one(related="step_id.document_id", readonly=True)
     step_verb = fields.Many2one("sarabun.verb", related="step_id.verb", readonly=True)
+    step_show_signature = fields.Boolean(related="step_id.verb.show_signature")
     target_name = fields.Char(related="step_id.target_name", readonly=True)
     sign_date_display = fields.Char(
         string="วันที่ลงนาม", compute="_compute_sign_date_display"

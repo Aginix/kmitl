@@ -10,15 +10,21 @@
         </record>
     </data>
 
-    <!-- Not noupdate: the cap is policy and should follow the module. -->
-    <record id="excep_ar_borrowing_headroom" model="exception.rule">
-        <field name="name">วงเงินยืมของใบขออนุมัติไม่พอ</field>
-        <field name="description">ยอดยืมรวมของใบขออนุมัตินี้เกินวงเงินที่อนุมัติ/จองงบไว้ กรุณาลดยอดยืม</field>
+    <!-- A borrowing rule (advance_payment ADR-0030), maintained by the
+         administrators from the Exception Rules menu — noupdate so an
+         upgrade does not undo their edits. -->
+    <data noupdate="1">
+    <record id="excep_ar_not_approved" model="exception.rule">
+        <field name="name">ใบขออนุมัติยังไม่ได้รับอนุมัติ</field>
+        <field name="description">ใบขออนุมัติที่อ้างอิงต้องได้รับอนุมัติแล้วจึงจะยืมเงินได้</field>
         <field name="sequence">33</field>
         <field name="model">advance.payment</field>
         <field name="exception_type">by_domain</field>
-        <field name="domain">[('exceeds_ar_headroom', '=', True)]</field>
+        <field
+            name="domain"
+        >[('approval_request_id', '!=', False), ('is_approval_request_approved', '=', False)]</field>
         <field name="is_blocking" eval="True"/>
         <field name="active" eval="True"/>
     </record>
+    </data>
 </odoo>

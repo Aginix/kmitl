@@ -92,13 +92,14 @@ station — but only the acts their role already entitles them to. Membership **
 never grants**: it says "this DR at this desk is yours", while the role says "you may
 approve DRs at all". A station with no members is open to everyone holding the role.
 Members are also the people who forward and divert a DR from their station.
-_Avoid_: approver (a role), assignee (Assignment picks one member), Member in the
+_Avoid_: approver (a role), Member in the
 `work_center` sense (focus only — see Flagged ambiguities).
 
 **การมอบหมาย (Assignment)**: Choosing **which officer inside a station** handles the
-DR, once it has arrived there. A separate concern from routing, with its own rules
-(`disbursement.assignment.rule`) — routing picks the station, assignment picks the
-person. _Avoid_: routing rule, forward.
+DR, once it has arrived there. A separate concern from routing, with its own rules —
+the station's **Assignment Rules** (`work_center`) — routing picks the station,
+assignment picks the person, and the other people of the station take the DR over with
+**Assign to Me**. _Avoid_: routing rule, forward.
 
 **Standard route (เส้นทางมาตรฐาน)**: The ordered chain of stations a DR normally
 passes through, configured once by an administrator rather than written in code.

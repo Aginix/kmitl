@@ -1,6 +1,4 @@
 from odoo import _, api, fields, models
-from odoo.exceptions import ValidationError
-from odoo.osv import expression
 from odoo.tools import plaintext2html
 
 
@@ -14,11 +12,12 @@ class AdvancePayment(models.Model):
         selection_add=[("purchase.request", "Purchase Request")],
     )
 
-    # Typed mirror of `reference` when it points at a purchase request, and
-    # the borrower's picker for it: compute for display, inverse for input,
-    # like agx_approval_advance_payment's approval_request_id. Gives searching,
+    # Typed mirror of `reference` when it points at a purchase request: compute
+    # for display, inverse for programmatic input, like
+    # agx_approval_advance_payment's approval_request_id. Gives searching,
     # grouping and referential integrity that a bare Reference (a Char at
-    # database level) cannot.
+    # database level) cannot. The borrower names the request by its number
+    # (`reference_number`, advance_payment ADR-0029).
     purchase_request_id = fields.Many2one(
         comodel_name="purchase.request",
         string="Purchase Request",
@@ -34,6 +33,19 @@ class AdvancePayment(models.Model):
 
     purchase_request_count = fields.Integer(
         compute="_compute_purchase_request_count",
+    )
+
+    # Technical flags read by the borrowing rules (ADR-0030), under sudo: the
+    # borrower, or the endorser a rule runs as, usually cannot read the
+    # request.
+    is_purchase_request_approved = fields.Boolean(
+        compute="_compute_purchase_request_flags", compute_sudo=True
+    )
+    is_purchase_request_advance = fields.Boolean(
+        compute="_compute_purchase_request_flags", compute_sudo=True
+    )
+    has_other_purchase_request_loan = fields.Boolean(
+        compute="_compute_purchase_request_flags", compute_sudo=True
     )
 
     # Own compute, not core's _compute_reference: a shared compute group stays
@@ -55,99 +67,64 @@ class AdvancePayment(models.Model):
             elif rec.reference_model == "purchase.request":
                 rec.reference = False
 
-    @api.onchange("purchase_request_id")
-    def _onchange_purchase_request_id(self):
-        """This picker stands in for the `reference` widget, so it has to run
-        the same prefill: `reference` itself is only written by the inverse at
-        save time, long after `_onchange_reference` could fire."""
-        if self.purchase_request_id:
-            self._apply_vals_from_reference()
-
     @api.onchange("loan_type_id")
     def _onchange_loan_type_id(self):
-        """The picker is only written into `reference` at save, so super's
-        clear cannot see it — drop it here when the new type does not take
-        purchase requests."""
+        """Drop the mirror too when the new type does not take purchase
+        requests."""
         super()._onchange_loan_type_id()
         if self.loan_type_id.reference_model != "purchase.request":
             self.purchase_request_id = False
 
-    def _get_reference_picker_domain(self):
-        """Only approved advance-payment requests with no live loan of their
-        own may back a loan — the same checks as _check_reference_status and
-        _check_one_loan_per_purchase_request, offered up front (ADR-0023)."""
-        domain = super()._get_reference_picker_domain()
-        if self.loan_type_id.reference_model == "purchase.request":
-            domain = expression.AND(
-                [
-                    domain,
-                    [
-                        ("state", "=", "approved"),
-                        ("payment_type", "=", "advance"),
-                        "|",
-                        ("advance_payment_id", "=", False),
-                        ("advance_payment_id", "=", self._origin.id),
-                    ],
-                ]
-            )
-        return domain
-
-    @api.constrains("purchase_request_id", "state")
-    def _check_one_loan_per_purchase_request(self):
-        """A purchase request backs one live loan; a cancelled one frees it."""
-        for rec in self.filtered(
-            lambda r: r.purchase_request_id and r.state != "cancel"
-        ):
-            # sudo: an own-only borrower cannot see the other loan.
-            other = self.sudo().search(
-                [
-                    ("purchase_request_id", "=", rec.purchase_request_id.id),
-                    ("state", "!=", "cancel"),
-                    ("id", "!=", rec.id),
-                ],
-                limit=1,
-            )
-            if other:
-                raise ValidationError(
-                    _(
-                        "ใบขอให้จัดหา %(pr)s มีสัญญายืมเงิน %(loan)s อยู่แล้ว",
-                        pr=rec.purchase_request_id.name,
-                        loan=other.name,
-                    )
-                )
-
-    @api.depends("purchase_request_id")
-    def _compute_purchase_request_count(self):
+    @api.depends(
+        "purchase_request_id.state",
+        "purchase_request_id.payment_type",
+        "purchase_request_id.advance_payment_ids.state",
+    )
+    def _compute_purchase_request_flags(self):
         for rec in self:
-            rec.purchase_request_count = 1 if rec.purchase_request_id else 0
+            pr = rec.purchase_request_id
+            rec.is_purchase_request_approved = pr.state == "approved"
+            rec.is_purchase_request_advance = pr.payment_type == "advance"
+            rec.has_other_purchase_request_loan = bool(
+                pr
+                and pr.advance_payment_ids.filtered(
+                    lambda loan: loan.state != "cancel" and loan != rec._origin
+                )
+            )
 
-    def _check_reference_status(self):
-        res = super()._check_reference_status()
-        pr = self.purchase_request_id
-        if pr and pr.payment_type != "advance":
-            raise ValidationError(
-                _(
-                    "ใบขอให้จัดหา %(name)s ไม่ได้เลือกวิธีจ่ายเป็นเงินยืม",
-                    name=pr.name,
-                )
+    # Counted as the reader: a borrower who may not open the request sees no
+    # button rather than one that opens an AccessError (ADR-0029).
+    @api.depends("purchase_request_id")
+    @api.depends_context("uid")
+    def _compute_purchase_request_count(self):
+        Request = self.env["purchase.request"]
+        can_read = Request.check_access_rights("read", raise_exception=False)
+        for rec in self:
+            rec.purchase_request_count = (
+                Request.search_count([("id", "=", rec.purchase_request_id.id)])
+                if can_read and rec.purchase_request_id
+                else 0
             )
-        if pr and pr.state != "approved":
-            raise ValidationError(
-                _(
-                    "Purchase request %(name)s must be approved before it can"
-                    " back a loan (current status: %(state)s).",
-                    name=pr.name,
-                    state=dict(pr._fields["state"].selection).get(pr.state),
-                )
+
+    def _get_reference_summary(self):
+        summary = super()._get_reference_summary()
+        pr = self.purchase_request_id.sudo()
+        if pr:
+            summary.update(
+                subject=pr.title
+                or (pr.description or "").strip().split("\n")[0]
+                or pr.name,
+                unit=pr.requesting_department_id.display_name,
             )
-        return res
+        return summary
 
     def _prepare_vals_from_reference(self):
-        """Pull the loan values off the picked purchase request. The borrower
+        """Pull the loan values off the named purchase request. The borrower
         is kept: anyone may borrow against a request, not only its requester
-        (ADR-0026)."""
+        (ADR-0029)."""
         vals = super()._prepare_vals_from_reference()
-        pr = self.purchase_request_id
+        # sudo: the borrower usually cannot read the request (ADR-0029).
+        pr = self.purchase_request_id.sudo()
         if pr:
             vals.update(
                 {

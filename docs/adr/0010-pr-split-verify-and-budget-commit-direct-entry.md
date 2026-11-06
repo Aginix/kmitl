@@ -3,6 +3,10 @@
 ## Status
 
 Accepted. Reserve-Todo routing changed by [ADR-0012](0012-pr-designated-budget-committer.md).
+Reserve-new and the "read-only + sudo" stance amended by
+[budget ADR-0020](../../budget/docs/adr/0020-cross-charge-entered-on-the-reservation-form.md):
+Reserve opens the ใบจองงบประมาณ as a dialog, and ผู้จองงบประมาณ พ.1 may write its
+Reservation Split.
 
 ## Context
 

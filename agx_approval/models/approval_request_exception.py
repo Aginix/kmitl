@@ -1,5 +1,14 @@
 from odoo import api, fields, models
 
+# ตีกลับ markers, keyed by the step that sent the request back. The send-back
+# flow links them itself (_mark_sent_back) and any later state change clears
+# them. Detection never evaluates them: it would unlink them, and pop them up
+# on the very resubmission that should clear them.
+SENT_BACK_RULES = {
+    "to_verify": "agx_approval.excep_sent_back_verify",
+    "to_commit": "agx_approval.excep_sent_back_commit",
+}
+
 
 class ApprovalRequest(models.Model):
     _name = "approval.request"
@@ -9,6 +18,30 @@ class ApprovalRequest(models.Model):
     @api.model
     def _reverse_field(self):
         return "approval_request_ids"
+
+    def _sent_back_rules(self):
+        return self.env["exception.rule"].browse(
+            [self.env.ref(xmlid).id for xmlid in SENT_BACK_RULES.values()]
+        )
+
+    def _rule_domain(self):
+        # tuple: base_exception caches rules keyed on the (hashable) domain
+        return super()._rule_domain() + [
+            ("id", "not in", tuple(self._sent_back_rules().ids))
+        ]
+
+    def _mark_sent_back(self, step):
+        """Show ตีกลับ from ``step`` (to_verify / to_commit) in ข้อผิดพลาด."""
+        self.exception_ids = [(4, self.env.ref(SENT_BACK_RULES[step]).id)]
+
+    def write(self, vals):
+        res = super().write(vals)
+        if "state" in vals:
+            rules = self._sent_back_rules()
+            marked = self.filtered(lambda r: r.exception_ids & rules)
+            if marked:
+                marked.write({"exception_ids": [(3, rule.id) for rule in rules]})
+        return res
 
     # -- exception.rule helpers --------------------------------------------
     # Called from by_py_code rules in data/approval_request_exception_data.xml.
@@ -44,8 +77,7 @@ class ApprovalRequest(models.Model):
 
         A gate on the *draw*, not a standing invariant: once the slip is drawn
         (``budget_commitment_id`` is that slip) the check goes quiet. Every
-        later ``detect_exceptions()`` — notably agx_approval_disbursement's
-        action_create_disbursement_request — would otherwise re-test the *plan*
+        later ``detect_exceptions()`` would otherwise re-test the *plan*
         total against an availability that legitimately shrank meanwhile (a
         shared project slip drawn by sibling requests), blocking a request whose
         แผน can no longer be edited (is_plan_editable) and whose actual spend may
@@ -64,12 +96,12 @@ class ApprovalRequest(models.Model):
         )
 
     def _exception_plan_amount_mismatch(self):
-        """True when a multi-product request's lines do not add up to its
-        จำนวนเงิน (``plan_amount``) — the ceiling the requester declared up
-        front. Single-product requests mirror plan_amount onto their one line,
-        so they can never mismatch."""
+        """True when an itemized request's lines (category with Expense Items)
+        do not add up to its จำนวนเงิน (``plan_amount``) — the ceiling the
+        requester declared up front. Without Expense Items the amount is
+        mirrored onto the one line, so it can never mismatch."""
         self.ensure_one()
-        if not self.multi_product:
+        if not self.has_expense_items:
             return False
         return bool(
             self.currency_id.compare_amounts(self.total_amount, self.plan_amount)

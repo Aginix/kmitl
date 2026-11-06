@@ -175,7 +175,7 @@ msgstr "ยืนยันงบประมาณ"
 #. module: purchase_request_budget
 #: model_terms:ir.ui.view,arch_db:purchase_request_budget.view_purchase_request_form
 msgid "Return"
-msgstr ""
+msgstr "ตีกลับแก้ไข"
 
 #. module: purchase_request_budget
 #: model:ir.model.fields,field_description:purchase_request_budget.field_purchase_request__source_analytic_id

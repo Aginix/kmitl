@@ -89,6 +89,7 @@ class WorkAcceptanceCommitteeWizardLine(models.TransientModel):
             ('chairman', 'Chairman'),
             ('committee', 'Committee'),
             ('secretary', 'Secretary'),
+            ('deputy_secretary', 'Deputy Secretary'),
         ],
         string='Role',
         readonly=True,

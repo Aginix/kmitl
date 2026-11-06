@@ -112,6 +112,12 @@ class WorkCenter(models.Model):
         string="Routing Rules",
         groups="work_center.group_work_center_manager",
     )
+    assignment_rule_ids = fields.One2many(
+        comodel_name="work.center.assignment.rule",
+        inverse_name="work_center_id",
+        string="Assignment Rules",
+        groups="work_center.group_work_center_manager",
+    )
     document_model = fields.Char(
         compute="_compute_document_model",
         search="_search_document_model",
@@ -261,6 +267,19 @@ class WorkCenter(models.Model):
             return holders, "role"
         admins = self.env.ref("work_center.group_work_center_manager").sudo().users
         return admins.filtered(lambda u: u.active and not u.share), "fallback"
+
+    def action_apply_assignment_rules(self):
+        """Assign, by the rules, the documents at the station that nobody
+        holds yet (those that arrived before the rules were set)."""
+        for station in self:
+            for model_name in station.assignment_rule_ids.mapped("model_name"):
+                self.env[model_name].sudo().search(
+                    [
+                        ("work_center_id", "=", station.id),
+                        ("work_center_assignee_id", "=", False),
+                    ]
+                )._work_center_auto_assign()
+        return True
 
     # ------------------------------------------------------------------
     # Counters

@@ -22,6 +22,7 @@ const ZOOMS = [0.5, 0.75, 1, 1.25, 1.5, 2, 3];
 const PEN_WIDTH = 0.003;
 const STAMP_SIZE = 0.04;
 const MIN_BOX = 0.005;
+const HANDLE_RADIUS = 14;
 const CHECK_POINTS = [
     [-0.8, 0],
     [-0.25, 0.6],
@@ -45,6 +46,7 @@ const HIGHLIGHT_OPACITY = 0.35;
 const MAX_CANVAS_PIXELS = 12e6;
 
 const DRAWING_TOOLS = ["pen", "check", "cross", "highlight", "rect", "comment"];
+const RESIZABLE_KINDS = ["check", "cross", "highlight", "rect"];
 
 const isPdf = (attachment) => attachment.mimetype === "application/pdf";
 
@@ -145,6 +147,10 @@ export class AnnotationEditor {
         this.tool = "pen";
         this.color = COLORS[0];
         this.zoom = 1;
+        // Quarter turns clockwise the pages are shown rotated by.
+        this.rotation = 0;
+        this.pages = null;
+        this.pageInput = null;
         this.undoStack = [];
         this.session = {added: new Set(), changed: new Set(), removed: 0};
         // Tags every call of this visit (see the Session note).
@@ -189,8 +195,17 @@ export class AnnotationEditor {
             await loadJS(PDFJS);
             const pdfjsLib = window.pdfjsLib;
             pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJS_WORKER;
-            const pdf = await pdfjsLib.getDocument({url: getUrl(this.attachment)})
-                .promise;
+            // Download the file ourselves: pdf.js' own loader fails on some
+            // server responses (e.g. 416) with an uncaught error, and
+            // `no-store` keeps a stale or truncated cache entry out of it.
+            const response = await fetch(getUrl(this.attachment), {cache: "no-store"});
+            if (!response.ok) {
+                throw new Error(
+                    `Cannot fetch attachment ${this.attachment.id}: ${response.status}`
+                );
+            }
+            const data = new Uint8Array(await response.arrayBuffer());
+            const pdf = await pdfjsLib.getDocument({data}).promise;
             for (let number = 1; number <= pdf.numPages; number++) {
                 const pdfPage = await pdf.getPage(number);
                 // The viewport applies /Rotate: geometry is relative to the
@@ -308,6 +323,19 @@ export class AnnotationEditor {
             resizeTimer = setTimeout(() => this.renderVisibleSheets(), 200);
         });
         this.resizeObserver.observe(this.scroll);
+        if (this.pageInput) {
+            let frame = null;
+            this.scroll.addEventListener(
+                "scroll",
+                () => {
+                    frame ??= requestAnimationFrame(() => {
+                        frame = null;
+                        this.showCurrentPage();
+                    });
+                },
+                {passive: true}
+            );
+        }
         this.page.replaceChildren(this.root);
         this.applyZoom();
     }
@@ -347,6 +375,7 @@ export class AnnotationEditor {
             ["rect", "fa-square-o", _t("Rectangle")],
             ["comment", "fa-commenting-o", _t("Comment")],
             ["eraser", "fa-eraser", _t("Erase my marks")],
+            ["resize", "fa-expand", _t("Resize my marks")],
         ];
         this.toolButtons = {};
         for (const [tool, icon, title] of tools) {
@@ -367,6 +396,35 @@ export class AnnotationEditor {
         toolbar.append(this.toolsGroup);
 
         toolbar.append(htmlElement("div", "flex-grow-1"));
+        if (this.pdf) {
+            this.pageInput = htmlElement(
+                "input",
+                "form-control form-control-sm o_agx_annotation_page"
+            );
+            this.pageInput.type = "number";
+            this.pageInput.min = 1;
+            this.pageInput.max = this.sheets.length;
+            this.pageInput.value = 1;
+            this.pageInput.title = _t("Go to page");
+            this.pageInput.addEventListener("change", () =>
+                this.goToPage(Number(this.pageInput.value))
+            );
+            // Keep the viewer's shortcuts (arrows, Q, F...) out of the field.
+            this.pageInput.addEventListener("keydown", (ev) => {
+                ev.stopPropagation();
+                if (ev.key === "Enter") {
+                    this.goToPage(Number(this.pageInput.value));
+                }
+            });
+            toolbar.append(
+                this.pageInput,
+                htmlElement("span", "o_agx_annotation_zoom", `/ ${this.sheets.length}`)
+            );
+        }
+        toolbar.append(
+            button("fa-rotate-left", _t("Rotate left"), () => this.rotate(-1)),
+            button("fa-rotate-right", _t("Rotate right"), () => this.rotate(1))
+        );
         toolbar.append(
             button("fa-search-minus", _t("Zoom out"), () => this.stepZoom(-1))
         );
@@ -387,11 +445,13 @@ export class AnnotationEditor {
 
     buildSheet(sheet) {
         sheet.element = htmlElement("div", "o_agx_annotation_sheet");
-        sheet.element.style.aspectRatio = `1 / ${sheet.ratio}`;
+        // The page itself, turned inside the sheet by rotateSheet.
+        sheet.content = htmlElement("div", "o_agx_annotation_content");
+        sheet.element.append(sheet.content);
         if (sheet.image) {
             sheet.image.className = "o_agx_annotation_source";
             sheet.image.draggable = false;
-            sheet.element.append(sheet.image);
+            sheet.content.append(sheet.image);
         }
         sheet.layer = svgElement("svg", {
             class: "o_agx_annotation_layer",
@@ -401,7 +461,80 @@ export class AnnotationEditor {
         sheet.layer.addEventListener("pointerdown", (ev) =>
             this.onPointerDown(ev, sheet)
         );
-        sheet.element.append(sheet.layer);
+        sheet.content.append(sheet.layer);
+        this.rotateSheet(sheet);
+    }
+
+    /**
+     * Turn the page of `sheet` to the current rotation: a quarter turn swaps
+     * the sides, so the sheet takes the other ratio and the page, still laid
+     * out upright, is sized to fit it before being turned.
+     */
+    rotateSheet(sheet) {
+        const turned = this.rotation % 2 === 1;
+        sheet.element.style.aspectRatio = turned
+            ? `${sheet.ratio} / 1`
+            : `1 / ${sheet.ratio}`;
+        Object.assign(sheet.content.style, {
+            width: `${turned ? 100 / sheet.ratio : 100}%`,
+            height: `${turned ? 100 * sheet.ratio : 100}%`,
+            transform: `translate(-50%, -50%) rotate(${this.rotation * 90}deg)`,
+        });
+    }
+
+    rotate(step) {
+        const number = this.currentPage();
+        this.rotation = (this.rotation + step + 4) % 4;
+        this.closePopover();
+        this.sheets.forEach((sheet) => this.rotateSheet(sheet));
+        this.goToPage(number);
+        this.renderVisibleSheets();
+    }
+
+    /**
+     * Where `geometry`'s point is on the sheet as shown, as fractions of its
+     * width and height.
+     */
+    display({x, y}) {
+        return [
+            [x, y],
+            [1 - y, x],
+            [1 - x, 1 - y],
+            [y, 1 - x],
+        ][this.rotation];
+    }
+
+    /**
+     * Number of the page at the top of the scrolled area.
+     */
+    currentPage() {
+        const area = this.scroll.getBoundingClientRect();
+        const limit = area.top + area.height / 3;
+        const sheet =
+            this.sheets.find((s) => s.element.getBoundingClientRect().bottom > limit) ||
+            this.sheets[this.sheets.length - 1];
+        return sheet.number;
+    }
+
+    showCurrentPage() {
+        if (this.pageInput !== document.activeElement) {
+            this.pageInput.value = this.currentPage();
+        }
+    }
+
+    goToPage(number) {
+        const sheet =
+            this.sheets[Math.min(Math.max(number, 1), this.sheets.length) - 1];
+        if (sheet) {
+            // The area is padded by 12px.
+            this.scroll.scrollTop +=
+                sheet.element.getBoundingClientRect().top -
+                this.scroll.getBoundingClientRect().top -
+                12;
+        }
+        if (this.pageInput) {
+            this.pageInput.value = sheet?.number || this.currentPage();
+        }
     }
 
     async renderSheet(sheet) {
@@ -409,7 +542,7 @@ export class AnnotationEditor {
             return;
         }
         const width = Math.min(
-            Math.round(sheet.element.clientWidth * window.devicePixelRatio),
+            Math.round(sheet.content.clientWidth * window.devicePixelRatio),
             Math.floor(Math.sqrt(MAX_CANVAS_PIXELS / sheet.ratio))
         );
         if (!width || (sheet.renderedWidth && sheet.renderedWidth >= width * 0.95)) {
@@ -447,7 +580,7 @@ export class AnnotationEditor {
             }
             sheet.canvas?.remove();
             sheet.canvas = canvas;
-            sheet.element.prepend(canvas);
+            sheet.content.prepend(canvas);
             sheet.renderedWidth = width;
         } finally {
             sheet.rendering = false;
@@ -538,14 +671,30 @@ export class AnnotationEditor {
         this.drawButton.classList.toggle("btn-light", !drawing);
         this.toolsGroup.classList.toggle("d-none", !drawing);
         this.updateToolClass();
+        if (this.tool === "resize") {
+            this.redrawHandles();
+        }
     }
 
     setTool(tool) {
+        const resizing = [this.tool, tool].includes("resize");
         this.tool = tool;
         for (const [name, element] of Object.entries(this.toolButtons)) {
             element.classList.toggle("active", name === tool);
         }
         this.updateToolClass();
+        if (resizing) {
+            this.redrawHandles();
+        }
+    }
+
+    /**
+     * The resize handles only show while the Resize tool is in use.
+     */
+    redrawHandles() {
+        if (this.pages) {
+            this.redraw();
+        }
     }
 
     updateToolClass() {
@@ -619,7 +768,13 @@ export class AnnotationEditor {
             sheet.layer.replaceChildren(
                 ...annotations
                     .filter((annotation) => annotation.page === sheet.number)
-                    .map((annotation) => this.shape(annotation, sheet, numbers))
+                    .map((annotation) => {
+                        const group = this.shape(annotation, sheet, numbers);
+                        if (this.isResizable(annotation)) {
+                            group.append(...this.handles(annotation, sheet));
+                        }
+                        return group;
+                    })
             );
         }
         setBadge(this.attachment.id, this.annotations.length);
@@ -670,6 +825,17 @@ export class AnnotationEditor {
                     width: x(geometry.w),
                     height: y(geometry.h),
                 };
+                if (annotation.kind === "rect") {
+                    // Wider invisible copy so thin outlines are easy to pick.
+                    group.append(
+                        svgElement("rect", {
+                            ...box,
+                            stroke: "transparent",
+                            fill: "none",
+                            "stroke-width": 12,
+                        })
+                    );
+                }
                 group.append(
                     annotation.kind === "highlight"
                         ? svgElement("rect", {
@@ -705,6 +871,14 @@ export class AnnotationEditor {
                     )
                     .join("");
                 group.append(
+                    // Invisible square so the mark is easy to pick.
+                    svgElement("rect", {
+                        x: x(geometry.x) - radius,
+                        y: y(geometry.y) - radius,
+                        width: radius * 2,
+                        height: radius * 2,
+                        fill: "transparent",
+                    }),
                     svgElement("path", {
                         d,
                         ...stroke,
@@ -742,11 +916,147 @@ export class AnnotationEditor {
         return group;
     }
 
+    isResizable(annotation) {
+        return (
+            this.drawing &&
+            this.tool === "resize" &&
+            this.canAnnotate() &&
+            annotation.is_own &&
+            annotation.id &&
+            RESIZABLE_KINDS.includes(annotation.kind)
+        );
+    }
+
+    /**
+     * Grips to drag to resize `annotation`: a stamp has one (its size
+     * grows around its centre), a box one on each corner.
+     */
+    handles(annotation, sheet) {
+        const {x, y, w, h, size} = annotation.geometry;
+        const stamp = annotation.kind === "check" || annotation.kind === "cross";
+        const radius = (size || STAMP_SIZE) / 2;
+        const corners = stamp
+            ? [[1, 1]]
+            : [
+                  [0, 0],
+                  [1, 0],
+                  [0, 1],
+                  [1, 1],
+              ];
+        return corners.map(([cx, cy]) =>
+            svgElement("circle", {
+                class: "o_agx_annotation_handle",
+                "data-corner": `${cx},${cy}`,
+                cx: (stamp ? x + radius : x + cx * w) * UNITS,
+                cy:
+                    (stamp ? y + radius / sheet.ratio : y + cy * h) *
+                    UNITS *
+                    sheet.ratio,
+                r: HANDLE_RADIUS,
+                // A quarter turn swaps the diagonals.
+                cursor:
+                    (cx === cy) === (this.rotation % 2 === 0)
+                        ? "nwse-resize"
+                        : "nesw-resize",
+            })
+        );
+    }
+
+    /**
+     * Resize the user's own `annotation` while the pointer, down on one of
+     * its handles, moves; nothing is saved if it does not move.
+     */
+    resize(ev, sheet, annotation, group, corner) {
+        const rect = sheet.layer.getBoundingClientRect();
+        const [cx, cy] = corner.split(",").map(Number);
+        const {x, y, w, h} = annotation.geometry;
+        const stamp = annotation.kind === "check" || annotation.kind === "cross";
+        // The corner opposite the handle stays where it is.
+        const ax = x + (1 - cx) * w;
+        const ay = y + (1 - cy) * h;
+        let geometry = null;
+        let shape = group;
+        const move = (moveEv) => {
+            if (moveEv.pointerId !== ev.pointerId) {
+                return;
+            }
+            const [mx, my] = this.point(moveEv, sheet, rect);
+            const next = stamp
+                ? {
+                      ...annotation.geometry,
+                      size: round(
+                          Math.max(
+                              clamp(
+                                  2 *
+                                      Math.max(
+                                          Math.abs(mx - x),
+                                          Math.abs(my - y) * sheet.ratio
+                                      )
+                              ),
+                              MIN_BOX
+                          )
+                      ),
+                  }
+                : {
+                      x: round(Math.min(ax, mx)),
+                      y: round(Math.min(ay, my)),
+                      w: round(Math.abs(mx - ax)),
+                      h: round(Math.abs(my - ay)),
+                  };
+            if (stamp || (next.w > MIN_BOX && next.h > MIN_BOX)) {
+                geometry = next;
+                const resized = {...annotation, geometry};
+                const preview = this.shape(resized, sheet, new Map());
+                preview.append(...this.handles(resized, sheet));
+                shape.replaceWith(preview);
+                shape = preview;
+            }
+        };
+        const stop = () => {
+            window.removeEventListener("pointermove", move);
+            window.removeEventListener("pointerup", finish);
+            window.removeEventListener("pointercancel", finish);
+            this.pointer = null;
+        };
+        const finish = (upEv) => {
+            if (upEv.pointerId !== ev.pointerId) {
+                return;
+            }
+            stop();
+            if (geometry && upEv.type === "pointerup") {
+                this.update(annotation, {geometry}).catch((error) => {
+                    this.redraw();
+                    throw error;
+                });
+            } else {
+                this.redraw();
+            }
+        };
+        this.pointer = {
+            type: ev.pointerType,
+            cancel: () => {
+                stop();
+                this.redraw();
+            },
+        };
+        window.addEventListener("pointermove", move);
+        window.addEventListener("pointerup", finish);
+        window.addEventListener("pointercancel", finish);
+    }
+
+    /**
+     * Where the pointer is on the page, whatever its rotation.
+     */
     point(ev, sheet, rect = sheet.layer.getBoundingClientRect()) {
+        // `rect` bounds the page as shown.
+        const u = clamp((ev.clientX - rect.left) / rect.width);
+        const v = clamp((ev.clientY - rect.top) / rect.height);
         return [
-            round(clamp((ev.clientX - rect.left) / rect.width)),
-            round(clamp((ev.clientY - rect.top) / rect.height)),
-        ];
+            [u, v],
+            [v, 1 - u],
+            [1 - u, 1 - v],
+            [1 - v, u],
+        ][this.rotation].map(round);
     }
 
     onPointerDown(ev, sheet) {
@@ -772,6 +1082,14 @@ export class AnnotationEditor {
         if (this.tool === "eraser") {
             if (annotation?.is_own) {
                 this.onTap(ev, () => this.remove(annotation));
+            }
+            return;
+        }
+        if (this.tool === "resize") {
+            const handle = ev.target.closest(".o_agx_annotation_handle");
+            if (handle && annotation && ev.button === 0) {
+                ev.preventDefault();
+                this.resize(ev, sheet, annotation, target, handle.dataset.corner);
             }
             return;
         }
@@ -1106,12 +1424,10 @@ export class AnnotationEditor {
     openComment(sheet, annotation) {
         this.closePopover();
         const popover = htmlElement("div", "o_agx_annotation_popover");
-        popover.style.left = `${annotation.geometry.x * 100}%`;
-        popover.style.top = `${annotation.geometry.y * 100}%`;
-        popover.classList.toggle(
-            "o_agx_annotation_popover_left",
-            annotation.geometry.x > 0.6
-        );
+        const [left, top] = this.display(annotation.geometry);
+        popover.style.left = `${left * 100}%`;
+        popover.style.top = `${top * 100}%`;
+        popover.classList.toggle("o_agx_annotation_popover_left", left > 0.6);
         popover.addEventListener("pointerdown", (ev) => ev.stopPropagation());
         popover.addEventListener("keydown", (ev) => {
             // Keep the viewer's arrow / Escape shortcuts out of the text.

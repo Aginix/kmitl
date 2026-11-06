@@ -57,6 +57,14 @@ class TestContractPdf(TransactionCase):
         )
         self.assertEqual(self.agreement._contract_date_th(False), "")
 
+    def test_thai_distribute(self):
+        """Real spaces keep their width in span.rs; markup in the text is
+        escaped, never injected."""
+        html = self.agreement._contract_thai_distribute("ข้าพเจ้า <b>นาย ก</b>")
+        self.assertIn('<span class="rs"> </span>', html)
+        self.assertIn("&lt;b&gt;", html)
+        self.assertEqual(self.agreement._contract_thai_distribute(False), "")
+
     def test_signatures_follow_workflow(self):
         """A block carries its signer's signature only once the record is
         past the signer's step — not in draft, and not once cancelled."""
@@ -67,19 +75,44 @@ class TestContractPdf(TransactionCase):
         self.assertEqual(sigs["borrower"]["date"], "")
 
         self.agreement.write(
-            {"state": "to_approve", "date_submitted": "2026-07-23 03:00:00"}
+            {
+                "state": "to_approve",
+                "date_submitted": "2026-07-23 03:00:00",
+                "submitted_by_id": self.env.ref("base.user_admin").id,
+            }
         )
         sigs = self.agreement._contract_signatures()
         self.assertEqual(sigs["borrower"]["signature"], SIGNATURE)
         self.assertEqual(sigs["borrower"]["date"], "23 กรกฎาคม 2569")
         self.assertFalse(sigs["approver"]["signature"])
         self.assertFalse(sigs["receiver"]["signature"])
+        self.assertEqual(sigs["endorser"]["position"], "ผู้บังคับบัญชา")
 
         self.agreement.state = "in_progress"
         sigs = self.agreement._contract_signatures()
         self.assertEqual(sigs["approver"]["signature"], SIGNATURE)
-        self.assertEqual(sigs["receiver"]["signature"], SIGNATURE)
+        # ใบรับเงิน is always signed and dated by hand.
+        self.assertFalse(sigs["receiver"]["signature"])
+        self.assertEqual(sigs["receiver"]["date"], "")
 
         self.agreement.state = "cancel"
         sigs = self.agreement._contract_signatures()
         self.assertFalse(any(sig["signature"] for sig in sigs.values()))
+
+    def test_borrower_block_blank_when_submitted_on_behalf(self):
+        """ADR-0031: a loan officer's submission does not sign for the
+        borrower — the block is left to sign by hand."""
+        self.agreement.employee_id.signature = SIGNATURE
+        officer = self.env["res.users"].create(
+            {"name": "Officer", "login": "officer_contract_pdf"}
+        )
+        self.agreement.write(
+            {
+                "state": "to_approve",
+                "date_submitted": "2026-07-23 03:00:00",
+                "submitted_by_id": officer.id,
+            }
+        )
+        sigs = self.agreement._contract_signatures()
+        self.assertFalse(sigs["borrower"]["signature"])
+        self.assertEqual(sigs["borrower"]["date"], "")

@@ -2,6 +2,8 @@
 
 > **Amended by [ADR-0018](./0018-cross-charge-liquidated-per-code-in-order.md):** on a ถัวจ่าย reservation the return (and every obligate/consume) is split per budget code in the ledger — obligate/consume draw the primary code first, a return gives back the last code first.
 
+> **Amended (partial return):** the amount is no longer read-only — the wizard's `amount` defaults to the whole leftover and the user may type less to return part of it. `_return_leftover(amount=…)` re-reads `available_to_obligate` at confirm time and refuses an amount above it (or ≤ 0). A partial return leaves the commitment open; only returning the whole leftover closes it to `done`.
+
 When actual disbursement comes in under the reservation, the unspent remainder
 (`total_reserved − total_consumed`) is returned to the pool through a manual
 **ส่งคืนเงินเหลือจ่าย** action. Mechanically this is **คืนจอง**: a single

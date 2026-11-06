@@ -78,7 +78,8 @@ class AdvancePaymentPartnerBankWizard(models.TransientModel):
                 }
             )
             log = _("สร้างบัญชีธนาคาร %s ให้ผู้ยืม", account.display_name)
-        loan.write({"bank_id": account.id, "use_unlisted_bank": False})
+        # The tick stays: it records that the borrower declared the account.
+        loan.write({"bank_id": account.id})
         loan.message_post(
             body=Markup("%s<br/>%s") % (log, _("โดย %s", self.env.user.name)),
             subtype_xmlid="mail.mt_note",

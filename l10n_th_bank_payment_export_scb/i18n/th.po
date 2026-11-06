@@ -644,3 +644,12 @@ msgstr "07 - เงินกู้"
 #: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_service_type__59
 msgid "59 - Other"
 msgstr "59 - อื่น ๆ"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export_scb.bank_payment_export_view_form
+msgid ""
+"<span attrs=\"{'invisible': ['|', ('scb_is_editable', '!=', True), "
+"('scb_is_wht_present', '=', False)]}\">Signatory = </span>"
+msgstr ""
+"<span attrs=\"{'invisible': ['|', ('scb_is_editable', '!=', True), "
+"('scb_is_wht_present', '=', False)]}\">ผู้ลงนาม = </span>"

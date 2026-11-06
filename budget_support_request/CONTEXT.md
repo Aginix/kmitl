@@ -15,14 +15,16 @@ routed by a separate bridge).
 The document a requesting unit files to ask central for budget. It carries only the
 *request* side — the requester's `department` dimension, the amount asked for, a
 rich-text justification (เหตุผล/ความจำเป็น), and supporting attachments. It does **not**
-name the pool the money comes out of; central picks that when fulfilling.
+name the pool the money comes out of, nor the กองทุน/กิจกรรม/**รหัสงบประมาณ** — central
+picks those on the fulfilment document (the transfer / the commitment).
 _Avoid_: budget request (ambiguous with พ.1 purchase request), transfer
 
 **แหล่งเงิน of a support request**:
 Always **งบประมาณเงินรายได้** — central supports units out of revenue budget and nothing
 else, so this is a stated fact about the request, not a question put to the requester. It
 is shown, and travels onto whichever document fulfils the request (where ADR-0009 requires
-both sides of a transfer to agree on it), but it is never chosen. A request naming any
+both sides of a transfer to agree on it) — the only dimension that does — but it is never
+chosen. A request naming any
 other แหล่งเงิน is refused outright, however it was written.
 _Avoid_: funding source (that is the *pool* central picks at fulfilment — a different
 choice), budget type
@@ -54,7 +56,7 @@ _Avoid_: allocation (that is ปรับเข้าแผน into a project di
 **Fulfil (จัดสรร)**:
 The act, after approval, of opening the target document from an approved request: central
 chooses the method, and the request opens a **new, pre-filled but unsaved**
-`budget.transfer` form (requester's department + amount pre-filled as context defaults) or
+`budget.transfer` form (amount + แหล่งเงิน pre-filled as context defaults; no other dimension) or
 `budget.commitment` form (amount pre-filled; the beneficiary OU is pre-filled by the
 Operating Unit bridge) — never a persisted draft. `budget.move.line.account_id` and
 `budget.commitment.account_id` are hard `required=True` with no default, so the document
@@ -93,8 +95,8 @@ it" is a fact about the document rather than a request for a favour.
 _Avoid_: approve (the Buddy does not decide the money — the อธิการบดี does), review
 
 **State lifecycle**:
-`draft → to_verify → submitted → approved → in_progress → done`, plus `cancelled` /
-`rejected` (and, with the e-Saraban bridge, `sent` / `returned`). **`to_verify`** = the unit
+`draft → to_verify → submitted → approved → in_progress → done`, plus `rejected`
+(and the legacy `cancelled` — there is no Cancel any more, see Deleting) (and, with the e-Saraban bridge, `sent` / `returned`). **`to_verify`** = the unit
 is finished, the Buddy has not read it yet. **`submitted`** = released by the Buddy and
 ready for a หนังสือ. **`approved`** = approved in principle,
 central has not yet acted. **`in_progress`** = central has fulfilled at least one
@@ -106,9 +108,27 @@ _Avoid_: posted (that is the transfer's term), fulfilled (use `done`)
 
 **Reopening (คืนสู่ร่าง)**:
 Putting a request back to `draft`. The requester may take back their own request while it is
-merely `submitted`; from every other state — including one already decided or fulfilled —
+still undecided (`to_verify`, `submitted`, and with e-Saraban `returned`); from every other state — including one already decided or fulfilled —
 reopening is a **Budget Manager's** act and theirs alone. Deliberately unguarded beyond
 that: a manager reopening a fulfilled request is assumed to know the allocations already made
-still point at it, and to settle those separately. Distinct from **cancelling**, which is
-refused outright once central has acted.
+still point at it, and to settle those separately.
 _Avoid_: reset (English-only; say reopening), undo (nothing is unwound)
+
+**Deleting (ลบ)**:
+Replaces cancelling. The requester (or a Budget Manager) deletes a request they no longer
+want — only once it is back in `draft`, never one with a transfer/commitment against it, and
+(with e-Saraban) never while a หนังสือ is still live.
+
+**Title (ชื่อเรื่อง)**:
+What the request is about, in the unit's words — required to submit, and the เรื่อง of the
+หนังสือ the e-Saraban bridge issues.
+
+**Buddy editing**:
+While the request sits in `to_verify` the named Buddy may correct it directly instead of
+sending it back. The Buddy follows the request and its หนังสือ.
+
+**วันที่ส่งคำขอ (`date`)**:
+Stamped by the system when the requester confirms (the latest confirm, if it came back and was
+re-sent) — not typed in. The e-Saraban bridge adds **เลขที่หนังสือ / วันที่หนังสือ**, the
+หนังสือ's own number and date, stamped together when it is numbered (or typed in together for a
+request approved on paper).

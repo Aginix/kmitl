@@ -146,3 +146,33 @@ class TestAdvancePaymentException(TransactionCase):
         )
         ap.action_submit()
         self.assertEqual(ap.state, "to_endorse")
+
+    # One active agreement per borrower (ADR-0001), a rule since ADR-0030.
+
+    def test_one_active_blocks_second_submit(self):
+        self._make().action_submit()
+        second = self._make()
+        action = second.action_submit()
+        self.assertEqual(second.state, "draft")
+        self.assertEqual(action["res_model"], "advance.payment.exception.confirm")
+        self.assertIn(
+            self.env.ref("advance_payment_exception.excep_one_active_agreement"),
+            second.exception_ids,
+        )
+
+    def test_closed_agreement_does_not_block(self):
+        first = self._make()
+        first.action_submit()
+        first.write({"state": "done"})
+        second = self._make()
+        second.action_submit()
+        self.assertEqual(second.state, "to_endorse")
+
+    def test_one_active_rule_can_be_switched_off(self):
+        self._make().action_submit()
+        self.env.ref(
+            "advance_payment_exception.excep_one_active_agreement"
+        ).active = False
+        second = self._make()
+        second.action_submit()
+        self.assertEqual(second.state, "to_endorse")

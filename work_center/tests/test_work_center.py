@@ -512,6 +512,134 @@ class TestWorkCenter(TransactionCase):
             self._rule(self.wc_central, [("no_such_field", "=", 1)])
 
     # ------------------------------------------------------------------
+    # Assignment inside a station
+    # ------------------------------------------------------------------
+    def _assignment_rule(self, domain, user, station=None, sequence=10):
+        return self.env["work.center.assignment.rule"].create(
+            {
+                "work_center_id": (station or self.wc_dept).id,
+                "model_id": self.doc_model.id,
+                "domain": repr(domain),
+                "user_id": user.id,
+                "sequence": sequence,
+            }
+        )
+
+    def _two_members(self):
+        self.wc_dept.member_ids = [(4, self.user_a2.id)]
+
+    def test_assignment_rule_picks_the_assignee_and_the_todo(self):
+        self._two_members()
+        self._assignment_rule([("partner_id", "child_of", self.dept.id)], self.user_a2)
+        doc = self._enter(partner_id=self.sub_dept.id)
+        self.assertEqual(doc.work_center_assignee_id, self.user_a2)
+        self.assertEqual(self._arrival_todos(doc).user_id, self.user_a2)
+        # The visit still freezes everyone responsible on arrival.
+        self.assertEqual(
+            doc._work_center_open_visit().responsible_user_ids,
+            self.user_a | self.user_a2,
+        )
+
+    def test_without_a_matching_rule_the_station_works_as_before(self):
+        self._two_members()
+        self._assignment_rule([("partner_id", "=", self.sub_dept.id)], self.user_a2)
+        # No rule matches; a rule for someone no longer at the station is skipped.
+        self._assignment_rule([], self.user_none, sequence=20)
+        doc = self._enter(partner_id=self.dept.id)
+        self.assertFalse(doc.work_center_assignee_id)
+        self.assertEqual(self._arrival_todos(doc).user_id, self.user_a | self.user_a2)
+        self.env.invalidate_all()
+        for user in (self.user_a, self.user_a2):
+            self.assertTrue(doc.with_user(user).work_center_can_move)
+            self.assertTrue(doc.with_user(user).work_center_can_claim)
+
+    def test_only_the_assignee_acts_until_the_other_claims(self):
+        self._two_members()
+        self._assignment_rule([], self.user_a)
+        doc = self._enter(partner_id=self.dept.id)
+        self.env.invalidate_all()
+        mine, other = doc.with_user(self.user_a), doc.with_user(self.user_a2)
+        self.assertTrue(mine.work_center_can_move)
+        self.assertFalse(mine.work_center_can_claim)
+        self.assertFalse(other.work_center_can_move)
+        self.assertTrue(other.work_center_can_claim)
+        self.assertFalse(other._work_center_offers("test.check"))
+        with self.assertRaises(AccessError):
+            other._work_center_check_act("test.check")
+        with self.assertRaises(AccessError):
+            other._work_center_divert(self.wc_other, "not mine yet")
+        other.action_work_center_assign_me()
+        self.assertEqual(doc.work_center_assignee_id, self.user_a2)
+        self.assertEqual(self._arrival_todos(doc).user_id, self.user_a2)
+        self.env.invalidate_all()
+        doc.with_user(self.user_a2)._work_center_check_act("test.check")
+        self.assertFalse(doc.with_user(self.user_a)._work_center_offers("test.check"))
+        self.assertFalse(doc.with_user(self.user_a).work_center_can_move)
+
+    def test_moving_on_clears_the_assignee_and_picks_again(self):
+        self._assignment_rule([], self.user_a)
+        self._assignment_rule([], self.user_b, station=self.wc_central)
+        doc = self._enter(partner_id=self.dept.id)
+        self.assertEqual(doc.work_center_assignee_id, self.user_a)
+        doc._work_center_act_done("test.check")
+        doc._work_center_forward()
+        self.assertEqual(doc.work_center_id, self.wc_central)
+        self.assertEqual(doc.work_center_assignee_id, self.user_b)
+        self.assertEqual(self._arrival_todos(doc).user_id, self.user_b)
+        doc._work_center_act_done("test.approve")
+        doc._work_center_forward()
+        self.assertFalse(doc.work_center_assignee_id)
+
+    def test_manual_assign_is_for_station_administrators(self):
+        self._two_members()
+        doc = self._enter(partner_id=self.dept.id)
+        self.env.invalidate_all()
+        with self.assertRaises(AccessError):
+            doc.with_user(self.user_a).action_work_center_assign_wizard()
+        with self.assertRaises(AccessError):
+            doc.with_user(self.user_a)._work_center_manual_assign(self.user_a)
+        with self.assertRaises(AccessError):
+            self.env["work.center.assign.wizard"].with_user(self.user_a).create(
+                {"res_model": doc._name, "res_id": doc.id, "user_id": self.user_a.id}
+            )
+        action = doc.with_user(self.user_manager).action_work_center_assign_wizard()
+        Wizard = self.env["work.center.assign.wizard"].with_user(self.user_manager)
+        wizard = Wizard.with_context(**action["context"]).create(
+            {"user_id": self.user_a2.id}
+        )
+        self.assertEqual(wizard.allowed_user_ids, self.user_a | self.user_a2)
+        wizard.action_assign()
+        self.assertEqual(doc.work_center_assignee_id, self.user_a2)
+        self.assertEqual(self._arrival_todos(doc).user_id, self.user_a2)
+        # Someone who is not responsible at the station cannot be chosen.
+        with self.assertRaises(UserError):
+            doc._work_center_manual_assign(self.user_none)
+
+    def test_apply_assignment_rules_assigns_the_waiting_documents(self):
+        self._two_members()
+        doc = self._enter(partner_id=self.dept.id)
+        self.assertFalse(doc.work_center_assignee_id)
+        self._assignment_rule([], self.user_a)
+        self.wc_dept.action_apply_assignment_rules()
+        self.assertEqual(doc.work_center_assignee_id, self.user_a)
+        self.assertEqual(self._arrival_todos(doc).user_id, self.user_a)
+
+    def test_the_assignee_is_written_by_the_engine_only(self):
+        doc = self._enter(partner_id=self.dept.id)
+        with self.assertRaises(UserError):
+            doc.work_center_assignee_id = self.user_a
+        with self.assertRaises(UserError):
+            self._doc(work_center_assignee_id=self.user_a.id)
+
+    def test_assignment_rule_cannot_target_unassigned(self):
+        with self.assertRaises(ValidationError):
+            self._assignment_rule(
+                [], self.user_a, station=self.area.unassigned_work_center_id
+            )
+        with self.assertRaises(ValidationError):
+            self._assignment_rule([("no_such_field", "=", 1)], self.user_a)
+
+    # ------------------------------------------------------------------
     # Counters
     # ------------------------------------------------------------------
     def _counter(self, domain):

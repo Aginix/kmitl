@@ -30,6 +30,23 @@ class ResConfigSettings(models.TransientModel):
         "หากไม่ระบุ ระบบจะเลือกให้เองเมื่อมีเจ้าหน้าที่เพียงคนเดียว",
     )
 
+    # The standing director for director_id — one institution-wide director,
+    # defaulted like the approver (ADR-0027).
+    advance_payment_default_director_id = fields.Many2one(
+        comodel_name="res.users",
+        string="ผู้อำนวยการสำนักงานคลัง",
+        config_parameter="advance_payment.default_director_id",
+        domain=lambda self: [
+            (
+                "groups_id",
+                "in",
+                self.env.ref("advance_payment.group_advance_payment_director").ids,
+            )
+        ],
+        help="ผู้ที่จะถูกตั้งเป็นผู้อำนวยการสำนักงานคลังของสัญญาใหม่ทุกฉบับ และได้รับงานให้พิจารณา "
+        "เมื่อเจ้าหน้าที่ตรวจสอบคำขอเรียบร้อยแล้ว หากไม่ระบุ ระบบจะใช้ผู้ดูแลระบบ",
+    )
+
     # The standing approver for approver_id. Unlike the loan officer there is
     # no sole-member to infer (root/admin are standing members of the approver
     # group), so this setting is the only real source; advance.payment falls
@@ -47,7 +64,7 @@ class ResConfigSettings(models.TransientModel):
             )
         ],
         help="ผู้ที่จะถูกตั้งเป็นผู้อนุมัติของสัญญาใหม่ทุกฉบับ และได้รับงานให้อนุมัติ "
-        "เมื่อเจ้าหน้าที่ตรวจสอบคำขอเรียบร้อยแล้ว หากไม่ระบุ ระบบจะใช้ผู้ดูแลระบบ",
+        "เมื่อผู้อำนวยการพิจารณาเรียบร้อยแล้ว หากไม่ระบุ ระบบจะใช้ผู้ดูแลระบบ",
     )
 
     # A rich-text Html field cannot use config_parameter= — res.config.settings

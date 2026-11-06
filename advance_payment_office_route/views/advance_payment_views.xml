@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_advance_payment_form_office_route" model="ir.ui.view">
+        <field name="name">advance.payment.form.office.route</field>
+        <field name="model">advance.payment</field>
+        <field name="inherit_id" ref="advance_payment.view_advance_payment_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//header/field[@name='state']" position="attributes">
+                <attribute
+                    name="attrs"
+                >{'invisible': [('is_office_route', '=', True)]}</attribute>
+            </xpath>
+            <xpath expr="//header/field[@name='state']" position="after">
+                <field name="is_office_route" invisible="1" />
+                <field
+                    name="state"
+                    widget="statusbar"
+                    statusbar_visible="draft,to_verify,to_director,to_approve,approved,in_progress,done"
+                    attrs="{'invisible': [('is_office_route', '=', False)]}"
+                />
+            </xpath>
+            <xpath expr="//group[@name='processing_unit']" position="attributes">
+                <attribute
+                    name="attrs"
+                >{'invisible': [('is_office_route', '=', True)]}</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>

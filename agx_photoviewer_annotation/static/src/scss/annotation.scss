@@ -64,6 +64,10 @@
     }
 }
 
+.o_agx_annotation_page {
+    width: 4.5em;
+}
+
 .o_agx_annotation_zoom {
     min-width: 3em;
     font-size: 12px;
@@ -103,6 +107,13 @@
     margin: 0 auto 12px;
     background: #fff;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+// The upright page, sized and turned by the editor to fit the sheet.
+.o_agx_annotation_content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
 }
 
 .o_agx_annotation_source,
@@ -163,6 +174,15 @@
     &:hover {
         opacity: 0.5;
     }
+}
+
+// Grips of the Resize tool, drawn with the marks they resize.
+.o_agx_annotation_handle {
+    pointer-events: all;
+    touch-action: none;
+    fill: #fff;
+    stroke: $o-brand-primary;
+    stroke-width: 3px;
 }
 
 .o_agx_annotation_popover {

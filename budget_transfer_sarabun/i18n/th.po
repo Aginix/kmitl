@@ -1,0 +1,265 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* budget_transfer_sarabun
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-27 00:59+0000\n"
+"PO-Revision-Date: 2026-10-27 00:59+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: budget_transfer_sarabun
+#: model_terms:ir.ui.view,arch_db:budget_transfer_sarabun.view_budget_transfer_form_sarabun
+msgid ""
+"<i class=\"fa fa-paper-plane me-1\"/>\n"
+"                    สถานะการเดินหนังสือสารบรรณ:"
+msgstr ""
+
+#. module: budget_transfer_sarabun
+#: model_terms:ir.ui.view,arch_db:budget_transfer_sarabun.view_budget_transfer_form_sarabun
+msgid ""
+"<i class=\"fa fa-pencil-square-o me-1\"/>\n"
+"                    หนังสือสารบรรณถูกสร้างแล้วแต่ยังไม่ได้ส่งออก (สถานะ: ร่าง)"
+msgstr ""
+
+#. module: budget_transfer_sarabun
+#: model:ir.model.fields,help:budget_transfer_sarabun.field_budget_transfer__sarabun_is_draft
+msgid "A หนังสือ was created from this record but not yet sent (still draft)."
+msgstr ""
+
+#. module: budget_transfer_sarabun
+#: model:ir.model.fields,help:budget_transfer_sarabun.field_budget_transfer__sarabun_document_ids
+msgid "All หนังสือ spawned from this record (1:N)."
+msgstr ""
+
+#. module: budget_transfer_sarabun
+#: model:ir.model,name:budget_transfer_sarabun.model_budget_transfer
+msgid "Budget Transfer"
+msgstr "โอนงบประมาณ"
+
+#. module: budget_transfer_sarabun
+#: model:ir.model.fields,field_description:budget_transfer_sarabun.field_budget_transfer__sarabun_has_live_document
+msgid "Has Live หนังสือ"
+msgstr ""
+
+#. module: budget_transfer_sarabun
+#: model:ir.model.fields,help:budget_transfer_sarabun.field_budget_transfer__sarabun_state_label
+msgid ""
+"Human-readable status of the current หนังสือ (state + routing progress)."
+msgstr ""
+
+#. module: budget_transfer_sarabun
+#. odoo-python
+#: code:addons/budget_transfer_sarabun/models/budget_transfer.py:0
+#, python-format
+msgid "Only Budget Managers can reset a rejected transfer to draft."
+msgstr ""
+
+#. module: budget_transfer_sarabun
+#. odoo-python
+#: code:addons/budget_transfer_sarabun/models/budget_transfer.py:0
+#, python-format
+msgid "Only submitted transfers can be approved."
+msgstr ""
+
+#. module: budget_transfer_sarabun
+#. odoo-python
+#: code:addons/budget_transfer_sarabun/models/budget_transfer.py:0
+#, python-format
+msgid "Only submitted transfers can be posted."
+msgstr ""
+
+#. module: budget_transfer_sarabun
+#: model_terms:ir.ui.view,arch_db:budget_transfer_sarabun.view_budget_transfer_form_sarabun
+#: model_terms:ir.ui.view,arch_db:budget_transfer_sarabun.view_budget_transfer_search_sarabun
+msgid "Rejected"
+msgstr ""
+
+#. module: budget_transfer_sarabun
+#: model_terms:ir.ui.view,arch_db:budget_transfer_sarabun.view_budget_transfer_form_sarabun
+#: model_terms:ir.ui.view,arch_db:budget_transfer_sarabun.view_budget_transfer_search_sarabun
+msgid "Returned"
+msgstr ""
+
+#. module: budget_transfer_sarabun
+#: model:ir.model.fields,field_description:budget_transfer_sarabun.field_budget_transfer__sarabun_document_count
+msgid "Sarabun Document Count"
+msgstr ""
+
+#. module: budget_transfer_sarabun
+#: model:ir.model.fields,field_description:budget_transfer_sarabun.field_budget_transfer__sarabun_enclosure_attachment_id
+msgid "Sarabun Enclosure Attachment"
+msgstr ""
+
+#. module: budget_transfer_sarabun
+#: model_terms:ir.ui.view,arch_db:budget_transfer_sarabun.view_budget_transfer_search_sarabun
+msgid "Sent"
+msgstr ""
+
+#. module: budget_transfer_sarabun
+#: model:ir.model.fields,help:budget_transfer_sarabun.field_budget_transfer__sarabun_state
+msgid "State of the current live หนังสือ, mirrored onto the origin record."
+msgstr ""
+
+#. module: budget_transfer_sarabun
+#: model:ir.model.fields,field_description:budget_transfer_sarabun.field_budget_transfer__state
+msgid "Status"
+msgstr "สถานะ"
+
+#. module: budget_transfer_sarabun
+#: model:ir.model.fields,help:budget_transfer_sarabun.field_budget_transfer__active_sarabun_document_id
+msgid ""
+"The current live Document (most recent non-terminal one); others are "
+"superseded (rejected → duplicated). Replaces per-consumer "
+"main_sarabun_document_id."
+msgstr ""
+
+#. module: budget_transfer_sarabun
+#. odoo-python
+#: code:addons/budget_transfer_sarabun/models/budget_transfer.py:0
+#, python-format
+msgid ""
+"This transfer has a letter out for signature. Recall or void it before "
+"cancelling."
+msgstr ""
+
+#. module: budget_transfer_sarabun
+#. odoo-python
+#: code:addons/budget_transfer_sarabun/models/budget_transfer.py:0
+#, python-format
+msgid ""
+"This transfer has a letter out for signature. Recall or void it before "
+"resetting to draft."
+msgstr ""
+
+#. module: budget_transfer_sarabun
+#: model:ir.model.fields,help:budget_transfer_sarabun.field_budget_transfer__sarabun_has_live_document
+msgid ""
+"True while a non-terminal Document exists "
+"(draft/circulating/completed/returned). Gate the 'create หนังสือ' button on "
+"this — NOT on sarabun_document_count — so a fresh one can be issued after a "
+"terminal outcome (rejected/cancelled), while a returned doc is revised in "
+"place."
+msgstr ""
+
+#. module: budget_transfer_sarabun
+#: model:ir.model.fields.selection,name:budget_transfer_sarabun.selection__budget_transfer__state__sent
+msgid "กำลังเวียนสารบรรณ"
+msgstr ""
+
+#. module: budget_transfer_sarabun
+#. odoo-python
+#: code:addons/budget_transfer_sarabun/models/budget_transfer.py:0
+#, python-format
+msgid "ขออนุมัติโอน เปลี่ยนแปลง %(src)s ประจำปีงบประมาณ พ.ศ. %(fy)s %(dept)s"
+msgstr ""
+
+#. module: budget_transfer_sarabun
+#: model:sarabun.document.type,name:budget_transfer_sarabun.document_type_budget_transfer
+msgid "ขออนุมัติโอนงบประมาณ"
+msgstr ""
+
+#. module: budget_transfer_sarabun
+#. odoo-python
+#: code:addons/budget_transfer_sarabun/models/budget_transfer.py:0
+#, python-format
+msgid ""
+"ด้วย%(dept)s มีความประสงค์ขออนุมัติโอน เปลี่ยนแปลง %(src)s ประจำปีงบประมาณ "
+"พ.ศ. %(fy)s จำนวนเงิน %(amt)s บาท รายละเอียดตามเอกสารแนบ แบบ งปม. 303 เลขที่"
+" %(no)s"
+msgstr ""
+
+#. module: budget_transfer_sarabun
+#: model:ir.model.fields.selection,name:budget_transfer_sarabun.selection__budget_transfer__state__returned
+msgid "ตีกลับเพื่อแก้ไข"
+msgstr ""
+
+#. module: budget_transfer_sarabun
+#: model:ir.model.fields.selection,name:budget_transfer_sarabun.selection__budget_transfer__state__rejected
+msgid "ปฏิเสธ"
+msgstr ""
+
+#. module: budget_transfer_sarabun
+#: model:sarabun.position,name:budget_transfer_sarabun.position_budget_transfer_approver
+msgid "ผู้อนุมัติการโอนงบประมาณ (Budget Transfer Approver)"
+msgstr ""
+
+#. module: budget_transfer_sarabun
+#. odoo-python
+#: code:addons/budget_transfer_sarabun/models/budget_transfer.py:0
+#, python-format
+msgid ""
+"มีหนังสือสารบรรณค้างอยู่ ไม่สามารถอนุมัติและบันทึกได้ "
+"กรุณาลบหนังสือก่อนจึงจะดำเนินการด้วยตนเองได้"
+msgstr ""
+
+#. module: budget_transfer_sarabun
+#: model_terms:ir.ui.view,arch_db:budget_transfer_sarabun.view_budget_transfer_form_sarabun
+msgid "ยืนยันข้อมูล"
+msgstr ""
+
+#. module: budget_transfer_sarabun
+#: model:ir.model.fields,field_description:budget_transfer_sarabun.field_budget_transfer__sarabun_state_label
+msgid "สถานะการเดินหนังสือ"
+msgstr ""
+
+#. module: budget_transfer_sarabun
+#: model:ir.model.fields,field_description:budget_transfer_sarabun.field_budget_transfer__sarabun_state
+msgid "สถานะหนังสือ (Sarabun Status)"
+msgstr ""
+
+#. module: budget_transfer_sarabun
+#: model_terms:ir.ui.view,arch_db:budget_transfer_sarabun.view_budget_transfer_form_sarabun
+msgid "สร้างหนังสือ"
+msgstr ""
+
+#. module: budget_transfer_sarabun
+#: model:ir.model.fields.selection,name:budget_transfer_sarabun.selection__budget_transfer__state__submitted
+msgid "ส่งแล้ว"
+msgstr "รอส่งขออนุมัติ"
+
+#. module: budget_transfer_sarabun
+#: model_terms:ir.ui.view,arch_db:budget_transfer_sarabun.view_budget_transfer_form_sarabun
+msgid "หนังสือ"
+msgstr ""
+
+#. module: budget_transfer_sarabun
+#: model:ir.model.fields,field_description:budget_transfer_sarabun.field_budget_transfer__sarabun_document_ids
+msgid "หนังสือ (Documents)"
+msgstr ""
+
+#. module: budget_transfer_sarabun
+#: model:ir.model.fields,field_description:budget_transfer_sarabun.field_budget_transfer__active_sarabun_document_id
+msgid "หนังสือฉบับปัจจุบัน (Active Document)"
+msgstr ""
+
+#. module: budget_transfer_sarabun
+#: model:ir.model.fields,field_description:budget_transfer_sarabun.field_budget_transfer__sarabun_is_draft
+msgid "หนังสือยังเป็นร่าง (Sarabun Draft)"
+msgstr ""
+
+#. module: budget_transfer_sarabun
+#. odoo-python
+#: code:addons/budget_transfer_sarabun/models/budget_transfer.py:0
+#, python-format
+msgid "อธิการบดี"
+msgstr ""
+
+#. module: budget_transfer_sarabun
+#: model_terms:ir.ui.view,arch_db:budget_transfer_sarabun.view_budget_transfer_form_sarabun
+msgid "เปิดหนังสือเพื่อส่ง"
+msgstr ""
+
+#. module: budget_transfer_sarabun
+#. odoo-python
+#: code:addons/budget_transfer_sarabun/models/budget_transfer.py:0
+#, python-format
+msgid "เหตุผลการขออนุมัติ"
+msgstr ""

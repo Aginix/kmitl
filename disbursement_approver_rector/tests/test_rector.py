@@ -17,6 +17,14 @@ class TestRector(TwoApproverCommon):
     """The rector-delegate act needs no director approval first (it replaces
     the old "cannot skip the finance step" rule) and consumes no budget."""
 
+    def _make_signed_dr(self):
+        dr = super()._make_signed_dr()
+        # disbursement_approver_rector_budget (auto-installed next to
+        # disbursement_budget) consumes on approval: test the act alone.
+        if "consumes_budget" in dr._fields:
+            dr.consumes_budget = False
+        return dr
+
     def test_rector_acts_without_any_director_approval(self):
         dr = self._make_signed_dr()
         self.assertTrue(dr.with_user(self.rector).can_approve_rector)

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <!-- The type with no source document is the loan officer's back-office
+         tool (advance_payment ADR-0029/0031). -->
+    <record id="advance_payment.loan_type_other" model="advance.payment.loan.type">
+        <field
+            name="group_ids"
+            eval="[(4, ref('advance_payment.group_advance_payment_loan_officer'))]"
+        />
+    </record>
+</odoo>

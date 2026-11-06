@@ -6,54 +6,6 @@
         <field name="inherit_id" ref="advance_payment.view_advance_payment_form" />
         <field name="arch" type="xml">
 
-            <!-- Allow loan_type_id to be edited when linked to an approval request -->
-            <xpath expr="//field[@name='loan_type_id']" position="attributes">
-                <attribute name="attrs">
-                    {'readonly': ['|', ('state', '!=', 'draft'), '&amp;', ('is_locked_by_reference', '=', True), ('approval_request_id', '=', False)]}
-                </attribute>
-            </xpath>
-
-            <!-- The borrower's own picker: approved requests, narrowed by the
-                 loan type's filter (advance_payment ADR-0023/0025). -->
-            <xpath expr="//field[@name='loan_type_id']" position="after">
-                <field
-                    name="approval_request_id"
-                    options="{'no_create': True, 'no_create_edit': True}"
-                    domain="reference_picker_domain"
-                    attrs="{
-                        'invisible': [('loan_type_reference_model', '!=', 'approval.request')],
-                        'readonly': [('state', '!=', 'draft')],
-                        'required': [('loan_type_reference_model', '=', 'approval.request')]
-                    }"
-                />
-            </xpath>
-
-            <!-- Expense report vs what the request itemises against this loan -->
-            <xpath expr="//field[@name='actual_expense_amount']" position="after">
-                <field
-                    name="allocation_expense_amount"
-                    attrs="{'invisible': [('approval_request_count', '=', 0)]}"
-                />
-                <field name="has_expense_divergence" invisible="1" />
-                <button
-                    name="action_prefill_expense_from_allocation"
-                    type="object"
-                    string="ดึงยอดจากใบขออนุมัติ"
-                    class="btn-link"
-                    attrs="{'invisible': ['|', ('state', '!=', 'in_progress'),
-                                          ('approval_request_count', '=', 0)]}"
-                />
-                <div
-                    class="alert alert-warning mb-0"
-                    role="alert"
-                    colspan="2"
-                    attrs="{'invisible': [('has_expense_divergence', '=', False)]}"
-                >
-                    ยอดค่าใช้จ่ายจริงที่รายงาน ไม่เท่ากับผลรวมแถวเงินยืมในใบขออนุมัติ
-                    — ยืนยันว่าถูกต้องได้ แต่โปรดตรวจสอบก่อนส่ง
-                </div>
-            </xpath>
-
             <xpath expr="//div[@name='button_box']" position="inside">
                 <field name="approval_request_count" invisible="1" />
                 <button

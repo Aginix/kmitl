@@ -9,7 +9,7 @@
         <field name="domain_force">
             ['|', '|', ('operating_unit_id','=',False),
             ('operating_unit_id','in',user.operating_unit_ids.ids),
-            ('commitment_id.beneficiary_operating_unit_id','in',user.operating_unit_ids.ids)]
+            ('commitment_id.beneficiary_operating_unit_ids','in',user.operating_unit_ids.ids)]
         </field>
         <field name="name">budget move from allowed operating units</field>
         <field name="global" eval="True" />
@@ -24,7 +24,7 @@
         <field name="domain_force">
             ['|', '|', ('operating_unit_id','=',False),
             ('operating_unit_id','in',user.operating_unit_ids.ids),
-            ('commitment_id.beneficiary_operating_unit_id','in',user.operating_unit_ids.ids)]
+            ('commitment_id.beneficiary_operating_unit_ids','in',user.operating_unit_ids.ids)]
         </field>
         <field name="name">budget move line from allowed operating units</field>
         <field name="global" eval="True" />
@@ -56,7 +56,7 @@
         <field name="domain_force">
             ['|', '|', ('operating_unit_id','=',False),
             ('operating_unit_id','in',user.operating_unit_ids.ids),
-            ('beneficiary_operating_unit_id','in',user.operating_unit_ids.ids)]
+            ('beneficiary_operating_unit_ids','in',user.operating_unit_ids.ids)]
         </field>
         <field name="name">budget commitment from allowed operating units</field>
         <field name="global" eval="True" />
@@ -71,7 +71,7 @@
         <field name="domain_force">
             ['|', '|', ('operating_unit_id','=',False),
             ('operating_unit_id','in',user.operating_unit_ids.ids),
-            ('commitment_id.beneficiary_operating_unit_id','in',user.operating_unit_ids.ids)]
+            ('commitment_id.beneficiary_operating_unit_ids','in',user.operating_unit_ids.ids)]
         </field>
         <field name="name">budget commitment line from allowed operating units</field>
         <field name="global" eval="True" />

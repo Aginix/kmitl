@@ -109,6 +109,33 @@
                                 </tree>
                             </field>
                         </page>
+                        <page
+                            name="assignment_rules"
+                            string="Assignment Rules"
+                            groups="work_center.group_work_center_manager"
+                            attrs="{'invisible': [('is_unassigned', '=', True)]}"
+                        >
+                            <div class="text-muted mb-2">
+                                A document that arrives here goes to the person of the first rule whose condition matches. The others press Assign to Me to take it over.
+                            </div>
+                            <button
+                                name="action_apply_assignment_rules"
+                                type="object"
+                                string="Apply Assignment Rules"
+                                class="btn-secondary mb-2"
+                            />
+                            <field name="assignment_rule_ids">
+                                <tree>
+                                    <field name="sequence" widget="handle" />
+                                    <field name="model_id" />
+                                    <field name="domain" />
+                                    <field
+                                        name="user_id"
+                                        widget="many2one_avatar_user"
+                                    />
+                                </tree>
+                            </field>
+                        </page>
                     </notebook>
                 </sheet>
                 <div class="oe_chatter">

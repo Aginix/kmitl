@@ -18,4 +18,4 @@ Three modules, dependency-ordered:
 - Reservation release logic (formerly on `on_hold`) moves onto `action_reset_to_draft` / `action_cancel` and stays a budget-layer concern.
 - The PR↔plan bridge is renamed `purchase_request_budget_procurement` → `purchase_request_procurement_plan`; consumers re-point their `depends`.
 - The plan's running number resets per `account_fiscal_year_id` (per-fiscal-year sequence, drawn on the fiscal year's end date — the `kmitl_project` idiom).
-- The whole procurement_plan family is pre-deployment: no data migration, no version bumps.
+- ~~The whole procurement_plan family is pre-deployment: no data migration, no version bumps.~~ **Amended 2026-10-24:** the family is now in production — every touched module gets a manifest version bump, and data changes ship with migrations (decision D12).

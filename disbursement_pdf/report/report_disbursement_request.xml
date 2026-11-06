@@ -25,6 +25,11 @@
                         }
                     </style>
 
+                    <div t-if="report_type == 'pdf'" class="footer"
+                         style="text-align: right; font-family: 'THSarabunNew'; font-size: 14pt;">
+                        Page <t t-translation="off"><span class="page"/>/<span class="topage"/></t>
+                    </div>
+
                     <div class="page">
                         <!-- Company Logo (top-left) -->
                         <div style="position: absolute; top: 0px; left: 0px">
@@ -124,7 +129,7 @@
                                 <div class="row mb-2" t-if="partner_bank">
                                     <div class="col">
                                         ธนาคาร                                        <span class="ms-2" t-out="partner_bank.bank_id.name"/>
-                                        เลขที่บัญชี                                        <span class="ms-2" t-out="o._get_masked_acc_number(partner_bank.acc_number)"/>
+                                        เลขที่บัญชี                                        <span class="ms-2" t-out="partner_bank.acc_number"/>
                                     </div>
                                 </div>
                                 <table class="table table-bordered table-sm mb-4">
@@ -139,7 +144,7 @@
                                         <t t-foreach="partner_lines" t-as="line">
                                             <tr>
                                                 <td class="text-center" style="width: 8%" t-out="global_row_no"/>
-                                                <td t-out="line.name" style="white-space: pre-wrap"/>
+                                                <td style="white-space: pre-wrap"><t t-out="line.name"/><t t-if="line.note"><br/>หมายเหตุ: <t t-out="line.note"/></t></td>
                                                 <td class="text-end" t-out="'{0:,.2f} ฿'.format(line.price_subtotal)"/>
                                             </tr>
                                             <t t-set="global_row_no" t-value="global_row_no + 1"/>
@@ -217,12 +222,12 @@
         <div t-if="o.signature_ids" class="mt-5">
             <div t-foreach="o.signature_ids" t-as="sig"
                  style="display: inline-block; width: 32%; vertical-align: top; text-align: center; margin-bottom: 24px; page-break-inside: avoid;">
+                <div t-if="sig.step_action" t-out="sig.step_action"/>
                 <div t-if="sig.signature_image">
                     <img t-att-src="image_data_uri(sig.signature_image)" style="max-height: 60px;" alt="Signature"/>
                 </div>
                 <div t-else="" style="height: 60px;"/>
                 <div>(<span t-out="sig.signed_name or sig.signed_by_id.name"/>)</div>
-                <div t-field="sig.step"/>
                 <div t-if="sig.signed_position_name" t-out="sig.signed_position_name"/>
                 <div t-if="sig.signed_date" t-out="o.format_datetime_thai_sign(sig.signed_date)"/>
             </div>

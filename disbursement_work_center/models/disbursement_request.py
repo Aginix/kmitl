@@ -49,6 +49,12 @@ class DisbursementRequest(models.Model):
     def _work_center_act_applies(self, code):
         return self._disbursement_act_applicable(code)
 
+    def _verification_officer(self):
+        """The return To-Dos reach the person handling the request at its
+        station."""
+        self.ensure_one()
+        return self.work_center_assignee_id or super()._verification_officer()
+
     def _disbursement_act_offered(self, code):
         offered = super()._disbursement_act_offered(code)
         if self.state == "in_progress":

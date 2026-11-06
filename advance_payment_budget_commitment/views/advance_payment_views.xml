@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_advance_payment_form_budget_commitment" model="ir.ui.view">
+        <field name="name">advance.payment.form.budget.commitment</field>
+        <field name="model">advance.payment</field>
+        <field name="inherit_id" ref="advance_payment.view_advance_payment_form" />
+        <field name="arch" type="xml">
+            <!-- no_open: the borrower usually cannot read the commitment. -->
+            <field name="reference_unit" position="after">
+                <field
+                    name="budget_commitment_id"
+                    options="{'no_open': True}"
+                    attrs="{'invisible': [('budget_commitment_id', '=', False)]}"
+                />
+                <field
+                    name="borrowing_headroom"
+                    attrs="{'invisible': [('budget_commitment_id', '=', False)]}"
+                />
+            </field>
+            <group name="amount_summary" position="before">
+                <group
+                    name="voucher_budget"
+                    string="มิติทางบัญชี / รหัสงบประมาณ"
+                    attrs="{'invisible': ['|', ('state', '!=', 'approved'), ('budget_commitment_id', '=', False)]}"
+                >
+                    <field
+                        name="budget_commitment_id"
+                        string="เลขที่ใบจองงบประมาณ"
+                        options="{'no_open': True}"
+                    />
+                    <field
+                        name="commitment_source_analytic_id"
+                        options="{'no_open': True}"
+                    />
+                    <field
+                        name="commitment_department_analytic_id"
+                        options="{'no_open': True}"
+                    />
+                    <field
+                        name="commitment_fund_analytic_id"
+                        options="{'no_open': True}"
+                    />
+                    <field
+                        name="commitment_activity_analytic_id"
+                        options="{'no_open': True}"
+                    />
+                    <field name="commitment_account_id" options="{'no_open': True}" />
+                    <field
+                        name="commitment_kmitl_project_analytic_id"
+                        options="{'no_open': True}"
+                        attrs="{'invisible': [('commitment_kmitl_project_analytic_id', '=', False)]}"
+                    />
+                    <field
+                        name="commitment_procurement_plan_analytic_id"
+                        options="{'no_open': True}"
+                        attrs="{'invisible': [('commitment_procurement_plan_analytic_id', '=', False)]}"
+                    />
+                </group>
+            </group>
+        </field>
+    </record>
+</odoo>

@@ -1,6 +1,6 @@
 {
     "name": "Purchase Request Approval",
-    "version": "16.0.2.2.0",
+    "version": "16.0.2.2.2",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
@@ -12,6 +12,7 @@
         "thai_date_utils",
         "portal",
         "purchase_request_egp",
+        "purchase_request_procurement_mode",
         "agx_sarabun_layout",
         "l10n_th_base_sequence",
     ],

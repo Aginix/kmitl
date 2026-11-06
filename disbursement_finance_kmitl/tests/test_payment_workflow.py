@@ -178,11 +178,8 @@ class TestPaymentWorkflow(TransactionCase):
     # ------------------------------------------------------------------
     # The acts
     # ------------------------------------------------------------------
-    def test_audit_authorize_forward(self):
+    def test_authorize_forward(self):
         request = self._billed_request()
-        request.action_audit()
-        self.assertEqual(request.payment_auditor_id, self.env.user)
-        self.assertTrue(request.payment_audit_date)
         request.action_authorize()
         self.assertEqual(request.payment_authorizer_id, self.env.user)
         self.assertTrue(request.payment_authorize_date)
@@ -190,33 +187,29 @@ class TestPaymentWorkflow(TransactionCase):
         self.assertEqual(len(request.payment_ids), 1)
         self.assertEqual(request.state, "signed")
 
-    def test_audit_and_authorize_leave_signatures_that_are_never_archived(self):
-        """Each payment-execution step contributes a row to the ใบขอเบิก's
-        signature block (disbursement ADR-0002); the rows stay active while the
+    def test_authorize_leaves_a_signature_that_is_never_archived(self):
+        """The authorization contributes a row to the ใบขอเบิก's
+        signature block (disbursement ADR-0002); the row stays active while the
         request is in the circuit."""
         request = self._billed_request()
-        request.action_audit()
         request.action_authorize()
         signatures = request.signature_ids.filtered(
-            lambda s: s.step in ("payment_audit", "payment_authorize")
+            lambda s: s.step == "payment_authorize"
         )
-        self.assertEqual(
-            signatures.mapped("step"), ["payment_audit", "payment_authorize"]
-        )
-        self.assertEqual(
-            [sig.signed_by_id for sig in signatures], [self.env.user] * 2
-        )
+        self.assertEqual(signatures.mapped("step"), ["payment_authorize"])
+        self.assertEqual([sig.signed_by_id for sig in signatures], [self.env.user])
         self.assertTrue(all(signatures.mapped("signed_date")))
         self.assertTrue(all(signatures.mapped("active")))
 
-    def test_audit_requires_bills_posted(self):
-        """Integrity, not ordering: there is nothing to audit before a bill is
+    def test_payments_require_bills_posted(self):
+        """Integrity, not ordering: there is nothing to pay before a bill is
         posted."""
         request = self._make_request()
         request.state = "signed"
         request.payment_subject_id = self.subject_fixed
+        request.payment_authorizer_id = self.env.user
         with self.assertRaisesRegex(UserError, "Post the bills first"):
-            request.action_audit()
+            request._create_payments()
 
     def test_confirm_paid_requires_payment(self):
         request = self._authorized_without_payments()
@@ -234,9 +227,8 @@ class TestPaymentWorkflow(TransactionCase):
         payment.move_id.state = "posted"
         self.assertEqual(request.settlement_stage, "booked")
 
-    def test_cancel_blocked_after_audit_when_billed(self):
+    def test_cancel_blocked_after_authorize_when_billed(self):
         request = self._billed_request()
-        request.action_audit()
         request.action_authorize()
         with self.assertRaises(UserError):
             request.action_cancel()
@@ -371,14 +363,14 @@ class TestPaymentWorkflow(TransactionCase):
     # ------------------------------------------------------------------
     # Audit guards
     # ------------------------------------------------------------------
-    def test_audit_needs_a_subject(self):
+    def test_classification_needs_a_subject(self):
         payees = [self.payee_ktb]
         request = self._make_request(payees)
         self._post_bills(request, payees)
         with self.assertRaises(UserError):
-            request.action_audit()
+            request._check_payment_classification()
 
-    def test_audit_refuses_a_transfer_payee_without_a_bank_account(self):
+    def test_classification_refuses_a_transfer_payee_without_a_bank_account(self):
         payee = self.env["res.partner"].create(
             {
                 "name": "Bankless",
@@ -390,7 +382,7 @@ class TestPaymentWorkflow(TransactionCase):
         self._post_bills(request, payees)
         request.payment_subject_id = self.subject_fixed
         with self.assertRaises(UserError):
-            request.action_audit()
+            request._check_payment_classification()
         # Moving them onto cash unblocks it — cash needs no bank account.
         request.payment_line_ids.write(
             {
@@ -398,8 +390,7 @@ class TestPaymentWorkflow(TransactionCase):
                 "paying_account_match": "manual",
             }
         )
-        request.action_audit()
-        self.assertEqual(request.payment_auditor_id, self.env.user)
+        self.assertTrue(request._check_payment_classification())
 
     # ------------------------------------------------------------------
     # Payment creation
@@ -408,7 +399,6 @@ class TestPaymentWorkflow(TransactionCase):
         request = self._billed_request(
             [self.payee_ktb, self.payee_other], self.subject_auto
         )
-        request.action_audit()
         request.action_authorize()
         by_payee = {p.partner_id: p for p in request.payment_ids}
         self.assertEqual(
@@ -431,7 +421,6 @@ class TestPaymentWorkflow(TransactionCase):
 
     def test_banking_coordinates_freeze_once_the_payment_exists(self):
         request = self._billed_request([self.payee_ktb], self.subject_fixed)
-        request.action_audit()
         request.action_authorize()
         with self.assertRaises(UserError):
             request.payment_line_ids.paying_account_id = self.ktb_account
@@ -453,7 +442,6 @@ class TestPaymentWorkflow(TransactionCase):
                     "paying_account_match": "manual",
                 }
             )
-        request.action_audit()
         request.action_authorize()
         return request
 
@@ -465,7 +453,6 @@ class TestPaymentWorkflow(TransactionCase):
         auditor checked it and is not right now.
         """
         request = self._billed_request([self.payee_ktb], self.subject_fixed)
-        request.action_audit()
         self.payee_ktb.bank_ids.unlink()
         request.action_authorize()
         return request
@@ -578,7 +565,6 @@ class TestPaymentWorkflow(TransactionCase):
         the request crosses when the last voucher lands (ADR-0007)."""
         request = self._billed_request([self.payee_ktb, self.payee_other])
         request.payment_subject_id = self.subject_fixed
-        request.action_audit()
         request.action_authorize()
         payments = request.payment_ids
         self.assertEqual(len(payments), 2)
@@ -694,7 +680,6 @@ class TestPaymentWorkflow(TransactionCase):
         where the circuit left it (finance_kmitl ADR-0006)."""
         request = self._billed_request([self.payee_ktb, self.payee_other])
         request.payment_subject_id = self.subject_fixed
-        request.action_audit()
         request.payment_line_ids.paying_account_id = self.cheque_account
         request.action_authorize()
         cheques = self.env["cheque.register"]
@@ -719,7 +704,6 @@ class TestPaymentWorkflow(TransactionCase):
         unpaid by leaving as well as by being paid."""
         request = self._billed_request([self.payee_ktb, self.payee_other])
         request.payment_subject_id = self.subject_fixed
-        request.action_audit()
         request.action_authorize()
         first, second = request.payment_ids[0], request.payment_ids[1]
         first._mark_paid()
@@ -802,7 +786,6 @@ class TestPaymentWorkflow(TransactionCase):
                 "paying_account_match": "manual",
             }
         )
-        request.action_audit()
         request.action_authorize()
         payment = request.payment_ids
         self.assertFalse(payment.needs_bank_export)

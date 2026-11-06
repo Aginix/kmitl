@@ -1,6 +1,6 @@
 {
     "name": "KMITL Project Budget Transfer",
-    "version": "16.0.2.0.0",
+    "version": "16.0.2.0.1",
     "summary": """ Filter the transfer-line project picker by dimensions, open
     supported projects to other units, and move floating budget into a project
     (จัดสรรงบประมาณ (งบลอย)) and back out (โอนคืนงบลอย) """,

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_related_document_kind_list" model="ir.ui.view">
+        <field name="name">related.document.kind.list</field>
+        <field name="model">related.document.kind</field>
+        <field name="arch" type="xml">
+            <tree string="ชนิดเอกสารอ้างอิง">
+                <field name="sequence" widget="handle" />
+                <field name="name" />
+                <field name="model_id" />
+                <field name="number_field_id" />
+                <field name="subject_field_id" />
+                <field name="date_field_id" />
+                <field name="allow_number_lookup" optional="show" />
+                <field name="show_cited_by" optional="show" />
+                <field name="active" widget="boolean_toggle" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_related_document_kind_form" model="ir.ui.view">
+        <field name="name">related.document.kind.form</field>
+        <field name="model">related.document.kind</field>
+        <field name="arch" type="xml">
+            <form string="ชนิดเอกสารอ้างอิง">
+                <sheet>
+                    <div
+                        class="alert alert-warning"
+                        role="alert"
+                        attrs="{'invisible': [('allow_number_lookup', '=', False)]}"
+                    >
+                        ผู้ใช้ที่พิมพ์เลขที่ถูกต้องจะเห็น "เรื่อง" ของเอกสารชนิดนี้แม้ไม่มีสิทธิ์อ่าน
+                        ให้เปิดเฉพาะเอกสารที่เปิดเผยเรื่องได้
+                    </div>
+                    <group>
+                        <group>
+                            <field name="name" />
+                            <field name="model_id" options="{'no_create': True}" />
+                            <field
+                                name="number_field_id"
+                                options="{'no_create': True}"
+                                attrs="{'invisible': [('model_id', '=', False)]}"
+                            />
+                            <field
+                                name="subject_field_id"
+                                options="{'no_create': True}"
+                                attrs="{'invisible': [('model_id', '=', False)]}"
+                            />
+                            <field
+                                name="date_field_id"
+                                options="{'no_create': True}"
+                                attrs="{'invisible': [('model_id', '=', False)]}"
+                            />
+                            <field name="active" />
+                        </group>
+                        <group>
+                            <field
+                                name="citing_model_ids"
+                                widget="many2many_tags"
+                                options="{'no_create': True}"
+                            />
+                            <field name="allow_number_lookup" />
+                            <field name="show_cited_by" />
+                        </group>
+                    </group>
+                    <group name="target_domain" string="เงื่อนไขเอกสารที่อ้างได้">
+                        <field
+                            name="target_domain"
+                            nolabel="1"
+                            colspan="2"
+                            widget="domain"
+                            options="{'model': 'model_name'}"
+                            attrs="{'invisible': [('model_id', '=', False)]}"
+                        />
+                        <field name="model_name" invisible="1" />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_related_document_kind" model="ir.actions.act_window">
+        <field name="name">ชนิดเอกสารอ้างอิง</field>
+        <field name="res_model">related.document.kind</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+        id="menu_related_document_kind"
+        name="ชนิดเอกสารอ้างอิง"
+        parent="base.menu_custom"
+        action="action_related_document_kind"
+        sequence="60"
+        groups="base.group_system"
+    />
+</odoo>
