@@ -21,6 +21,7 @@ msgid "Active"
 msgstr "ใช้งาน"
 
 #. module: purchase_request_archive
+#: model_terms:ir.ui.view,arch_db:purchase_request_archive.view_purchase_request_form
 #: model_terms:ir.ui.view,arch_db:purchase_request_archive.view_purchase_request_search
 msgid "Archived"
 msgstr "เก็บถาวร"
@@ -31,8 +32,3 @@ msgstr "เก็บถาวร"
 #, python-format
 msgid "Only cancelled or rejected purchase requests can be archived."
 msgstr "เก็บถาวรได้เฉพาะแบบขอให้จัดหา (พ.1) ที่ยกเลิกหรือถูกปฏิเสธแล้วเท่านั้น"
-
-#. module: purchase_request_archive
-#: model_terms:ir.ui.view,arch_db:purchase_request_archive.view_purchase_request_form
-msgid "<strong>This purchase request is archived.</strong>"
-msgstr "<strong>แบบขอให้จัดหา (พ.1) นี้ถูกเก็บถาวรแล้ว</strong>"
