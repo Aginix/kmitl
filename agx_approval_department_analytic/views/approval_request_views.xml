@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="approval_request_view_form_department" model="ir.ui.view">
+        <field name="name">approval.request.view.form.department</field>
+        <field name="model">approval.request</field>
+        <field name="inherit_id" ref="agx_approval.approval_request_view_form"/>
+        <field name="arch" type="xml">
+            <field name="owner_id" position="after">
+                <field
+                    name="department_analytic_id"
+                    options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"
+                    attrs="{'readonly': ['|', ('is_plan_editable', '=', False),
+                            '&amp;', ('budget_commitment_id', '!=', False),
+                            ('budget_commitment_state', '!=', 'cancel')]}"
+                />
+            </field>
+        </field>
+    </record>
+</odoo>
