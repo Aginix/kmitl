@@ -20,6 +20,28 @@
                     />
                 </button>
             </xpath>
+            <!-- Once a BC is linked to a ใบ พ.1 the PR is the single source of
+                 truth for all dimensions (ADR-0010). Lock the BC-side editors
+                 so a budget officer can't drift the two apart via the
+                 cancel → reset → edit → re-reserve cycle. -->
+            <xpath expr="//field[@name='account_id']" position="attributes">
+                <attribute name="attrs">{'readonly': [('purchase_request_count', '>', 0)]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='department_analytic_id']" position="attributes">
+                <attribute name="attrs">{'readonly': [('purchase_request_count', '>', 0)]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='source_analytic_id']" position="attributes">
+                <attribute name="attrs">{'readonly': [('purchase_request_count', '>', 0)]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='activity_analytic_id']" position="attributes">
+                <attribute name="attrs">{'readonly': [('purchase_request_count', '>', 0)]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='fund_analytic_id']" position="attributes">
+                <attribute name="attrs">{'readonly': [('purchase_request_count', '>', 0)]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='account_fiscal_year_id']" position="attributes">
+                <attribute name="attrs">{'readonly': ['|', ('id', '!=', False), ('purchase_request_count', '>', 0)]}</attribute>
+            </xpath>
         </field>
     </record>
 </odoo>

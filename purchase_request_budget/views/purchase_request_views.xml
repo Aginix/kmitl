@@ -38,6 +38,15 @@
                     attrs="{'invisible': ['|', ('state', '!=', 'to_verify_budget'), ('budget_commitment_state', 'not in', [False, 'cancel', 'draft'])]}"
                     groups="purchase_request_kmitl.group_purchase_request_verify"
                 />
+                <!-- ดึงกลับ to_approve → to_verify_budget: ผู้จองงบประมาณ พ.1 แก้สิ่งที่
+                     จองผิด ตราบที่หนังสือสารบรรณยังไม่เวียน (root ADR-0010) -->
+                <button
+                    name="action_recall_to_verify_budget"
+                    string="ดึงกลับ"
+                    type="object"
+                    attrs="{'invisible': [('state', '!=', 'to_approve')]}"
+                    groups="purchase_request_budget.group_purchase_request_budget_commit"
+                />
             </xpath>
             <xpath expr="//button[@name='button_draft']" position="before">
                 <field name="hide_reserve_budget_button" invisible="1" />
