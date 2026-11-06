@@ -9,3 +9,8 @@ class ResConfigSettings(models.TransientModel):
         related="company_id.advance_payment_office_ou_ids",
         readonly=False,
     )
+    advance_payment_office_director_title = fields.Char(
+        string="ตำแหน่งผู้อำนวยการสำนักงานคลัง (บนสัญญา)",
+        config_parameter="advance_payment_office_route.director_title",
+        default="ผู้อำนวยการ สำนักงานคลัง",
+    )

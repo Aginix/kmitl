@@ -1,23 +1,33 @@
 from odoo import api, fields, models
 
+# Source states that no longer hold their commitment (AR: rejected,
+# PR: rejected/cancelled).
+DEAD_SOURCE_STATES = ("cancel", "cancelled", "rejected")
+
 
 class AdvancePayment(models.Model):
     _inherit = "advance.payment"
 
-    # The loan holds no commitment of its own (ADR-0025): it reaches its
-    # source's, under sudo — the borrower, or the endorser a borrowing rule
-    # runs as, usually cannot read the source (ADR-0029/0030).
+    # A commitment may itself be the source (ADR-0033).
+    reference = fields.Reference(
+        selection_add=[("budget.commitment", "ใบจองงบประมาณ")],
+    )
+    # Stored (ADR-0033): the reference itself when it is a commitment, else
+    # the source's own. Follows the source in draft, fixed at submit. The loan
+    # still never reserves on it (ADR-0025).
     budget_commitment_id = fields.Many2one(
         comodel_name="budget.commitment",
         string="ใบจองงบประมาณ",
-        compute="_compute_borrowing_headroom",
-        compute_sudo=True,
+        compute="_compute_budget_commitment_id",
+        store=True,
+        index=True,
+        copy=False,
     )
     borrowing_headroom = fields.Monetary(
         string="วงเงินยืมคงเหลือ",
         compute="_compute_borrowing_headroom",
         compute_sudo=True,
-        help="ยอดจองงบของใบจองต้นเรื่อง หักสัญญายืมเงินอื่นที่ยังไม่ยกเลิก"
+        help="ยอดจองงบของใบจอง หักยอดยืมของสัญญาอื่นที่ส่งแล้วและยังไม่ยกเลิก"
         " (สัญญาที่ปิดแล้วยังนับ เพราะเงินออกไปแล้ว)",
     )
     exceeds_borrowing_headroom = fields.Boolean(
@@ -30,85 +40,54 @@ class AdvancePayment(models.Model):
         compute_sudo=True,
         help="Technical flag read by the live-commitment exception rule.",
     )
-    # What the voucher will be charged to, shown at รอโอนเงิน (read-only).
-    commitment_account_id = fields.Many2one(
-        comodel_name="budget.account",
-        string="รหัสงบประมาณ",
-        compute="_compute_commitment_voucher_budget",
+    is_commitment_held_by_source = fields.Boolean(
+        compute="_compute_is_commitment_held_by_source",
         compute_sudo=True,
-    )
-    commitment_department_analytic_id = fields.Many2one(
-        comodel_name="account.analytic.account",
-        string="ส่วนงาน",
-        compute="_compute_commitment_voucher_budget",
-        compute_sudo=True,
-    )
-    commitment_source_analytic_id = fields.Many2one(
-        comodel_name="account.analytic.account",
-        string="แหล่งเงิน",
-        compute="_compute_commitment_voucher_budget",
-        compute_sudo=True,
-    )
-    commitment_fund_analytic_id = fields.Many2one(
-        comodel_name="account.analytic.account",
-        string="กองทุน",
-        compute="_compute_commitment_voucher_budget",
-        compute_sudo=True,
-    )
-    commitment_activity_analytic_id = fields.Many2one(
-        comodel_name="account.analytic.account",
-        string="ด้าน/แผนงาน/กิจกรรม",
-        compute="_compute_commitment_voucher_budget",
-        compute_sudo=True,
-    )
-    commitment_kmitl_project_analytic_id = fields.Many2one(
-        comodel_name="account.analytic.account",
-        string="โครงการ/กิจกรรม",
-        compute="_compute_commitment_voucher_budget",
-        compute_sudo=True,
-    )
-    commitment_procurement_plan_analytic_id = fields.Many2one(
-        comodel_name="account.analytic.account",
-        string="แผนจัดซื้อจัดจ้าง",
-        compute="_compute_commitment_voucher_budget",
-        compute_sudo=True,
+        help="Technical flag read by the cite-the-source exception rule.",
     )
 
     def _get_source_commitment(self):
-        """The commitment of the source document, if its model has one."""
+        """The commitment the reference stands for, if it has one."""
         self.ensure_one()
         source = self.reference.sudo()
+        if source._name == "budget.commitment":
+            return source
         if source and "budget_commitment_id" in source._fields:
             return source.budget_commitment_id
         return self.env["budget.commitment"]
 
+    @api.depends("reference")
+    def _compute_budget_commitment_id(self):
+        for rec in self:
+            # Fixed once submitted; still filled on records that never had one
+            # (the column's first compute on -u).
+            if rec.state == "draft" or not rec.budget_commitment_id:
+                rec.budget_commitment_id = (
+                    rec._get_source_commitment() if rec.reference else False
+                )
+
+    def action_submit(self):
+        # Re-read the source's commitment: it may have been re-pointed since
+        # the reference was picked (ADR-0033).
+        for rec in self.filtered(lambda r: r.state == "draft" and r.reference):
+            rec.budget_commitment_id = rec._get_source_commitment()
+        return super().action_submit()
+
     @api.model
     def _get_loans_on_commitment(self, commitment):
-        """Every non-cancelled loan whose source draws on `commitment`, across
-        all source models — several sources could share one commitment."""
-        references = []
-        selection = self._fields["reference"]._description_selection(self.env)
-        for model, _label in selection:
-            Source = self.env[model].sudo().with_context(active_test=False)
-            if "budget_commitment_id" not in Source._fields:
-                continue
-            references += [
-                "%s,%s" % (model, source_id)
-                for source_id in Source.search(
-                    [("budget_commitment_id", "=", commitment.id)]
-                ).ids
-            ]
-        if not references:
-            return self.browse()
+        """The loans counted in the commitment's borrowed amount: submitted
+        and not cancelled (ADR-0033)."""
         return self.sudo().search(
-            [("reference", "in", references), ("state", "!=", "cancel")]
+            [
+                ("budget_commitment_id", "=", commitment.id),
+                ("state", "not in", ("draft", "cancel")),
+            ]
         )
 
-    @api.depends("reference", "loan_amount", "state")
+    @api.depends("budget_commitment_id", "loan_amount", "state")
     def _compute_borrowing_headroom(self):
         for rec in self:
-            commitment = rec._get_source_commitment() if rec.reference else False
-            rec.budget_commitment_id = commitment
+            commitment = rec.budget_commitment_id
             rec.is_budget_commitment_live = bool(
                 commitment and commitment.state in ("reserved", "partial")
             )
@@ -130,33 +109,46 @@ class AdvancePayment(models.Model):
                 > 0
             )
 
-    # Not `related=`: budget_commitment_id is a non-searchable compute, so
-    # related fields over it warn on every registry load.
     @api.depends("reference")
-    def _compute_commitment_voucher_budget(self):
+    def _compute_is_commitment_held_by_source(self):
+        """A commitment cited directly while a live source of another kind
+        draws on it — the loan must cite that source (ADR-0033)."""
+        selection = self._fields["reference"]._description_selection(self.env)
         for rec in self:
-            commitment = rec.budget_commitment_id
-            rec.commitment_account_id = commitment.account_id
-            for dim in (
-                "department",
-                "source",
-                "fund",
-                "activity",
-                "kmitl_project",
-                "procurement_plan",
-            ):
-                rec["commitment_%s_analytic_id" % dim] = commitment[
-                    "%s_analytic_id" % dim
-                ]
+            commitment = rec.reference
+            held = False
+            if commitment and commitment._name == "budget.commitment":
+                for model, _label in selection:
+                    Source = self.env[model]
+                    if model == "budget.commitment" or (
+                        "budget_commitment_id" not in Source._fields
+                    ):
+                        continue
+                    domain = [("budget_commitment_id", "=", commitment.id)]
+                    if "state" in Source._fields:
+                        domain.append(("state", "not in", DEAD_SOURCE_STATES))
+                    if Source.search_count(domain, limit=1):
+                        held = True
+                        break
+            rec.is_commitment_held_by_source = held
+
+    def _get_reference_summary(self):
+        summary = super()._get_reference_summary()
+        commitment = self.reference.sudo()
+        if commitment._name == "budget.commitment":
+            summary.update(
+                subject=(commitment.description or "").strip().split("\n")[0]
+                or commitment.name,
+                unit=commitment.department_analytic_id.display_name,
+            )
+        return summary
 
     def _prepare_account_payment_vals(self, payment_type):
-        """Charge the voucher to the commitment header's dimensions and
-        primary code — the commitment as a whole, not per line; accounting
-        may still correct them on the voucher (ADR-0029)."""
+        """Charge the voucher to the commitment header's dimensions — the
+        commitment as a whole, not per line; accounting may still correct
+        them on the voucher (ADR-0029)."""
         vals = super()._prepare_account_payment_vals(payment_type)
-        commitment = self.sudo().budget_commitment_id
-        if commitment.analytic_distribution:
-            vals["analytic_distribution"] = commitment.analytic_distribution
-        if commitment.account_id:
-            vals["budget_account_id"] = commitment.account_id.id
+        distribution = self.sudo().budget_commitment_id.analytic_distribution
+        if distribution:
+            vals["analytic_distribution"] = distribution
         return vals

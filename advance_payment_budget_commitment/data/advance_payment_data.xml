@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <!-- A loan cited directly on a ใบจองงบประมาณ (ADR-0033). -->
+    <record id="loan_type_budget_commitment" model="advance.payment.loan.type">
+        <field name="name">ตามใบจองงบประมาณ</field>
+        <field name="reference_model">budget.commitment</field>
+    </record>
+</odoo>

@@ -1,5 +1,7 @@
 from odoo import api, fields, models
 
+DEFAULT_DIRECTOR_TITLE = "ผู้อำนวยการ สำนักงานคลัง"
+
 
 class AdvancePayment(models.Model):
     _inherit = "advance.payment"
@@ -65,9 +67,14 @@ class AdvancePayment(models.Model):
         return steps
 
     def _contract_signatures(self):
-        """The director signs the เสนอ block here, so it shows the director's
-        own job title instead of the fixed "ผู้บังคับบัญชา"."""
+        """The director signs the เสนอ block here, under the director title
+        set in Settings instead of the fixed "ผู้บังคับบัญชา"."""
         res = super()._contract_signatures()
         if self.is_office_route:
-            res["endorser"].pop("position", None)
+            res["endorser"]["position"] = (
+                self.env["ir.config_parameter"]
+                .sudo()
+                .get_param("advance_payment_office_route.director_title")
+                or DEFAULT_DIRECTOR_TITLE
+            )
         return res

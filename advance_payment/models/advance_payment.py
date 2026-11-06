@@ -987,12 +987,15 @@ class AdvancePayment(models.Model):
         for rec in self:
             rec.amount_remaining = rec.loan_amount - rec.actual_expense_amount
 
-    @api.depends("payment_ids")
+    @api.depends("payment_ids.state")
     def _compute_payment_count(self):
         # sudo: account.payment read is ACL-gated to Accounting/Budget groups
         # a loan officer viewing the smart button has no reason to hold.
+        # Cancelled vouchers do not count, so a new one can be created.
         for rec in self:
-            rec.payment_count = len(rec.sudo().payment_ids)
+            rec.payment_count = len(
+                rec.sudo().payment_ids.filtered(lambda p: p.state != "cancel")
+            )
 
     def _compute_can_view_payments(self):
         allowed = self.env["account.payment"].check_access_rights(
@@ -1624,12 +1627,13 @@ class AdvancePayment(models.Model):
 
     def action_start(self, payment=None):
         """Transfer completed → the loan becomes a formal debt.
-        (approved → in_progress). Triggered by payment posting."""
+        (approved → in_progress). Triggered when the finance office confirms
+        the voucher paid (ADR-0034); dated by its วันที่จ่ายจริง."""
         for rec in self:
             vals = {"state": "in_progress"}
             if not rec.effective_date:
                 vals["effective_date"] = (
-                    payment.date if payment else fields.Date.context_today(rec)
+                    payment.paid_date if payment else fields.Date.context_today(rec)
                 )
             if not rec.contract_number:
                 vals["contract_number"] = self.env["ir.sequence"].next_by_code(
@@ -1647,6 +1651,24 @@ class AdvancePayment(models.Model):
                 date=rec.effective_date or "-",
             )
             rec.message_post(body=body, subtype_xmlid="mail.mt_note")
+
+    def action_unstart(self):
+        """The finance office withdrew its paid confirmation (ADR-0034):
+        back to waiting for transfer. The contract number stays."""
+        for rec in self:
+            if rec.actual_expense_amount:
+                raise UserError(
+                    _(
+                        "%s has already been partly cleared, so its payment"
+                        " cannot be withdrawn.",
+                        rec.display_name,
+                    )
+                )
+            rec.write({"state": "approved", "effective_date": False})
+            rec.message_post(
+                body=_("ยกเลิกการยืนยันจ่ายเงิน — กลับไปรอโอนเงิน"),
+                subtype_xmlid="mail.mt_note",
+            )
 
     # ------------------------------------------------------------------ #
     # Recall / reset (before approval)                                     #

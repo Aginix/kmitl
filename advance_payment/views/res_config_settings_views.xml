@@ -67,6 +67,24 @@
                             </div>
                         </div>
                     </div>
+                    <h2>ใบสำคัญจ่ายเงินยืม</h2>
+                    <div class="row mt16 o_settings_container">
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_right_pane">
+                                <span class="o_form_label">บัญชีลูกหนี้เงินยืม</span>
+                                <div class="text-muted">
+                                    กำหนดรหัสบัญชีลูกหนี้เงินยืม (Override Account) และสมุดรายวัน ของประเภทจ่ายเงินยืมและรับคืนเงินยืม ใบสำคัญจ่ายเงินยืมจะตั้งลูกหนี้ด้วยบัญชีนี้
+                                </div>
+                                <button
+                                    name="action_open_advance_payment_types"
+                                    type="object"
+                                    string="ตั้งค่าใบสำคัญจ่าย/รับคืนเงินยืม"
+                                    icon="fa-arrow-right"
+                                    class="btn-link"
+                                />
+                            </div>
+                        </div>
+                    </div>
                     <h2>เงื่อนไขและข้อตกลง</h2>
                     <div class="row mt16 o_settings_container">
                         <div class="col-12 o_setting_box">

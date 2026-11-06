@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="budget_commitment_form_view_advance_payment" model="ir.ui.view">
+        <field name="name">budget.commitment.form.advance.payment</field>
+        <field name="model">budget.commitment</field>
+        <field name="inherit_id" ref="budget.budget_commitment_form_view" />
+        <field name="arch" type="xml">
+            <div name="button_box" position="inside">
+                <button
+                    class="oe_stat_button"
+                    type="object"
+                    name="action_view_advance_payments"
+                    icon="fa-handshake-o"
+                    groups="advance_payment.group_advance_payment_user"
+                    attrs="{'invisible': [('advance_payment_count', '=', 0)]}"
+                >
+                    <field
+                        string="สัญญายืมเงิน"
+                        name="advance_payment_count"
+                        widget="statinfo"
+                    />
+                </button>
+            </div>
+            <group name="budget_summary" position="after">
+                <group
+                    name="advance_payment_summary"
+                    string="เงินยืม"
+                    attrs="{'invisible': [('advance_payment_count', '=', 0)]}"
+                >
+                    <group>
+                        <field
+                            name="advance_payment_borrowed_amount"
+                            widget="monetary"
+                        />
+                        <field
+                            name="advance_payment_headroom"
+                            widget="monetary"
+                            decoration-danger="advance_payment_headroom &lt; 0"
+                        />
+                    </group>
+                </group>
+            </group>
+        </field>
+    </record>
+</odoo>

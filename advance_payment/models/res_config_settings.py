@@ -1,4 +1,4 @@
-from odoo import fields, models
+from odoo import _, fields, models
 
 
 class ResConfigSettings(models.TransientModel):
@@ -91,3 +91,18 @@ class ResConfigSettings(models.TransientModel):
             "advance_payment.terms_conditions",
             self.advance_payment_terms_conditions or "",
         )
+
+    def action_open_advance_payment_types(self):
+        """The voucher's ลูกหนี้เงินยืม account lives on the loan's payment
+        types (ADR-0002 amendment): open them rather than mirror it here."""
+        types = self.env.ref(
+            "advance_payment.payment_type_advance_payment_outbound"
+        ) | self.env.ref("advance_payment.payment_type_advance_payment_inbound")
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("ใบสำคัญจ่าย/รับคืนเงินยืม"),
+            "res_model": "kmitl.payment.type",
+            "view_mode": "tree,form",
+            "domain": [("id", "in", types.ids)],
+            "context": {"create": False},
+        }

@@ -26,6 +26,15 @@
                             />
                         </div>
                     </div>
+                    <div class="col-12 col-lg-6 o_setting_box">
+                        <div class="o_setting_right_pane">
+                            <label for="advance_payment_office_director_title" />
+                            <div class="text-muted">
+                                ตำแหน่งที่พิมพ์ใต้ลายมือชื่อผู้อำนวยการในช่องเสนอของสัญญา flow สำนักงาน
+                            </div>
+                            <field name="advance_payment_office_director_title" />
+                        </div>
+                    </div>
                 </div>
             </xpath>
         </field>
