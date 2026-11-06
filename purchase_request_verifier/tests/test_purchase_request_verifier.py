@@ -1,13 +1,14 @@
 from odoo import Command
-from odoo.exceptions import UserError, ValidationError
+from odoo.exceptions import ValidationError
 from odoo.tests.common import TransactionCase, new_test_user, tagged
 
 
 @tagged("post_install", "-at_install")
 class TestPurchaseRequestVerifier(TransactionCase):
-    """ผู้ยืนยันตรวจสอบ พ.1 (ADR-0011): required on submit, gets the to_verify
-    Todo, which is done only when they press ตรวจสอบ and withdrawn otherwise;
-    the verifier's ตีกลับ sends the requester (and creator) a Todo."""
+    """ผู้ยืนยันตรวจสอบ พ.1 (ADR-0011): left empty, submit skips to the budget
+    step; named, they get the to_verify Todo, which is done only when they press
+    ตรวจสอบ and withdrawn otherwise; ตีกลับ to draft sends the requester (and
+    creator) a Todo."""
 
     @classmethod
     def setUpClass(cls):
@@ -24,6 +25,10 @@ class TestPurchaseRequestVerifier(TransactionCase):
         )
         cls.verifier = cls._user("pr_ver_verifier", f"{user},{verify}")
         cls.verifier_b = cls._user("pr_ver_verifier_b", f"{user},{verify}")
+        cls.committer = cls._user(
+            "pr_ver_committer",
+            f"{user},purchase_request_budget.group_purchase_request_budget_commit",
+        )
         cls.verify_type = cls.env.ref(
             "purchase_request_verifier.mail_activity_pr_verify"
         )
@@ -64,11 +69,11 @@ class TestPurchaseRequestVerifier(TransactionCase):
     def _todos(self, pr, act_type):
         return pr.sudo().activity_ids.filtered(lambda a: a.activity_type_id == act_type)
 
-    def _submit(self, pr, user=None):
+    def _submit(self, pr, user=None, state="to_verify"):
         # button_draft (ตีกลับ) clears ignore_exception; the rules aren't under test
         pr.ignore_exception = True
         pr.with_user(user or self.requester).button_to_verify()
-        self.assertEqual(pr.state, "to_verify")
+        self.assertEqual(pr.state, state)
 
     def _verify(self, pr, user):
         # sudo keeps the presser as env.user but passes the
@@ -82,16 +87,21 @@ class TestPurchaseRequestVerifier(TransactionCase):
         ).create({"request_id": pr.id, "reason": "แก้ไขรายการ"}).action_confirm()
         self.assertEqual(pr.state, "draft")
 
-    def test_submit_requires_verifier(self):
+    def test_submit_without_verifier_skips_to_budget(self):
         pr = self._make_pr()
-        with self.assertRaises(UserError):
-            pr.with_user(self.requester).button_to_verify()
+        self._submit(pr, state="to_verify_budget")
+        self.assertFalse(self._todos(pr, self.verify_type))
+        self.assertFalse(pr.verified_by)
 
-    def test_superuser_submit_without_verifier(self):
-        # Demo data and hooks submit in superuser mode (kmitl_demo)
-        pr = self._make_pr().sudo()
-        pr.button_to_verify()
-        self.assertEqual(pr.state, "to_verify")
+    def test_skipped_return_goes_to_draft(self):
+        pr = self._make_pr(creator=self.creator)
+        self._submit(pr, self.creator, state="to_verify_budget")
+        self._return(pr, self.committer)
+        returned = self._todos(pr, self.returned_type)
+        self.assertEqual(returned.user_id, self.requester | self.creator)
+        # Resubmitting skips again and closes the returned Todos
+        self._submit(pr, self.creator, state="to_verify_budget")
+        self.assertFalse(self._todos(pr, self.returned_type))
 
     def test_non_verifier_rejected(self):
         with self.assertRaises(ValidationError):

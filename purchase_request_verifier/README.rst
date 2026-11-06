@@ -6,9 +6,10 @@ Purchase Request Verifier
 
 The พ.1's ``assigned_to`` field names the one member of
 ``purchase_request_kmitl.group_purchase_request_verify`` who should check the
-request. It must be set before ส่งคำขอ, cannot be cleared while the request
-is at ``to_verify``, and stays editable until the request ends (done /
-rejected / cancelled).
+request. Left empty, ส่งคำขอ skips ``to_verify`` straight to
+``to_verify_budget``, and ตีกลับ/ดึงกลับ from there returns to ``draft``. Once
+named, it cannot be cleared while the request is at ``to_verify``, and stays
+editable until the request ends (done / rejected / cancelled).
 
 Todos (``mail_activity_todo`` Execution Todos):
 

@@ -88,6 +88,21 @@ class TestPurchaseRequestBudgetVerifier(TransactionCase):
         with self.assertRaises(UserError):
             pr.with_user(self.verifier).button_to_approve()
 
+    def test_exception_requires_verifier_or_budget_verifier(self):
+        rule = self.env.ref(
+            "purchase_request_budget_verifier.pr_exception_verifier_or_budget_verifier"
+        )
+        pr = self._make_pr(assigned_to=False)
+        pr.detect_exceptions()
+        self.assertIn(rule, pr.exception_ids)
+        for vals in (
+            {"budget_verifier_id": self.committer.id},
+            {"budget_verifier_id": False, "assigned_to": self.verifier.id},
+        ):
+            pr.write(vals)
+            pr.detect_exceptions()
+            self.assertNotIn(rule, pr.exception_ids)
+
     def test_superuser_verify_without_budget_verifier(self):
         # Demo data and hooks verify in superuser mode (kmitl_demo)
         pr = self._make_pr()

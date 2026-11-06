@@ -27,7 +27,8 @@ now dormant on the PR and holds no data in production.
   - an `@api.constrains`;
   - an onchange that clears a non-candidate and auto-picks a lone candidate.
 - **Rules for the field**:
-  - required to submit;
+  - required to submit; *amended*: left empty, ส่งคำขอ skips `to_verify` straight to
+    `to_verify_budget`, and the budget step's ตีกลับ/ดึงกลับ returns it to `draft`;
   - cannot be cleared while the PR is at `to_verify`;
   - editable until the PR ends (done/rejected/cancelled).
 - **The ADR-0010 gate is unchanged**: any Verifier may still press ตรวจสอบ or ตีกลับ.
