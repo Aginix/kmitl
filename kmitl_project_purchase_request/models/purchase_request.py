@@ -12,6 +12,7 @@ class PurchaseRequest(models.Model):
     use_project = fields.Boolean(
         string="Use KMITL Project",
         store=True,
+        copy=False,
     )
 
     budget_selection_mode = fields.Selection(
@@ -23,6 +24,7 @@ class PurchaseRequest(models.Model):
         comodel_name="kmitl.project",
         string="โครงการ/กิจกรรม",
         tracking=True,
+        copy=False,
     )
 
     project_analytic_id = fields.Many2one(
