@@ -14,11 +14,7 @@
                     groups="advance_payment.group_advance_payment_user"
                     attrs="{'invisible': [('advance_payment_count', '=', 0)]}"
                 >
-                    <field
-                        string="สัญญายืมเงิน"
-                        name="advance_payment_count"
-                        widget="statinfo"
-                    />
+                    <field name="advance_payment_count" widget="statinfo" />
                 </button>
             </div>
             <group name="budget_summary" position="after">
@@ -27,6 +23,7 @@
                     string="เงินยืม"
                     attrs="{'invisible': [('advance_payment_count', '=', 0)]}"
                 >
+                    <field name="advance_payment_count" invisible="1" />
                     <group>
                         <field
                             name="advance_payment_borrowed_amount"

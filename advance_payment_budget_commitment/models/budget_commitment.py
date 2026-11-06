@@ -7,6 +7,7 @@ class BudgetCommitment(models.Model):
     # Computed as the system: a commitment's reader may not read loans
     # (ADR-0033). The list opens under the reader's own rights.
     advance_payment_count = fields.Integer(
+        string="สัญญายืมเงิน",
         compute="_compute_advance_payment_borrowed",
         compute_sudo=True,
     )
