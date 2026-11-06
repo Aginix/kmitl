@@ -21,6 +21,10 @@ from odoo import api, fields, models
 # that gates or signs gets the old _action pencil, a pure รับทราบ the old _ack eye.
 ACK_ICON = "fa-eye"
 ACTION_ICON = "fa-pencil-square-o"
+# Default emoji of a verb's act button when button_emoji is empty.
+SIGN_EMOJI = "✍️"
+GATING_EMOJI = "✅"
+ACK_EMOJI = "👀"
 
 
 class SarabunVerb(models.Model):
@@ -60,6 +64,21 @@ class SarabunVerb(models.Model):
         "official number at that moment (the first such step wins). Every route must "
         "contain one. Independent of the other flags, so a non-signing ธุรการ verb may "
         "issue the number too (ADR-0017).",
+    )
+    allow_sign_comment = fields.Boolean(
+        string="เปิดให้ใส่ความเห็นในการลงนาม (Allow sign comment)",
+        help="For a แสดงลายเซ็น verb: the signer may write a ความเห็น (rich text) and "
+        "attach files, printed with the signature block.",
+    )
+    can_edit_document = fields.Boolean(
+        string="แก้ไขเอกสารได้ (Can edit document)",
+        help="While a step with this verb is active, its holders may edit the "
+        "หนังสือ's เรื่อง / เรียน / เนื้อหา / อ้างถึง / สิ่งที่ส่งมาด้วย (ADR-0022).",
+    )
+    button_emoji = fields.Char(
+        string="Emoji ปุ่ม (Button emoji)",
+        help="Shown before the verb name on the act button. Empty = by type: "
+        "✍️ signing, ✅ gating, 👀 otherwise.",
     )
 
     activity_type_id = fields.Many2one(
@@ -148,6 +167,18 @@ class SarabunVerb(models.Model):
             "view_mode": "form",
             "target": "current",
         }
+
+    def _button_label(self):
+        """Act-button label: emoji + verb name (e.g. "✍️ ลงนาม")."""
+        self.ensure_one()
+        emoji = self.button_emoji or (
+            SIGN_EMOJI
+            if self.show_signature
+            else GATING_EMOJI
+            if self.gating
+            else ACK_EMOJI
+        )
+        return "%s %s" % (emoji, self.name)
 
     @api.onchange("is_signature")
     def _onchange_is_signature(self):

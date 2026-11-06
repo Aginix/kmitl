@@ -17,6 +17,8 @@
             <field name="gating" eval="False"/>
             <field name="show_signature" eval="True"/>
             <field name="is_signature" eval="False"/>
+            <field name="button_emoji">✍️</field>
+            <field name="allow_sign_comment" eval="True"/>
         </record>
 
         <!-- ผู้จัดทำที่ไม่ลงนาม — a เจ้าหน้าที่ธุรการ/งานสารบรรณ who ร่าง but does not
@@ -29,6 +31,7 @@
             <field name="gating" eval="False"/>
             <field name="show_signature" eval="False"/>
             <field name="is_signature" eval="False"/>
+            <field name="button_emoji">📝</field>
         </record>
 
         <!-- UAT verb catalogue (ADR-0008 / CONTEXT §Step verbs). The earlier
@@ -48,6 +51,7 @@
             <field name="gating" eval="False"/>
             <field name="show_signature" eval="False"/>
             <field name="is_signature" eval="False"/>
+            <field name="button_emoji">👀</field>
         </record>
 
         <!-- รับทราบและลงนาม — an acknowledgement that also puts a signature on the
@@ -59,6 +63,8 @@
             <field name="gating" eval="False"/>
             <field name="show_signature" eval="True"/>
             <field name="is_signature" eval="False"/>
+            <field name="button_emoji">✍️</field>
+            <field name="allow_sign_comment" eval="True"/>
         </record>
 
         <!-- ตรวจเอกสาร — an intermediate actor must check before the หนังสือ moves on,
@@ -70,6 +76,7 @@
             <field name="gating" eval="True"/>
             <field name="show_signature" eval="False"/>
             <field name="is_signature" eval="False"/>
+            <field name="button_emoji">🔍</field>
         </record>
 
         <!-- ผ่านเรื่อง / กลั่นกรอง — a screening gate the matter must pass; the screener
@@ -81,6 +88,8 @@
             <field name="gating" eval="True"/>
             <field name="show_signature" eval="True"/>
             <field name="is_signature" eval="False"/>
+            <field name="button_emoji">🗂️</field>
+            <field name="allow_sign_comment" eval="True"/>
         </record>
 
         <!-- ตรวจสอบและลงนามกำกับ — verify and countersign. Gating + show_signature;
@@ -92,6 +101,8 @@
             <field name="gating" eval="True"/>
             <field name="show_signature" eval="True"/>
             <field name="is_signature" eval="False"/>
+            <field name="button_emoji">🖊️</field>
+            <field name="allow_sign_comment" eval="True"/>
         </record>
 
         <!-- พิจารณา / ให้ความเห็นและลงนามกำกับ — give an opinion and countersign, passing
@@ -104,6 +115,8 @@
             <field name="gating" eval="True"/>
             <field name="show_signature" eval="True"/>
             <field name="is_signature" eval="False"/>
+            <field name="button_emoji">💬</field>
+            <field name="allow_sign_comment" eval="True"/>
         </record>
 
         <!-- ลงนามในใบปะหน้า / เอกสารเพื่อลงนาม — the authoritative signature that issues
@@ -118,6 +131,8 @@
             <field name="show_signature" eval="True"/>
             <field name="is_signature" eval="True"/>
             <field name="issues_number" eval="True"/>
+            <field name="button_emoji">✍️</field>
+            <field name="allow_sign_comment" eval="True"/>
         </record>
 
         <!-- อนุมัติ / อนุญาต / เห็นชอบและลงนามกำกับ — an approving authority's decision and
@@ -130,6 +145,8 @@
             <field name="gating" eval="True"/>
             <field name="show_signature" eval="True"/>
             <field name="is_signature" eval="True"/>
+            <field name="button_emoji">👍</field>
+            <field name="allow_sign_comment" eval="True"/>
         </record>
     </data>
 </odoo>

@@ -20,7 +20,8 @@ class SarabunRecallWizard(models.TransientModel):
         ],
         string="การดำเนินการ (Action)",
         required=True,
-        default="pull_back",
+        default=lambda self: self.env.context.get("sarabun_recall_mode")
+        or "pull_back",
     )
     reason = fields.Text(string="เหตุผล (Reason)", required=True)
 

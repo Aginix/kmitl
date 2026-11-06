@@ -1,7 +1,7 @@
 {
     "name": "e-Sarabun: Standard Comments",
     "summary": "Reusable ข้อความมาตรฐาน (canned เกษียน text) for the Act-on-step wizard",
-    "version": "16.0.1.0.1",
+    "version": "16.0.1.1.0",
     "category": "KMITL/Correspondence",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",

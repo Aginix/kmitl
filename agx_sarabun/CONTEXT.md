@@ -77,6 +77,7 @@ _Avoid_: coupling "shows a signature" with "gating" (they are independent axes �
 
 The set of moves available at an active step, subject to authority: **complete** (perform the required verb) · **เกษียนสั่งการ (Direct)** (I acted, now insert the next step) · **มอบหมาย (Delegate)** (I will not act — X performs *this* step instead) · **ตีกลับ (Return)** (send back for revision) · **ปฏิเสธ (Reject)** (terminal negative). **ตีกลับ and ปฏิเสธ are available only on a *gating* step (เห็นชอบ / ลงนาม-อนุมัติ) and only to that step's own active actor** — a รับทราบ / สำเนาเรียน (CC) recipient may only complete (acknowledge), and the sender/manager cannot ตีกลับ/ปฏิเสธ on an actor's behalf (contrast ดึงกลับ / ยกเลิกการส่ง, which *are* the sender's).
 _Avoid_: treating มอบหมาย and เกษียนสั่งการ as the same move — Delegate reassigns *this* step, Direct inserts the *next*; letting a CC/รับทราบ actor ตีกลับ.
+In the UI the actor sees one button per move, never a generic "ดำเนินการ": the **complete** button is labelled with the step's own verb (e.g. "✍️ ลงนาม…", "🔍 ตรวจเอกสาร"), plus **↩️ ตีกลับ** on a gating step. **ปฏิเสธ has no UI path** (engine-only) — an actor who disagrees ตีกลับ instead.
 
 ### Lifecycle
 
@@ -169,6 +170,18 @@ _Avoid_: signature (reserve for the act/data, not the rendered block); splitting
 **เกษียน trail**:
 The accumulated endorsement/signing history (who, when, in what capacity, with what comment). As of **ADR-0008 it is audit-only** — kept on the Routing Steps + chatter and visible in the Route, **no longer rendered onto the official document** (the document shows **signatures only** — the `show_signature` steps). A signing step's own ความเห็น still shows **under its signature block**, but non-signing checks (ตรวจสอบ / พิจารณา / ส่งต่อ) leave no mark on the letter.
 _Avoid_: history, log; printing the trail on the official document (superseded — ADR-0008); rendering **backward-move** events (ดึงกลับ / ยกเลิกการส่ง / ตีกลับ / ปฏิเสธ) anywhere on the หนังสือ — those are internal routing history kept in the audit/chatter with their required reason
+
+**ความเห็นในการลงนาม (Sign comment)**:
+The rich-text comment a signer may write when completing a `show_signature` step, offered only if the verb allows it (**เปิดให้ใส่ความเห็นในการลงนาม**). Optional. It prints with that step's signature block. Distinct from a **ตีกลับ reason**, which stays plain text and never prints.
+_Avoid_: calling the ตีกลับ reason a ความเห็นในการลงนาม.
+
+**เอกสารประกอบการลงนาม (Sign attachments)**:
+Files a signer attaches together with their ความเห็นในการลงนาม. They belong to that signing step, not to the หนังสือ's **สิ่งที่ส่งมาด้วย**; their filenames print under the signer's ตำแหน่ง, and anyone who can read the หนังสือ can download them.
+_Avoid_: listing them as สิ่งที่ส่งมาด้วย.
+
+**แก้ไขเอกสารได้ (Content editor)**:
+A verb flag: while a step of that verb is **active**, its holders may edit the circulating หนังสือ's เรื่อง / เรียน / เนื้อหา / อ้างถึง / หมายเหตุ / สิ่งที่ส่งมาด้วย — never its unit, register, type or Route. The right ends the moment the step is acted on. Edits may follow earlier signatures; each edit is recorded in the chatter ([ADR-0022](./docs/adr/0022-recipient-content-edit-while-circulating.md)).
+_Avoid_: assuming a circulating หนังสือ is frozen for everyone but the ผู้จัดทำ.
 
 **ข้อความมาตรฐาน (Standard comment)**:
 Admin-configurable canned text for the เกษียน note, offered as a picker in the Act-on-step wizard (it **replaces** the comment on select, which stays freely editable). A **verb** may name one as its **default**, pre-filled when a step of that verb is acted on. Owned by the optional `agx_sarabun_standard_comment` extension — the core wizard works unchanged without it.

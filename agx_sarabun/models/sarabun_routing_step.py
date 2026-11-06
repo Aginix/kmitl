@@ -153,6 +153,18 @@ class SarabunRoutingStep(models.Model):
     delegated_to_id = fields.Many2one(
         "hr.employee", string="Delegated To", readonly=True
     )
+    # ความเห็นในการลงนาม — only for verbs with allow_sign_comment; `note` stays the
+    # plain-text return / reject reason.
+    sign_comment = fields.Html(string="ความเห็นในการลงนาม", readonly=True, copy=False)
+    sign_attachment_ids = fields.Many2many(
+        "ir.attachment",
+        relation="sarabun_routing_step_sign_attachment_rel",
+        column1="step_id",
+        column2="attachment_id",
+        string="เอกสารประกอบการลงนาม",
+        readonly=True,
+        copy=False,
+    )
 
     # === Signature snapshot (frozen at signing — ADR-0009) ===
     # ชื่อ / ตำแหน่ง / ลายเซ็น captured the instant this step is signed, so later edits
@@ -512,6 +524,7 @@ class SarabunRoutingStep(models.Model):
         step = self.sudo()
         note = vals.get("note")
         if disposition == "complete":
+            step._write_sign_comment(vals)
             step._do_complete(actor, note, vals.get("signed_as_position_id"))
         elif disposition == "direct":
             step._do_direct(actor, note, vals)
@@ -557,6 +570,25 @@ class SarabunRoutingStep(models.Model):
         if disposition in POSITIVE_DISPOSITIONS and self.verb.issues_number:
             self.document_id._assign_register_number()
         self._clear_activities()
+
+    def _write_sign_comment(self, vals):
+        """Store the ความเห็นในการลงนาม + its files; the files are re-owned by the
+        หนังสือ so every reader of it can download them."""
+        self.ensure_one()
+        if not self.verb.allow_sign_comment:
+            return
+        attachments = self.env["ir.attachment"].browse(
+            vals.get("sign_attachment_ids") or []
+        )
+        attachments.sudo().write(
+            {"res_model": "sarabun.document", "res_id": self.document_id.id}
+        )
+        self.write(
+            {
+                "sign_comment": vals.get("sign_comment") or False,
+                "sign_attachment_ids": [(6, 0, attachments.ids)],
+            }
+        )
 
     def _signature_snapshot_vals(self, actor, capacity=False):
         """Snapshot the signer's rendered identity — ชื่อ / ตำแหน่ง / ลายเซ็น — at the

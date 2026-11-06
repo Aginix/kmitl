@@ -7,7 +7,8 @@
             <form string="ดึงกลับ / ยกเลิกการส่ง">
                 <field name="document_id" invisible="1"/>
                 <group>
-                    <field name="mode" widget="radio"/>
+                    <!-- Locked by the header button (⏪ ดึงกลับ / 🚫 ยกเลิกการส่ง). -->
+                    <field name="mode" invisible="1"/>
                     <field name="reason" placeholder="ระบุเหตุผล / reason..."/>
                 </group>
                 <footer>

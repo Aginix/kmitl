@@ -11,11 +11,24 @@ import base64
 import logging
 
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError, ValidationError
+from odoo.exceptions import AccessError, UserError, ValidationError
 
 from .sarabun_routing_step import POSITIVE_DISPOSITIONS
 
 _logger = logging.getLogger(__name__)
+
+# What a แก้ไขเอกสารได้ step holder may change while circulating (ADR-0022).
+CONTENT_EDITOR_FIELDS = {
+    "subject",
+    "addressee_prefix_id",
+    "addressee",
+    "include_content",
+    "content",
+    "remark",
+    "enclosure_attachment_ids",
+    "reference_document_ids",
+    "reference_line_ids",
+}
 
 
 class SarabunDocument(models.Model):
@@ -283,6 +296,31 @@ class SarabunDocument(models.Model):
         "incoming-box columns (read status / received / verb) so they stay populated "
         "after the user has acted.",
     )
+    my_step_button_label = fields.Char(
+        compute="_compute_my_active_step",
+        help="Label of the act button: the verb's emoji + name.",
+    )
+    my_step_can_return = fields.Boolean(
+        compute="_compute_my_active_step",
+        help="My active step is gating, so ตีกลับ is offered.",
+    )
+    content_editor_user_ids = fields.Many2many(
+        comodel_name="res.users",
+        relation="sarabun_document_content_editor_rel",
+        column1="document_id",
+        column2="user_id",
+        compute="_compute_content_editor_user_ids",
+        store=True,
+        string="ผู้แก้ไขเอกสารได้ (Content editors)",
+        help="Holders of an active แก้ไขเอกสารได้ step — may edit the หนังสือ while "
+        "it circulates (ADR-0022).",
+    )
+    can_edit_content = fields.Boolean(compute="_compute_can_edit_content")
+    sign_attachment_ids = fields.Many2many(
+        comodel_name="ir.attachment",
+        compute="_compute_sign_attachment_ids",
+        string="เอกสารประกอบการลงนาม",
+    )
     pending_ack_count = fields.Integer(
         compute="_compute_routing_progress",
         string="ค้างรับทราบ",
@@ -419,10 +457,38 @@ class SarabunDocument(models.Model):
         return docs
 
     def write(self, vals):
+        editing = self._content_editor_records()
+        if editing and set(vals) - CONTENT_EDITOR_FIELDS:
+            raise AccessError(
+                _("ระหว่างเวียนหนังสือ แก้ไขได้เฉพาะ เรื่อง / เรียน / เนื้อหา / อ้างถึง / "
+                  "หมายเหตุ / สิ่งที่ส่งมาด้วย")
+            )
         res = super().write(vals)
         if "enclosure_attachment_ids" in vals:
             self._adopt_enclosures()
+        if editing:
+            editing._log_content_edit(vals)
         return res
+
+    def _content_editor_records(self):
+        """Records the current user writes as a แก้ไขเอกสารได้ holder (not as the
+        ผู้จัดทำ / manager / engine) — ADR-0022."""
+        if self.env.su or self.env.user.has_group("agx_sarabun.group_sarabun_manager"):
+            return self.browse()
+        user = self.env.user
+        return self.filtered(
+            lambda d: d.sender_user_id != user and user in d.content_editor_user_ids
+        )
+
+    def _log_content_edit(self, vals):
+        labels = ", ".join(
+            self._fields[f].get_description(self.env)["string"] for f in sorted(vals)
+        )
+        for doc in self:
+            doc.message_post(
+                body=_("แก้ไขเอกสารระหว่างเวียน: %s") % labels,
+                subtype_xmlid="mail.mt_note",
+            )
 
     def _adopt_enclosures(self):
         """Keep every enclosure owned by its own หนังสือ, so whoever can read the
@@ -609,6 +675,9 @@ class SarabunDocument(models.Model):
             record.my_active_step_id = record.routing_step_ids.filtered(
                 lambda s: s.state == "active" and uid in s.actor_user_ids
             )[:1]
+            verb = record.my_active_step_id.verb
+            record.my_step_button_label = verb and verb._button_label()
+            record.my_step_can_return = record.my_active_step_id.gating
             # "reaching" step drives the persistent incoming box + its columns. It is
             # keyed on my sarabun.step.recipient rows (the permanent per-person ledger,
             # never removed) — not the mutable actor_user_ids snapshot — so it survives
@@ -622,6 +691,32 @@ class SarabunDocument(models.Model):
                 active or my_recips.sorted(key=lambda r: (r.step_id.order, r.id))[-1:]
             )
             record.my_reaching_step_id = reaching.step_id
+
+    @api.depends(
+        "state",
+        "routing_step_ids.state",
+        "routing_step_ids.actor_user_ids",
+        "routing_step_ids.verb.can_edit_document",
+    )
+    def _compute_content_editor_user_ids(self):
+        for record in self:
+            steps = record.routing_step_ids.filtered(
+                lambda s: s.state == "active" and s.verb.can_edit_document
+            )
+            record.content_editor_user_ids = (
+                steps.actor_user_ids if record.state == "circulating" else False
+            )
+
+    @api.depends("content_editor_user_ids")
+    @api.depends_context("uid")
+    def _compute_can_edit_content(self):
+        for record in self:
+            record.can_edit_content = self.env.user in record.content_editor_user_ids
+
+    @api.depends("routing_step_ids.sign_attachment_ids")
+    def _compute_sign_attachment_ids(self):
+        for record in self:
+            record.sign_attachment_ids = record.routing_step_ids.sign_attachment_ids
 
     # Depend on the real routing_step_ids O2m (searchable), not the non-stored
     # my_reaching_step_id — Odoo can't resolve reverse triggers (e.g. when a verb
@@ -961,13 +1056,15 @@ class SarabunDocument(models.Model):
     def action_open_recall_wizard(self):
         """Open the ดึงกลับ / ยกเลิกการส่ง wizard (collects the mandatory reason)."""
         self.ensure_one()
+        # Set by the header button: ⏪ ดึงกลับ (pull_back) or 🚫 ยกเลิกการส่ง.
+        mode = self.env.context.get("sarabun_recall_mode") or "pull_back"
         return {
             "type": "ir.actions.act_window",
-            "name": _("ดึงกลับ / ยกเลิกการส่ง"),
+            "name": _("⏪ ดึงกลับ") if mode == "pull_back" else _("🚫 ยกเลิกการส่ง"),
             "res_model": "sarabun.recall.wizard",
             "view_mode": "form",
             "target": "new",
-            "context": {"default_document_id": self.id},
+            "context": {"default_document_id": self.id, "sarabun_recall_mode": mode},
         }
 
     def action_act_on_my_step(self):
@@ -975,13 +1072,22 @@ class SarabunDocument(models.Model):
         self.ensure_one()
         if not self.my_active_step_id:
             raise UserError(_("You have no pending action on this document."))
+        # Set by the header button: ✍️ <verb> (complete) or ↩️ ตีกลับ (return).
+        disposition = self.env.context.get("sarabun_disposition") or "complete"
         return {
             "type": "ir.actions.act_window",
-            "name": _("Act on Step"),
+            "name": self.my_step_button_label
+            if disposition == "complete"
+            else _("↩️ ตีกลับ"),
             "res_model": "sarabun.step.act.wizard",
             "view_mode": "form",
             "target": "new",
-            "context": {"default_step_id": self.my_active_step_id.id},
+            "context": {
+                "default_step_id": self.my_active_step_id.id,
+                # not default_disposition: it would leak into the steps the
+                # engine creates on ตีกลับ (sarabun.routing.step.disposition).
+                "sarabun_disposition": disposition,
+            },
         }
 
     # The awaiting-action surface is native mail.activity now (ADR-0014): the

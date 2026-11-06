@@ -38,21 +38,40 @@
                     <button
                         name="action_open_send_wizard"
                         type="object"
-                        string="Send"
+                        string="📨 ส่งเอกสาร"
                         class="oe_highlight"
                         attrs="{'invisible': [('is_editable', '=', False)]}"
                     />
+                    <!-- The act button is labelled with the step's own verb
+                         ("✍️ ลงนาม…", "✅ ตรวจเอกสาร") so the actor sees what to do. -->
                     <button
                         name="action_act_on_my_step"
                         type="object"
-                        string="Act on My Step"
                         class="oe_highlight"
                         attrs="{'invisible': [('my_active_step_id', '=', False)]}"
+                    >
+                        <field name="my_step_button_label" />
+                    </button>
+                    <button
+                        name="action_act_on_my_step"
+                        type="object"
+                        string="↩️ ตีกลับ"
+                        class="btn-warning"
+                        context="{'sarabun_disposition': 'return'}"
+                        attrs="{'invisible': [('my_step_can_return', '=', False)]}"
                     />
                     <button
                         name="action_open_recall_wizard"
                         type="object"
-                        string="ดึงกลับ / ยกเลิกการส่ง"
+                        string="⏪ ดึงกลับ"
+                        context="{'sarabun_recall_mode': 'pull_back'}"
+                        attrs="{'invisible': [('can_withdraw', '=', False)]}"
+                    />
+                    <button
+                        name="action_open_recall_wizard"
+                        type="object"
+                        string="🚫 ยกเลิกการส่ง"
+                        context="{'sarabun_recall_mode': 'cancel_send'}"
                         attrs="{'invisible': [('can_withdraw', '=', False)]}"
                     />
                     <button
@@ -91,6 +110,14 @@
                         bg_color="bg-danger"
                         attrs="{'invisible': [('state', '!=', 'cancelled')]}"
                     />
+                    <div
+                        class="alert alert-info"
+                        role="alert"
+                        attrs="{'invisible': [('can_edit_content', '=', False)]}"
+                    >
+                        ✏️ ขั้นตอนของคุณแก้ไขเอกสารได้ — แก้ไข เรื่อง / เรียน / เนื้อหา /
+                        อ้างถึง / สิ่งที่ส่งมาด้วย แล้วกดบันทึกก่อนดำเนินการ
+                    </div>
                     <div class="oe_button_box" name="button_box">
                         <button
                             name="action_view_origin"
@@ -174,28 +201,30 @@
                             />
                         </group>
                     </group>
+                    <!-- Also open to a แก้ไขเอกสารได้ step holder while circulating
+                         (can_edit_content — ADR-0022). -->
                     <group
                         name="header"
-                        attrs="{'invisible': [('is_editable', '=', False)]}"
+                        attrs="{'invisible': [('is_editable', '=', False), ('can_edit_content', '=', False)]}"
                     >
                         <field
                             name="subject"
                             placeholder="เรื่อง..."
-                            attrs="{'readonly': [('is_editable', '=', False)]}"
+                            attrs="{'readonly': [('is_editable', '=', False), ('can_edit_content', '=', False)]}"
                         />
                         <field
                             name="addressee_prefix_id"
                             nolabel="1"
                             widget="selection"
                             required="1"
-                            attrs="{'readonly': [('is_editable', '=', False)]}"
+                            attrs="{'readonly': [('is_editable', '=', False), ('can_edit_content', '=', False)]}"
                         />
                         <div class="o_row">
                             <field
                                 name="addressee"
                                 nolabel="1"
                                 placeholder="ผู้รับ / ตำแหน่ง..."
-                                attrs="{'readonly': [('is_editable', '=', False)]}"
+                                attrs="{'readonly': [('is_editable', '=', False), ('can_edit_content', '=', False)]}"
                             />
                         </div>
                     </group>
@@ -213,28 +242,28 @@
                     <label
                         string="มีเนื้อหา"
                         for="include_content"
-                        attrs="{'invisible': ['|', ('origin_model', '=', False), ('is_editable', '=', False)]}"
+                        attrs="{'invisible': ['|', ('origin_model', '=', False), '&amp;', ('is_editable', '=', False), ('can_edit_content', '=', False)]}"
                     />
                     <field
                         name="include_content"
-                        attrs="{'invisible': ['|', ('origin_model', '=', False), ('is_editable', '=', False)], 'readonly': [('is_editable', '=', False)]}"
+                        attrs="{'invisible': ['|', ('origin_model', '=', False), '&amp;', ('is_editable', '=', False), ('can_edit_content', '=', False)], 'readonly': [('is_editable', '=', False), ('can_edit_content', '=', False)]}"
                     />
                     <separator
                         string="เนื้อหา (Content)"
-                        attrs="{'invisible': ['|', ('include_content', '=', False), ('is_editable', '=', False)]}"
+                        attrs="{'invisible': ['|', ('include_content', '=', False), '&amp;', ('is_editable', '=', False), ('can_edit_content', '=', False)]}"
                     />
                     <field
                         name="content"
                         nolabel="1"
                         class="o_sarabun_content"
                         placeholder="พิมพ์เนื้อหาหนังสือ..."
-                        attrs="{'invisible': ['|', ('include_content', '=', False), ('is_editable', '=', False)], 'readonly': [('is_editable', '=', False)]}"
+                        attrs="{'invisible': ['|', ('include_content', '=', False), '&amp;', ('is_editable', '=', False), ('can_edit_content', '=', False)], 'readonly': [('is_editable', '=', False), ('can_edit_content', '=', False)]}"
                     />
                     <group>
                       <field
                             name="remark"
                             placeholder="หมายเหตุภายใน (ไม่บังคับ)..."
-                            attrs="{'readonly': [('is_editable', '=', False)]}"
+                            attrs="{'readonly': [('is_editable', '=', False), ('can_edit_content', '=', False)]}"
                         />
                     </group>
                     <group>
@@ -247,7 +276,21 @@
                             widget="many2many_binary"
                             nolabel="1"
                             colspan="2"
-                            attrs="{'readonly': [('is_editable', '=', False)]}"
+                            attrs="{'readonly': [('is_editable', '=', False), ('can_edit_content', '=', False)]}"
+                        />
+                    </group>
+                    <!-- ไฟล์ที่ผู้ลงนามแนบกับความเห็นในการลงนาม — download only. -->
+                    <group attrs="{'invisible': [('sign_attachment_ids', '=', [])]}">
+                        <separator
+                            string="เอกสารประกอบการลงนาม"
+                            name="sign_attachments"
+                        />
+                        <field
+                            name="sign_attachment_ids"
+                            widget="many2many_binary"
+                            nolabel="1"
+                            colspan="2"
+                            readonly="1"
                         />
                     </group>
                     <!-- helper flags used by attrs -->
@@ -257,6 +300,10 @@
                     <field name="has_signed" invisible="1" />
                     <field name="can_withdraw" invisible="1" />
                     <field name="my_active_step_id" invisible="1" />
+                    <field name="my_step_can_return" invisible="1" />
+                    <field name="can_edit_content" invisible="1" />
+                    <!-- busts the inline PDF cache after an in-flight content edit -->
+                    <field name="write_date" invisible="1" />
                     <notebook>
                         <page string="การเดินเรื่อง (Routing)" name="routing">
                             <group>
@@ -351,6 +398,11 @@
                                         optional="hide"
                                     />
                                     <field name="note" readonly="1" optional="hide" />
+                                    <field
+                                        name="sign_comment"
+                                        readonly="1"
+                                        optional="hide"
+                                    />
                                 </tree>
                                 <form string="เส้นทางเอกสาร (Routing Step)">
                                     <!-- Originator (ผู้จัดทำ/ผู้ส่ง) row is locked: only the
@@ -440,6 +492,22 @@
                                             readonly="1"
                                         />
                                     </group>
+                                    <group
+                                        string="ความเห็นในการลงนาม"
+                                        attrs="{'invisible': [('sign_comment', '=', False), ('sign_attachment_ids', '=', [])]}"
+                                    >
+                                        <field
+                                            name="sign_comment"
+                                            nolabel="1"
+                                            colspan="2"
+                                            readonly="1"
+                                        />
+                                        <field
+                                            name="sign_attachment_ids"
+                                            widget="many2many_binary"
+                                            readonly="1"
+                                        />
+                                    </group>
                                 </form>
                             </field>
                             <!-- No ประวัติการเดินเรื่อง (History) list here: ดึงกลับ /
@@ -475,13 +543,13 @@
                             <separator string="อ้างถึง — ในระบบ (prior หนังสือ)" />
                             <field
                                 name="reference_document_ids"
-                                attrs="{'readonly': [('is_editable', '=', False)]}"
+                                attrs="{'readonly': [('is_editable', '=', False), ('can_edit_content', '=', False)]}"
                                 widget="many2many_tags"
                             />
                             <separator string="อ้างถึง — นอกระบบ (free text)" />
                             <field
                                 name="reference_line_ids"
-                                attrs="{'readonly': [('is_editable', '=', False)]}"
+                                attrs="{'readonly': [('is_editable', '=', False), ('can_edit_content', '=', False)]}"
                             >
                                 <tree editable="bottom">
                                     <field name="sequence" widget="handle" />

@@ -9,6 +9,7 @@ import json
 import logging
 
 from odoo import api, fields, models
+from odoo.tools import html2plaintext
 
 _logger = logging.getLogger(__name__)
 
@@ -39,6 +40,7 @@ class SarabunDocument(models.Model):
         "routing_step_ids.acted_date",
         "routing_step_ids.activated_date",
         "routing_step_ids.note",
+        "routing_step_ids.sign_comment",
         "routing_step_ids.delegated_to_id",
         "routing_step_ids.preview_holder_ids",
         "routing_step_ids.actor_user_ids",
@@ -84,7 +86,9 @@ class SarabunDocument(models.Model):
             holders = step.preview_holder_ids
         else:
             holders = step.actor_user_ids.mapped("employee_id") or step.preview_holder_ids
-        note_full = (step.note or "").strip()
+        note_full = (
+            step.note or html2plaintext(step.sign_comment or "")
+        ).strip()
         note_short = None
         if note_full:
             note_short = (
