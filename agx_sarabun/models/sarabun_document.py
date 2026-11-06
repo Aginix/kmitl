@@ -12,6 +12,7 @@ import logging
 
 from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError, ValidationError
+from odoo.tools import html2plaintext
 
 from .sarabun_routing_step import POSITIVE_DISPOSITIONS
 
@@ -463,12 +464,22 @@ class SarabunDocument(models.Model):
                 _("ระหว่างเวียนหนังสือ แก้ไขได้เฉพาะ เรื่อง / เรียน / เนื้อหา / อ้างถึง / "
                   "หมายเหตุ / สิ่งที่ส่งมาด้วย")
             )
+        before = {d.id: {f: d[f] for f in vals} for d in editing}
         res = super().write(vals)
         if "enclosure_attachment_ids" in vals:
             self._adopt_enclosures()
-        if editing:
-            editing._log_content_edit(vals)
+        for doc in editing:
+            doc._log_content_edit(
+                [f for f in vals if doc._content_changed(f, before[doc.id][f])]
+            )
         return res
+
+    def _content_changed(self, fname, old):
+        # The Html editor re-sends an untouched เนื้อหา with re-measured tab widths;
+        # compare its text, not its markup.
+        if self._fields[fname].type == "html":
+            return html2plaintext(self[fname] or "") != html2plaintext(old or "")
+        return self[fname] != old
 
     def _content_editor_records(self):
         """Records the current user writes as a แก้ไขเอกสารได้ holder (not as the
@@ -480,15 +491,17 @@ class SarabunDocument(models.Model):
             lambda d: d.sender_user_id != user and user in d.content_editor_user_ids
         )
 
-    def _log_content_edit(self, vals):
+    def _log_content_edit(self, fnames):
+        self.ensure_one()
+        if not fnames:
+            return
         labels = ", ".join(
-            self._fields[f].get_description(self.env)["string"] for f in sorted(vals)
+            self._fields[f].get_description(self.env)["string"] for f in sorted(fnames)
         )
-        for doc in self:
-            doc.message_post(
-                body=_("แก้ไขเอกสารระหว่างเวียน: %s") % labels,
-                subtype_xmlid="mail.mt_note",
-            )
+        self.message_post(
+            body=_("แก้ไขเอกสารระหว่างเวียน: %s") % labels,
+            subtype_xmlid="mail.mt_note",
+        )
 
     def _adopt_enclosures(self):
         """Keep every enclosure owned by its own หนังสือ, so whoever can read the
