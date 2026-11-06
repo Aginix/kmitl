@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+    <t t-name="advance_payment_overview_report.OverviewRows" owl="1">
+        <t t-foreach="rows" t-as="row" t-key="row.id">
+            <tr class="o_ap_overview_row" t-on-click="() => this.openLoan(row)">
+                <t t-foreach="state.columns" t-as="column" t-key="column[0]">
+                    <td t-if="column[2]" class="text-end">
+                        <t t-esc="format(row[column[0]])" />
+                    </td>
+                    <td t-elif="column[0] === 'state'">
+                        <span t-att-class="'badge ' + stateBadge(row)" t-esc="row.state" />
+                    </td>
+                    <td t-elif="column[0] === 'return_due_status'">
+                        <span
+                            t-if="row.return_due_status"
+                            t-att-class="'badge ' + dueBadge(row)"
+                            t-esc="row.return_due_status"
+                        />
+                    </td>
+                    <td
+                        t-elif="column[0] === 'payments' or column[0] === 'disbursement_requests'"
+                    >
+                        <div
+                            t-foreach="lines(row[column[0]])"
+                            t-as="line"
+                            t-key="line_index"
+                            t-esc="line"
+                        />
+                    </td>
+                    <td
+                        t-elif="column[0] === 'name' or column[0] === 'contract_number'"
+                        class="fw-bold"
+                    >
+                        <t t-esc="row[column[0]]" />
+                    </td>
+                    <td t-else=""><t t-esc="row[column[0]]" /></td>
+                </t>
+            </tr>
+        </t>
+    </t>
+
+    <t t-name="advance_payment_overview_report.OverviewBand" owl="1">
+        <tr t-att-class="bandClass">
+            <t t-foreach="state.columns" t-as="column" t-key="column[0]">
+                <td t-if="column_index === 0" class="text-nowrap">
+                    <t t-esc="band.label" />
+                    <span t-if="band.count" class="text-muted fw-normal ms-1">
+                        (<t t-esc="band.count" />)
+                    </span>
+                </td>
+                <td t-elif="column[2]" class="text-end">
+                    <t t-esc="format(band.totals[column[0]])" />
+                </td>
+                <td t-else="" />
+            </t>
+        </tr>
+    </t>
+
+    <t t-name="advance_payment_overview_report.OverviewReport" owl="1">
+        <div class="o_action o_ap_overview_report">
+            <ControlPanel display="controlPanelDisplay">
+                <t t-set-slot="control-panel-bottom-left-buttons">
+                    <div class="o_cp_buttons">
+                        <button class="btn btn-secondary me-2" t-on-click="exportXlsx">
+                            <i class="fa fa-file-excel-o me-1" />Export Excel
+                        </button>
+                        <button class="btn btn-primary" t-on-click="printReport">
+                            <i class="fa fa-print me-1" />พิมพ์ PDF
+                        </button>
+                    </div>
+                </t>
+            </ControlPanel>
+            <div class="o_content p-3">
+                <div class="o_ap_overview_filters mb-3">
+                    <div class="row g-3">
+                        <div class="col-12 col-lg-4">
+                            <label class="o_form_label" for="ap_overview_search">
+                                ค้นหาเลขที่เอกสาร / ผู้ยืม
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fa fa-search" /></span>
+                                <input
+                                    id="ap_overview_search"
+                                    type="text"
+                                    class="form-control"
+                                    placeholder="ADV, เลขที่สัญญา, AR/PR, BC, DR, ใบสำคัญจ่าย"
+                                    t-att-value="state.search"
+                                    t-on-input="onSearchInput"
+                                />
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3 col-lg-2">
+                            <label class="o_form_label" for="ap_overview_date_from">
+                                ส่งคำขอตั้งแต่
+                            </label>
+                            <input
+                                id="ap_overview_date_from"
+                                type="date"
+                                class="form-control"
+                                t-att-value="state.dateFrom"
+                                t-on-change="(ev) => this.onDateChange('dateFrom', ev)"
+                            />
+                        </div>
+                        <div class="col-6 col-md-3 col-lg-2">
+                            <label class="o_form_label" for="ap_overview_date_to">
+                                ถึง
+                            </label>
+                            <input
+                                id="ap_overview_date_to"
+                                type="date"
+                                class="form-control"
+                                t-att-value="state.dateTo"
+                                t-on-change="(ev) => this.onDateChange('dateTo', ev)"
+                            />
+                        </div>
+                        <div class="col-6 col-md-3 col-lg-2">
+                            <label class="o_form_label" for="ap_overview_group_by">
+                                จัดกลุ่มตาม
+                            </label>
+                            <select
+                                id="ap_overview_group_by"
+                                class="form-select"
+                                t-on-change="(ev) => this.onGroupByChange('groupBy', ev)"
+                            >
+                                <option value="" t-att-selected="!state.groupBy">ไม่จัดกลุ่ม</option>
+                                <t t-foreach="axes" t-as="axis" t-key="axis.value">
+                                    <option
+                                        t-att-value="axis.value"
+                                        t-att-selected="state.groupBy === axis.value"
+                                        t-esc="axis.label"
+                                    />
+                                </t>
+                            </select>
+                        </div>
+                        <div class="col-6 col-md-3 col-lg-2">
+                            <label class="o_form_label" for="ap_overview_group_by_2">
+                                แล้วตาม
+                            </label>
+                            <select
+                                id="ap_overview_group_by_2"
+                                class="form-select"
+                                t-att-disabled="!state.groupBy"
+                                t-on-change="(ev) => this.onGroupByChange('groupBy2', ev)"
+                            >
+                                <option value="" t-att-selected="!state.groupBy2">ไม่มี</option>
+                                <t t-foreach="axes" t-as="axis" t-key="axis.value">
+                                    <option
+                                        t-if="axis.value !== state.groupBy"
+                                        t-att-value="axis.value"
+                                        t-att-selected="state.groupBy2 === axis.value"
+                                        t-esc="axis.label"
+                                    />
+                                </t>
+                            </select>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="d-flex flex-wrap align-items-center gap-2">
+                                <span class="text-muted me-1">สถานะ:</span>
+                                <t t-foreach="stateChoices" t-as="choice" t-key="choice.value">
+                                    <button
+                                        t-att-class="'btn btn-sm rounded-pill ' + (state.states.includes(choice.value) ? 'btn-primary' : 'btn-outline-secondary')"
+                                        t-on-click="() => this.toggleValue('states', choice.value)"
+                                        t-esc="choice.label"
+                                    />
+                                </t>
+                                <span class="text-muted ms-3 me-1">ครบกำหนด:</span>
+                                <t t-foreach="dueChoices" t-as="choice" t-key="choice.value">
+                                    <button
+                                        t-att-class="'btn btn-sm rounded-pill ' + (state.dueStatuses.includes(choice.value) ? 'btn-primary' : 'btn-outline-secondary')"
+                                        t-on-click="() => this.toggleValue('dueStatuses', choice.value)"
+                                        t-esc="choice.label"
+                                    />
+                                </t>
+                                <div class="ms-auto d-flex gap-3">
+                                    <button
+                                        class="btn btn-link p-0 text-nowrap"
+                                        t-on-click="toggleAdvanced"
+                                    >
+                                        <i
+                                            t-att-class="state.showAdvanced ? 'fa fa-caret-down me-1' : 'fa fa-caret-right me-1'"
+                                        />
+                                        <t t-if="state.showAdvanced">ซ่อนตัวกรอง</t>
+                                        <t t-else="">ตัวกรองเพิ่มเติม</t>
+                                        <span
+                                            t-if="activeFilterCount"
+                                            class="badge bg-primary ms-1"
+                                            t-esc="activeFilterCount"
+                                        />
+                                    </button>
+                                    <button
+                                        t-if="activeFilterCount or state.search"
+                                        class="btn btn-link p-0 text-muted text-nowrap"
+                                        t-on-click="clearFilters"
+                                    >
+                                        <i class="fa fa-times me-1" />ล้างตัวกรอง
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <t t-if="state.showAdvanced">
+                            <div class="col-12 col-md-4">
+                                <label class="o_form_label">ส่วนงาน</label>
+                                <MultiRecordSelect
+                                    resModel="'operating.unit'"
+                                    placeholder="'ส่วนงาน'"
+                                    selected="state.operatingUnits"
+                                    onChange="(sel) => this.onSelectionChange('operatingUnits', sel)"
+                                />
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <label class="o_form_label">ผู้ยืม</label>
+                                <MultiRecordSelect
+                                    resModel="'hr.employee'"
+                                    placeholder="'ผู้ยืม'"
+                                    selected="state.employees"
+                                    onChange="(sel) => this.onSelectionChange('employees', sel)"
+                                />
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <label class="o_form_label">ประเภทเงินยืม</label>
+                                <MultiRecordSelect
+                                    resModel="'advance.payment.loan.type'"
+                                    placeholder="'ประเภทเงินยืม'"
+                                    selected="state.loanTypes"
+                                    onChange="(sel) => this.onSelectionChange('loanTypes', sel)"
+                                />
+                            </div>
+                        </t>
+                    </div>
+                </div>
+
+                <t t-if="state.loading">
+                    <div class="text-center p-5">
+                        <span class="spinner-border" role="status" />
+                    </div>
+                </t>
+                <t t-elif="!rowCount">
+                    <div class="text-center text-muted p-5">
+                        ไม่พบสัญญายืมเงินตามเงื่อนไขที่เลือก
+                    </div>
+                </t>
+                <t t-else="">
+                    <div class="text-muted small mb-2">
+                        <t t-esc="rowCount" /> สัญญา
+                    </div>
+                    <div class="o_ap_overview_scroll">
+                        <table
+                            class="table table-sm table-hover table-bordered align-top mb-0 o_ap_overview_table"
+                        >
+                            <thead>
+                                <tr>
+                                    <t
+                                        t-foreach="state.columns"
+                                        t-as="column"
+                                        t-key="column[0]"
+                                    >
+                                        <th t-att-class="column[2] ? 'text-end' : ''">
+                                            <t t-esc="column[1]" />
+                                        </th>
+                                    </t>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="state.groups" t-as="group" t-key="group.key">
+                                    <t
+                                        t-if="state.grouped"
+                                        t-call="advance_payment_overview_report.OverviewBand"
+                                    >
+                                        <t t-set="band" t-value="group" />
+                                        <t t-set="bandClass" t-value="'table-secondary fw-bold'" />
+                                    </t>
+                                    <t t-call="advance_payment_overview_report.OverviewRows">
+                                        <t t-set="rows" t-value="group.rows" />
+                                    </t>
+                                    <t
+                                        t-foreach="group.subgroups"
+                                        t-as="subgroup"
+                                        t-key="subgroup.key"
+                                    >
+                                        <t t-call="advance_payment_overview_report.OverviewBand">
+                                            <t t-set="band" t-value="subgroup" />
+                                            <t t-set="bandClass" t-value="'table-light fw-bold'" />
+                                        </t>
+                                        <t t-call="advance_payment_overview_report.OverviewRows">
+                                            <t t-set="rows" t-value="subgroup.rows" />
+                                        </t>
+                                    </t>
+                                </t>
+                            </tbody>
+                            <tfoot>
+                                <t t-call="advance_payment_overview_report.OverviewBand">
+                                    <t
+                                        t-set="band"
+                                        t-value="{label: 'รวมทั้งสิ้น', totals: state.totals}"
+                                    />
+                                    <t t-set="bandClass" t-value="'table-primary fw-bold'" />
+                                </t>
+                            </tfoot>
+                        </table>
+                    </div>
+                </t>
+            </div>
+        </div>
+    </t>
+
+</templates>

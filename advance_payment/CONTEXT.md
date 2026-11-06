@@ -156,3 +156,7 @@ _Avoid_: deadline, activity end date
 **Return due status (สถานะวันครบกำหนด)**:
 Where an outstanding loan stands against its Return due date, read literally by the calendar day: **ยังไม่ถึงกำหนด** (before the date), **ครบกำหนด** (today *is* the date), **เกินกำหนด** (past it). Shown only while the borrower is a debtor — from the Effective Date until the agreement closes; blank otherwise. Distinct from the reminder window ("notify N days before"), which is a separate notion.
 _Avoid_: overdue flag (that is only one of the three values), due range / ช่วงวันครบกำหนดคืน (the 0-7/8-15/… buckets)
+
+**Overview report (รายงานภาพรวมสัญญายืมเงิน)**:
+The loan officer's register of agreements: **one row per agreement** that has been submitted and not cancelled, showing beside it the Source Reference (AR/PR), its Budget Commitment (BC), the payout voucher (ใบสำคัญจ่ายเงินยืม) and every ใบเบิกชดใช้เงินยืม (DR) clearing it — so nobody has to open each form. "DR" here means only ใบเบิกชดใช้เงินยืม; the payout voucher is its own column. Read with the officer's own visibility, while the linked numbers show even where the officer cannot open those documents. Its period is the วันที่ส่งคำขอ, by default the current fiscal year. An opt-in extension.
+_Avoid_: loan report (that is the Loan Contract Form), ledger, aging report

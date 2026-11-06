@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="action_overview_report" model="ir.actions.client">
+        <field name="name">รายงานภาพรวมสัญญายืมเงิน</field>
+        <field name="tag">advance_payment_overview_report</field>
+    </record>
+
+    <menuitem
+        id="menu_overview_report"
+        name="รายงานภาพรวมสัญญายืมเงิน"
+        parent="advance_payment.menu_advance_payment_root"
+        action="action_overview_report"
+        sequence="25"
+        groups="advance_payment.group_advance_payment_loan_officer,advance_payment.group_advance_payment_manager"
+    />
+</odoo>

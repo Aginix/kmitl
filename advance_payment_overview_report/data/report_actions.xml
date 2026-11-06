@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Printed from the report screen only, never from a Print menu. -->
+    <record id="action_report_overview_pdf" model="ir.actions.report">
+        <field name="name">รายงานภาพรวมสัญญายืมเงิน (PDF)</field>
+        <field name="model">advance.payment.overview.report.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">advance_payment_overview_report.overview_pdf</field>
+        <field name="report_file">advance_payment_overview_report.overview_pdf</field>
+        <field name="print_report_name">'รายงานภาพรวมสัญญายืมเงิน'</field>
+        <field name="paperformat_id" ref="paperformat_overview_report" />
+        <field name="binding_model_id" eval="False" />
+    </record>
+
+    <record id="action_report_overview_xlsx" model="ir.actions.report">
+        <field name="name">รายงานภาพรวมสัญญายืมเงิน (Excel)</field>
+        <field name="model">advance.payment.overview.report.wizard</field>
+        <field name="report_type">xlsx</field>
+        <field name="report_name">advance_payment_overview_report.overview_xlsx</field>
+        <field name="report_file">advance_payment_overview_report.overview_xlsx</field>
+        <field name="print_report_name">'รายงานภาพรวมสัญญายืมเงิน'</field>
+        <field name="binding_model_id" eval="False" />
+    </record>
+</odoo>
