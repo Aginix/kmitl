@@ -118,6 +118,15 @@ class AdvancePayment(models.Model):
         "(Effective Date). Distinct from the ADV running number.",
     )
 
+    account_fiscal_year_id = fields.Many2one(
+        comodel_name="account.fiscal.year",
+        string="ปีงบประมาณ",
+        readonly=True,
+        copy=False,
+        help="Fiscal year both numbers run in (ADR-0035): the commitment's when "
+        "there is one, else the submit date's.",
+    )
+
     state = fields.Selection(
         selection=[
             ("draft", "แบบร่าง"),
@@ -1360,6 +1369,28 @@ class AdvancePayment(models.Model):
             )
         self._schedule_workflow_activity(next_state)
 
+    def _ensure_fiscal_year(self):
+        """Fill the fiscal year the numbers run in, unless a bridge already did
+        (ADR-0035). Loans submitted before the field existed fall back to
+        their submit date."""
+        for rec in self.filtered(lambda r: not r.account_fiscal_year_id):
+            date = fields.Date.to_date(
+                rec.date_submitted
+            ) or fields.Date.context_today(rec)
+            rec.account_fiscal_year_id = self.env.company.find_daterange_fy(date)
+
+    def _next_number(self, code):
+        """Next number of `code`, in the loan's fiscal year. The date range
+        picks the per-year counter but `%(year_be)s` reads ir_sequence_date, so
+        pin both to the year's end date."""
+        self.ensure_one()
+        fiscal_date = self.account_fiscal_year_id.date_to
+        return (
+            self.env["ir.sequence"]
+            .with_context(ir_sequence_date=fiscal_date)
+            .next_by_code(code, sequence_date=fiscal_date)
+        )
+
     def action_submit(self):
         """Submit the request into its route (draft → first route state —
         to_endorse on the Standard route, ADR-0020/0027)."""
@@ -1370,7 +1401,8 @@ class AdvancePayment(models.Model):
             # The placeholder is translated at create time, so a draft made in
             # another language (API, import, en_US user) still reads "New".
             if rec.name in ("New", _("New")):
-                rec.name = self.env["ir.sequence"].next_by_code("advance.payment")
+                rec._ensure_fiscal_year()
+                rec.name = rec._next_number("advance.payment")
             # endorser_id already tracks the borrower's manager in draft and
             # freezes itself on this write (_compute_endorser_id, ADR-0020).
             rec.submitted_by_id = self.env.user
@@ -1688,7 +1720,8 @@ class AdvancePayment(models.Model):
                     payment.paid_date if payment else fields.Date.context_today(rec)
                 )
             if not rec.contract_number:
-                vals["contract_number"] = self.env["ir.sequence"].next_by_code(
+                rec._ensure_fiscal_year()
+                vals["contract_number"] = rec._next_number(
                     "advance.payment.contract"
                 )
             rec.write(vals)

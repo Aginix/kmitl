@@ -29,21 +29,8 @@
             name="domain"
         >[('purchase_request_id', '!=', False), ('is_purchase_request_advance', '=', False)]</field>
         <field name="is_blocking" eval="True" />
-        <field name="active" eval="True" />
-    </record>
-
-    <!-- ADR-0026's one-loan-per-request rule, kept switched off: several
-         borrowers may draw on one request (ADR-0029). -->
-    <record id="excep_pr_single_loan" model="exception.rule">
-        <field name="name">ใบขอให้จัดหามีสัญญายืมเงินอยู่แล้ว</field>
-        <field
-            name="description"
-        >ใบขอให้จัดหา 1 ใบมีสัญญายืมเงินที่ยังไม่ยกเลิกได้ 1 สัญญา</field>
-        <field name="sequence">36</field>
-        <field name="model">advance.payment</field>
-        <field name="exception_type">by_domain</field>
-        <field name="domain">[('has_other_purchase_request_loan', '=', True)]</field>
-        <field name="is_blocking" eval="True" />
+        <!-- Shipped off: the administrators switch it on when the payment
+             method should gate borrowing. -->
         <field name="active" eval="False" />
     </record>
 </odoo>

@@ -1,4 +1,4 @@
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 from odoo.tools import plaintext2html
 
 
@@ -44,9 +44,6 @@ class AdvancePayment(models.Model):
     is_purchase_request_advance = fields.Boolean(
         compute="_compute_purchase_request_flags", compute_sudo=True
     )
-    has_other_purchase_request_loan = fields.Boolean(
-        compute="_compute_purchase_request_flags", compute_sudo=True
-    )
 
     # Own compute, not core's _compute_reference: a shared compute group stays
     # protected while the picker's inverse writes `reference`, leaving
@@ -75,22 +72,12 @@ class AdvancePayment(models.Model):
         if self.loan_type_id.reference_model != "purchase.request":
             self.purchase_request_id = False
 
-    @api.depends(
-        "purchase_request_id.state",
-        "purchase_request_id.payment_type",
-        "purchase_request_id.advance_payment_ids.state",
-    )
+    @api.depends("purchase_request_id.state", "purchase_request_id.payment_type")
     def _compute_purchase_request_flags(self):
         for rec in self:
             pr = rec.purchase_request_id
             rec.is_purchase_request_approved = pr.state == "approved"
             rec.is_purchase_request_advance = pr.payment_type == "advance"
-            rec.has_other_purchase_request_loan = bool(
-                pr
-                and pr.advance_payment_ids.filtered(
-                    lambda loan: loan.state != "cancel" and loan != rec._origin
-                )
-            )
 
     # Counted as the reader: a borrower who may not open the request sees no
     # button rather than one that opens an AccessError (ADR-0029).
@@ -119,22 +106,17 @@ class AdvancePayment(models.Model):
         return summary
 
     def _prepare_vals_from_reference(self):
-        """Pull the loan values off the named purchase request. The borrower
-        is kept: anyone may borrow against a request, not only its requester
+        """Pull what the request can tell us. The amount is deliberately NOT
+        prefilled from the request: each borrower declares their own
         (ADR-0029)."""
         vals = super()._prepare_vals_from_reference()
         # sudo: the borrower usually cannot read the request (ADR-0029).
         pr = self.purchase_request_id.sudo()
         if pr:
-            vals.update(
-                {
-                    "loan_amount": pr.get_estimated_cost_currency(),
-                    # "" not "<p></p>": an empty paragraph would satisfy the
-                    # required reason.
-                    "loan_reason": (
-                        plaintext2html(pr.description) if pr.description else ""
-                    ),
-                }
+            # "" not "<p></p>": an empty paragraph would satisfy the required
+            # reason.
+            vals["loan_reason"] = (
+                plaintext2html(pr.description) if pr.description else ""
             )
         return vals
 
@@ -149,26 +131,3 @@ class AdvancePayment(models.Model):
             "view_mode": "form",
             "target": "current",
         }
-
-    def action_start(self, payment=None):
-        """Override to cross-post disbursement message to linked purchase request."""
-        res = super().action_start(payment=payment)
-        for rec in self:
-            pr = rec.purchase_request_id
-            if not pr:
-                continue
-            pr.message_post(
-                body=_(
-                    "สัญญายืมเงิน"
-                    " <a href='/web#id=%(id)s&amp;model=advance.payment'>"
-                    "<b>%(name)s</b></a>"
-                    " ได้รับการเบิกจ่ายแล้ว จำนวน"
-                    " <b>%(amount)s %(currency)s</b>",
-                    id=rec.id,
-                    name=rec.name,
-                    amount=rec.loan_amount,
-                    currency=rec.currency_id.name,
-                ),
-                subtype_xmlid="mail.mt_note",
-            )
-        return res

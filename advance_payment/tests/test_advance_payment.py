@@ -307,6 +307,34 @@ class TestAdvancePayment(TransactionCase):
         self.assertNotEqual(ap.name, "New")
         self.assertTrue(ap.date_submitted)
 
+    def test_numbers_run_in_the_loan_fiscal_year(self):
+        """ADV and APC carry the BE fiscal year, each year counting from 0001
+        (ADR-0035)."""
+        FiscalYear = self.env["account.fiscal.year"]
+        fy_a = FiscalYear.create(
+            {"name": "2599", "date_from": "2055-10-01", "date_to": "2056-09-30"}
+        )
+        fy_b = FiscalYear.create(
+            {"name": "2600", "date_from": "2056-10-01", "date_to": "2057-09-30"}
+        )
+        first, second = self._make(), self._make(requested_by=self.officer)
+        first.account_fiscal_year_id = fy_a
+        second.account_fiscal_year_id = fy_b
+        (first | second).action_submit()
+        self.assertEqual(first.name, "ADV/2599/0001")
+        self.assertEqual(second.name, "ADV/2600/0001")
+        first.write({"state": "approved"})
+        first.action_start()
+        self.assertEqual(first.contract_number, "APC/2599/0001")
+
+    def test_submit_without_commitment_uses_the_submit_date_year(self):
+        ap = self._make()
+        ap.action_submit()
+        self.assertEqual(
+            ap.account_fiscal_year_id,
+            self.env.company.find_daterange_fy(fields.Date.context_today(ap)),
+        )
+
     def test_submit_only_from_draft(self):
         ap = self._make()
         ap.action_submit()

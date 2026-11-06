@@ -157,7 +157,6 @@ class TestPurchaseRequestAdvancePayment(TransactionCase):
         self.assertEqual(pr.advance_payment_count, 0)
         ap = self._make_ap(pr)
         self.assertEqual(ap.purchase_request_id, pr)
-        self.assertEqual(pr.advance_payment_ids, ap)
         self.assertEqual(pr.advance_payment_count, 1)
 
     def test_several_borrowers_per_pr(self):
@@ -167,12 +166,13 @@ class TestPurchaseRequestAdvancePayment(TransactionCase):
         first = self._make_ap(pr)
         other_employee = self.env["hr.employee"].create({"name": "Second Borrower"})
         second = self._make_ap(pr, employee_id=other_employee.id)
-        self.assertEqual(pr.advance_payment_ids, first | second)
-        self.assertTrue(second.has_other_purchase_request_loan)
-        # ADR-0026's single-loan rule ships switched off (ADR-0030).
-        self.assertFalse(
-            self.env.ref("purchase_request_advance_payment.excep_pr_single_loan").active
+        self.assertEqual(
+            self.env["advance.payment"].search(
+                [("purchase_request_id", "=", pr.id)]
+            ),
+            first | second,
         )
+        self.assertEqual(pr.advance_payment_count, 2)
 
     def test_borrower_without_pr_access_finds_it_by_number(self):
         """The lookup runs under sudo: a borrower who cannot read the PR
@@ -221,7 +221,6 @@ class TestPurchaseRequestAdvancePayment(TransactionCase):
         AccessError; the borrower still gets it."""
         pr = self._make_pr()
         self._make_ap(pr)
-        self.assertTrue(pr.advance_payment_ids)
         outsider = self.env["res.users"].create(
             {
                 "name": "PR Reader",
@@ -235,7 +234,8 @@ class TestPurchaseRequestAdvancePayment(TransactionCase):
 
     def test_typing_pr_number_prefills_loan_and_keeps_borrower(self):
         """Anyone may borrow against a request, not only its requester: the
-        amount and reason come from the PR, the borrower stays (ADR-0029)."""
+        reason comes from the PR, the amount stays the borrower's to declare
+        and the borrower stays (ADR-0029)."""
         pr = self._make_pr(estimated_cost=7500)
         pr.description = "Need it"
         pr.requested_by = self.officer
@@ -251,7 +251,7 @@ class TestPurchaseRequestAdvancePayment(TransactionCase):
         ap._onchange_reference_number()
         self.assertEqual(ap.reference, pr)
         self.assertEqual(ap.employee_id, self.manager_employee)
-        self.assertEqual(ap.loan_amount, 7500)
+        self.assertNotEqual(ap.loan_amount, 7500)
         self.assertIn("Need it", ap.loan_reason)
 
     # ------------------------------------------------------------------ #
@@ -276,38 +276,10 @@ class TestPurchaseRequestAdvancePayment(TransactionCase):
         ap = self._make_ap(self._make_pr(payment_type="direct"))
         self.assertTrue(ap.is_purchase_request_approved)
         self.assertFalse(ap.is_purchase_request_advance)
-
-    # ------------------------------------------------------------------ #
-    # Cross-post on disbursement (action_start)                            #
-    # ------------------------------------------------------------------ #
-
-    def test_cross_post_on_disbursement(self):
-        """When AP transitions to in_progress, a message is posted on the PR."""
-        pr = self._make_pr()
-        ap = self._make_ap(pr)
-        # Simulate approval + disbursement (bypass actual payment creation)
-        ap.write({"state": "approved"})
-        msg_count_before = len(pr.message_ids)
-        ap.action_start()
-        pr.invalidate_recordset()
-        self.assertGreater(len(pr.message_ids), msg_count_before)
-
-    def test_no_cross_post_without_reference(self):
-        """AP without reference does not post to any PR."""
-        ap = self.env["advance.payment"].create(
-            {
-                "requested_by": self.manager.id,
-                "loan_amount": 1000,
-                "loan_type_id": self.env.ref(
-                    "advance_payment.loan_type_procurement"
-                ).id,
-                "loan_reason": "Standalone",
-            }
+        # The payment method rule ships switched off (ADR-0030).
+        self.assertFalse(
+            self.env.ref("purchase_request_advance_payment.excep_pr_not_advance").active
         )
-        ap.write({"state": "approved"})
-        # Should not raise even without reference
-        ap.action_start()
-        self.assertEqual(ap.state, "in_progress")
 
     # ------------------------------------------------------------------ #
     # is_locked_by_reference / is_reference_visible                        #

@@ -26,9 +26,7 @@ class PurchaseRequest(models.Model):
         can_read = AdvancePayment.check_access_rights("read", raise_exception=False)
         for rec in self:
             rec.advance_payment_count = (
-                AdvancePayment.search_count(
-                    [("purchase_request_id", "=", rec.id), ("state", "!=", "cancel")]
-                )
+                AdvancePayment.search_count([("purchase_request_id", "=", rec.id)])
                 if can_read and isinstance(rec.id, int)
                 else 0
             )
