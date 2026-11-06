@@ -142,6 +142,27 @@ class TestSarabunTodoBridge(SarabunCommon):
         )
         self.assertEqual(act.todo_category, "acknowledgement")
 
+    def test_return_notifies_creator_until_resent(self):
+        """A ตีกลับ gives the creator one Execution Todo naming who returned it and
+        why; re-sending the หนังสือ closes it."""
+        doc = self._make_doc(sender=self.user_a)
+        self._add_step(doc, order=10, verb="sign_approve", user=self.user_b)
+        doc.with_user(self.user_a).action_send()
+        self._act(self._active_step(doc), "return", self.user_b, note="แนบกำหนดการ")
+        self.assertEqual(doc.state, "returned")
+        act = self._activities(doc, self.user_a)
+        self.assertEqual(len(act), 1)
+        self.assertEqual(
+            act.activity_type_id,
+            self.env.ref("agx_sarabun_todo.mail_activity_sarabun_returned"),
+        )
+        self.assertEqual(act.todo_category, "execution")
+        self.assertIn("แนบกำหนดการ", act.note)
+        self.assertIn(self.user_b.name, act.note)
+        doc.with_user(self.user_a).action_send()
+        self.assertEqual(doc.state, "circulating")
+        self.assertFalse(self._activities(doc, self.user_a))
+
     def test_recall_teardown_not_logged(self):
         """A ยกเลิกการส่ง (recall) tears the pending Todo down without logging it —
         it was never completed, only aborted."""

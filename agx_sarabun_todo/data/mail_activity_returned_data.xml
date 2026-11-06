@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!--
+          ตีกลับ notice type (owned by the bridge, like the completion notice). On a
+          ตีกลับ core clears every routing Todo and only logs an internal chatter note,
+          so the creator is never told their หนังสือ came back. The bridge schedules
+          ONE Todo of this type for the creator (sarabun.document._do_return override).
+          Execution: it clears when the creator acts on the หนังสือ — re-sending it
+          (action_send) — not by Mark as Read.
+        -->
+        <record id="mail_activity_sarabun_returned" model="mail.activity.type">
+            <field name="name">Sarabun: ถูกตีกลับ (Returned)</field>
+            <field name="icon">fa-undo</field>
+            <field name="res_model">sarabun.document</field>
+            <field name="category">default</field>
+            <field name="todo_category">execution</field>
+        </record>
+    </data>
+</odoo>
