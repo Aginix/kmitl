@@ -88,7 +88,7 @@
                 <attribute name="states">purchase</attribute>
             </xpath>
             <xpath expr="//button[@name='button_draft']" position="attributes">
-                <attribute name="states">done,cancel</attribute>
+                <attribute name="invisible">1</attribute>
             </xpath>
             <xpath expr="//button[@name='button_done']" position="attributes">
                 <attribute name="string">Done</attribute>
