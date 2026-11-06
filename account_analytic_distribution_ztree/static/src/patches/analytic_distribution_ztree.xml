@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+    <t t-inherit="analytic.AnalyticDistributionPopup" t-inherit-mode="extension" owl="1">
+        <xpath expr="//AutoComplete" position="replace">
+            <t t-if="planHasZtree(plan.id)">
+                <Ztree
+                    id="dist_tag.id.toString()"
+                    placeholder="'Search Analytic Account'"
+                    value="dist_tag.analytic_account_name"
+                    sources="sourcesAnalyticTree(plan.id)"
+                    setting="ztreeSettingFor(dist_tag)"
+                    data="ztreeDataFor(dist_tag)"
+                    autoSelect="true"
+                    onSelect.alike="(ev, params) => this.onZtreeSelect(dist_tag, params)"
+                    onChange.alike="({inputValue}) => this.autoCompleteInputChanged(dist_tag, inputValue)"/>
+            </t>
+            <t t-else="">
+                <AutoComplete
+                    id="dist_tag.id.toString()"
+                    placeholder="'Search Analytic Account'"
+                    value="dist_tag.analytic_account_name"
+                    sources="sourcesAnalyticAccount(plan.id)"
+                    autoSelect="true"
+                    onSelect.alike="(option, params) => this.onSelect(option, params, dist_tag)"
+                    onChange.alike="({inputValue}) => this.autoCompleteInputChanged(dist_tag, inputValue)"/>
+            </t>
+        </xpath>
+    </t>
+
+</templates>
