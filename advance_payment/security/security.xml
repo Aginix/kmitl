@@ -45,6 +45,16 @@
         <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
     </record>
 
+    <!-- Read-only, sees every loan — e.g. the finance office that pays them.
+         No ACL of its own: base.group_user already reads advance.payment, and
+         the rule below grants read only, so writes stay limited to the other
+         rules (endorser, own). -->
+    <record id="group_advance_payment_viewer" model="res.groups">
+        <field name="name">ผู้ดูสัญญาเงินยืม (อ่านอย่างเดียว)</field>
+        <field name="category_id" eval="False"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
     <!-- Record Rules -->
     <record id="advance_payment_own_only_rule" model="ir.rule">
         <field name="name">Advance Payment: Own-only sees own records</field>
@@ -76,6 +86,17 @@
         <field name="model_id" ref="model_advance_payment"/>
         <field name="groups" eval="[(4, ref('group_advance_payment_user'))]"/>
         <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <record id="advance_payment_viewer_rule" model="ir.rule">
+        <field name="name">Advance Payment: Viewer reads all</field>
+        <field name="model_id" ref="model_advance_payment"/>
+        <field name="groups" eval="[(4, ref('group_advance_payment_viewer'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
     </record>
 
     <record id="advance_payment_manager_rule" model="ir.rule">

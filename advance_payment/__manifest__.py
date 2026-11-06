@@ -1,6 +1,6 @@
 {
     "name": "Advance Payment (สัญญายืมเงิน)",
-    "version": "16.0.3.1.1",
+    "version": "16.0.3.2.0",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
@@ -23,6 +23,7 @@
         "views/advance_payment_loan_type_views.xml",
         "views/advance_payment_views.xml",
         "views/account_payment_views.xml",
+        "views/bank_payment_export_views.xml",
         "views/advance_payment_menus.xml",
         "views/res_config_settings_views.xml",
     ],

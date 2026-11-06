@@ -2,6 +2,8 @@
 
 Status: proposed / **parked** (2026-07 review — to be detailed later with the accounting team)
 
+> **Amended (2026-11-05).** The *setting-up* leg is no longer deferred: the disbursement voucher books against the ลูกหนี้เงินยืม account set as the Override Account of the จ่ายเงินยืม payment type (and รับคืนเงินยืม for returns), reached from the loan app's Settings. The clearing leg stays deferred.
+
 ## Context & Decision
 
 advance_payment tracks the loan debt as **operational amounts on the record** (loan amount, verified actual expenses, returned cash, remaining debt). It does **not** own the general-ledger accounting for clearing — in particular it does not post the expense-recognition entry (`Dr expense / Cr ลูกหนี้เงินยืม`) when actual expenses clear the debt. Expense-report lines therefore need no GL account/analytic for now. How the debt maps to GL accounts (ลูกหนี้เงินยืม), and when/where clearing entries post, is **deferred to the accounting team** and will be specified later.

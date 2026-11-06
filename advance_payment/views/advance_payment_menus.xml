@@ -4,7 +4,7 @@
         name="สัญญายืมเงิน"
         sequence="6"
         web_icon="advance_payment,static/description/icon.png"
-        groups="advance_payment.group_advance_payment_own_only"/>
+        groups="advance_payment.group_advance_payment_own_only,advance_payment.group_advance_payment_viewer"/>
 
     <menuitem id="menu_advance_payment_my"
         name="สัญญาของฉัน"
@@ -23,7 +23,7 @@
         parent="menu_advance_payment_root"
         action="action_advance_payment"
         sequence="20"
-        groups="advance_payment.group_advance_payment_user"/>
+        groups="advance_payment.group_advance_payment_user,advance_payment.group_advance_payment_viewer"/>
 
     <menuitem id="menu_advance_payment_config"
         name="การกำหนดค่า"

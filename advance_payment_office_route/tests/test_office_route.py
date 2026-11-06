@@ -106,5 +106,11 @@ class TestOfficeRoute(TransactionCase):
         self.assertEqual(sig["employee"], ap.director_id.employee_id)
         self.assertEqual(sig["signature"], SIGNATURE)
         self.assertTrue(sig["date"])
-        # The director's own title, not the fixed "ผู้บังคับบัญชา".
-        self.assertNotIn("position", sig)
+        # The configured director title, not the fixed "ผู้บังคับบัญชา".
+        self.assertEqual(sig["position"], "ผู้อำนวยการ สำนักงานคลัง")
+        self.env["ir.config_parameter"].set_param(
+            "advance_payment_office_route.director_title", "ผอ.กองคลัง"
+        )
+        self.assertEqual(
+            ap._contract_signatures()["endorser"]["position"], "ผอ.กองคลัง"
+        )

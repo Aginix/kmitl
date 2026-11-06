@@ -2,7 +2,7 @@
     "name": "Advance Payment - Office Route (flow สำนักงาน)",
     "summary": "Offices under the Rector's Office skip the supervisor's "
     "endorsement; the director signs the contract's เสนอ block instead",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.1.0",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",

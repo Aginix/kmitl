@@ -987,12 +987,65 @@ class AdvancePayment(models.Model):
         for rec in self:
             rec.amount_remaining = rec.loan_amount - rec.actual_expense_amount
 
-    @api.depends("payment_ids")
+    @api.depends("payment_ids.state")
     def _compute_payment_count(self):
         # sudo: account.payment read is ACL-gated to Accounting/Budget groups
         # a loan officer viewing the smart button has no reason to hold.
+        # Cancelled vouchers do not count, so a new one can be created.
         for rec in self:
-            rec.payment_count = len(rec.sudo().payment_ids)
+            rec.payment_count = len(
+                rec.sudo().payment_ids.filtered(lambda p: p.state != "cancel")
+            )
+
+    # The transfer, read off the disbursement voucher (sudo: the voucher and
+    # its e-payment file are finance-only records).
+    payment_export_id = fields.Many2one(
+        comodel_name="bank.payment.export",
+        string="ไฟล์ e-payment",
+        compute="_compute_transfer_status",
+        compute_sudo=True,
+    )
+    payment_export_effective_date = fields.Date(
+        string="วันที่มีผลที่ธนาคาร",
+        compute="_compute_transfer_status",
+        compute_sudo=True,
+    )
+    transfer_status = fields.Selection(
+        selection=[
+            ("draft", "รอเจ้าหน้าที่การเงิน"),
+            ("confirmed", "รอโอน"),
+            ("paid", "โอนสำเร็จ"),
+        ],
+        string="สถานะการโอน",
+        compute="_compute_transfer_status",
+        compute_sudo=True,
+    )
+
+    @api.depends(
+        "payment_ids.state",
+        "payment_ids.finance_state",
+        "payment_ids.payment_export_id",
+    )
+    def _compute_transfer_status(self):
+        for rec in self:
+            payment = rec.payment_ids.filtered(
+                lambda p: p.state != "cancel" and p.payment_type == "outbound"
+            )[:1]
+            rec.payment_export_id = payment.payment_export_id
+            rec.payment_export_effective_date = (
+                payment.payment_export_id.effective_date
+            )
+            rec.transfer_status = payment.finance_state or False
+
+    def action_open_payment_export(self):
+        """Open the e-payment file in a new browser tab."""
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_url",
+            "url": "/web#id=%s&model=bank.payment.export&view_type=form"
+            % self.payment_export_id.id,
+            "target": "new",
+        }
 
     def _compute_can_view_payments(self):
         allowed = self.env["account.payment"].check_access_rights(
@@ -1326,7 +1379,9 @@ class AdvancePayment(models.Model):
                 body=_(
                     "Agreement submitted by <b>%(user)s</b>."
                     " Loan amount: <b>%(amount)s %(currency)s</b>.",
-                    user=rec.employee_id.name,
+                    # sudo: a loan officer submitting on the borrower's
+                    # behalf (ADR-0031) usually has no HR rights.
+                    user=rec.employee_id.sudo().name,
                     amount=rec.loan_amount,
                     currency=rec.currency_id.name,
                 ),
@@ -1624,12 +1679,13 @@ class AdvancePayment(models.Model):
 
     def action_start(self, payment=None):
         """Transfer completed → the loan becomes a formal debt.
-        (approved → in_progress). Triggered by payment posting."""
+        (approved → in_progress). Triggered when the finance office confirms
+        the voucher paid (ADR-0034); dated by its วันที่จ่ายจริง."""
         for rec in self:
             vals = {"state": "in_progress"}
             if not rec.effective_date:
                 vals["effective_date"] = (
-                    payment.date if payment else fields.Date.context_today(rec)
+                    payment.paid_date if payment else fields.Date.context_today(rec)
                 )
             if not rec.contract_number:
                 vals["contract_number"] = self.env["ir.sequence"].next_by_code(
@@ -1648,6 +1704,24 @@ class AdvancePayment(models.Model):
             )
             rec.message_post(body=body, subtype_xmlid="mail.mt_note")
 
+    def action_unstart(self):
+        """The finance office withdrew its paid confirmation (ADR-0034):
+        back to waiting for transfer. The contract number stays."""
+        for rec in self:
+            if rec.actual_expense_amount:
+                raise UserError(
+                    _(
+                        "%s has already been partly cleared, so its payment"
+                        " cannot be withdrawn.",
+                        rec.display_name,
+                    )
+                )
+            rec.write({"state": "approved", "effective_date": False})
+            rec.message_post(
+                body=_("ยกเลิกการยืนยันจ่ายเงิน — กลับไปรอโอนเงิน"),
+                subtype_xmlid="mail.mt_note",
+            )
+
     # ------------------------------------------------------------------ #
     # Recall / reset (before approval)                                     #
     # ------------------------------------------------------------------ #
@@ -1655,7 +1729,7 @@ class AdvancePayment(models.Model):
     def action_recall(self):
         """Borrower pulls a not-yet-approved request back to draft (ADR-0001)."""
         self.ensure_one()
-        if self.employee_id.user_id != self.env.user and not self.env.user.has_group(
+        if self.employee_id.sudo().user_id != self.env.user and not self.env.user.has_group(
             "base.group_system"
         ):
             raise UserError(_("Only the borrower can recall this request."))

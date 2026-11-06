@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Which loan each row of an e-payment file pays, opened in a new tab. -->
+    <record id="bank_payment_export_line_view_tree_advance_payment" model="ir.ui.view">
+        <field name="name">bank.payment.export.line.tree.advance_payment</field>
+        <field name="model">bank.payment.export.line</field>
+        <field
+            name="inherit_id"
+            ref="finance_kmitl.bank_payment_export_line_view_tree_inherit"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='payment_amount']" position="before">
+                <field name="advance_payment_id" optional="show" />
+                <button
+                    name="action_open_advance_payment"
+                    type="object"
+                    icon="fa-external-link"
+                    title="เปิดสัญญายืมเงิน"
+                    attrs="{'invisible': [('advance_payment_id', '=', False)]}"
+                />
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -17,6 +17,19 @@
         <field name="active" eval="True" />
     </record>
 
+    <record id="excep_budget_commitment_held_by_source" model="exception.rule">
+        <field name="name">ใบจองงบประมาณนี้มีเอกสารต้นทาง</field>
+        <field
+            name="description"
+        >ใบจองงบประมาณนี้มีใบขออนุมัติหรือใบขอให้จัดหาเป็นต้นทาง กรุณายืมโดยอ้างอิงเลขที่เอกสารต้นทางนั้นแทน</field>
+        <field name="sequence">39</field>
+        <field name="model">advance.payment</field>
+        <field name="exception_type">by_domain</field>
+        <field name="domain">[('is_commitment_held_by_source', '=', True)]</field>
+        <field name="is_blocking" eval="True" />
+        <field name="active" eval="True" />
+    </record>
+
     <record id="excep_borrowing_headroom" model="exception.rule">
         <field name="name">ยอดยืมเกินวงเงินยืมคงเหลือ</field>
         <field

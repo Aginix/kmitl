@@ -22,15 +22,26 @@ class AccountPayment(models.Model):
             "target": "current",
         }
 
-    def action_post(self):
-        res = super().action_post()
-        # Outbound advance-payment disbursement: transfer completed → the loan
-        # becomes a formal debt and moves to in_progress (ADR-0001).
-        # sudo: whoever posts (the accounting approver) need hold no
-        # advance-payment group; posting the voucher is the authority, and
+    def _mark_paid(self):
+        res = super()._mark_paid()
+        # Outbound advance-payment disbursement: the finance office confirmed
+        # the money reached the borrower → the loan becomes a formal debt and
+        # moves to in_progress (ADR-0034), without waiting for the posting.
+        # sudo: the finance officer need hold no advance-payment group;
         # sudo() keeps env.uid so the chatter note still names them.
         for payment in self.sudo().filtered(
             lambda p: p.advance_payment_id.state == "approved"
         ):
             payment.advance_payment_id.action_start(payment=payment)
+        return res
+
+    def _unmark_paid(self):
+        loans = (
+            self.sudo()
+            .filtered(lambda p: p.payment_type == "outbound")
+            .mapped("advance_payment_id")
+            .filtered(lambda loan: loan.state == "in_progress")
+        )
+        res = super()._unmark_paid()
+        loans.action_unstart()
         return res

@@ -1115,6 +1115,41 @@ class TestAdvancePayment(TransactionCase):
         self.assertTrue(ap.contract_number)
         self.assertNotEqual(ap.contract_number, ap.name)
 
+    def _paid_voucher(self, ap):
+        ap.write({"state": "approved"})
+        ap.with_user(self.officer).action_create_payment_voucher()
+        payment = ap.payment_ids.sudo()
+        payment.finance_state = "confirmed"
+        payment._mark_paid()
+        return payment
+
+    def test_confirm_paid_starts_loan(self):
+        """ADR-0034: the paid confirmation, not the posting, makes the debt —
+        dated by the voucher's วันที่จ่ายจริง."""
+        ap = self._make(requested_by=self.user, amount=1000)
+        payment = self._paid_voucher(ap)
+        self.assertEqual(ap.state, "in_progress")
+        self.assertEqual(ap.effective_date, payment.paid_date)
+        self.assertTrue(ap.contract_number)
+
+    def test_unconfirm_paid_returns_loan_keeping_contract(self):
+        ap = self._make(requested_by=self.user, amount=1000)
+        payment = self._paid_voucher(ap)
+        contract = ap.contract_number
+        payment._unmark_paid()
+        self.assertEqual(ap.state, "approved")
+        self.assertFalse(ap.effective_date)
+        self.assertEqual(ap.contract_number, contract)
+
+    def test_cancelled_voucher_can_be_recreated(self):
+        ap = self._make(requested_by=self.user, amount=1000)
+        ap.write({"state": "approved"})
+        ap.with_user(self.officer).action_create_payment_voucher()
+        ap.payment_ids.sudo().action_cancel()
+        self.assertEqual(ap.payment_count, 0)
+        ap.with_user(self.officer).action_create_payment_voucher()
+        self.assertEqual(ap.payment_count, 1)
+
     # ------------------------------------------------------------------ #
     # Expense report → accept                                              #
     # ------------------------------------------------------------------ #
