@@ -667,6 +667,7 @@ class SarabunDocument(models.Model):
         "routing_step_ids.actor_user_ids",
         "routing_step_ids.recipient_ids.user_id",
     )
+    @api.depends_context("uid")
     def _compute_my_active_step(self):
         uid = self.env.user
         for record in self:
@@ -676,7 +677,7 @@ class SarabunDocument(models.Model):
                 lambda s: s.state == "active" and uid in s.actor_user_ids
             )[:1]
             verb = record.my_active_step_id.verb
-            record.my_step_button_label = verb and verb._button_label()
+            record.my_step_button_label = verb._button_label() if verb else False
             record.my_step_can_return = record.my_active_step_id.gating
             # "reaching" step drives the persistent incoming box + its columns. It is
             # keyed on my sarabun.step.recipient rows (the permanent per-person ledger,

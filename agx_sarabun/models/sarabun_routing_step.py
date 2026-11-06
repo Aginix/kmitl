@@ -524,7 +524,7 @@ class SarabunRoutingStep(models.Model):
         step = self.sudo()
         note = vals.get("note")
         if disposition == "complete":
-            step._write_sign_comment(vals)
+            step._write_sign_comment(vals, actor)
             step._do_complete(actor, note, vals.get("signed_as_position_id"))
         elif disposition == "direct":
             step._do_direct(actor, note, vals)
@@ -571,14 +571,18 @@ class SarabunRoutingStep(models.Model):
             self.document_id._assign_register_number()
         self._clear_activities()
 
-    def _write_sign_comment(self, vals):
+    def _write_sign_comment(self, vals, actor):
         """Store the ความเห็นในการลงนาม + its files; the files are re-owned by the
-        หนังสือ so every reader of it can download them."""
+        หนังสือ so every reader of it can download them. Only the actor's own
+        unowned uploads are taken — never another record's file."""
         self.ensure_one()
         if not self.verb.allow_sign_comment:
             return
-        attachments = self.env["ir.attachment"].browse(
-            vals.get("sign_attachment_ids") or []
+        attachments = (
+            self.env["ir.attachment"]
+            .sudo()
+            .browse(vals.get("sign_attachment_ids") or [])
+            .filtered(lambda a: a.create_uid == actor and not a.res_id)
         )
         attachments.sudo().write(
             {"res_model": "sarabun.document", "res_id": self.document_id.id}

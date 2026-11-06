@@ -34,7 +34,11 @@ class SarabunStepActWizard(models.TransientModel):
     def _onchange_step_id(self):
         res = super()._onchange_step_id()
         default_comment = self.step_id.verb.default_standard_comment_id
-        if default_comment and self.disposition == "complete":
+        if (
+            default_comment
+            and self.disposition == "complete"
+            and self.step_allow_sign_comment
+        ):
             self.standard_comment_id = default_comment
             self._set_standard_comment(default_comment.body)
         return res
