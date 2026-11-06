@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_purchase_request_form" model="ir.ui.view">
+        <field name="name">purchase.request.form (Requested By KMITL)</field>
+        <field name="model">purchase.request</field>
+        <field name="priority">90</field>
+        <field
+            name="inherit_id"
+            ref="purchase_request_kmitl.view_purchase_request_form"
+        />
+        <field name="arch" type="xml">
+            <xpath
+                expr="//group[@name='purchase_request_details_group']//field[@name='requested_by']"
+                position="before"
+            >
+                <field name="can_edit_requested_by" invisible="1" />
+            </xpath>
+            <xpath
+                expr="//group[@name='purchase_request_details_group']//field[@name='requested_by']"
+                position="attributes"
+            >
+                <attribute
+                    name="attrs"
+                >{'readonly': ['|', ('is_editable', '=', False), ('can_edit_requested_by', '=', False)]}</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>
