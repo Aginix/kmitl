@@ -317,6 +317,11 @@ class SarabunDocument(models.Model):
         "it circulates (ADR-0022).",
     )
     can_edit_content = fields.Boolean(compute="_compute_can_edit_content")
+    is_content_editable = fields.Boolean(
+        compute="_compute_can_edit_content",
+        help="The content fields are open: the ผู้จัดทำ's draft / returned หนังสือ, or "
+        "a แก้ไขเอกสารได้ holder's circulating one.",
+    )
     sign_attachment_ids = fields.Many2many(
         comodel_name="ir.attachment",
         compute="_compute_sign_attachment_ids",
@@ -459,7 +464,7 @@ class SarabunDocument(models.Model):
 
     def write(self, vals):
         editing = self._content_editor_records()
-        if editing and set(vals) - CONTENT_EDITOR_FIELDS:
+        if editing and set(vals) - editing._content_editor_allowed_fields():
             raise AccessError(
                 _("ระหว่างเวียนหนังสือ แก้ไขได้เฉพาะ เรื่อง / เรียน / เนื้อหา / อ้างถึง / "
                   "หมายเหตุ / สิ่งที่ส่งมาด้วย")
@@ -470,9 +475,18 @@ class SarabunDocument(models.Model):
             self._adopt_enclosures()
         for doc in editing:
             doc._log_content_edit(
-                [f for f in vals if doc._content_changed(f, before[doc.id][f])]
+                [
+                    f
+                    for f in vals
+                    if f in CONTENT_EDITOR_FIELDS
+                    and doc._content_changed(f, before[doc.id][f])
+                ]
             )
         return res
+
+    def _content_editor_allowed_fields(self):
+        """Fields a แก้ไขเอกสารได้ holder may write; add-ons may widen it."""
+        return CONTENT_EDITOR_FIELDS
 
     def _content_changed(self, fname, old):
         # The Html editor re-sends an untouched เนื้อหา with re-measured tab widths;
@@ -488,10 +502,16 @@ class SarabunDocument(models.Model):
     def _content_editor_records(self):
         """Records the current user writes as a แก้ไขเอกสารได้ holder (not as the
         ผู้จัดทำ / manager / engine) — ADR-0022."""
-        if self.env.su or self.env.user.has_group("agx_sarabun.group_sarabun_manager"):
+        if self.env.su:
+            return self.browse()
+        # cheap state filter first: only a circulating หนังสือ has content editors
+        circulating = self.filtered(lambda d: d.state == "circulating")
+        if not circulating or self.env.user.has_group(
+            "agx_sarabun.group_sarabun_manager"
+        ):
             return self.browse()
         user = self.env.user
-        return self.filtered(
+        return circulating.filtered(
             lambda d: d.sender_user_id != user and user in d.content_editor_user_ids
         )
 
@@ -518,6 +538,13 @@ class SarabunDocument(models.Model):
           original owner keeps its file."""
         for doc in self:
             enclosures = doc.enclosure_attachment_ids.sudo()
+            if not self.env.su:
+                # Only files the writer may read themselves: the sudo adopt below
+                # would otherwise publish any linked attachment to the หนังสือ.
+                others = enclosures.filtered(
+                    lambda a: (a.res_model, a.res_id) != (self._name, doc.id)
+                )
+                others.with_env(self.env).check("read")
             orphans = enclosures.filtered(lambda a: not a.res_id)
             if orphans:
                 orphans.write({"res_model": self._name, "res_id": doc.id})
@@ -725,11 +752,12 @@ class SarabunDocument(models.Model):
                 steps.actor_user_ids if record.state == "circulating" else False
             )
 
-    @api.depends("content_editor_user_ids")
+    @api.depends("content_editor_user_ids", "state", "sender_user_id")
     @api.depends_context("uid")
     def _compute_can_edit_content(self):
         for record in self:
             record.can_edit_content = self.env.user in record.content_editor_user_ids
+            record.is_content_editable = record.is_editable or record.can_edit_content
 
     @api.depends("routing_step_ids.sign_attachment_ids")
     def _compute_sign_attachment_ids(self):

@@ -105,6 +105,27 @@ class TestP7SignCommentEdit(SarabunCommon):
         doc.with_user(self.user_b).write({"enclosure_attachment_ids": [(4, att.id)]})
         self.assertIn(att, doc.enclosure_attachment_ids)
 
+    def test_editor_cannot_publish_foreign_attachment(self):
+        """Linking a file the editor cannot read (another record's, or another
+        user's unsaved upload) as an enclosure is refused, not copied over."""
+        doc, _step = self._editor_doc()
+        private = self._make_doc(subject="ร่างส่วนตัว", sender=self.user_a)
+        foreign = self.env["ir.attachment"].create(
+            {
+                "name": "ลับ.pdf",
+                "datas": base64.b64encode(b"x"),
+                "res_model": "sarabun.document",
+                "res_id": private.id,
+            }
+        )
+        orphan = self._attachment(self.user_a, "ของคนอื่น.pdf")
+        for att in (foreign, orphan):
+            with self.assertRaises(AccessError):
+                doc.with_user(self.user_b).write(
+                    {"enclosure_attachment_ids": [(4, att.id)]}
+                )
+        self.assertFalse(doc.enclosure_attachment_ids)
+
     # ----------------------------------------------------------------- buttons
     def test_button_label_and_return_flag(self):
         verb = self._verb("sign_approve")

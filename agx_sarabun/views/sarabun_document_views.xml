@@ -205,26 +205,26 @@
                          (can_edit_content — ADR-0022). -->
                     <group
                         name="header"
-                        attrs="{'invisible': [('is_editable', '=', False), ('can_edit_content', '=', False)]}"
+                        attrs="{'invisible': [('is_content_editable', '=', False)]}"
                     >
                         <field
                             name="subject"
                             placeholder="เรื่อง..."
-                            attrs="{'readonly': [('is_editable', '=', False), ('can_edit_content', '=', False)]}"
+                            attrs="{'readonly': [('is_content_editable', '=', False)]}"
                         />
                         <field
                             name="addressee_prefix_id"
                             nolabel="1"
                             widget="selection"
                             required="1"
-                            attrs="{'readonly': [('is_editable', '=', False), ('can_edit_content', '=', False)]}"
+                            attrs="{'readonly': [('is_content_editable', '=', False)]}"
                         />
                         <div class="o_row">
                             <field
                                 name="addressee"
                                 nolabel="1"
                                 placeholder="ผู้รับ / ตำแหน่ง..."
-                                attrs="{'readonly': [('is_editable', '=', False), ('can_edit_content', '=', False)]}"
+                                attrs="{'readonly': [('is_content_editable', '=', False)]}"
                             />
                         </div>
                     </group>
@@ -242,28 +242,28 @@
                     <label
                         string="มีเนื้อหา"
                         for="include_content"
-                        attrs="{'invisible': ['|', ('origin_model', '=', False), '&amp;', ('is_editable', '=', False), ('can_edit_content', '=', False)]}"
+                        attrs="{'invisible': ['|', ('origin_model', '=', False), ('is_content_editable', '=', False)]}"
                     />
                     <field
                         name="include_content"
-                        attrs="{'invisible': ['|', ('origin_model', '=', False), '&amp;', ('is_editable', '=', False), ('can_edit_content', '=', False)], 'readonly': [('is_editable', '=', False), ('can_edit_content', '=', False)]}"
+                        attrs="{'invisible': ['|', ('origin_model', '=', False), ('is_content_editable', '=', False)], 'readonly': [('is_content_editable', '=', False)]}"
                     />
                     <separator
                         string="เนื้อหา (Content)"
-                        attrs="{'invisible': ['|', ('include_content', '=', False), '&amp;', ('is_editable', '=', False), ('can_edit_content', '=', False)]}"
+                        attrs="{'invisible': ['|', ('include_content', '=', False), ('is_content_editable', '=', False)]}"
                     />
                     <field
                         name="content"
                         nolabel="1"
                         class="o_sarabun_content"
                         placeholder="พิมพ์เนื้อหาหนังสือ..."
-                        attrs="{'invisible': ['|', ('include_content', '=', False), '&amp;', ('is_editable', '=', False), ('can_edit_content', '=', False)], 'readonly': [('is_editable', '=', False), ('can_edit_content', '=', False)]}"
+                        attrs="{'invisible': ['|', ('include_content', '=', False), ('is_content_editable', '=', False)], 'readonly': [('is_content_editable', '=', False)]}"
                     />
                     <group>
                       <field
                             name="remark"
                             placeholder="หมายเหตุภายใน (ไม่บังคับ)..."
-                            attrs="{'readonly': [('is_editable', '=', False), ('can_edit_content', '=', False)]}"
+                            attrs="{'readonly': [('is_content_editable', '=', False)]}"
                         />
                     </group>
                     <group>
@@ -276,7 +276,7 @@
                             widget="many2many_binary"
                             nolabel="1"
                             colspan="2"
-                            attrs="{'readonly': [('is_editable', '=', False), ('can_edit_content', '=', False)]}"
+                            attrs="{'readonly': [('is_content_editable', '=', False)]}"
                         />
                     </group>
                     <!-- ไฟล์ที่ผู้ลงนามแนบกับความเห็นในการลงนาม — download only. -->
@@ -302,6 +302,7 @@
                     <field name="my_active_step_id" invisible="1" />
                     <field name="my_step_can_return" invisible="1" />
                     <field name="can_edit_content" invisible="1" />
+                    <field name="is_content_editable" invisible="1" />
                     <!-- busts the inline PDF cache after an in-flight content edit -->
                     <field name="write_date" invisible="1" />
                     <notebook>
@@ -540,13 +541,13 @@
                             <separator string="อ้างถึง — ในระบบ (prior หนังสือ)" />
                             <field
                                 name="reference_document_ids"
-                                attrs="{'readonly': [('is_editable', '=', False), ('can_edit_content', '=', False)]}"
+                                attrs="{'readonly': [('is_content_editable', '=', False)]}"
                                 widget="many2many_tags"
                             />
                             <separator string="อ้างถึง — นอกระบบ (free text)" />
                             <field
                                 name="reference_line_ids"
-                                attrs="{'readonly': [('is_editable', '=', False), ('can_edit_content', '=', False)]}"
+                                attrs="{'readonly': [('is_content_editable', '=', False)]}"
                             >
                                 <tree editable="bottom">
                                     <field name="sequence" widget="handle" />
