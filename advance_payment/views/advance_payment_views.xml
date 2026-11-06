@@ -392,6 +392,29 @@
                         />
                     </group>
                     <group
+                        name="transfer_status"
+                        string="การโอนเงิน"
+                        attrs="{'invisible': [('transfer_status', '=', False)]}"
+                    >
+                        <field name="transfer_status" />
+                        <label for="payment_export_id" />
+                        <div class="o_row">
+                            <field name="payment_export_id" options="{'no_open': True}" />
+                            <button
+                                name="action_open_payment_export"
+                                type="object"
+                                icon="fa-external-link"
+                                string="เปิดไฟล์"
+                                class="btn-link"
+                                attrs="{'invisible': ['|', ('payment_export_id', '=', False), ('can_view_payments', '=', False)]}"
+                            />
+                        </div>
+                        <field
+                            name="payment_export_effective_date"
+                            attrs="{'invisible': [('payment_export_id', '=', False)]}"
+                        />
+                    </group>
+                    <group
                         name="reason"
                         string="เหตุผล"
                         attrs="{'invisible': [('cancel_reason', '=', False)]}"

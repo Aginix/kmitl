@@ -997,6 +997,56 @@ class AdvancePayment(models.Model):
                 rec.sudo().payment_ids.filtered(lambda p: p.state != "cancel")
             )
 
+    # The transfer, read off the disbursement voucher (sudo: the voucher and
+    # its e-payment file are finance-only records).
+    payment_export_id = fields.Many2one(
+        comodel_name="bank.payment.export",
+        string="ไฟล์ e-payment",
+        compute="_compute_transfer_status",
+        compute_sudo=True,
+    )
+    payment_export_effective_date = fields.Date(
+        string="วันที่มีผลที่ธนาคาร",
+        compute="_compute_transfer_status",
+        compute_sudo=True,
+    )
+    transfer_status = fields.Selection(
+        selection=[
+            ("draft", "รอเจ้าหน้าที่การเงิน"),
+            ("confirmed", "รอโอน"),
+            ("paid", "โอนสำเร็จ"),
+        ],
+        string="สถานะการโอน",
+        compute="_compute_transfer_status",
+        compute_sudo=True,
+    )
+
+    @api.depends(
+        "payment_ids.state",
+        "payment_ids.finance_state",
+        "payment_ids.payment_export_id",
+    )
+    def _compute_transfer_status(self):
+        for rec in self:
+            payment = rec.payment_ids.filtered(
+                lambda p: p.state != "cancel" and p.payment_type == "outbound"
+            )[:1]
+            rec.payment_export_id = payment.payment_export_id
+            rec.payment_export_effective_date = (
+                payment.payment_export_id.effective_date
+            )
+            rec.transfer_status = payment.finance_state or False
+
+    def action_open_payment_export(self):
+        """Open the e-payment file in a new browser tab."""
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_url",
+            "url": "/web#id=%s&model=bank.payment.export&view_type=form"
+            % self.payment_export_id.id,
+            "target": "new",
+        }
+
     def _compute_can_view_payments(self):
         allowed = self.env["account.payment"].check_access_rights(
             "read", raise_exception=False
@@ -1329,7 +1379,9 @@ class AdvancePayment(models.Model):
                 body=_(
                     "Agreement submitted by <b>%(user)s</b>."
                     " Loan amount: <b>%(amount)s %(currency)s</b>.",
-                    user=rec.employee_id.name,
+                    # sudo: a loan officer submitting on the borrower's
+                    # behalf (ADR-0031) usually has no HR rights.
+                    user=rec.employee_id.sudo().name,
                     amount=rec.loan_amount,
                     currency=rec.currency_id.name,
                 ),
@@ -1677,7 +1729,7 @@ class AdvancePayment(models.Model):
     def action_recall(self):
         """Borrower pulls a not-yet-approved request back to draft (ADR-0001)."""
         self.ensure_one()
-        if self.employee_id.user_id != self.env.user and not self.env.user.has_group(
+        if self.employee_id.sudo().user_id != self.env.user and not self.env.user.has_group(
             "base.group_system"
         ):
             raise UserError(_("Only the borrower can recall this request."))
