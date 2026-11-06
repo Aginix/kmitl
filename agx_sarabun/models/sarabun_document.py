@@ -477,8 +477,12 @@ class SarabunDocument(models.Model):
     def _content_changed(self, fname, old):
         # The Html editor re-sends an untouched เนื้อหา with re-measured tab widths;
         # compare its text, not its markup.
-        if self._fields[fname].type == "html":
+        ftype = self._fields[fname].type
+        if ftype == "html":
             return html2plaintext(self[fname] or "") != html2plaintext(old or "")
+        if ftype == "one2many":
+            # line edits keep the same ids; the form only sends dirty o2m commands
+            return True
         return self[fname] != old
 
     def _content_editor_records(self):

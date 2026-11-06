@@ -65,15 +65,17 @@ class SarabunDocument(models.Model):
             user_id=creator.id,
         )
 
-    def action_send(self):
-        """Re-sending a returned หนังสือ is the creator acting on the ตีกลับ Todo —
-        close it (Execution: never by Mark as Read)."""
-        returned = self.filtered(lambda d: d.state == "returned")
-        res = super().action_send()
-        returned_type = self.env.ref(
+    def write(self, vals):
+        """Leaving ตีกลับ (re-send, Reset to draft, …) is the creator acting on the
+        ตีกลับ Todo — close it (Execution: never by Mark as Read)."""
+        returned = self.browse()
+        if vals.get("state", "returned") != "returned":
+            returned = self.filtered(lambda d: d.state == "returned")
+        res = super().write(vals)
+        returned_type = returned and self.env.ref(
             "agx_sarabun_todo.mail_activity_sarabun_returned", raise_if_not_found=False
         )
-        if returned and returned_type:
+        if returned_type:
             self.env["mail.activity"].sudo().search(
                 [
                     ("res_model", "=", self._name),
