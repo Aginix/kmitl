@@ -24,24 +24,36 @@
                             invisible="0"
                             groups="base.group_erp_manager"
                         />
-                        <field name="budget_account_id"/>
-                        <field name="activity_analytic_id" string="Activity"/>
-                        <field name="department_analytic_id" string="Department"/>
-                        <field name="fund_analytic_id" string="Fund"/>
-                        <field name="source_analytic_id" string="Source"/>
-                        <field name="procurement_plan_analytic_id" invisible="1" />
-                    </group>
-                    <group name="procurement_plan" string="Procurement Plan">
+                        <!-- Budget comes only from a picked commitment (or, via
+                             bridges, a project): code and dimensions are locked. -->
+                        <field name="budget_commitment_domain" invisible="1" />
                         <field
-                            name="use_procurement_plan"
+                            name="budget_commitment_id"
+                            domain="budget_commitment_domain"
+                            options="{'no_create': True, 'no_open': True}"
                             attrs="{'readonly': [('state', 'in', ('purchase', 'done', 'cancel'))]}"
                         />
+                        <field name="budget_account_id" readonly="1" />
+                        <field name="budget_account_product_id" invisible="1" />
+                        <field name="activity_analytic_id" string="Activity" readonly="1" />
+                        <field name="department_analytic_id" string="Department" readonly="1" />
+                        <field name="fund_analytic_id" string="Fund" readonly="1" />
+                        <field name="source_analytic_id" string="Source" readonly="1" />
+                        <field name="procurement_plan_analytic_id" invisible="1" />
+                    </group>
+                    <!-- Read-only: a procurement plan only arrives from the
+                         purchase request this order was made from. -->
+                    <group
+                        name="procurement_plan"
+                        string="Procurement Plan"
+                        attrs="{'invisible': [('use_procurement_plan', '=', False)]}"
+                    >
+                        <field name="use_procurement_plan" readonly="1" />
                         <field name="account_fiscal_year_id" invisible="1" />
                         <field
                             name="procurement_plan_id"
                             options="{'no_create_edit': True, 'no_open': True}"
-                            domain="[('state', '=', 'pending'), ('account_fiscal_year_id', '=', account_fiscal_year_id)]"
-                            attrs="{'invisible': [('use_procurement_plan', '=', False)], 'required': [('use_procurement_plan', '=', True)], 'readonly': [('state', 'in', ('purchase', 'done', 'cancel'))]}"
+                            readonly="1"
                         />
                     </group>
                 </page>
@@ -54,7 +66,6 @@
                     icon="fa-money"
                     attrs="{'invisible':[('budget_commitment_id','=',False)]}"
                 >
-                    <field name="budget_commitment_id" invisible="1" />
                     <div class="o_stat_info">
                         <span>Budget Commitment</span>
                     </div>
@@ -98,7 +109,7 @@
                 <attribute name="invisible">1</attribute>
             </xpath>
             <xpath expr="//field[@name='order_line']" position="attributes">
-                <attribute name="context">{'default_state': 'draft', 'default_product_id': product_id}</attribute>
+                <attribute name="context">{'default_state': 'draft', 'default_product_id': budget_account_product_id}</attribute>
             </xpath>
         </field>
     </record>

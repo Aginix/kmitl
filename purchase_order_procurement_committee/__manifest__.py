@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Purchase Order Procurement Committee',
-    'version': '16.0.1.0.0',
+    'version': '16.0.1.0.1',
     'summary': """ Purchase Order Procurement Committee Summary """,
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
