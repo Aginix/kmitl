@@ -71,7 +71,7 @@ export class ReceivableRaisedReport extends Component {
             departments: _t("Departments"),
             sources: _t("Sources"),
             funds: _t("Funds"),
-            activities: _t("Activities"),
+            activities: _t("Analytic Activities"),
             customer: _t("Customer"),
             partnerType: _t("Partner Type"),
         };

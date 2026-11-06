@@ -73,7 +73,7 @@ export class ReceiptReport extends Component {
             departments: _t("Departments"),
             sources: _t("Sources"),
             funds: _t("Funds"),
-            activities: _t("Activities"),
+            activities: _t("Analytic Activities"),
             method: _t("Receiving Method"),
             payer: _t("Payer"),
             issuingDepartment: _t("Issuing Department"),
