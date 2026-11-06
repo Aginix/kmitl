@@ -60,15 +60,15 @@
                       <div
                             t-out="sig.signed_position_name or sig.signed_as_position_id.name or sig.position_id.name"
                         />
-                      <!-- เอกสารประกอบการลงนาม — filenames under ตำแหน่ง. -->
-                      <div
-                            t-foreach="sig.sign_attachment_ids"
-                            t-as="sig_file"
-                        >แนบ: <span t-out="sig_file.name" /></div>
                       <div
                             t-if="sig.acted_date"
                             t-out="doc.format_datetime_thai_sign(sig.acted_date)"
                         />
+                      <!-- เอกสารประกอบการลงนาม — filenames last, after the date. -->
+                      <div
+                            t-foreach="sig.sign_attachment_ids"
+                            t-as="sig_file"
+                        >แนบ: <span t-out="sig_file.name" /></div>
                     </div>
                 </div>
             </div>

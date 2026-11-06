@@ -176,7 +176,7 @@ The rich-text comment a signer may write when completing a `show_signature` step
 _Avoid_: calling the ตีกลับ reason a ความเห็นในการลงนาม.
 
 **เอกสารประกอบการลงนาม (Sign attachments)**:
-Files a signer attaches together with their ความเห็นในการลงนาม. They belong to that signing step, not to the หนังสือ's **สิ่งที่ส่งมาด้วย**; their filenames print under the signer's ตำแหน่ง, and anyone who can read the หนังสือ can download them.
+Files a signer attaches together with their ความเห็นในการลงนาม. They belong to that signing step, not to the หนังสือ's **สิ่งที่ส่งมาด้วย**; their filenames print last in the signature block, after the signing date, and anyone who can read the หนังสือ can download them.
 _Avoid_: listing them as สิ่งที่ส่งมาด้วย.
 
 **แก้ไขเอกสารได้ (Content editor)**:
