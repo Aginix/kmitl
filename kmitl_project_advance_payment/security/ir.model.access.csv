@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_advance_payment_project_line_user,advance.payment.project.line user,model_advance_payment_project_line,advance_payment.group_advance_payment_own_only,1,1,1,1
+access_advance_payment_project_line_endorser,advance.payment.project.line endorser,model_advance_payment_project_line,base.group_user,1,0,0,0
