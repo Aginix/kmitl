@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!--
+        agx_sarabun_person_capacity lets a Route Template line in person mode
+        carry an optional signing capacity (ตำแหน่ง), but only on the inline
+        tree. The flow diagram edits lines through the dialog <form> added by
+        agx_sarabun_widget_flow, so mirror the same rule there, as on the
+        document's step dialog: shown in position mode, or in person mode once a
+        บุคลากร is picked (filtered to that person's holdings), placed after the
+        บุคลากร.
+    -->
+    <record id="view_sarabun_route_template_form" model="ir.ui.view">
+        <field name="name">sarabun.route.template.form.flow.person.capacity</field>
+        <field name="model">sarabun.route.template</field>
+        <field
+            name="inherit_id"
+            ref="agx_sarabun_widget_flow.view_sarabun_route_template_form"
+        />
+        <field name="arch" type="xml">
+            <xpath
+                expr="//field[@name='line_ids']/form//field[@name='position_id']"
+                position="attributes"
+            >
+                <attribute
+                    name="attrs"
+                >{'invisible': ['|', ('target_mode', 'not in', ('position', 'person')), '&amp;', ('target_mode', '=', 'person'), ('employee_id', '=', False)], 'required': [('target_mode', '=', 'position')]}</attribute>
+                <attribute
+                    name="domain"
+                >[('holder_ids', 'in', [employee_id])] if target_mode == 'person' and employee_id else []</attribute>
+            </xpath>
+            <xpath
+                expr="//field[@name='line_ids']/form//field[@name='employee_id']"
+                position="after"
+            >
+                <xpath
+                    expr="//field[@name='line_ids']/form//field[@name='position_id']"
+                    position="move"
+                />
+            </xpath>
+        </field>
+    </record>
+</odoo>

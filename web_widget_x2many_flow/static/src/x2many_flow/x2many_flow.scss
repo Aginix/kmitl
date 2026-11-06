@@ -1,0 +1,310 @@
+// Flow Diagram: Layers of fixed-width Node cards joined by fork/join connectors.
+// Fixed card width lets the fork/join bus line span exactly from the first to the
+// last card centre without measuring the DOM. Overridable per view through the
+// `card_width` option (set as --o-flow-card-width on the root).
+
+$o-flow-card-width: var(--o-flow-card-width, 280px);
+$o-flow-line: $gray-400;
+$o-flow-stub: 0.75rem;
+$o-flow-gap: 1rem;
+
+.o_field_x2many_flow {
+    width: 100%;
+}
+
+.o_flow {
+    .o_flow_toolbar {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .o_flow_empty {
+        padding: 1.5rem;
+        text-align: center;
+        border: 1px dashed $o-flow-line;
+        border-radius: $border-radius;
+    }
+
+    .o_flow_canvas {
+        display: flex;
+        align-items: safe center;
+        overflow: auto;
+        padding: 0.5rem;
+    }
+
+    .o_flow_layer_wrap {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        flex: 0 0 auto;
+    }
+
+    .o_flow_layer_label {
+        font-size: $font-size-sm;
+        color: $text-muted;
+        margin-bottom: 0.25rem;
+    }
+
+    .o_flow_layer_body {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .o_flow_layer {
+        position: relative;
+        display: flex;
+        gap: $o-flow-gap;
+        min-width: $o-flow-card-width;
+        min-height: 2.5rem;
+        border-radius: $border-radius;
+    }
+
+    // Gaps: a connector arrow between Layers; a visible drop zone while dragging.
+    .o_flow_gap {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 auto;
+        &.o_flow_gap_edge {
+            display: none;
+        }
+    }
+
+    .o_flow_connector {
+        position: relative;
+        background: $o-flow-line;
+        &::after {
+            content: "";
+            position: absolute;
+            border: 0.35rem solid transparent;
+        }
+    }
+
+    &.o_flow_dragging {
+        .o_flow_gap {
+            display: flex;
+            min-width: $o-flow-card-width;
+            min-height: 2.5rem;
+            border: 2px dashed $o-flow-line;
+            border-radius: $border-radius;
+            margin: 0.25rem;
+            .o_flow_connector {
+                display: none;
+            }
+        }
+        .o_flow_layer {
+            outline: 1px dashed $o-flow-line;
+            outline-offset: 0.25rem;
+        }
+        .o_flow_drop_hover {
+            border-color: $o-brand-primary;
+            outline-color: $o-brand-primary;
+            background: rgba($o-brand-primary, 0.06);
+        }
+    }
+
+    // Node card
+    .o_flow_node {
+        position: relative;
+        flex: 0 0 auto;
+        width: $o-flow-card-width;
+        text-align: start;
+        background: $white;
+        border: 1px solid $border-color;
+        border-left: 4px solid $o-flow-line;
+        border-radius: $border-radius;
+        box-shadow: $box-shadow-sm;
+        @each $name, $color in $theme-colors {
+            &.o_flow_deco_#{$name} {
+                border-left-color: $color;
+            }
+        }
+        &.o_flow_deco_muted {
+            border-left-color: $gray-300;
+            opacity: 0.7;
+        }
+        &.o_flow_locked {
+            background: $gray-100;
+        }
+        &.o_flow_draggable {
+            cursor: grab;
+            user-select: none;
+        }
+    }
+
+    .o_flow_node_header {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 0.25rem 0.25rem 0.25rem 0.5rem;
+        .o_flow_handle {
+            color: $text-muted;
+        }
+        .o_flow_lock {
+            color: $text-muted;
+        }
+        .btn {
+            padding: 0 0.25rem;
+            color: $text-muted;
+            &:hover {
+                color: $body-color;
+            }
+        }
+    }
+
+    .o_flow_node_title {
+        flex: 1 1 auto;
+        min-width: 0;
+        font-weight: $font-weight-bold;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .o_flow_node_body {
+        padding: 0 0.5rem 0.4rem;
+    }
+
+    .o_flow_node_row {
+        display: flex;
+        gap: 0.25rem;
+        min-width: 0;
+        > .o_field_widget {
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    }
+
+    // Card values are display-only: drop the theme's "required input" tint
+    // (web_theme_classic_extended paints required selections with !important).
+    .o_flow_node .o_field_widget.o_required_modifier {
+        background-color: transparent !important;
+        padding-left: 0 !important;
+    }
+
+    .o_flow_node_label {
+        flex: 0 0 auto;
+        color: $text-muted;
+        &::after {
+            content: ":";
+        }
+    }
+
+    // ---------------------------------------------------------------- vertical
+    &.o_flow_vertical {
+        .o_flow_canvas {
+            flex-direction: column;
+        }
+        .o_flow_layer_body {
+            flex-direction: row;
+        }
+        .o_flow_layer {
+            flex-direction: row;
+        }
+        .o_flow_connector {
+            width: 2px;
+            height: 1.5rem;
+            &::after {
+                bottom: -0.5rem;
+                left: -0.3rem;
+                border-top-color: $o-flow-line;
+            }
+        }
+        // fork (top bus) / join (bottom bus) spanning first to last card centre
+        .o_flow_layer_multi {
+            padding: $o-flow-stub 0;
+            &::before,
+            &::after {
+                content: "";
+                position: absolute;
+                left: calc(#{$o-flow-card-width} / 2);
+                right: calc(#{$o-flow-card-width} / 2);
+                border-top: 2px solid $o-flow-line;
+            }
+            &::before {
+                top: 0;
+            }
+            &::after {
+                bottom: 0;
+            }
+            > .o_flow_node {
+                &::before,
+                &::after {
+                    content: "";
+                    position: absolute;
+                    left: 50%;
+                    height: $o-flow-stub;
+                    border-left: 2px solid $o-flow-line;
+                }
+                // offsets include the card's 1px border
+                &::before {
+                    top: calc(-#{$o-flow-stub} - 1px);
+                }
+                &::after {
+                    bottom: calc(-#{$o-flow-stub} - 1px);
+                }
+            }
+        }
+    }
+
+    // -------------------------------------------------------------- horizontal
+    &.o_flow_horizontal {
+        .o_flow_canvas {
+            flex-direction: row;
+        }
+        .o_flow_layer_body {
+            flex-direction: column;
+        }
+        .o_flow_layer {
+            flex-direction: column;
+        }
+        .o_flow_connector {
+            width: 1.5rem;
+            height: 2px;
+            &::after {
+                right: -0.5rem;
+                top: -0.3rem;
+                border-left-color: $o-flow-line;
+            }
+        }
+        .o_flow_layer_multi {
+            padding: 0 $o-flow-stub;
+            &::before,
+            &::after {
+                content: "";
+                position: absolute;
+                top: 1.25rem;
+                bottom: 1.25rem;
+                border-left: 2px solid $o-flow-line;
+            }
+            &::before {
+                left: 0;
+            }
+            &::after {
+                right: 0;
+            }
+            > .o_flow_node {
+                &::before,
+                &::after {
+                    content: "";
+                    position: absolute;
+                    top: 1.25rem;
+                    width: $o-flow-stub;
+                    border-top: 2px solid $o-flow-line;
+                }
+                // offsets include the card's 4px left / 1px right border
+                &::before {
+                    left: calc(-#{$o-flow-stub} - 4px);
+                }
+                &::after {
+                    right: calc(-#{$o-flow-stub} - 1px);
+                }
+            }
+        }
+    }
+}

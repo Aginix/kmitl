@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!--
+        Route-Template seed lines as a flow diagram. The widget edits through a
+        dialog, so the inline-editable tree gains a <form> mirroring its per
+        target_mode required / readonly rules (inactive targets hidden). The
+        field's `default_order: next_line_order` context still seeds Save & New;
+        the widget's own Add / "+" buttons pass the Layer's order explicitly.
+    -->
+    <record id="view_sarabun_route_template_form" model="ir.ui.view">
+        <field name="name">sarabun.route.template.form.flow</field>
+        <field name="model">sarabun.route.template</field>
+        <field name="inherit_id" ref="agx_sarabun.view_sarabun_route_template_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='line_ids']" position="attributes">
+                <attribute name="widget">x2many_flow</attribute>
+                <attribute
+                    name="options"
+                >{'order_field': 'order', 'title_field': 'verb'}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='line_ids']/tree" position="after">
+                <form string="ขั้นตอนเส้นทาง (Route Step)">
+                    <group>
+                        <group>
+                            <field name="order" string="ลำดับ" />
+                            <field name="verb" />
+                        </group>
+                        <group>
+                            <field name="for_info" />
+                        </group>
+                    </group>
+                    <group>
+                        <field name="target_mode" widget="radio" />
+                        <field
+                            name="position_id"
+                            attrs="{'invisible': [('target_mode', '!=', 'position')], 'required': [('target_mode', '=', 'position')]}"
+                            options="{'no_create': True, 'no_open': True}"
+                        />
+                        <field
+                            name="employee_id"
+                            attrs="{'invisible': [('target_mode', '!=', 'person')], 'required': [('target_mode', '=', 'person')]}"
+                            options="{'no_create': True, 'no_open': True}"
+                        />
+                        <field
+                            name="department_id"
+                            attrs="{'invisible': [('target_mode', '!=', 'unit')], 'required': [('target_mode', '=', 'unit')]}"
+                            options="{'no_create': True, 'no_open': True}"
+                        />
+                    </group>
+                </form>
+            </xpath>
+        </field>
+    </record>
+</odoo>

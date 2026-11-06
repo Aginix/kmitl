@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!--
+        The Route (เส้นทางเอกสาร) as a flow diagram: one Layer per Stage (steps
+        sharing an `order`). The tree stays the card source and the existing step
+        dialog the editor, so every other module's xpath into tree / form still
+        applies. A step's ลำดับ is locked — no drag, no push, no trash — for the
+        originator (its write-guard) and for any step no longer waiting
+        (agx_sarabun_route_edit's rule while circulating).
+    -->
+    <record id="view_sarabun_document_form" model="ir.ui.view">
+        <field name="name">sarabun.document.form.flow</field>
+        <field name="model">sarabun.document</field>
+        <field name="inherit_id" ref="agx_sarabun.view_sarabun_document_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='routing_step_ids']" position="attributes">
+                <attribute name="widget">x2many_flow</attribute>
+                <attribute
+                    name="options"
+                >{'order_field': 'order', 'title_field': 'target_name', 'card_fields': ['verb', 'for_info', 'state', 'acted_by_id', 'activated_date']}</attribute>
+            </xpath>
+            <xpath
+                expr="//field[@name='routing_step_ids']/tree/field[@name='order']"
+                position="attributes"
+            >
+                <attribute
+                    name="attrs"
+                >{'readonly': ['|', ('is_originator', '=', True), ('state', '!=', 'waiting')]}</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>
