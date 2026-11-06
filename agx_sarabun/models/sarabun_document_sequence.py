@@ -25,7 +25,7 @@ class SarabunDocumentSequence(models.Model):
 
     # === Owning unit: a ส่วนงาน may keep several เล่มทะเบียน (ADR-0012) ===
     sender_department_id = fields.Many2one(
-        "hr.department", string="ส่วนงาน (Issuing Unit)", required=True, index=True,
+        "hr.department", string="ส่วนงาน (Issuing Unit)", index=True,
         help="หน่วยงานเจ้าของเล่มทะเบียนนี้ — หนึ่งหน่วยงานมีได้หลายเล่มทะเบียน; "
         "หนังสือจะเลือกว่าจะออกเลขจากเล่มใด (ค่าเริ่มต้น = เล่มทะเบียนหลักของหน่วยงาน).",
     )
