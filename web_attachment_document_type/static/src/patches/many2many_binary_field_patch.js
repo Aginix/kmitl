@@ -137,6 +137,37 @@ patch(
             }
         },
 
+        // Fallback path: when no doctype is configured for this res_model
+        // `beforeAttachClick` returns true and the stock FileInput flow
+        // runs, which only toasts on error. Delegate to _super for the
+        // existing per-file danger notifications + saveRecord, then add
+        // the same success confirmation used by _uploadAndLink so the user
+        // isn't left guessing whether the upload landed.
+        async onFileUploaded(files) {
+            await this._super(...arguments);
+            const okCount = files.filter((f) => !f.error).length;
+            if (okCount) {
+                this.env.services.notification.add(
+                    this.env._t("Attachment(s) added"),
+                    {type: "success"}
+                );
+            }
+        },
+
+        // Spinner for the fallback path — the dialog/drag flows toggle
+        // `uploading` inside `_uploadAndLink`, but click-upload here goes
+        // through stock FileInput. Hooking FileInput's own lifecycle
+        // (via the patched onBeforeUpload/onAfterUpload props) keeps the
+        // overlay in sync with the HTTP request, including the error
+        // path where `onFileUploaded` never runs.
+        onBeforeUpload() {
+            this.doctypeState.uploading = true;
+        },
+
+        onAfterUpload() {
+            this.doctypeState.uploading = false;
+        },
+
         // ------------------------------------------------------------------
         // Drag & drop — uploads immediately without asking for a doctype;
         // user can tag the newly-added attachments via the badge afterward.
