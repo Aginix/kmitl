@@ -44,6 +44,10 @@
                   table.ap-overview td.multi {
                     white-space: pre-line;
                   }
+                  /* One document number per line, never broken at its hyphen. */
+                  table.ap-overview td.numbers {
+                    white-space: pre;
+                  }
                   table.ap-overview tr {
                     page-break-inside: avoid;
                   }
@@ -133,7 +137,11 @@
         <tr t-foreach="rows" t-as="row">
             <t t-foreach="columns" t-as="column">
                 <td t-if="column[2]" class="num" t-out="format_amount(row[column[0]])" />
-                <td t-else="" class="multi" t-out="row[column[0]]" />
+                <td
+                    t-else=""
+                    t-att-class="'numbers' if column[0] in ('contract', 'documents') else 'multi'"
+                    t-out="row[column[0]]"
+                />
             </t>
         </tr>
     </template>

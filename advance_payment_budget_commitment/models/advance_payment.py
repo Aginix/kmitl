@@ -23,6 +23,11 @@ class AdvancePayment(models.Model):
         index=True,
         copy=False,
     )
+    department_analytic_id = fields.Many2one(
+        compute="_compute_department_analytic_id",
+        store=True,
+        compute_sudo=True,
+    )
     borrowing_headroom = fields.Monetary(
         string="วงเงินยืมคงเหลือ",
         compute="_compute_borrowing_headroom",
@@ -65,6 +70,11 @@ class AdvancePayment(models.Model):
                 rec.budget_commitment_id = (
                     rec._get_source_commitment() if rec.reference else False
                 )
+
+    @api.depends("budget_commitment_id.department_analytic_id")
+    def _compute_department_analytic_id(self):
+        for rec in self:
+            rec.department_analytic_id = rec.budget_commitment_id.department_analytic_id
 
     def action_submit(self):
         # Re-read the source's commitment: it may have been re-pointed since

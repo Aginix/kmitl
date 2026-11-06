@@ -1,9 +1,7 @@
-from datetime import datetime, time, timedelta
-
 import pytz
 
 from odoo import api, fields, models
-from odoo.tools import date_utils
+from odoo.osv import expression
 
 REPORT_MODEL = "advance.payment.overview.report"
 CARRIER_MODEL = "advance.payment.overview.report.wizard"
@@ -13,254 +11,185 @@ NO_VALUE = "—"
 # Not yet asked for (draft) or never going to be (cancel).
 EXCLUDED_STATES = ("draft", "cancel")
 TOTAL_KEYS = ("loan_amount", "cleared_amount", "remaining_amount")
-GROUP_AXES = ("operating_unit_id", "state", "loan_type_id", "return_due_status")
+# Group-by levels the report folds into; the search model may hold more.
+MAX_GROUP_LEVELS = 2
 
-# Control-panel picker -> the loan field it narrows.
-ID_FILTERS = (
-    ("operating_unit_ids", "operating_unit_id"),
-    ("employee_ids", "employee_id"),
-    ("loan_type_ids", "loan_type_id"),
-)
+
+class AdvancePayment(models.Model):
+    _inherit = "advance.payment"
+
+    # Search-only: one box for every number around the loan. The linked
+    # documents are matched under sudo, since the loan officer need not read
+    # budget, disbursement or accounting records.
+    overview_document_number = fields.Char(
+        string="เลขที่เอกสาร",
+        compute="_compute_overview_document_number",
+        search="_search_overview_document_number",
+    )
+
+    def _compute_overview_document_number(self):
+        self.overview_document_number = False
+
+    def _search_overview_document_number(self, operator, value):
+        if operator not in ("ilike", "=", "like") or not value:
+            return []
+        loans = self.sudo().search(
+            [
+                "|",
+                "|",
+                "|",
+                "|",
+                "|",
+                "|",
+                ("name", operator, value),
+                ("contract_number", operator, value),
+                ("reference_number", operator, value),
+                ("budget_commitment_id.name", operator, value),
+                ("disbursement_request_ids.name", operator, value),
+                ("payment_ids.name", operator, value),
+                ("employee_id.name", operator, value),
+            ]
+        )
+        return [("id", "in", loans.ids)]
 
 
 class AdvancePaymentOverviewReport(models.AbstractModel):
     """รายงานภาพรวมสัญญายืมเงิน — one row per submitted agreement with every
     document number around it, so the loan officer need not open each form.
 
-    The rows are searched with the user's own rights (OU rules apply); the
-    linked BC/DR/voucher numbers are read under sudo, since the officer need
-    not hold budget, disbursement or accounting rights.
+    The screen's search model (domain, group-by, facets) drives the rows. The
+    loans are searched with the user's own rights (OU rules apply); the linked
+    BC/DR/voucher numbers and the ส่วนงาน name are read under sudo.
     """
 
     _name = REPORT_MODEL
     _description = "Advance Payment Overview Report Data Provider"
 
-    # ------------------------------------------------------------------
-    # Metadata RPCs
-    # ------------------------------------------------------------------
+    @api.model
+    def get_search_view_id(self):
+        return self.env.ref("advance_payment_overview_report.view_overview_search").id
+
     @api.model
     def get_columns(self):
         """``(row key, heading, is a figure, printed width)`` for the screen,
-        the PDF and the workbook alike."""
+        the PDF and the workbook alike — kept to what debt follow-up needs."""
         return [
-            ("name", "เลขที่คำขอ", False, 16),
-            ("contract_number", "เลขที่สัญญา", False, 16),
-            ("employee", "ผู้ยืม", False, 26),
-            ("operating_unit", "ส่วนงาน", False, 22),
-            ("loan_type", "ประเภทเงินยืม", False, 22),
-            ("state", "สถานะ", False, 18),
-            ("date_submitted", "วันที่ส่งคำขอ", False, 14),
-            ("reference_number", "เอกสารต้นเรื่อง (AR/PR)", False, 18),
-            ("budget_commitment", "ใบจองงบ (BC)", False, 18),
-            ("payments", "ใบสำคัญจ่าย", False, 18),
+            ("contract", "เลขที่สัญญา", False, 18),
+            ("employee", "ผู้ยืม", False, 24),
+            ("department", "ส่วนงาน", False, 26),
+            ("state", "สถานะ", False, 14),
             ("effective_date", "วันที่เป็นลูกหนี้", False, 14),
+            ("documents", "เอกสารอ้างอิง", False, 24),
+            ("loan_amount", "จำนวนเงินยืม", True, 15),
+            ("cleared_amount", "ส่งใช้คืน", True, 15),
+            ("remaining_amount", "คงเหลือ", True, 15),
             ("return_due_date", "วันที่ครบกำหนด", False, 14),
-            ("return_due_status", "สถานะวันครบกำหนด", False, 16),
-            ("loan_amount", "จำนวนเงินยืม", True, 16),
-            ("cleared_amount", "ส่งใช้คืน", True, 16),
-            ("remaining_amount", "คงเหลือ", True, 16),
-            ("disbursement_requests", "ใบเบิกชดใช้เงินยืม (DR)", False, 20),
+            ("return_due_status", "สถานะวันครบกำหนด", False, 18),
         ]
 
+    # ------------------------------------------------------------------
+    # Rows
+    # ------------------------------------------------------------------
     @api.model
-    def _group_axis_titles(self):
-        return {
-            "operating_unit_id": "ส่วนงาน",
-            "state": "สถานะ",
-            "loan_type_id": "ประเภทเงินยืม",
-            "return_due_status": "สถานะวันครบกำหนด",
-        }
-
-    @api.model
-    def get_group_axes(self):
-        titles = self._group_axis_titles()
-        return [{"value": axis, "label": titles[axis]} for axis in GROUP_AXES]
-
-    @api.model
-    def _selection(self, field_name):
+    def _selection_labels(self, field_name):
         field = self.env["advance.payment"]._fields[field_name]
-        return field._description_selection(self.env)
+        return dict(field._description_selection(self.env))
 
     @api.model
-    def get_selections(self):
-        """State and due-status choices for the two plain dropdown filters."""
-        states = [
-            {"value": value, "label": label}
-            for value, label in self._selection("state")
-            if value not in EXCLUDED_STATES
-        ]
-        due = [
-            {"value": value, "label": label}
-            for value, label in self._selection("return_due_status")
-        ]
-        return {"states": states, "return_due_statuses": due}
+    def _local_date(self, value):
+        """Datetime -> the Bangkok calendar day it fell on."""
+        if not value:
+            return False
+        return value.replace(tzinfo=pytz.utc).astimezone(BANGKOK_TZ).date()
 
     @api.model
-    def get_default_options(self):
-        """The current fiscal year (1 ต.ค. – 30 ก.ย.), by วันที่ส่งคำขอ."""
-        company = self.env.company
-        today = fields.Date.context_today(self)
-        fiscal_year = self.env["account.fiscal.year"].search(
-            [
-                ("company_id", "=", company.id),
-                ("date_from", "<=", today),
-                ("date_to", ">=", today),
-            ],
-            limit=1,
-        )
-        if fiscal_year:
-            date_from, date_to = fiscal_year.date_from, fiscal_year.date_to
-        else:
-            date_from, date_to = date_utils.get_fiscal_year(
-                today,
-                day=company.fiscalyear_last_day,
-                month=int(company.fiscalyear_last_month),
-            )
-        return {
-            "date_from": fields.Date.to_string(date_from),
-            "date_to": fields.Date.to_string(date_to),
-        }
-
-    # ------------------------------------------------------------------
-    # Data
-    # ------------------------------------------------------------------
-    @api.model
-    def _utc_bound(self, date_value, next_day=False):
-        """Bangkok midnight of ``date_value`` (or of the next day) in naive UTC,
-        so a request sent at 03:00 on 1 ต.ค. lands in the new fiscal year."""
-        day = fields.Date.to_date(date_value)
-        if next_day:
-            day += timedelta(days=1)
-        local = BANGKOK_TZ.localize(datetime.combine(day, time.min))
-        return local.astimezone(pytz.utc).replace(tzinfo=None)
-
-    @api.model
-    def _text_domain(self, text):
-        """Any document number: the loan's own ones directly, the linked ones
-        resolved under sudo (the officer may not read those models)."""
-        linked = (
-            self.env["advance.payment"]
-            .sudo()
-            .search(
-                [
-                    "|",
-                    "|",
-                    ("budget_commitment_id.name", "ilike", text),
-                    ("disbursement_request_ids.name", "ilike", text),
-                    ("payment_ids.name", "ilike", text),
-                ]
-            )
-        )
-        return [
-            "|",
-            "|",
-            "|",
-            "|",
-            ("name", "ilike", text),
-            ("contract_number", "ilike", text),
-            ("reference_number", "ilike", text),
-            ("employee_id.name", "ilike", text),
-            ("id", "in", linked.ids),
-        ]
-
-    @api.model
-    def _domain(self, options):
-        domain = [("state", "not in", EXCLUDED_STATES)]
-        if options.get("date_from"):
-            domain.append(
-                ("date_submitted", ">=", self._utc_bound(options["date_from"]))
-            )
-        if options.get("date_to"):
-            domain.append(
-                (
-                    "date_submitted",
-                    "<",
-                    self._utc_bound(options["date_to"], next_day=True),
-                )
-            )
-        if options.get("states"):
-            domain.append(("state", "in", options["states"]))
-        if options.get("return_due_statuses"):
-            domain.append(("return_due_status", "in", options["return_due_statuses"]))
-        for option_key, field_name in ID_FILTERS:
-            if options.get(option_key):
-                domain.append((field_name, "in", options[option_key]))
-        text = (options.get("search") or "").strip()
-        if text:
-            domain += self._text_domain(text)
-        return domain
-
-    @api.model
-    def _axis(self, record):
-        if not record:
-            return ("", NO_VALUE)
-        name = record.display_name or ""
-        return (name, name)
-
-    @api.model
-    def _row(self, loan, state_labels, due_labels):
-        thai = self.env["thai.date.mixin"]
-        sudo_loan = loan.sudo()
-        payments = sudo_loan.payment_ids.filtered(
-            lambda p: p.state != "cancel"
-        ).sorted("name")
-        requests = sudo_loan.disbursement_request_ids.filtered(
+    def _documents(self, loan):
+        """One ``label: number`` line per document around the loan: its
+        source, its commitment (once, when the source is the commitment
+        itself) and every live ใบเบิกชดใช้เงินยืม."""
+        commitment = loan.budget_commitment_id.name
+        lines = []
+        if loan.reference_number and loan.reference_number != commitment:
+            lines.append("AR/PR: %s" % loan.reference_number)
+        if commitment:
+            lines.append("BC: %s" % commitment)
+        requests = loan.disbursement_request_ids.filtered(
             lambda r: r.state != "cancel"
         ).sorted("name")
-        state_label = state_labels.get(loan.state, "")
-        due_label = due_labels.get(loan.return_due_status, "")
-        # Datetime -> the Bangkok calendar day it was sent on.
-        submitted = (
-            loan.date_submitted.replace(tzinfo=pytz.utc).astimezone(BANGKOK_TZ).date()
-            if loan.date_submitted
-            else False
-        )
-        row = {
+        lines += ["DR: %s" % r.name for r in requests if r.name]
+        return "\n".join(lines)
+
+    @api.model
+    def _due_text(self, loan, due_statuses):
+        """The due status with its day count, e.g. "เกินกำหนด 5 วัน"."""
+        status = loan.return_due_status
+        if status == "overdue":
+            return "%s %d วัน" % (due_statuses[status], -loan.days_to_return)
+        if status == "not_due":
+            return "%s (อีก %d วัน)" % (due_statuses[status], loan.days_to_return)
+        return due_statuses.get(status, "")
+
+    @api.model
+    def _row(self, loan, states, due_statuses):
+        thai = self.env["thai.date.mixin"]
+        sudo_loan = loan.sudo()
+        # The contract number once there is one, the ADV number beneath it.
+        numbers = [n for n in (loan.contract_number, loan.name) if n]
+        return {
             "id": loan.id,
-            "name": loan.name or "",
-            "contract_number": loan.contract_number or "",
-            "employee": loan.employee_id.name or "",
-            "operating_unit": loan.operating_unit_id.display_name or "",
-            "loan_type": loan.loan_type_id.display_name or "",
-            "state": state_label,
+            "contract": "\n".join(numbers),
+            "employee": sudo_loan.employee_id.name or "",
+            "department": sudo_loan.department_analytic_id.display_name or "",
+            "state": states.get(loan.state, ""),
             "state_code": loan.state,
-            "date_submitted": thai.format_date_thai_short(submitted),
-            "reference_number": loan.reference_number or "",
-            "budget_commitment": sudo_loan.budget_commitment_id.name or "",
-            "payments": "\n".join(p.name for p in payments if p.name),
             "effective_date": thai.format_date_thai_short(loan.effective_date),
+            "documents": self._documents(sudo_loan),
             "return_due_date": thai.format_date_thai_short(loan.return_due_date),
-            "return_due_status": due_label,
+            "return_due_status": self._due_text(loan, due_statuses),
             "return_due_status_code": loan.return_due_status or "",
             "loan_amount": loan.loan_amount,
             "cleared_amount": loan.actual_expense_amount,
             "remaining_amount": loan.amount_remaining,
-            "disbursement_requests": "\n".join(r.name for r in requests if r.name),
         }
-        row["_axes"] = {
-            "operating_unit_id": self._axis(loan.operating_unit_id),
-            # Sort states by workflow order, not alphabetically.
-            "state": (
-                "%02d" % list(state_labels).index(loan.state),
-                state_label,
-            ),
-            "loan_type_id": self._axis(loan.loan_type_id),
-            "return_due_status": (
-                loan.return_due_status or "",
-                due_label or NO_VALUE,
-            ),
-        }
-        return row
+
+    # ------------------------------------------------------------------
+    # Grouping — by whatever the search model's Group By holds
+    # ------------------------------------------------------------------
+    @api.model
+    def _group_specs(self, group_by):
+        """The first levels of ``group_by`` that name a real loan field."""
+        fields_map = self.env["advance.payment"]._fields
+        specs = []
+        for spec in group_by or []:
+            if spec.split(":")[0] in fields_map and spec not in specs:
+                specs.append(spec)
+        return specs[:MAX_GROUP_LEVELS]
 
     @api.model
-    def _chosen_axes(self, options):
-        group_by = options.get("group_by")
-        if group_by not in GROUP_AXES:
-            group_by = None
-        group_by_2 = options.get("group_by_2")
-        if not group_by or group_by_2 not in GROUP_AXES or group_by_2 == group_by:
-            group_by_2 = None
-        return group_by, group_by_2
+    def _axis(self, loan, spec):
+        """``(sort key, label)`` of ``loan`` on a group-by spec; blank last."""
+        field_name, _sep, interval = spec.partition(":")
+        field = loan._fields[field_name]
+        value = loan.sudo()[field_name]
+        if not value:
+            return ("~", NO_VALUE)
+        if field.type == "many2one":
+            return (value.display_name or "", value.display_name or "")
+        if field.type == "selection":
+            choices = field._description_selection(self.env)
+            keys = [key for key, _label in choices]
+            return ("%03d" % keys.index(value), dict(choices).get(value, value))
+        if field.type in ("date", "datetime"):
+            day = self._local_date(value) if field.type == "datetime" else value
+            thai = self.env["thai.date.mixin"]
+            if interval == "day":
+                return (str(day), thai.format_date_thai_short(day))
+            if interval == "year":
+                return (str(day.year), str(day.year + 543))
+            # month — Odoo's default interval — for anything else
+            label = thai.format_date_thai_short(day).split(" ", 1)[1]
+            return (day.strftime("%Y-%m"), label)
+        return (str(value), str(value))
 
     @api.model
     def _empty_totals(self):
@@ -272,15 +201,17 @@ class AdvancePaymentOverviewReport(models.AbstractModel):
             totals[key] += row.get(key) or 0.0
 
     @api.model
-    def _group_rows(self, rows, axis_1, axis_2):
-        """Fold rows into up to two levels of groups, each totalling every
-        figure column. With no axis, one unnamed group holds every row."""
+    def _group_rows(self, loans, specs):
+        """Fold the rows into up to two levels of groups, each totalling every
+        figure column. With no group-by, one unnamed group holds every row."""
+        states = self._selection_labels("state")
+        due_statuses = self._selection_labels("return_due_status")
         top = {}
         grand = self._empty_totals()
-        for row in rows:
-            axes = row.pop("_axes", {})
+        for loan in loans:
+            row = self._row(loan, states, due_statuses)
             self._add_totals(grand, row)
-            key_1, label_1 = axes[axis_1] if axis_1 else ("", "")
+            key_1, label_1 = self._axis(loan, specs[0]) if specs else ("", "")
             group = top.setdefault(
                 key_1,
                 {
@@ -294,12 +225,12 @@ class AdvancePaymentOverviewReport(models.AbstractModel):
             )
             self._add_totals(group["totals"], row)
             group["count"] += 1
-            if axis_2:
-                key_2, label_2 = axes.get(axis_2) or ("", NO_VALUE)
+            if len(specs) > 1:
+                key_2, label_2 = self._axis(loan, specs[1])
                 sub = group["subs"].setdefault(
                     key_2,
                     {
-                        "key": key_2 or "none",
+                        "key": key_2,
                         "label": label_2,
                         "count": 0,
                         "totals": self._empty_totals(),
@@ -318,65 +249,30 @@ class AdvancePaymentOverviewReport(models.AbstractModel):
             subs = group.pop("subs")
             group["subgroups"] = [subs[sub_key] for sub_key in sorted(subs)]
             groups.append(group)
-        return {"groups": groups, "totals": grand, "grouped": bool(axis_1)}
+        return {
+            "groups": groups,
+            "totals": grand,
+            "grouped": bool(specs),
+            "count": len(loans),
+        }
 
     @api.model
     def get_report_data(self, options):
+        """``options``: the search model's ``domain`` and ``group_by``."""
         options = options or {}
-        loans = self.env["advance.payment"].search(
-            self._domain(options), order="date_submitted, id"
+        domain = expression.AND(
+            [[("state", "not in", EXCLUDED_STATES)], options.get("domain") or []]
         )
-        state_labels = dict(self._selection("state"))
-        due_labels = dict(self._selection("return_due_status"))
-        rows = [self._row(loan, state_labels, due_labels) for loan in loans]
-        group_by, group_by_2 = self._chosen_axes(options)
-        return self._group_rows(rows, group_by, group_by_2)
+        loans = self.env["advance.payment"].search(domain, order="date_submitted, id")
+        return self._group_rows(loans, self._group_specs(options.get("group_by")))
 
     # ------------------------------------------------------------------
     # Print / export
     # ------------------------------------------------------------------
     @api.model
     def get_filter_lines(self, options):
-        """What the reader restricted the report to, for the printed header."""
-        options = options or {}
-        thai = self.env["thai.date.mixin"]
-        lines = [
-            "วันที่ส่งคำขอ: %s – %s"
-            % (
-                thai.format_date_thai_short(options.get("date_from")) or "…",
-                thai.format_date_thai_short(options.get("date_to")) or "…",
-            )
-        ]
-        selections = self.get_selections()
-        for key, title, choices in (
-            ("states", "สถานะ", selections["states"]),
-            (
-                "return_due_statuses",
-                "สถานะวันครบกำหนด",
-                selections["return_due_statuses"],
-            ),
-        ):
-            chosen = options.get(key) or []
-            if chosen:
-                labels = [c["label"] for c in choices if c["value"] in chosen]
-                lines.append("%s: %s" % (title, ", ".join(labels)))
-        for option_key, title, model in (
-            ("operating_unit_ids", "ส่วนงาน", "operating.unit"),
-            ("employee_ids", "ผู้ยืม", "hr.employee"),
-            ("loan_type_ids", "ประเภทเงินยืม", "advance.payment.loan.type"),
-        ):
-            ids = options.get(option_key) or []
-            if ids:
-                names = self.env[model].browse(ids).exists().mapped("display_name")
-                lines.append("%s: %s" % (title, ", ".join(names)))
-        if (options.get("search") or "").strip():
-            lines.append("ค้นหา: %s" % options["search"].strip())
-        group_by, group_by_2 = self._chosen_axes(options)
-        if group_by:
-            titles = self._group_axis_titles()
-            grouping = [titles[group_by]] + ([titles[group_by_2]] if group_by_2 else [])
-            lines.append("จัดกลุ่มตาม: %s" % " › ".join(grouping))
-        return lines
+        """The search facets as the reader saw them, for the printed header."""
+        return [line for line in (options or {}).get("facets") or [] if line]
 
     @api.model
     def format_amount(self, value):
@@ -389,12 +285,9 @@ class AdvancePaymentOverviewReport(models.AbstractModel):
     def _report_action(self, options, report_xmlid):
         """ir.actions.report needs a record: a throwaway carrier stands in, and
         the on-screen options travel beside it in ``data``."""
-        options = options or {}
-        carrier = self.env[CARRIER_MODEL].create(
-            {"company_id": options.get("company_id") or self.env.company.id}
-        )
+        carrier = self.env[CARRIER_MODEL].create({"company_id": self.env.company.id})
         report = self.env.ref(report_xmlid)
-        return report.report_action(carrier, data={"options": options})
+        return report.report_action(carrier, data={"options": options or {}})
 
     @api.model
     def action_print_pdf(self, options):
@@ -426,9 +319,6 @@ class AdvancePaymentOverviewReportXlsx(models.AbstractModel):
         report = self.env[REPORT_MODEL]
         result = report.get_report_data(options)
         columns = report.get_columns()
-        company = self.env["res.company"].browse(
-            options.get("company_id") or self.env.company.id
-        )
 
         sheet = workbook.add_worksheet("ภาพรวมสัญญายืมเงิน")
         bold = workbook.add_format({"bold": True})
@@ -459,7 +349,7 @@ class AdvancePaymentOverviewReportXlsx(models.AbstractModel):
         )
 
         last_col = len(columns) - 1
-        sheet.merge_range(0, 0, 0, last_col, company.display_name, bold)
+        sheet.merge_range(0, 0, 0, last_col, self.env.company.display_name, bold)
         sheet.merge_range(1, 0, 1, last_col, "รายงานภาพรวมสัญญายืมเงิน", bold)
         row_index = 2
         for line in report.get_filter_lines(options):
@@ -524,9 +414,7 @@ class AdvancePaymentOverviewReportPdf(models.AbstractModel):
             "doc_ids": docids,
             "doc_model": CARRIER_MODEL,
             "docs": self.env[CARRIER_MODEL].browse(docids),
-            "company": self.env["res.company"].browse(
-                options.get("company_id") or self.env.company.id
-            ),
+            "company": self.env.company,
             "columns": columns,
             "label_span": [column[2] for column in columns].index(True),
             "groups": result["groups"],

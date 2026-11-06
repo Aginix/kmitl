@@ -1,15 +1,8 @@
 .o_ap_overview_report {
-    .o_ap_overview_filters {
-        padding: 0.75rem 0.75rem 0.5rem;
-        background-color: #f8f9fa;
-        border: 1px solid #e0e3e8;
-        border-radius: 0.5rem;
-    }
-
     // Seventeen columns: scroll sideways inside the page, header stays put.
     .o_ap_overview_scroll {
         overflow: auto;
-        max-height: calc(100vh - 290px);
+        max-height: calc(100vh - 200px);
         border: 1px solid #dee2e6;
     }
 
@@ -38,8 +31,9 @@
         }
 
         .badge {
-            font-size: 0.85rem;
+            font-size: 0.95rem;
             font-weight: 500;
+            padding: 0.3em 0.6em;
         }
 
         tbody tr.o_ap_overview_row {

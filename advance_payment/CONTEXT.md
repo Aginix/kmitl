@@ -118,7 +118,7 @@ The sum of every loan drawn on a Budget Commitment — directly or through its S
 _Avoid_: ยอดจอง / reserved (that is the commitment's own reservation)
 
 **มิติทางบัญชี (financial dimensions)**:
-The four dimensions a loan is charged to — ส่วนงาน, แหล่งเงิน, กองทุน, ด้าน/แผนงาน/กิจกรรม — The loan itself carries none (ADR-0025). The disbursement voucher (ใบสำคัญจ่ายเงินยืม) takes them from the header of the Source Reference's Budget Commitment when it is created — the commitment as a whole, not per commitment line; accounting may still correct them on the voucher.
+The four dimensions a loan is charged to — ส่วนงาน, แหล่งเงิน, กองทุน, ด้าน/แผนงาน/กิจกรรม — The loan itself is charged through none of them (ADR-0025); it only records its Budget Commitment's ส่วนงาน for reporting (see ส่วนงาน below). The disbursement voucher (ใบสำคัญจ่ายเงินยืม) takes them from the header of the Source Reference's Budget Commitment when it is created — the commitment as a whole, not per commitment line; accounting may still correct them on the voucher.
 _Avoid_: analytic accounts (that is the underlying model), cost centre
 
 **Required reference model (`loan_type_id.reference_model`)**:
@@ -157,6 +157,10 @@ _Avoid_: deadline, activity end date
 Where an outstanding loan stands against its Return due date, read literally by the calendar day: **ยังไม่ถึงกำหนด** (before the date), **ครบกำหนด** (today *is* the date), **เกินกำหนด** (past it). Shown only while the borrower is a debtor — from the Effective Date until the agreement closes; blank otherwise. Distinct from the reminder window ("notify N days before"), which is a separate notion.
 _Avoid_: overdue flag (that is only one of the three values), due range / ช่วงวันครบกำหนดคืน (the 0-7/8-15/… buckets)
 
+**ส่วนงาน (`department_analytic_id`)**:
+The unit the loan is for, read from its Budget Commitment's header and following it; empty on a loan with no commitment. It is **not** the operating unit (OU), which only decides who may see the record. Recorded for reporting — the loan is still charged only through its voucher.
+_Avoid_: OU / operating unit (that is visibility), หน่วยงานต้นเรื่อง (that is the source's unit)
+
 **Overview report (รายงานภาพรวมสัญญายืมเงิน)**:
-The loan officer's register of agreements: **one row per agreement** that has been submitted and not cancelled, showing beside it the Source Reference (AR/PR), its Budget Commitment (BC), the payout voucher (ใบสำคัญจ่ายเงินยืม) and every ใบเบิกชดใช้เงินยืม (DR) clearing it — so nobody has to open each form. "DR" here means only ใบเบิกชดใช้เงินยืม; the payout voucher is its own column. Read with the officer's own visibility, while the linked numbers show even where the officer cannot open those documents. Its period is the วันที่ส่งคำขอ, by default the current fiscal year. An opt-in extension.
+The loan officer's register of agreements: **one row per agreement** that has been submitted and not cancelled, showing beside it the Source Reference (AR/PR), its Budget Commitment (BC), the payout voucher (ใบสำคัญจ่ายเงินยืม) and every ใบเบิกชดใช้เงินยืม (DR) clearing it — so nobody has to open each form. "DR" here means only ใบเบิกชดใช้เงินยืม; the payout voucher is its own column. It groups and filters by ส่วนงาน, not the operating unit. Read with the officer's own visibility, while the linked numbers show even where the officer cannot open those documents. Its period is the วันที่ส่งคำขอ, by default the current fiscal year. An opt-in extension.
 _Avoid_: loan report (that is the Loan Contract Form), ledger, aging report
