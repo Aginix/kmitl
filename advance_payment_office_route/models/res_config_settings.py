@@ -1,5 +1,7 @@
 from odoo import fields, models
 
+from .advance_payment import DEFAULT_DIRECTOR_TITLE
+
 
 class ResConfigSettings(models.TransientModel):
     _inherit = "res.config.settings"
@@ -12,5 +14,5 @@ class ResConfigSettings(models.TransientModel):
     advance_payment_office_director_title = fields.Char(
         string="ตำแหน่งผู้อำนวยการสำนักงานคลัง (บนสัญญา)",
         config_parameter="advance_payment_office_route.director_title",
-        default="ผู้อำนวยการ สำนักงานคลัง",
+        default=DEFAULT_DIRECTOR_TITLE,
     )

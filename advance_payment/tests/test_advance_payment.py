@@ -1151,7 +1151,7 @@ class TestAdvancePayment(TransactionCase):
         self.assertEqual(ap.payment_count, 1)
 
     # ------------------------------------------------------------------ #
-    # Expense report → accept                                          #
+    # Expense report → accept                                              #
     # ------------------------------------------------------------------ #
 
     # ------------------------------------------------------------------ #

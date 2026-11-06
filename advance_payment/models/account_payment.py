@@ -36,8 +36,11 @@ class AccountPayment(models.Model):
         return res
 
     def _unmark_paid(self):
-        loans = self.sudo().mapped("advance_payment_id").filtered(
-            lambda loan: loan.state == "in_progress"
+        loans = (
+            self.sudo()
+            .filtered(lambda p: p.payment_type == "outbound")
+            .mapped("advance_payment_id")
+            .filtered(lambda loan: loan.state == "in_progress")
         )
         res = super()._unmark_paid()
         loans.action_unstart()

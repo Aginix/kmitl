@@ -137,8 +137,7 @@ class AdvancePayment(models.Model):
         commitment = self.reference.sudo()
         if commitment._name == "budget.commitment":
             summary.update(
-                subject=(commitment.description or "").strip().split("\n")[0]
-                or commitment.name,
+                subject=commitment.title or commitment.name,
                 unit=commitment.department_analytic_id.display_name,
             )
         return summary
