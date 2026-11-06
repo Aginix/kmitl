@@ -272,7 +272,7 @@ class PurchaseRequestApproval(models.Model):
         for rec in self:
             rec.is_editable = rec.state in ("draft", "sarabun_returned")
 
-    @api.depends("line_ids.price_total")
+    @api.depends("line_ids.price_total", "line_ids.estimated_cost")
     def _amount_all(self):
         for record in self:
             line_ids = record.line_ids
@@ -291,7 +291,7 @@ class PurchaseRequestApproval(models.Model):
             record.amount_untaxed = amount_untaxed
             record.amount_tax = amount_tax
             record.amount_total = amount_untaxed + amount_tax
-            record.estimated_cost = amount_untaxed + amount_tax
+            record.estimated_cost = sum(line_ids.mapped("estimated_cost"))
 
     @api.depends_context("lang")
     @api.depends(

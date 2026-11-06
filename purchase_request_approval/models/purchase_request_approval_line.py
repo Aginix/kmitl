@@ -49,7 +49,7 @@ class PurchaseRequestApprovalLine(models.Model):
                     "price_subtotal": amount_untaxed,
                     "price_tax": amount_tax,
                     "price_total": amount_untaxed + amount_tax,
-                    "estimated_cost": amount_untaxed + amount_tax,
+                    "estimated_cost": line.price_unit * line.product_qty,
                 }
             )
 
