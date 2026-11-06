@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_budget_transfer_form_reversal" model="ir.ui.view">
+        <field name="name">budget.transfer.form.reversal</field>
+        <field name="model">budget.transfer</field>
+        <field name="inherit_id" ref="budget_transfer.view_budget_transfer_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header/field[@name='state']" position="before">
+                <button name="action_reverse" type="object" string="กลับรายการ" attrs="{'invisible': ['|', ('state', '!=', 'posted'), ('can_reverse', '=', False)]}"/>
+            </xpath>
+            <xpath expr="//widget[@name='web_ribbon'][@title='Posted']" position="attributes">
+                <attribute name="attrs">{'invisible': ['|', ('state', '!=', 'posted'), ('reversal_status', '!=', False)]}</attribute>
+            </xpath>
+            <xpath expr="//div[@name='button_box']" position="before">
+                <field name="can_reverse" invisible="1"/>
+                <field name="reversal_status" invisible="1"/>
+                <widget name="web_ribbon" title="กลับรายการแล้ว" bg_color="bg-danger" attrs="{'invisible': [('reversal_status', '!=', 'full')]}"/>
+                <widget name="web_ribbon" title="กลับรายการบางส่วน" bg_color="bg-warning" attrs="{'invisible': [('reversal_status', '!=', 'partial')]}"/>
+            </xpath>
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button class="oe_stat_button" type="object" name="action_view_reversals" icon="fa-undo" attrs="{'invisible': [('reversal_count', '=', 0)]}">
+                    <field name="reversal_count" widget="statinfo" string="กลับรายการ"/>
+                </button>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
