@@ -344,11 +344,11 @@
                                     decoration-success="state == 'done' and disposition in ('complete','direct')"
                                     decoration-info="state == 'active'"
                                 >
-                                    <!-- Hidden column; still loaded for row attrs. -->
+                                    <!-- Hidden columns; still loaded for row attrs. -->
                                     <field name="is_originator" invisible="1" />
                                     <field name="order" string="ลำดับ" />
                                     <field name="verb" />
-                                    <field name="for_info" string="CC" />
+                                    <field name="for_info" invisible="1" />
                                     <field name="target_mode" />
                                     <field name="target_name" string="เป้าหมาย" />
                                     <field name="state" readonly="1" widget="badge" />
