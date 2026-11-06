@@ -23,6 +23,10 @@ upfront.
     budget-transfer feature (การโอนงบ) split out of core `budget`. `budget.transfer` is
     a 1:1 delegated `budget.move` (the `account.payment` ↔ `account.move` pattern) with
     its lines folded into `budget.move.line`; see budget ADR-0013.
+  - **`procurement_plan_budget_transfer_pdf`** + **`kmitl_project_budget_transfer_pdf`**
+    (no own glossary — part of the Budget context): the เอกสารแนบ งปม.303 — extra
+    pages after the form listing the procurement plans / projects tagged on a
+    transfer's lines (`budget_transfer_pdf`).
   - **`purchase_request_budget`** + its source bridges `kmitl_project_purchase_request`
     and `purchase_request_procurement_plan` (no own glossary — part of the Budget
     context): give a ใบขอซื้อ (พ.1) its **แหล่งงบประมาณ** — reserve anew from the

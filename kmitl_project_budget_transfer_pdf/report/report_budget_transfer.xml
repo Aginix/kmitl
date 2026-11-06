@@ -1,0 +1,43 @@
+<odoo>
+    <!-- เอกสารแนบท้าย แบบ งปม.303 — โครงการ/กิจกรรมที่ปรากฏในบรรทัดโอน.
+         priority 10: applied before the plan annex so the plan annex prints first. -->
+    <template
+        id="report_budget_transfer_project_annex"
+        inherit_id="budget_transfer_pdf.report_budget_transfer"
+        priority="10"
+    >
+        <xpath expr="//div[hasclass('page')]" position="after">
+            <t t-foreach="o._annex_projects()" t-as="side">
+                <div class="annex" style="page-break-before: always; color: #000; font-size: 15pt; line-height: 1.25;">
+                    <div class="form-code">เอกสารแนบ แบบ งปม. 303 เลขที่ <span t-out="o.name"/></div>
+                    <div class="doc-title">
+                        รายละเอียดโครงการ/กิจกรรม<br/>
+                        <span t-out="side[0]"/>
+                    </div>
+                    <table class="detail">
+                        <thead>
+                            <tr>
+                                <th class="seq">ที่</th>
+                                <th>รหัสโครงการ</th>
+                                <th>ชื่อโครงการ</th>
+                                <th class="amt">ยอดโอน (บาท)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="side[1]" t-as="row">
+                                <td class="seq" t-out="row_index + 1"/>
+                                <td t-out="row[0].key"/>
+                                <td t-out="row[0].name"/>
+                                <td class="amt" t-out="'{:,.2f}'.format(row[1])"/>
+                            </tr>
+                            <tr class="total">
+                                <td colspan="3" style="text-align:right;">รวมทั้งสิ้น</td>
+                                <td class="amt" t-out="'{:,.2f}'.format(sum(r[1] for r in side[1]))"/>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </t>
+        </xpath>
+    </template>
+</odoo>
