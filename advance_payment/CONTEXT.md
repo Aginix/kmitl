@@ -32,11 +32,15 @@ Covering a multi-activity need with a *sequence* of single-draw agreements (borr
 _Avoid_: partial borrowing, installment, drawdown
 
 **ADV Running Number (เลขที่คำขอ)**:
-The record's running identifier (`ADV/<BE year>/####`), assigned when the request is first submitted (draft → to_endorse). Identifies the data row throughout its life.
+The record's running identifier (`ADV/<BE fiscal year>/####`), assigned when the request is first submitted (draft → to_endorse). The counter restarts each fiscal year. Identifies the data row throughout its life.
 _Avoid_: contract number, agreement number
 
+**Fiscal Year (ปีงบประมาณ)**:
+The fiscal year both of a loan's numbers run in. It is the Budget Commitment's when the loan has one, otherwise the fiscal year of the submit date. Fixed when the ADV Running Number is issued (ADR-0035).
+_Avoid_: calendar year
+
 **Contract Number (เลขที่สัญญายืมเงิน)**:
-The formal loan-contract number, assigned only when the disbursement transfer completes on the Effective Date — distinct from the ADV Running Number. Uses a simple running sequence for now; a dedicated override module may customize the format later.
+The formal loan-contract number, assigned only when the disbursement transfer completes on the Effective Date — distinct from the ADV Running Number. Runs in the same fiscal year as the ADV Running Number (`APC/<BE fiscal year>/####`, restarting each year); a dedicated override module may customize the format later.
 _Avoid_: ADV number, running number
 
 **Loan Contract Form (แบบ สค.001 / ใบสัญญาการยืมเงิน)**:

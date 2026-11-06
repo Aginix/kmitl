@@ -73,6 +73,16 @@ class AdvancePayment(models.Model):
             rec.budget_commitment_id = rec._get_source_commitment()
         return super().action_submit()
 
+    def _ensure_fiscal_year(self):
+        """The numbers run in the commitment's fiscal year (ADR-0035)."""
+        for rec in self.filtered(
+            lambda r: not r.account_fiscal_year_id and r.budget_commitment_id
+        ):
+            rec.account_fiscal_year_id = (
+                rec.budget_commitment_id.sudo().account_fiscal_year_id
+            )
+        return super()._ensure_fiscal_year()
+
     @api.model
     def _get_loans_on_commitment(self, commitment):
         """The loans counted in the commitment's borrowed amount: submitted

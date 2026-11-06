@@ -12,12 +12,13 @@ ADR-0024 moved the submit-time rules into `advance_payment_exception`. It kept a
 |---|---|---|
 | One active agreement per borrower (ADR-0001) | `advance_payment_exception` | active |
 | Source must be approved | each source bridge | active |
-| PR must have payment type เงินยืม | `purchase_request_advance_payment` | active |
-| A PR backs a single loan (ADR-0026) | `purchase_request_advance_payment` | **inactive** |
+| PR must have payment type เงินยืม | `purchase_request_advance_payment` | **inactive** (2026-11-06) |
 | Loan fits the Borrowing headroom | `advance_payment_budget_commitment` | active |
 | Source's commitment is reserved / partly used | `advance_payment_budget_commitment` | active |
 
 **Integrity guards stay in code.** These are the loan type matching its source's document kind (`_check_reference_matches_loan_type`) and a bank account before Verify. They protect data shape rather than policy. Switching one off would only let malformed records in.
+
+> **Amended (2026-11-06).** The single-loan PR rule is removed (several borrowers may draw on a PR, ADR-0029, and the headroom rule caps the total). The PR payment-type rule now ships inactive.
 
 ## Why
 

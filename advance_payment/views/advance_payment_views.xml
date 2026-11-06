@@ -224,6 +224,11 @@
                             />
                             <field name="date_submitted" />
                             <field
+                                name="account_fiscal_year_id"
+                                options="{'no_open': True}"
+                                attrs="{'invisible': [('account_fiscal_year_id', '=', False)]}"
+                            />
+                            <field
                                 name="submitted_by_id"
                                 attrs="{'invisible': [('submitted_by_id', '=', False)]}"
                             />
