@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Three report screens hang under the base module's existing "รายงาน"
+         submenu: procurement_plan.action_procurement_plan_report_menu -->
+    <menuitem
+        id="menu_ppr_construction"
+        name="รายงานแผนจัดซื้อ — สิ่งก่อสร้าง"
+        parent="procurement_plan.action_procurement_plan_report_menu"
+        action="action_procurement_plan_report_construction"
+        sequence="20"
+    />
+    <menuitem
+        id="menu_ppr_equipment"
+        name="รายงานแผนจัดซื้อ — ครุภัณฑ์ (งวดเดียว)"
+        parent="procurement_plan.action_procurement_plan_report_menu"
+        action="action_procurement_plan_report_equipment"
+        sequence="21"
+    />
+    <menuitem
+        id="menu_ppr_equipment_multi"
+        name="รายงานแผนจัดซื้อ — ครุภัณฑ์ (หลายงวด)"
+        parent="procurement_plan.action_procurement_plan_report_menu"
+        action="action_procurement_plan_report_equipment_multi"
+        sequence="22"
+    />
+</odoo>

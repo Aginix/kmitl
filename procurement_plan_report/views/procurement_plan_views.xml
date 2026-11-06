@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Smart button → open the report screen for this plan's own form type,
+         pre-scoped to its ปีงบ + หน่วยงาน. Plus the variance เหตุผล gap field. -->
+    <record id="view_procurement_plan_form_report" model="ir.ui.view">
+        <field name="name">view.procurement.plan.form.report</field>
+        <field name="model">procurement.plan</field>
+        <field name="inherit_id" ref="procurement_plan.view_procurement_plan_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
+                <field name="show_report_button" invisible="1" />
+                <button
+                    name="action_open_procurement_report"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-file-text-o"
+                    attrs="{'invisible': [('show_report_button', '=', False)]}"
+                >
+                    <div class="o_stat_info">
+                        <span class="o_stat_text">รายงาน</span>
+                        <span class="o_stat_text">แผนจัดซื้อ</span>
+                    </div>
+                </button>
+            </xpath>
+            <xpath expr="//field[@name='acceptance_eta']" position="after">
+                <field name="variance_reason" />
+            </xpath>
+        </field>
+    </record>
+</odoo>

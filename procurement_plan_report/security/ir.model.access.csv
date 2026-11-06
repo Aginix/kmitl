@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_procurement_plan_report_wizard_user,procurement.plan.report.wizard user,model_procurement_plan_report_wizard,procurement_plan.group_procurement_plan_user,1,1,1,1
+access_procurement_plan_report_wizard_manager,procurement.plan.report.wizard manager,model_procurement_plan_report_wizard,procurement_plan.group_procurement_plan_manager,1,1,1,1
