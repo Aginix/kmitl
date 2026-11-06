@@ -46,14 +46,32 @@
                     right: 5mm;
                 }
             }
+            /* Hide on screen. Odoo's _prepare_html extracts class="header"
+               into wkhtmltopdf's header-html so it repeats per PDF page. */
+            .report-page-label-header {
+                display: none;
+            }
         </style>
     </template>
 
-    <!-- Reusable page label (top-right of every page, persists on print) -->
+    <!-- Reusable page label. Two elements: the positioned .report-page-label
+         drives HTML preview + browser print; the class="header" sibling is
+         extracted by wkhtmltopdf into header-html so it repeats per PDF
+         page (styles must be inline; header is rendered standalone). -->
     <template id="report_page_label">
-        <div class="report-page-label" contenteditable="false">
-            <t t-out="page_label"/>
-        </div>
+        <t t-set="is_pdf" t-value="not o.env.context.get('html_preview', False)"/>
+        <t t-if="not is_pdf">
+            <div class="report-page-label" contenteditable="false">
+                <t t-out="page_label"/>
+            </div>
+        </t>
+        <t t-else="">
+            <div class="header report-page-label-header">
+                <div style="text-align: right; padding-right: 5mm; font-family: 'THSarabun', Arial, sans-serif; font-size: 15pt;">
+                    <t t-out="page_label"/>
+                </div>
+            </div>
+        </t>
     </template>
 
     <!-- Preview styles for A4 paper page effect (set is_landscape before calling) -->
