@@ -69,12 +69,16 @@ class AdvancePayment(models.Model):
             self.kmitl_project_id = False
             self.project_line_ids = False
 
-    @api.onchange("reference")
-    def _onchange_reference_drop_foreign_lines(self):
+    # On reference_number, not reference: `reference` is not on the form, so
+    # its onchange never fires there.
+    @api.onchange("reference_number")
+    def _onchange_reference_number(self):
         """Items of a previously picked project no longer apply."""
+        res = super()._onchange_reference_number()
         self.project_line_ids = self.project_line_ids.filtered(
             lambda line: line.project_line_id.sudo().project_id == self.reference
         )
+        return res
 
     def _find_reference_by_number(self, number):
         if self.loan_type_id.reference_model != "kmitl.project":
@@ -142,20 +146,18 @@ class AdvancePayment(models.Model):
 
     def _check_project_line_caps(self):
         """A hard limit, not a switchable rule: no item may be borrowed past
-        its remaining amount. The lock serialises concurrent submits."""
+        its remaining amount. Touching the item rows serialises concurrent
+        submits: under REPEATABLE READ a mere FOR UPDATE lock would not."""
         self.ensure_one()
         lines = self.project_line_ids.project_line_id.sudo()
         if lines:
             self.env.cr.execute(
-                "SELECT id FROM project_budget_line WHERE id IN %s FOR UPDATE",
+                "UPDATE project_budget_line SET write_date = write_date"
+                " WHERE id IN %s",
                 (tuple(lines.ids),),
             )
-            # Re-read what concurrent loans committed before the lock.
-            lines.invalidate_recordset()
-            self.env["advance.payment"].invalidate_model(["state"])
-            self.project_line_ids.invalidate_recordset(
-                ["remaining_amount", "exceeds_remaining"]
-            )
+            # A concurrent submit now fails with a serialization error and is
+            # retried on a fresh snapshot.
         if lines and lines.project_id != self.kmitl_project_id.sudo():
             raise ValidationError(_("มีรายการที่ไม่ใช่ของโครงการที่อ้างอิง"))
         over = self.project_line_ids.filtered("exceeds_remaining")

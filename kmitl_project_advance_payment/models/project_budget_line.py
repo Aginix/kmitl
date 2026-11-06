@@ -1,5 +1,6 @@
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
+from odoo.tools import float_compare
 
 
 class ProjectBudgetLine(models.Model):
@@ -40,8 +41,9 @@ class ProjectBudgetLine(models.Model):
 
     @api.constrains("amount")
     def _check_amount_covers_loans(self):
+        rounding = self.env.company.currency_id.rounding
         for rec in self:
-            if rec.remaining_amount < 0:
+            if float_compare(rec.remaining_amount, 0, precision_rounding=rounding) < 0:
                 raise ValidationError(
                     _("วงเงินรายการ %s ต่ำกว่ายอดที่ถูกยืมไปแล้ว", rec.name)
                 )

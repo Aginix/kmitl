@@ -1,5 +1,6 @@
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
+from odoo.tools import float_compare
 
 
 class AdvancePaymentProjectLine(models.Model):
@@ -40,7 +41,14 @@ class AdvancePaymentProjectLine(models.Model):
             # Once submitted the loan counts itself in `remaining_amount`.
             counted = rec.advance_payment_id.state not in ("draft", "cancel")
             own = rec.amount if counted else 0.0
-            rec.exceeds_remaining = rec.amount > rec.remaining_amount + own
+            rec.exceeds_remaining = (
+                float_compare(
+                    rec.amount,
+                    rec.remaining_amount + own,
+                    precision_rounding=rec.currency_id.rounding,
+                )
+                > 0
+            )
 
     @api.constrains("amount", "project_line_id", "advance_payment_id")
     def _check_line(self):
