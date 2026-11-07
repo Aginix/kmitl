@@ -1,0 +1,43 @@
+.o_ap_overview_report {
+    // Seventeen columns: scroll sideways inside the page, header stays put.
+    .o_ap_overview_scroll {
+        overflow: auto;
+        max-height: calc(100vh - 200px);
+        border: 1px solid #dee2e6;
+    }
+
+    .o_ap_overview_table {
+        th,
+        td {
+            white-space: nowrap;
+            // 1rem: Thai vowels and tone marks collapse first at small sizes.
+            font-size: 1rem;
+            font-variant-numeric: tabular-nums;
+        }
+
+        thead th {
+            position: sticky;
+            top: 0;
+            z-index: 2;
+            background-color: #f0f2f5;
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        tfoot td {
+            position: sticky;
+            bottom: 0;
+            z-index: 1;
+        }
+
+        .badge {
+            font-size: 0.95rem;
+            font-weight: 500;
+            padding: 0.3em 0.6em;
+        }
+
+        tbody tr.o_ap_overview_row {
+            cursor: pointer;
+        }
+    }
+}

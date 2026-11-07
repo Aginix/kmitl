@@ -2,7 +2,7 @@
     "name": "Advance Payment - Budget Commitment",
     "summary": "Borrow against a ใบจองงบประมาณ, cap borrowing at it and charge "
     "the disbursement voucher to its dimensions",
-    "version": "16.0.1.3.0",
+    "version": "16.0.1.4.0",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",

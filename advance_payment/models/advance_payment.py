@@ -127,6 +127,18 @@ class AdvancePayment(models.Model):
         "there is one, else the submit date's.",
     )
 
+    # The unit the loan is for — read from its budget commitment by the bridge,
+    # not the operating unit. For reporting only; the loan is still charged
+    # through the voucher (ADR-0025).
+    department_analytic_id = fields.Many2one(
+        comodel_name="account.analytic.account",
+        string="ส่วนงาน",
+        domain=[("root_plan_id.code", "=", "departments")],
+        readonly=True,
+        copy=False,
+        index=True,
+    )
+
     state = fields.Selection(
         selection=[
             ("draft", "แบบร่าง"),

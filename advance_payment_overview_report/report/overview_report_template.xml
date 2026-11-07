@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <template id="overview_pdf">
+        <t t-call="web.html_container">
+            <t t-call="web.basic_layout">
+                <style>
+                  /* THSarabun sets small; sizes in pt because wkhtmltopdf
+                     supports neither var() nor viewport units. */
+                  * {
+                    font-family: "THSarabun", Arial, sans-serif;
+                  }
+                  div, span, p {
+                    font-size: 15pt;
+                  }
+                  h4, .h4 {
+                    font-size: 20pt;
+                    margin-bottom: 0;
+                  }
+                  h5, .h5 {
+                    font-size: 17pt;
+                    margin-bottom: 0;
+                  }
+                  table.ap-overview {
+                    width: 100%;
+                    border-collapse: collapse;
+                    font-size: 11pt;
+                  }
+                  table.ap-overview th,
+                  table.ap-overview td {
+                    border: 1px solid #000;
+                    padding: 1px 3px;
+                    vertical-align: top;
+                  }
+                  table.ap-overview thead th {
+                    background-color: #f0f0f0;
+                    text-align: center;
+                    font-weight: bold;
+                  }
+                  table.ap-overview td.num {
+                    text-align: right;
+                    white-space: nowrap;
+                  }
+                  table.ap-overview td.multi {
+                    white-space: pre-line;
+                  }
+                  /* One document number per line, never broken at its hyphen. */
+                  table.ap-overview td.numbers {
+                    white-space: pre;
+                  }
+                  table.ap-overview tr {
+                    page-break-inside: avoid;
+                  }
+                  table.ap-overview tr.group-row td {
+                    font-weight: bold;
+                    background-color: #ededed;
+                  }
+                  table.ap-overview tr.subgroup-row td {
+                    font-weight: bold;
+                    background-color: #f7f7f7;
+                  }
+                  table.ap-overview tfoot td {
+                    font-weight: bold;
+                    background-color: #f0f0f0;
+                  }
+                </style>
+
+                <div>
+                    <h4 t-out="company.display_name" />
+                    <h5>รายงานภาพรวมสัญญายืมเงิน</h5>
+                </div>
+
+                <div class="footer" style="text-align: right; font-size: 13pt;">
+                    <span class="page" />/<span class="topage" />
+                </div>
+
+                <div class="article">
+                    <div style="margin-bottom: 6px;">
+                        <div t-foreach="filter_lines" t-as="line" t-out="line" />
+                    </div>
+
+                    <table class="ap-overview">
+                        <thead style="display: table-header-group;">
+                            <tr>
+                                <th t-foreach="columns" t-as="column" t-out="column[1]" />
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="groups" t-as="group">
+                                <t t-if="grouped" t-call="advance_payment_overview_report.overview_pdf_band">
+                                    <t t-set="band" t-value="group" />
+                                    <t t-set="band_class" t-value="'group-row'" />
+                                </t>
+                                <t t-call="advance_payment_overview_report.overview_pdf_rows">
+                                    <t t-set="rows" t-value="group['rows']" />
+                                </t>
+                                <t t-foreach="group['subgroups']" t-as="subgroup">
+                                    <t t-call="advance_payment_overview_report.overview_pdf_band">
+                                        <t t-set="band" t-value="subgroup" />
+                                        <t t-set="band_class" t-value="'subgroup-row'" />
+                                    </t>
+                                    <t t-call="advance_payment_overview_report.overview_pdf_rows">
+                                        <t t-set="rows" t-value="subgroup['rows']" />
+                                    </t>
+                                </t>
+                            </t>
+                        </tbody>
+                        <tfoot>
+                            <t t-call="advance_payment_overview_report.overview_pdf_band">
+                                <t t-set="band" t-value="{'label': 'รวมทั้งสิ้น', 'totals': totals}" />
+                                <t t-set="band_class" t-value="''" />
+                            </t>
+                        </tfoot>
+                    </table>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <!-- A group / subgroup / grand-total line: the label spans every column
+         before the first figure, then one total under each figure column. -->
+    <template id="overview_pdf_band">
+        <tr t-att-class="band_class">
+            <td t-att-colspan="label_span" t-out="band['label']" />
+            <t t-foreach="columns[label_span:]" t-as="column">
+                <td
+                    t-if="column[2]"
+                    class="num"
+                    t-out="format_amount(band['totals'][column[0]])"
+                />
+                <td t-else="" />
+            </t>
+        </tr>
+    </template>
+
+    <template id="overview_pdf_rows">
+        <tr t-foreach="rows" t-as="row">
+            <t t-foreach="columns" t-as="column">
+                <td t-if="column[2]" class="num" t-out="format_amount(row[column[0]])" />
+                <td
+                    t-else=""
+                    t-att-class="'numbers' if column[0] in ('contract', 'documents') else 'multi'"
+                    t-out="row[column[0]]"
+                />
+            </t>
+        </tr>
+    </template>
+
+</odoo>

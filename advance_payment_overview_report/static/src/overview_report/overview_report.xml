@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+    <t t-name="advance_payment_overview_report.OverviewReportAction" owl="1">
+        <WithSearch t-props="withSearchProps" t-slot-scope="search">
+            <AdvancePaymentOverviewReport
+                domain="search.domain"
+                groupBy="search.groupBy"
+                context="search.context"
+            />
+        </WithSearch>
+    </t>
+
+    <t t-name="advance_payment_overview_report.OverviewRows" owl="1">
+        <t t-foreach="rows" t-as="row" t-key="row.id">
+            <tr class="o_ap_overview_row" t-on-click="() => this.openLoan(row)">
+                <t t-foreach="state.columns" t-as="column" t-key="column[0]">
+                    <td t-if="column[2]" class="text-end">
+                        <t t-esc="format(row[column[0]])" />
+                    </td>
+                    <td t-elif="column[0] === 'state'">
+                        <span t-att-class="'badge ' + stateBadge(row)" t-esc="row.state" />
+                    </td>
+                    <td t-elif="column[0] === 'return_due_status'">
+                        <span
+                            t-if="row.return_due_status"
+                            t-att-class="'badge ' + dueBadge(row)"
+                            t-esc="row.return_due_status"
+                        />
+                    </td>
+                    <td t-elif="column[0] === 'contract'">
+                        <t t-foreach="lines(row.contract)" t-as="line" t-key="line_index">
+                            <a
+                                t-if="line_first"
+                                class="fw-bold"
+                                target="_blank"
+                                t-att-href="recordUrl('advance.payment', row.id)"
+                                t-on-click.stop="() => {}"
+                                t-esc="line"
+                            />
+                            <div t-else="" class="text-muted small" t-esc="line" />
+                        </t>
+                    </td>
+                    <td t-elif="column[0] === 'documents'">
+                        <div t-foreach="row.document_links" t-as="doc" t-key="doc.model + doc.id">
+                            <a
+                                t-if="doc.link"
+                                target="_blank"
+                                t-att-href="recordUrl(doc.model, doc.id)"
+                                t-on-click.stop="() => {}"
+                                t-esc="doc.name"
+                            />
+                            <span t-else="" t-esc="doc.name" />
+                        </div>
+                    </td>
+                    <td t-else=""><t t-esc="row[column[0]]" /></td>
+                </t>
+            </tr>
+        </t>
+    </t>
+
+    <t t-name="advance_payment_overview_report.OverviewBand" owl="1">
+        <!-- The label spans every column before the first figure. -->
+        <tr t-att-class="bandClass">
+            <td t-att-colspan="labelSpan">
+                <t t-esc="band.label" />
+                <span t-if="band.count" class="text-muted fw-normal ms-1">
+                    (<t t-esc="band.count" />)
+                </span>
+            </td>
+            <t t-foreach="state.columns.slice(labelSpan)" t-as="column" t-key="column[0]">
+                <td t-if="column[2]" class="text-end">
+                    <t t-esc="format(band.totals[column[0]])" />
+                </td>
+                <td t-else="" />
+            </t>
+        </tr>
+    </t>
+
+    <t t-name="advance_payment_overview_report.OverviewReport" owl="1">
+        <div class="o_action o_ap_overview_report">
+            <ControlPanel>
+                <t t-set-slot="control-panel-bottom-left-buttons">
+                    <div class="o_cp_buttons">
+                        <button class="btn btn-primary me-2" t-on-click="printReport">
+                            <i class="fa fa-print me-1" />พิมพ์ PDF
+                        </button>
+                        <button class="btn btn-secondary" t-on-click="exportXlsx">
+                            <i class="fa fa-file-excel-o me-1" />Export Excel
+                        </button>
+                    </div>
+                </t>
+            </ControlPanel>
+            <div class="o_content p-3">
+                <t t-if="state.loading and !state.count">
+                    <div class="text-center p-5">
+                        <span class="spinner-border" role="status" />
+                    </div>
+                </t>
+                <t t-elif="!state.count">
+                    <div class="o_view_nocontent">
+                        <div class="o_nocontent_help">
+                            <p class="o_view_nocontent_empty_folder">
+                                ไม่พบสัญญายืมเงินตามเงื่อนไขที่ค้นหา
+                            </p>
+                        </div>
+                    </div>
+                </t>
+                <t t-else="">
+                    <div class="text-muted small mb-2">
+                        <t t-esc="state.count" /> สัญญา
+                    </div>
+                    <div class="o_ap_overview_scroll">
+                        <table
+                            class="table table-sm table-hover table-bordered align-top mb-0 o_ap_overview_table"
+                        >
+                            <thead>
+                                <tr>
+                                    <t
+                                        t-foreach="state.columns"
+                                        t-as="column"
+                                        t-key="column[0]"
+                                    >
+                                        <th t-att-class="column[2] ? 'text-end' : ''">
+                                            <t t-esc="column[1]" />
+                                        </th>
+                                    </t>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="state.groups" t-as="group" t-key="group.key">
+                                    <t
+                                        t-if="state.grouped"
+                                        t-call="advance_payment_overview_report.OverviewBand"
+                                    >
+                                        <t t-set="band" t-value="group" />
+                                        <t t-set="bandClass" t-value="'table-secondary fw-bold'" />
+                                    </t>
+                                    <t t-call="advance_payment_overview_report.OverviewRows">
+                                        <t t-set="rows" t-value="group.rows" />
+                                    </t>
+                                    <t
+                                        t-foreach="group.subgroups"
+                                        t-as="subgroup"
+                                        t-key="subgroup.key"
+                                    >
+                                        <t t-call="advance_payment_overview_report.OverviewBand">
+                                            <t t-set="band" t-value="subgroup" />
+                                            <t t-set="bandClass" t-value="'table-light fw-bold'" />
+                                        </t>
+                                        <t t-call="advance_payment_overview_report.OverviewRows">
+                                            <t t-set="rows" t-value="subgroup.rows" />
+                                        </t>
+                                    </t>
+                                </t>
+                            </tbody>
+                            <tfoot>
+                                <t t-call="advance_payment_overview_report.OverviewBand">
+                                    <t
+                                        t-set="band"
+                                        t-value="{label: 'รวมทั้งสิ้น', totals: state.totals}"
+                                    />
+                                    <t t-set="bandClass" t-value="'table-primary fw-bold'" />
+                                </t>
+                            </tfoot>
+                        </table>
+                    </div>
+                </t>
+            </div>
+        </div>
+    </t>
+
+</templates>

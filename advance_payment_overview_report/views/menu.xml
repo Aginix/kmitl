@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Drives the report's native search bar. Priority 100, so the loan
+         menus keep their own (default) search view. -->
+    <record id="view_overview_search" model="ir.ui.view">
+        <field name="name">advance.payment.overview.search</field>
+        <field name="model">advance.payment</field>
+        <field name="mode">primary</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <search string="รายงานภาพรวมสัญญายืมเงิน">
+                <field name="overview_document_number" />
+                <field name="employee_id" />
+                <field name="department_analytic_id" />
+                <field name="loan_type_id" />
+                <!-- 1 ต.ค. – 30 ก.ย. around today: shift into the calendar year
+                     by +3 months, take 1 ม.ค., shift back. Local midnight in
+                     UTC, since date_submitted is a datetime. -->
+                <filter
+                    name="current_fiscal_year"
+                    string="ปีงบประมาณปัจจุบัน"
+                    domain="[
+                        ('date_submitted', '&gt;=', datetime.datetime.combine(context_today() + relativedelta(months=3) + relativedelta(month=1, day=1, months=-3), datetime.time(0, 0, 0)).to_utc().strftime('%Y-%m-%d %H:%M:%S')),
+                        ('date_submitted', '&lt;', datetime.datetime.combine(context_today() + relativedelta(months=3) + relativedelta(month=1, day=1, months=9), datetime.time(0, 0, 0)).to_utc().strftime('%Y-%m-%d %H:%M:%S')),
+                    ]"
+                />
+                <filter name="date_submitted" string="วันที่ส่งคำขอ" date="date_submitted" />
+                <separator />
+                <filter
+                    name="in_approval"
+                    string="ระหว่างอนุมัติ"
+                    domain="[('state', 'in', ('to_endorse', 'to_verify', 'to_director', 'to_approve'))]"
+                />
+                <filter name="approved" string="รอโอนเงิน" domain="[('state', '=', 'approved')]" />
+                <filter
+                    name="in_progress"
+                    string="ค้างชำระ"
+                    domain="[('state', '=', 'in_progress')]"
+                />
+                <filter name="done" string="ปิดสัญญา" domain="[('state', '=', 'done')]" />
+                <separator />
+                <filter
+                    name="not_due"
+                    string="ยังไม่ถึงกำหนด"
+                    domain="[('return_due_status', '=', 'not_due')]"
+                />
+                <filter name="due" string="ครบกำหนด" domain="[('return_due_status', '=', 'due')]" />
+                <filter
+                    name="overdue"
+                    string="เกินกำหนด"
+                    domain="[('return_due_status', '=', 'overdue')]"
+                />
+                <group expand="0" string="จัดกลุ่มตาม">
+                    <filter
+                        name="group_department"
+                        string="ส่วนงาน"
+                        context="{'group_by': 'department_analytic_id'}"
+                    />
+                    <filter name="group_state" string="สถานะ" context="{'group_by': 'state'}" />
+                    <filter
+                        name="group_loan_type"
+                        string="ประเภทเงินยืม"
+                        context="{'group_by': 'loan_type_id'}"
+                    />
+                    <filter
+                        name="group_due_status"
+                        string="สถานะวันครบกำหนด"
+                        context="{'group_by': 'return_due_status'}"
+                    />
+                    <filter
+                        name="group_employee"
+                        string="ผู้ยืม"
+                        context="{'group_by': 'employee_id'}"
+                    />
+                    <filter
+                        name="group_date_submitted"
+                        string="วันที่ส่งคำขอ"
+                        context="{'group_by': 'date_submitted:month'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_overview_report" model="ir.actions.client">
+        <field name="name">รายงานภาพรวมสัญญายืมเงิน</field>
+        <field name="tag">advance_payment_overview_report</field>
+        <field name="res_model">advance.payment</field>
+        <field name="context">{'search_default_in_progress': 1}</field>
+    </record>
+
+    <menuitem
+        id="menu_overview_report"
+        name="รายงานภาพรวมสัญญายืมเงิน"
+        parent="advance_payment.menu_advance_payment_root"
+        action="action_overview_report"
+        sequence="25"
+        groups="advance_payment.group_advance_payment_loan_officer,advance_payment.group_advance_payment_manager"
+    />
+</odoo>
