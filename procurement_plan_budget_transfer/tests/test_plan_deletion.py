@@ -67,7 +67,7 @@ class TestPlanDeletion(PlanTransferCommon):
         plan = self._funded_plan(5000, funded=3000)  # to_verify, 3000 allocated
         self.assertEqual(plan.state, "to_verify")
         self.assertTrue(plan.has_held_money)
-        with self.assertRaisesRegex(UserError, "มีงบประมาณค้างในมิติแผน"):
+        with self.assertRaisesRegex(UserError, "มีงบประมาณคงเหลือ 3,000.00 บาท"):
             plan.unlink()
         wizard = self._return_all(plan)
         self.assertEqual(wizard.floating_available, 3000)
@@ -89,7 +89,7 @@ class TestPlanDeletion(PlanTransferCommon):
         commitment = plan.budget_commitment_ids.filtered(lambda c: c.state != "cancel")
         self.assertEqual(commitment.available_to_obligate, 5000)
         reasons = plan._get_held_money_reasons()
-        self.assertEqual(len(reasons), 2, reasons)  # allocation + reservation
+        self.assertEqual(reasons, ["มีงบประมาณคงเหลือ 5,000.00 บาท"])
         self._return_all(plan)
         commitment.invalidate_recordset()
         self.assertEqual(commitment.available_to_obligate, 0)
@@ -127,10 +127,14 @@ class TestPlanDeletion(PlanTransferCommon):
         with self.assertRaisesRegex(UserError, "ปิดแล้ว"):
             plan.unlink()
 
-    def test_reset_needs_manager(self):
-        plan = self._make_plan(5000)
+    def test_reset_by_plan_user_only_while_unfunded(self):
+        plan = self._make_plan(5000)  # to_verify, no money yet
+        plan.with_user(self.plan_user).action_reset_to_draft()
+        self.assertEqual(plan.state, "draft")
+        funded = self._funded_plan(5000)  # verified, reserved
+        funded.read()  # warm the cache: plan_user has no operating unit
         with self.assertRaisesRegex(UserError, "ผู้จัดการแผน"):
-            plan.with_user(self.plan_user).action_reset_to_draft()
+            funded.with_user(self.plan_user).action_reset_to_draft()
 
     # --- responsible -------------------------------------------------------
     def test_responsible_follows_plan(self):

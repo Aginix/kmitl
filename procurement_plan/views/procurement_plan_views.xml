@@ -41,7 +41,7 @@
                     <button name="action_reset_to_draft" string="กลับเป็นแบบร่าง" type="object" states="to_verify" groups="procurement_plan.group_procurement_plan_user" confirm="กลับเป็นแบบร่างเพื่อแก้ไขแผน? เลขที่แผนเดิมยังคงอยู่" />
                     <button name="action_reset_to_draft" string="กลับเป็นแบบร่าง" type="object" states="verified,cancel" groups="procurement_plan.group_procurement_plan_manager" confirm="กลับเป็นแบบร่าง? หากแผนจองงบประมาณไว้และยังไม่ได้ใช้ ใบจองจะถูกยกเลิก" />
                     <!-- ADR-0007: any plan user cancels a numbered plan once it holds no money and no open พ.1 points at it. -->
-                    <button name="action_cancel" string="ยกเลิกแผน" type="object" groups="procurement_plan.group_procurement_plan_user" attrs="{'invisible': ['|', ('state', 'in', ('done', 'cancel')), ('name', 'in', (False, '/'))]}" confirm="ยกเลิกแผนนี้? แผนจะถูกเก็บถาวรพร้อมมิติแผน (ผู้จัดการแผนกู้คืนได้ด้วยเลขเดิม) ต้องโอนคืนงบลอยให้เหลือ 0 บาท และไม่มีใบขอซื้อค้างอยู่ก่อน" />
+                    <button name="action_cancel" string="ยกเลิกแผน" type="object" groups="procurement_plan.group_procurement_plan_user" attrs="{'invisible': ['|', ('state', 'in', ('done', 'cancel')), ('name', 'in', (False, '/'))]}" confirm="ยกเลิกแผนนี้? แผนจัดซื้อจัดจ้างนี้จะถูกเก็บถาวร เงื่อนไขการยกเลิก ต้องมียอดคงเหลือ 0 บาท และไม่อยู่ในกระบวนการจัดซื้อจัดจ้าง" />
                 </header>
                 <sheet>
                     <field name="can_edit" invisible="1"/>
