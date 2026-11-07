@@ -697,6 +697,7 @@ msgstr "ส่งคืนผู้จัดทำแล้ว"
 #: model:ir.model.fields,field_description:work_center.field_work_center_act__sequence
 #: model:ir.model.fields,field_description:work_center.field_work_center_area__sequence
 #: model:ir.model.fields,field_description:work_center.field_work_center_counter__sequence
+#: model:ir.model.fields,field_description:work_center.field_work_center_route__sequence
 #: model:ir.model.fields,field_description:work_center.field_work_center_route_line__sequence
 #: model:ir.model.fields,field_description:work_center.field_work_center_rule__sequence
 #: model:ir.model.fields,field_description:work_center.field_work_center_assignment_rule__sequence
@@ -1222,3 +1223,27 @@ msgstr "มอบหมายให้"
 #: model:ir.model.fields,field_description:work_center.field_work_center_assign_wizard__allowed_user_ids
 msgid "Responsible People"
 msgstr "ผู้รับผิดชอบ"
+
+#. module: work_center
+#. odoo-python
+#: code:addons/work_center/models/work_center_route.py:0
+#, python-format
+msgid "%s already has an active route without a condition."
+msgstr "%s มีเส้นทางที่ไม่มีเงื่อนไขอยู่แล้ว"
+
+#. module: work_center
+#: model:ir.model.fields,field_description:work_center.field_work_center_route__domain
+msgid "Condition"
+msgstr "เงื่อนไข"
+
+#. module: work_center
+#. odoo-python
+#: code:addons/work_center/models/work_center_route.py:0
+#, python-format
+msgid "Invalid condition on route %(route)s: %(error)s"
+msgstr "เงื่อนไขของเส้นทาง %(route)s ไม่ถูกต้อง: %(error)s"
+
+#. module: work_center
+#: model:ir.model.fields,field_description:work_center.field_work_center_route__model_name
+msgid "Model Name"
+msgstr "ชื่อโมเดล"

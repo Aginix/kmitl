@@ -44,7 +44,9 @@ document to any member. _Avoid_: take ownership, lock
 one model normally pass through, configured once rather than written in code, and read
 live — editing it moves documents in flight too. A **route line** is one position on
 it: it names one or more **candidate stations**, and the **routing rules** choose among
-them when there are several. A station appears at most once per route. _Avoid_: step
+them when there are several. A station appears at most once per route. A model may have
+several routes: a document takes the first, in sequence, whose **condition** it
+matches, and the one route without a condition is the default (ADR 0005). _Avoid_: step
 (a route line is a position, not a step performed), workflow
 
 **Routing Rule (กฎการจัดเข้าสถานี)**: A condition on a document type that chooses which
@@ -105,7 +107,8 @@ else is responsible.
 - A **ระบบงาน** has many **stations**, **routes** and **Counters**, plus exactly one
   **ยังไม่มีสถานี** card.
 - A **route** belongs to one area and one document model, and has ordered **lines**; a
-  line has one or more candidate **stations**.
+  line has one or more candidate **stations**. A model has at most one default route
+  (no condition) and any number of conditional ones.
 - A **station** has many **Members**, **allowed** and **required acts**, **editable
   parts**, **routing rules** and **assignment rules**, and at most one Operating Unit.
 - A document is at one station; each stay is a **visit**, and within it at most one

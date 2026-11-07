@@ -1,16 +1,23 @@
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
+from odoo.osv import expression
+
+from .work_center_rule import eval_domain
 
 
 class WorkCenterRoute(models.Model):
     """The standard route of a document model: the ordered chain of stations
     its documents normally pass through. It is configuration, read live — it is
     not copied onto a document, so editing it moves documents in flight too.
+
+    A model may have several routes: a document takes the first, in sequence,
+    whose condition it matches; the one route without a condition is the
+    default.
     """
 
     _name = "work.center.route"
     _description = "Standard Route"
-    _order = "id"
+    _order = "sequence, id"
 
     name = fields.Char(required=True, translate=True)
     area_id = fields.Many2one(
@@ -28,7 +35,10 @@ class WorkCenterRoute(models.Model):
         ondelete="cascade",
         domain="[('id', 'in', area_model_ids)]",
     )
+    model_name = fields.Char(related="model_id.model", string="Model Name")
     area_model_ids = fields.Many2many(related="area_id.model_ids")
+    sequence = fields.Integer(default=10)
+    domain = fields.Char(string="Condition", default="[]", required=True)
     active = fields.Boolean(default=True)
     line_ids = fields.One2many(
         comodel_name="work.center.route.line",
@@ -36,7 +46,10 @@ class WorkCenterRoute(models.Model):
         string="Stations on the Route",
     )
 
-    @api.constrains("area_id", "model_id", "active")
+    def _is_default(self):
+        return not eval_domain(self.env, self.domain)
+
+    @api.constrains("area_id", "model_id", "active", "domain")
     def _check_route(self):
         for route in self:
             if route.model_id not in route.area_id.sudo().model_ids:
@@ -50,15 +63,29 @@ class WorkCenterRoute(models.Model):
                 raise ValidationError(
                     _("%s does not support stations.") % route.model_id.name
                 )
-            if route.active and self.search_count(
-                [
-                    ("id", "!=", route.id),
-                    ("model_id", "=", route.model_id.id),
-                    ("active", "=", True),
-                ]
+            try:
+                expression.expression(
+                    eval_domain(self.env, route.domain), self.env[route.model_id.model]
+                )
+            except Exception as e:
+                raise ValidationError(
+                    _("Invalid condition on route %(route)s: %(error)s")
+                    % {"route": route.name, "error": e}
+                ) from e
+            if (
+                route.active
+                and route._is_default()
+                and self.search(
+                    [
+                        ("id", "!=", route.id),
+                        ("model_id", "=", route.model_id.id),
+                        ("active", "=", True),
+                    ]
+                ).filtered(lambda r: r._is_default())
             ):
                 raise ValidationError(
-                    _("%s already has an active route.") % route.model_id.name
+                    _("%s already has an active route without a condition.")
+                    % route.model_id.name
                 )
 
 
