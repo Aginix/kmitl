@@ -302,6 +302,12 @@ class SarabunDocument(models.Model):
         compute="_compute_my_step_actions",
         help="Label of the act button: the verb's emoji + name.",
     )
+    # Last ตีกลับ — kept on the หนังสือ because the returned step is purged with its
+    # round (ADR-0023); shown as a banner while returned, cleared once it leaves.
+    returned_by_id = fields.Many2one("res.users", string="ตีกลับโดย", readonly=True, copy=False)
+    returned_date = fields.Datetime(string="วันที่ตีกลับ", readonly=True, copy=False)
+    returned_step_name = fields.Char(string="ขั้นตอนที่ตีกลับ", readonly=True, copy=False)
+    returned_reason = fields.Text(string="เหตุผลการตีกลับ", readonly=True, copy=False)
     my_take_back_step_id = fields.Many2one(
         comodel_name="sarabun.routing.step",
         compute="_compute_my_step_actions",
@@ -470,6 +476,8 @@ class SarabunDocument(models.Model):
         return docs
 
     def write(self, vals):
+        if vals.get("state") and vals["state"] != "returned":
+            vals = dict(vals, **self._returned_clear_vals())
         editing = self._content_editor_records()
         if editing and set(vals) - editing._content_editor_allowed_fields():
             raise AccessError(
@@ -490,6 +498,15 @@ class SarabunDocument(models.Model):
                 ]
             )
         return res
+
+    @api.model
+    def _returned_clear_vals(self):
+        return {
+            "returned_by_id": False,
+            "returned_date": False,
+            "returned_step_name": False,
+            "returned_reason": False,
+        }
 
     def _content_editor_allowed_fields(self):
         """Fields a แก้ไขเอกสารได้ holder may write; add-ons may widen it."""
@@ -1287,6 +1304,14 @@ class SarabunDocument(models.Model):
         history (ADR-0023). The new round recreates either the whole live เส้นทาง
         verbatim (restart) or just the chosen resume step onward (resume)."""
         self.ensure_one()
+        self.write(
+            {
+                "returned_by_id": step.acted_by_id.id,
+                "returned_date": step.acted_date,
+                "returned_step_name": step.verb.name,
+                "returned_reason": step.note,
+            }
+        )
         self.routing_step_ids._clear_activities()  # drop to-dos before archive
         if destination == "resume_step" and resume_step_id:
             resume = self.env["sarabun.routing.step"].browse(int(resume_step_id))

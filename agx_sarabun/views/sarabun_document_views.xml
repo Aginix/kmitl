@@ -118,6 +118,23 @@
                         bg_color="bg-danger"
                         attrs="{'invisible': [('state', '!=', 'cancelled')]}"
                     />
+                    <!-- ตีกลับ details — the returned step is purged (ADR-0023). -->
+                    <div
+                        class="alert alert-danger"
+                        role="alert"
+                        attrs="{'invisible': ['|', ('state', '!=', 'returned'), ('returned_by_id', '=', False)]}"
+                    >
+                        <div>
+                            <strong>↩️ หนังสือถูกตีกลับ</strong> โดย
+                            <field name="returned_by_id" class="oe_inline fw-bold"
+                                   options="{'no_open': True}" />
+                            (<field name="returned_step_name" class="oe_inline" />)
+                            เมื่อ <field name="returned_date" class="oe_inline" />
+                        </div>
+                        <div class="mt-1">
+                            เหตุผล: <field name="returned_reason" class="oe_inline" />
+                        </div>
+                    </div>
                     <div
                         class="alert alert-info"
                         role="alert"

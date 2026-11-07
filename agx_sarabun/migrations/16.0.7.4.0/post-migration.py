@@ -44,6 +44,20 @@ def _purge_history(env):
         len(old),
         len(old.document_id),
     )
+    # a หนังสือ waiting in ตีกลับ keeps its banner: copy the return off the step first
+    for doc in old.document_id.filtered(lambda d: d.state == "returned"):
+        ret = old.filtered(
+            lambda s: s.document_id == doc and s.disposition == "return"
+        ).sorted(lambda s: s.acted_date or s.create_date)[-1:]
+        if ret:
+            doc.write(
+                {
+                    "returned_by_id": ret.acted_by_id.id,
+                    "returned_date": ret.acted_date,
+                    "returned_step_name": ret.verb.name,
+                    "returned_reason": ret.note,
+                }
+            )
     for doc in old.document_id:
         before = doc.reached_user_ids
         doc._purge_archived_steps()

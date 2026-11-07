@@ -70,6 +70,20 @@ class TestP7SignCommentEdit(SarabunCommon):
         self.assertFalse(att.exists())
         self.assertFalse(doc.sign_attachment_ids)
 
+    def test_return_banner_details(self):
+        """The ตีกลับ details (who / step / when / reason) stay on the หนังสือ for the
+        banner, and are cleared once it is re-sent."""
+        doc = self._make_doc(sender=self.user_a)
+        step = self._add_step(doc, order=10, verb="sign_approve", user=self.user_b)
+        doc.action_send()
+        self._act(step, "return", self.user_b, note="แนบกำหนดการ")
+        self.assertEqual(doc.returned_by_id, self.user_b)
+        self.assertEqual(doc.returned_step_name, self._verb("sign_approve").name)
+        self.assertEqual(doc.returned_reason, "แนบกำหนดการ")
+        self.assertTrue(doc.returned_date)
+        doc.with_user(self.user_a).action_send()
+        self.assertFalse(doc.returned_by_id or doc.returned_reason)
+
     def test_returner_sent_to_inbox(self):
         """A returner reached only in the deleted round can't reload the หนังสือ —
         the wizard opens their incoming box instead of closing."""
