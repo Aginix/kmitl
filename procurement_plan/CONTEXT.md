@@ -22,8 +22,8 @@ _Avoid_: dimension, tag
 What the plan **asks for** — the procurement's estimated value as planned. The yardstick that **Plan Budget** is measured against; never reserved by itself.
 _Avoid_: budget, Plan Budget (that is what was actually received)
 
-**Responsible (เจ้าหน้าที่ผู้รับผิดชอบ, `responsible_id`)**:
-The officer who looks after the plan day to day. A contact, not an owner: they follow the plan and are told of every status change, but grant no rights the unit's plan users don't already have. Optional, and may change at any time until the plan is closed or cancelled.
+**Responsible (เจ้าหน้าที่งานพัสดุ (จัดซื้อจัดจ้าง), `responsible_id`)**:
+The procurement (พัสดุ) officer who looks after the plan day to day. A contact, not an owner: they follow the plan and are told of every status change, but grant no rights the unit's plan users don't already have. Optional, and may change at any time until the plan is closed or cancelled.
 _Avoid_: owner, coordinator (plans have neither — unlike a KMITL Project); ผู้จัดทำ
 
 **Preparer (ผู้จัดทำ, `user_id`)**:
@@ -37,7 +37,7 @@ _Avoid_: payment, period
 ### Lifecycle
 
 **Submit (ส่งเข้ารอจัดสรรงบประมาณ)**:
-The draft → รอตรวจสอบข้อมูล transition. The single act that takes a plan out of drafting and mints its plan analytic account. Budget-free at the core level.
+The draft → รอตรวจสอบข้อมูล transition. Numbers the plan and mints its plan analytic account, and locks its fiscal year, dimensions and รหัสงบ; the plan's details (ชื่อรายการ, จำนวน, หน่วย, Plan Amount, โน้ต, Installments) stay editable until it is closed or deleted. Plan users may pull a submitted plan back to draft while it holds no money; later resets are the plan manager's ([ADR-0007](./docs/adr/0007-plan-details-stay-editable-preparer-pulls-back.md)). Budget-free at the core level.
 _Avoid_: confirm, activate, ปรับแผน
 
 **Close Plan (ปิดแผน)**:
@@ -45,7 +45,7 @@ The manual act that finishes a plan in progress (อยู่ในระหว�
 _Avoid_: done / auto-close, cancel
 
 **Plan Deletion (ลบแผน)**:
-The single way to take a plan out of use. A plan with no **Ledger Footprint** is deleted for good together with its analytic account; one with a footprint that has never spent is **soft-deleted** — it becomes ยกเลิก and both it and its analytic account are archived, and resetting it to draft brings both back with the same number. A plan that has spent cannot be deleted; it is closed instead. Waits until the plan holds no **Held Money** and has no open purchase request, purchase order or disbursement request. A numbered plan may be deleted only by plan managers. See [ADR-0005](./docs/adr/0005-plan-close-and-deletion-follow-project.md).
+The single way to take a plan out of use. A plan with no **Ledger Footprint** is deleted for good together with its analytic account; one with a footprint that has never spent is **soft-deleted** — it becomes ยกเลิก and both it and its analytic account are archived, and resetting it to draft brings both back with the same number. A plan that has spent cannot be deleted; it is closed instead. Waits until the plan holds no **Held Money** and has no open purchase request, purchase order or disbursement request. A numbered plan may be deleted only by plan managers — or by its creator/Preparer while it has no **Ledger Footprint** ([ADR-0007](./docs/adr/0007-plan-details-stay-editable-preparer-pulls-back.md)). Archiving a plan is its soft delete, restoring it is Reset to Draft. See [ADR-0005](./docs/adr/0005-plan-close-and-deletion-follow-project.md).
 _Avoid_: cancel as a separate act (ยกเลิก is only the state a soft-deleted plan ends in)
 
 **Ledger Footprint (ประวัติในบัญชีงบประมาณ)**:

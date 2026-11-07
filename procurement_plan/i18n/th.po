@@ -109,8 +109,8 @@ msgid "Can Edit"
 msgstr ""
 
 #. module: procurement_plan
-#: model:ir.model.fields,field_description:procurement_plan.field_procurement_plan__can_edit_description
-msgid "Can Edit Description"
+#: model:ir.model.fields,field_description:procurement_plan.field_procurement_plan__can_edit_details
+msgid "Can Edit Details"
 msgstr ""
 
 #. module: procurement_plan

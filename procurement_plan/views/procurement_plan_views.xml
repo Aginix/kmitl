@@ -32,22 +32,34 @@
             <form string="Procurement Plan">
                 <header>
                     <field name="state" widget="statusbar" statusbar_visible="draft,to_verify,verified,in_progress,done" />
-                    <button name="action_send_to_verify" string="ส่งเข้ารอจัดสรรงบประมาณ" type="object" class="btn-primary" states="draft" />
+                    <button name="action_send_to_verify" string="ส่งเข้ารอจัดสรรงบประมาณ" type="object" class="btn-primary" states="draft" confirm="ส่งแผนเข้ารอจัดสรรงบประมาณ? ระบบจะออกเลขที่แผน หลังส่งแล้วแก้ไขปีงบประมาณ มิติ และรหัสงบประมาณไม่ได้ (กดกลับเป็นแบบร่างได้จนกว่าแผนจะได้รับงบประมาณ)" />
                     <button name="action_verify" string="ยืนยัน" type="object" class="btn-primary" states="to_verify" />
                     <!-- A plan starts through its first purchase request (ADR-0004).
                          ADR-0005: closing is manual and returns the unspent reservation;
                          there is no Cancel — a plan is taken out of use by Delete. -->
                     <button name="action_done" string="ปิดแผน" type="object" states="in_progress" groups="procurement_plan.group_procurement_plan_manager" confirm="ปิดแผนนี้? เงินจองที่เหลือจะถูกคืน (คืนจอง) และแผนจะแก้ไขต่อไม่ได้" />
-                    <button name="action_reset_to_draft" string="Reset to Draft" type="object" states="to_verify,verified,cancel" groups="procurement_plan.group_procurement_plan_manager" />
+                    <!-- Plan users pull back a plan still waiting for money; any later reset is the plan manager's (ADR-0002). -->
+                    <button name="action_reset_to_draft" string="กลับเป็นแบบร่าง" type="object" states="to_verify" groups="procurement_plan.group_procurement_plan_user" confirm="กลับเป็นแบบร่างเพื่อแก้ไขแผน? เลขที่แผนเดิมยังคงอยู่" />
+                    <button name="action_reset_to_draft" string="กลับเป็นแบบร่าง" type="object" states="verified,cancel" groups="procurement_plan.group_procurement_plan_manager" confirm="กลับเป็นแบบร่าง? หากแผนจองงบประมาณไว้และยังไม่ได้ใช้ ใบจองจะถูกยกเลิก" />
                 </header>
                 <sheet>
                     <field name="can_edit" invisible="1"/>
                     <field name="active" invisible="1"/>
-                    <field name="can_edit_description" invisible="1"/>
+                    <field name="can_edit_details" invisible="1"/>
                     <div class="oe_button_box" name="button_box"/>
                     <!-- A banner, not a web_ribbon: the ribbon covers the last smart button. -->
                     <div class="alert alert-danger" role="alert" attrs="{'invisible': [('active', '=', True)]}">
-                        <strong>แผนนี้ถูกลบ (เก็บประวัติ)</strong> — ผู้จัดการแผนกด Reset to Draft เพื่อกู้คืนได้ด้วยเลขเดิม
+                        <strong>แผนนี้ถูกลบ (เก็บประวัติ)</strong> — ผู้จัดการแผนกด กลับเป็นแบบร่าง เพื่อกู้คืนได้ด้วยเลขเดิม
+                    </div>
+                    <div class="alert alert-info" role="status" name="next_step_draft" attrs="{'invisible': [('state', '!=', 'draft')]}">
+                        <strong>แบบร่าง</strong> — กรอกข้อมูลแผนให้ครบ แล้วกด <strong>ส่งเข้ารอจัดสรรงบประมาณ</strong> เพื่อออกเลขที่แผนและส่งให้งานแผนจัดสรรงบประมาณ
+                    </div>
+                    <div class="alert alert-info" role="status" name="next_step_to_verify" attrs="{'invisible': [('state', '!=', 'to_verify')]}">
+                        <strong>รอจัดสรรงบประมาณ</strong> — แก้ไขชื่อรายการ จำนวน วงเงิน โน้ต และงวดงานได้ตามปกติ
+                        หากต้องแก้ปีงบประมาณ มิติ หรือรหัสงบประมาณ กด <strong>กลับเป็นแบบร่าง</strong> (ทำได้จนกว่าแผนจะได้รับงบประมาณ หลังจากนั้นติดต่อผู้จัดการแผน)
+                    </div>
+                    <div class="alert alert-info" role="status" name="next_step_verified" attrs="{'invisible': [('state', '!=', 'verified')]}">
+                        <strong>รอดำเนินการ</strong> — เริ่มจัดซื้อจัดจ้างโดยสร้างใบขอซื้อ (พ.1) จากแผนนี้
                     </div>
                     <div class="oe_title">
                         <label for="name" />
@@ -57,20 +69,20 @@
                     </div>
                     <group>
                         <group name="basic">
-                            <field name="description" placeholder="e.g. ครุภัณฑ์วิทยาศาสตร์และการแพทย์, ปรับปรุงห้องปฏิบัติการฟิสิกส์" attrs="{'readonly': [('can_edit_description', '=', False)]}" />
+                            <field name="description" placeholder="e.g. ครุภัณฑ์วิทยาศาสตร์และการแพทย์, ปรับปรุงห้องปฏิบัติการฟิสิกส์" attrs="{'readonly': [('can_edit_details', '=', False)]}" />
                             <label for="amount" string="จำนวน" />
                             <div class="o_row">
-                                <field name="amount" attrs="{'readonly': [('can_edit', '=', False)]}"  />
-                                <field name="unit" placeholder="e.g. ชิ้น, รายการ, ตัว, ชุด" attrs="{'readonly': [('can_edit', '=', False)]}"  />
+                                <field name="amount" attrs="{'readonly': [('can_edit_details', '=', False)]}" />
+                                <field name="unit" placeholder="e.g. ชิ้น, รายการ, ตัว, ชุด" attrs="{'readonly': [('can_edit_details', '=', False)]}" />
                             </div>
-                            <field name="total_price" attrs="{'readonly': [('can_edit', '=', False)]}" />
+                            <field name="total_price" attrs="{'readonly': [('can_edit_details', '=', False)]}" />
                             <field name="user_id" widget="many2one_avatar_user" required="1" attrs="{'readonly': [('can_edit', '=', False)]}" />
                             <field name="responsible_id" widget="many2one_avatar_user" options="{'no_create': True}" />
-                            <field name="note" placeholder="Notes..." />
+                            <field name="note" placeholder="Notes..." attrs="{'readonly': [('can_edit_details', '=', False)]}" />
                         </group>
                         <group>
                             <field name="analytic_distribution" invisible="1" />
-                            <field name="account_fiscal_year_id" required="1" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': [('analytic_account_id', '!=', False)]}" />
+                            <field name="account_fiscal_year_id" required="1" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': [('can_edit', '=', False)]}" />
                             <field name="activity_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" invisible="context.get('hide_budget', False)" attrs="{'readonly': [('can_edit', '=', False)]}" />
                             <field name="source_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" invisible="context.get('hide_budget', False)" attrs="{'readonly': [('can_edit', '=', False)]}" />
                             <field name="department_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" invisible="context.get('hide_budget', False)" attrs="{'readonly': [('can_edit', '=', False)]}" />
@@ -90,7 +102,7 @@
                             </group>
                         </page>
                         <page string="การเบิกจ่าย">
-                            <field name="payment_ids">
+                            <field name="payment_ids" attrs="{'readonly': [('can_edit_details', '=', False)]}">
                                 <tree editable="bottom">
                                     <field name="number" width="1" />
                                     <field name="number_of_days" width="3" />
@@ -99,7 +111,7 @@
                                 </tree>
                             </field>
                         </page>
-                        <page name="additional_info" string="Additional Info">
+                        <page name="additional_info" string="ข้อมูลเพิ่มเติม">
                             <group>
                                 <group>
                                     <field name="analytic_account_id" groups="analytic.group_analytic_accounting" attrs="{'readonly': [('can_edit', '=', False)]}" />
@@ -141,7 +153,7 @@
                 <filter name="hide_cancel" string="ซ่อนที่ยกเลิก" domain="[('state', '!=', 'cancel')]" />
                 <separator/>
                 <filter name="state_draft" string="แบบร่าง" domain="[('state', '=', 'draft')]" />
-                <filter name="state_to_verify" string="จัดสรรงบประมาณ (ปรับเข้าแผน)" domain="[('state', '=', 'to_verify')]" />
+                <filter name="state_to_verify" string="รอจัดสรรงบประมาณ" domain="[('state', '=', 'to_verify')]" />
                 <filter name="state_verified" string="รอดำเนินการ" domain="[('state', '=', 'verified')]" />
                 <filter name="state_in_progress" string="กำลังดำเนินการ" domain="[('state', '=', 'in_progress')]" />
                 <filter name="state_done" string="เสร็จสิ้น" domain="[('state', '=', 'done')]" />
@@ -157,7 +169,7 @@
                     <filter string="ปีงบประมาณ" name="group_by_fiscal_year" context="{'group_by': 'account_fiscal_year_id'}" />
                     <filter string="สถานะ" name="group_by_state" context="{'group_by': 'state'}" />
                     <filter string="ผู้จัดทำ" name="group_by_user" context="{'group_by': 'user_id'}" />
-                    <filter string="เจ้าหน้าที่ผู้รับผิดชอบ" name="group_by_responsible" context="{'group_by': 'responsible_id'}" />
+                    <filter string="เจ้าหน้าที่งานพัสดุ (จัดซื้อจัดจ้าง)" name="group_by_responsible" context="{'group_by': 'responsible_id'}" />
                     <filter string="ส่วนงาน" name="group_by_department" context="{'group_by': 'department_analytic_id'}" />
                     <filter string="แหล่งเงิน" name="group_by_source" context="{'group_by': 'source_analytic_id'}" />
                     <filter string="กองทุน" name="group_by_fund" context="{'group_by': 'fund_analytic_id'}" />

@@ -2,10 +2,10 @@
 <odoo noupdate="1">
     <!-- UC1: plan officer must complete the operating plan before a PR (พ.1) can be created -->
     <record id="mail_activity_procurement_plan_fill" model="mail.activity.type">
-        <field name="name">Complete the operating plan</field>
+        <field name="name">กรอกแผนการดำเนินงาน</field>
         <field
             name="summary"
-        >Complete the operating plan (ETAs + procurement method) before creating the purchase request</field>
+        >กรอกแผนการดำเนินงาน (กำหนดการ ETA และวิธีจัดซื้อจัดจ้าง) ก่อนสร้างใบขอซื้อ</field>
         <field name="todo_category">execution</field>
         <field name="res_model">procurement.plan</field>
         <field name="icon">fa-pencil-square-o</field>

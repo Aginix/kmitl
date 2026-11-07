@@ -17,7 +17,7 @@ class ProcurementPlan(models.Model):
     # its label only (no new value, no ondelete needed).
     state = fields.Selection(
         selection_add=[
-            ("to_verify", "รอจัดสรรงบประมาณ (ปรับเข้าแผน) และจองงบประมาณ"),
+            ("to_verify", "รอจัดสรรงบประมาณ"),
         ],
     )
 
