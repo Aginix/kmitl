@@ -19,6 +19,11 @@ upfront.
 - [Budget](./budget/CONTEXT.md) — appropriation, reservation and disbursement tracking;
   appropriated pool (`budget.move`) consumed through a reserve→obligate→consume
   commitment pipeline (`budget.commitment`).
+  - **`budget_commitment_exception`** + `budget_commitment_exception_procurement_plan`,
+    and the field bridges `kmitl_project_budget_commitment` /
+    `procurement_plan_budget_commitment` (no own glossary — part of the Budget
+    context): switchable rules checked on จองงบ (a plan code must name its plan), and
+    the โครงการ/แผน field shown after รหัสงบประมาณ for codes of that type.
   - **`budget_transfer`** (no own glossary — part of the Budget context): houses the
     budget-transfer feature (การโอนงบ) split out of core `budget`. `budget.transfer` is
     a 1:1 delegated `budget.move` (the `account.payment` ↔ `account.move` pattern) with

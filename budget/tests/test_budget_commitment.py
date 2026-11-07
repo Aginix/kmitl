@@ -226,6 +226,15 @@ class TestBudgetCommitment(TransactionCase):
         with self.assertRaises(UserError):
             c.action_reserve()
 
+    def test_02c_reserve_requires_all_core_dimensions(self):
+        """จองงบ requires all 4 core dimensions on the header."""
+        distribution = self._header_analytic()
+        distribution.pop(str(self.fund.id))
+        c = self._create_commitment(100_000, analytic_distribution=distribution)
+        with self.assertRaisesRegex(UserError, "กองทุน"):
+            c.action_reserve()
+        self.assertEqual(c.state, "draft")
+
     def test_03_obligate_moves_to_partial(self):
         """Adding an obligate line transitions header to partial."""
         c = self._create_commitment(100_000)

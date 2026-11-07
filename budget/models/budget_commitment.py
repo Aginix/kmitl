@@ -683,6 +683,7 @@ class BudgetCommitment(models.Model):
                         "Cannot reserve: no reserve lines found. Add reserve lines first."
                     )
                 )
+            record._check_core_dimensions()
             record._check_reserve_availability()
             if record.name == _("New"):
                 record.name = self.env["ir.sequence"].next_by_code(
@@ -692,6 +693,23 @@ class BudgetCommitment(models.Model):
             # Post now, before the next one in a batch is checked: the pool
             # only nets a reservation once its events are in the ledger.
             record._pending_reserve_lines()._post_budget_moves()
+
+    _CORE_DIMS = (
+        ("department_analytic_id", "ส่วนงาน"),
+        ("source_analytic_id", "แหล่งเงิน"),
+        ("fund_analytic_id", "กองทุน"),
+        ("activity_analytic_id", "กิจกรรม"),
+    )
+
+    def _check_core_dimensions(self):
+        """A reservation must carry all 4 core dimensions."""
+        self.ensure_one()
+        missing = [label for fname, label in self._CORE_DIMS if not self[fname]]
+        if missing:
+            raise UserError(
+                _("กรุณาระบุมิติบัญชีให้ครบก่อนจองงบประมาณ (%(name)s): ขาด %(missing)s")
+                % {"name": self.display_name, "missing": ", ".join(missing)}
+            )
 
     def _create_reserve_line_from_header(self):
         """Synthesize the single reserve line from the header (form-first).

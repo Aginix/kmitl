@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Show the tag right after รหัสงบประมาณ whenever the code is of this type. -->
+    <record id="budget_commitment_form_view" model="ir.ui.view">
+        <field name="name">budget.commitment.form.procurement_plan_budget_commitment</field>
+        <field name="model">budget.commitment</field>
+        <field name="inherit_id" ref="budget.budget_commitment_form_view" />
+        <field name="arch" type="xml">
+            <xpath
+                expr="//group[@name='budget_details']/field[@name='procurement_plan_analytic_id']"
+                position="attributes"
+            >
+                <attribute
+                    name="attrs"
+                >{'invisible': [('account_is_procurement_plan', '=', False), ('procurement_plan_analytic_id', '=', False)]}</attribute>
+            </xpath>
+            <xpath
+                expr="//group[@name='budget_details']/field[@name='procurement_plan_analytic_id']"
+                position="before"
+            >
+                <field name="account_is_procurement_plan" invisible="1" />
+            </xpath>
+        </field>
+    </record>
+</odoo>
