@@ -46,7 +46,7 @@ class PurchaseRequestLine(models.Model):
                 lambda l: l.wa_id.state == "accept"
             ):
                 qty_accepted += wa_line.product_uom._compute_quantity(
-                    wa_line.product_qty, line.product_uom, round=False
+                    wa_line.product_qty, line.product_uom_id, round=False
                 )
             line.qty_accepted = qty_accepted
 

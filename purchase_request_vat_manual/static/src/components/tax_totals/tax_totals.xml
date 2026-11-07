@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<templates>
+    <t
+        t-name="purchase_request_vat_manual.TaxTotalsField"
+        t-inherit="account.TaxTotalsField"
+        t-inherit-mode="primary"
+        owl="1"
+    >
+        <xpath expr="//TaxGroupComponent" position="replace">
+            <tr>
+                <td class="o_td_label">
+                    <a
+                        t-if="canEditVat"
+                        href="#"
+                        class="me-2"
+                        title="Edit VAT"
+                        t-on-click.prevent="openVatWizard"
+                    >
+                        <i class="fa fa-pencil" />
+                    </a>
+                    <label
+                        class="o_form_label o_tax_total_label"
+                        t-esc="taxGroup.tax_group_name"
+                    />
+                </td>
+                <td class="o_list_monetary">
+                    <span
+                        style="white-space: nowrap;"
+                        t-out="taxGroup.formatted_tax_group_amount"
+                    />
+                </td>
+            </tr>
+        </xpath>
+    </t>
+</templates>

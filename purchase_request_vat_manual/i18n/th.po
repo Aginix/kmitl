@@ -1,0 +1,172 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* purchase_request_vat_manual
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-05 10:12+0000\n"
+"PO-Revision-Date: 2026-11-05 10:12+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: purchase_request_vat_manual
+#: model_terms:ir.ui.view,arch_db:purchase_request_vat_manual.purchase_request_vat_wizard_view_form
+msgid ""
+"<i class=\"fa fa-exclamation-triangle me-1\"/>\n"
+"                    <strong>Please note:</strong>\n"
+"                    changing the VAT from the system-calculated amount is the\n"
+"                    responsibility of the person making the change.\n"
+"                    Kindly verify the new amount against the supporting documents\n"
+"                    before confirming."
+msgstr ""
+"<i class=\"fa fa-exclamation-triangle me-1\"/>\n"
+"                    <strong>โปรดทราบ:</strong>\n"
+"                    การแก้ไขภาษีมูลค่าเพิ่มให้ต่างจากที่ระบบคำนวณ ถือเป็นความรับผิดชอบของผู้แก้ไข\n"
+"                    กรุณาตรวจสอบจำนวนเงินใหม่กับเอกสารประกอบให้ถูกต้องก่อนยืนยัน"
+
+#. module: purchase_request_vat_manual
+#: model_terms:ir.ui.view,arch_db:purchase_request_vat_manual.purchase_request_vat_wizard_view_form
+msgid "Cancel"
+msgstr "ยกเลิก"
+
+#. module: purchase_request_vat_manual
+#: model:ir.model.fields,field_description:purchase_request_vat_manual.field_purchase_request_vat_wizard__amount_tax_computed
+msgid "Computed VAT"
+msgstr "ภาษีมูลค่าเพิ่มที่ระบบคำนวณ"
+
+#. module: purchase_request_vat_manual
+#: model_terms:ir.ui.view,arch_db:purchase_request_vat_manual.purchase_request_vat_wizard_view_form
+msgid "Confirm"
+msgstr "ยืนยัน"
+
+#. module: purchase_request_vat_manual
+#: model:ir.model.fields,field_description:purchase_request_vat_manual.field_purchase_request_vat_wizard__create_uid
+msgid "Created by"
+msgstr "สร้างโดย"
+
+#. module: purchase_request_vat_manual
+#: model:ir.model.fields,field_description:purchase_request_vat_manual.field_purchase_request_vat_wizard__create_date
+msgid "Created on"
+msgstr "สร้างเมื่อ"
+
+#. module: purchase_request_vat_manual
+#: model:ir.model.fields,field_description:purchase_request_vat_manual.field_purchase_request_vat_wizard__currency_id
+msgid "Currency"
+msgstr "สกุลเงิน"
+
+#. module: purchase_request_vat_manual
+#: model:ir.model.fields,help:purchase_request_vat_manual.field_disbursement_request__amount_tax_adjustment
+msgid ""
+"Difference between the VAT edited on the purchase request and the computed "
+"VAT. Applied to the vendor bill."
+msgstr "ส่วนต่างระหว่างภาษีมูลค่าเพิ่มที่แก้ไขในใบขอซื้อกับค่าที่ระบบคำนวณ นำไปปรับในใบแจ้งหนี้ผู้ขาย"
+
+#. module: purchase_request_vat_manual
+#: model:ir.model.fields,help:purchase_request_vat_manual.field_purchase_request_approval__amount_tax_adjustment
+msgid ""
+"Difference between the VAT edited on the purchase request and the computed "
+"VAT. Carried to the disbursement request."
+msgstr "ส่วนต่างระหว่างภาษีมูลค่าเพิ่มที่แก้ไขในใบขอซื้อกับค่าที่ระบบคำนวณ ส่งต่อไปยังใบขอเบิก"
+
+#. module: purchase_request_vat_manual
+#: model:ir.model,name:purchase_request_vat_manual.model_disbursement_request
+msgid "Disbursement Request"
+msgstr "ใบขอเบิก"
+
+#. module: purchase_request_vat_manual
+#: model:ir.model.fields,field_description:purchase_request_vat_manual.field_purchase_request_vat_wizard__display_name
+msgid "Display Name"
+msgstr "ชื่อที่แสดง"
+
+#. module: purchase_request_vat_manual
+#: model:ir.model,name:purchase_request_vat_manual.model_purchase_request_vat_wizard
+msgid "Edit Purchase Request VAT"
+msgstr "แก้ไขภาษีมูลค่าเพิ่มของใบขอซื้อ"
+
+#. module: purchase_request_vat_manual
+#. odoo-javascript
+#. odoo-python
+#: code:addons/purchase_request_vat_manual/models/purchase_request.py:0
+#: code:addons/purchase_request_vat_manual/static/src/components/tax_totals/tax_totals.xml:0
+#: model_terms:ir.ui.view,arch_db:purchase_request_vat_manual.purchase_request_vat_wizard_view_form
+#, python-format
+msgid "Edit VAT"
+msgstr "แก้ไขภาษีมูลค่าเพิ่ม"
+
+#. module: purchase_request_vat_manual
+#: model:ir.model.fields,field_description:purchase_request_vat_manual.field_purchase_request_vat_wizard__id
+msgid "ID"
+msgstr "ID"
+
+#. module: purchase_request_vat_manual
+#: model:ir.model.fields,field_description:purchase_request_vat_manual.field_purchase_request_vat_wizard____last_update
+msgid "Last Modified on"
+msgstr "แก้ไขล่าสุดเมื่อ"
+
+#. module: purchase_request_vat_manual
+#: model:ir.model.fields,field_description:purchase_request_vat_manual.field_purchase_request_vat_wizard__write_uid
+msgid "Last Updated by"
+msgstr "อัปเดตล่าสุดโดย"
+
+#. module: purchase_request_vat_manual
+#: model:ir.model.fields,field_description:purchase_request_vat_manual.field_purchase_request_vat_wizard__write_date
+msgid "Last Updated on"
+msgstr "อัปเดตล่าสุดเมื่อ"
+
+#. module: purchase_request_vat_manual
+#: model:ir.model.fields,field_description:purchase_request_vat_manual.field_purchase_request__amount_tax_manual
+msgid "Manual VAT"
+msgstr "ภาษีมูลค่าเพิ่ม (แก้ไขเอง)"
+
+#. module: purchase_request_vat_manual
+#: model:ir.model.fields,field_description:purchase_request_vat_manual.field_purchase_request_vat_wizard__amount_tax_new
+msgid "New VAT"
+msgstr "ภาษีมูลค่าเพิ่มใหม่"
+
+#. module: purchase_request_vat_manual
+#: model:ir.model,name:purchase_request_vat_manual.model_purchase_request
+msgid "Purchase Request"
+msgstr "คำขอซื้อขอจ้าง"
+
+#. module: purchase_request_vat_manual
+#: model:ir.model,name:purchase_request_vat_manual.model_purchase_request_approval
+msgid "Purchase Request Approval"
+msgstr "รายงานขอซื้อ/จ้าง (พจ.1)"
+
+#. module: purchase_request_vat_manual
+#: model:ir.model.fields,field_description:purchase_request_vat_manual.field_purchase_request_vat_wizard__request_id
+msgid "Request"
+msgstr "ใบขอซื้อ"
+
+#. module: purchase_request_vat_manual
+#. odoo-python
+#: code:addons/purchase_request_vat_manual/wizard/purchase_request_vat_wizard.py:0
+#, python-format
+msgid ""
+"The VAT amount must be greater than zero. To remove VAT, please set the "
+"request to VAT Exclusive instead."
+msgstr "จำนวนภาษีมูลค่าเพิ่มต้องมากกว่าศูนย์ หากไม่ต้องการคิดภาษีมูลค่าเพิ่ม กรุณาเปลี่ยนเป็น VAT Exclusive แทน"
+
+#. module: purchase_request_vat_manual
+#: model_terms:ir.ui.view,arch_db:purchase_request_vat_manual.purchase_request_vat_wizard_view_form
+msgid "Use Computed VAT"
+msgstr "ใช้ค่าที่ระบบคำนวณ"
+
+#. module: purchase_request_vat_manual
+#: model:ir.model.fields,field_description:purchase_request_vat_manual.field_disbursement_request__amount_tax_adjustment
+#: model:ir.model.fields,field_description:purchase_request_vat_manual.field_purchase_request_approval__amount_tax_adjustment
+msgid "VAT Adjustment"
+msgstr "ส่วนปรับภาษีมูลค่าเพิ่ม"
+
+#. module: purchase_request_vat_manual
+#: model:ir.model.fields,help:purchase_request_vat_manual.field_purchase_request__amount_tax_manual
+msgid ""
+"VAT amount edited manually by the user. Empty means the computed VAT is "
+"used."
+msgstr "จำนวนภาษีมูลค่าเพิ่มที่ผู้ใช้แก้ไขเอง หากว่างไว้จะใช้ค่าที่ระบบคำนวณ"
