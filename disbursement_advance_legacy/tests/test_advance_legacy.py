@@ -86,4 +86,16 @@ class TestAdvanceLegacy(TransactionCase):
         """advance_payment_disbursement's loan requirement keys on ``advance``."""
         request = self._request()
         request.action_submit()
-        self.assertIn(request.state, ("draft", "submitted"))
+        self.assertEqual(request.state, "submitted")
+
+    def test_external_payee_type_blocked_at_submit(self):
+        external = self.env["res.partner.type"].search(
+            [("is_internal", "=", False)], limit=1
+        )
+        request = self._request(partner_type_id=external.id)
+        rule = self.env.ref(
+            "disbursement_advance_legacy.excep_disbursement_advance_legacy_internal_payee"
+        )
+        self.assertIn(rule.id, request.detect_exceptions())
+        request.action_submit()
+        self.assertEqual(request.state, "draft")

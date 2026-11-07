@@ -9,7 +9,10 @@
     "category": "KMITL",
     "license": "LGPL-3",
     "depends": ["disbursement", "hr"],
-    "data": ["views/disbursement_request_views.xml"],
+    "data": [
+        "data/exception_rule_data.xml",
+        "views/disbursement_request_views.xml",
+    ],
     "installable": True,
     "auto_install": False,
 }
