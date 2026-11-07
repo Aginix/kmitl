@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Revision Draft: หนังสือขออนุมัติปรับแผน once รออนุมัติปรับแผน; the
+         Manager's อนุมัติ/ตีกลับ only until the หนังสือ is sent (ADR-0014). The
+         sarabun_* / can_submit_sarabun fields come from the project form's
+         sarabun extensions. -->
+    <record id="view_kmitl_project_revision_form_sarabun" model="ir.ui.view">
+        <field name="name">view.kmitl.project.revision.form.sarabun</field>
+        <field name="model">kmitl.project</field>
+        <field
+            name="inherit_id"
+            ref="kmitl_project_revision.view_kmitl_project_revision_form"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_revision_approve']" position="before">
+                <button
+                    name="action_submit_to_sarabun"
+                    string="สร้างหนังสือขออนุมัติปรับแผน"
+                    type="object"
+                    class="oe_highlight"
+                    attrs="{'invisible': ['|', '|', ('state', '!=', 'sent'), ('sarabun_has_live_document', '=', True), ('can_submit_sarabun', '=', False)]}"
+                />
+            </xpath>
+            <xpath
+                expr="//button[@name='action_revision_approve']"
+                position="attributes"
+            >
+                <attribute
+                    name="attrs"
+                >{'invisible': ['|', ('state', '!=', 'sent'), '&amp;', ('sarabun_has_live_document', '=', True), ('sarabun_is_draft', '=', False)]}</attribute>
+            </xpath>
+            <xpath
+                expr="//button[@name='action_open_revision_reason'][contains(@context, 'return')]"
+                position="attributes"
+            >
+                <attribute
+                    name="attrs"
+                >{'invisible': ['|', ('state', '!=', 'sent'), '&amp;', ('sarabun_has_live_document', '=', True), ('sarabun_is_draft', '=', False)]}</attribute>
+            </xpath>
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button
+                    type="object"
+                    name="action_view_sarabun_documents"
+                    class="oe_stat_button"
+                    icon="fa-file-text-o"
+                    attrs="{'invisible': [('sarabun_document_count', '=', 0)]}"
+                    string="หนังสือ"
+                />
+            </xpath>
+        </field>
+    </record>
+</odoo>

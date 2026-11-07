@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- No seeded route: the drafter builds it on the หนังสือ (ADR-0014). -->
+    <record id="document_type_kmitl_project_revision" model="sarabun.document.type">
+        <field name="name">ขออนุมัติปรับแผนโครงการ</field>
+        <field name="kind">from_record</field>
+    </record>
+</odoo>
