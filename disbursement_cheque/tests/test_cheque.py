@@ -70,3 +70,14 @@ class TestCheque(TwoApproverCommon):
         dr = self._draft()
         with self.assertRaises(ValidationError):
             dr.line_ids.payment_method = False
+
+    def test_has_cheque_follows_lines(self):
+        dr = self._draft()
+        self.assertFalse(dr.has_cheque)
+        dr.line_ids.payment_method = "cheque"
+        self.assertTrue(dr.has_cheque)
+        dr.line_ids.payment_method = "transfer"
+        self.assertFalse(dr.has_cheque)
+        dr.line_ids.payment_method = "cheque"
+        dr.payment_type = "advance"
+        self.assertFalse(dr.has_cheque)
