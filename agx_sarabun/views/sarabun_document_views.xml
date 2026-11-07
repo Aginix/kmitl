@@ -38,7 +38,7 @@
                     <button
                         name="action_open_send_wizard"
                         type="object"
-                        string="📨 ส่งเอกสาร"
+                        string="📤 ส่งหนังสือ"
                         class="oe_highlight"
                         attrs="{'invisible': [('is_editable', '=', False)]}"
                     />

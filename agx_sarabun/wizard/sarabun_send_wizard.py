@@ -14,10 +14,9 @@ class SarabunSendWizard(models.TransientModel):
     sender_department_id = fields.Many2one(
         related="document_id.sender_department_id", readonly=True,
     )
-    # ลงนาม/ไม่ลงนาม ของผู้จัดทำ, surfaced at the send gate as a required radio.
-    # The originator verb was easy to miss buried in the routing-step form, so a
-    # drafter kept *accidentally* sending as ผู้จัดทำลงนาม even when the เรื่อง needed
-    # them not to sign (UAT feedback). Prefilled from the step's current verb.
+    # ลงนาม/ไม่ลงนาม ของผู้จัดทำ, asked at the send gate. No default on purpose: the
+    # drafter must pick it every time (UAT feedback — a prefilled choice was sent
+    # without being read).
     originator_sign_mode = fields.Selection(
         [
             ("sign", "ลงนาม — ผู้จัดทำ (เจ้าของเรื่อง) ลงนามในหนังสือ"),
@@ -25,15 +24,7 @@ class SarabunSendWizard(models.TransientModel):
         ],
         string="การลงนามของผู้จัดทำ",
         required=True,
-        default=lambda self: self._default_originator_sign_mode(),
     )
-
-    def _default_originator_sign_mode(self):
-        doc_id = self.env.context.get("default_document_id")
-        doc = self.env["sarabun.document"].browse(doc_id)
-        originator = doc.routing_step_ids.filtered("is_originator")[:1]
-        # No originator yet, or a signing originator verb → default to ลงนาม.
-        return "no_sign" if (originator and not originator.verb.show_signature) else "sign"
 
     def _apply_originator_sign_mode(self):
         """Pin the originator (ผู้จัดทำ) step's verb from the explicit send-time choice,
