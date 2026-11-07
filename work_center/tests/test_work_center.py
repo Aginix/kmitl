@@ -334,6 +334,20 @@ class TestWorkCenter(TransactionCase):
         doc._work_center_forward()
         self.assertEqual(doc.work_center_id, self.wc_central)
 
+    def test_divert_to_a_chosen_person(self):
+        self.wc_other.member_ids = [(4, self.user_a2.id)]
+        doc = self._enter(partner_id=self.dept.id)
+        doc._work_center_divert(self.wc_other, "for you", assignee=self.user_a2)
+        self.assertEqual(doc.work_center_assignee_id, self.user_a2)
+        self.assertEqual(self._arrival_todos(doc).user_id, self.user_a2)
+
+    def test_divert_to_a_person_not_responsible_refused(self):
+        self.wc_other.member_ids = [(4, self.user_a2.id)]
+        doc = self._enter(partner_id=self.dept.id)
+        with self.assertRaises(UserError):
+            doc._work_center_divert(self.wc_other, "wrong one", assignee=self.user_a)
+        self.assertEqual(doc.work_center_id, self.wc_dept)
+
     def test_divert_to_another_area_refused(self):
         doc = self._enter(partner_id=self.dept.id)
         with self.assertRaises(UserError):

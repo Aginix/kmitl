@@ -63,7 +63,7 @@ the last station it leaves the circuit. _Avoid_: approve, submit (those are acts
 forwarding is a hand-off)
 
 **เบี่ยงเส้นทาง (Divert)**: Handing the document to any other station **of the same
-area**, with a reason. The document is expected to rejoin the route afterwards: "next"
+area**, with a reason, optionally to a named person there (else the assignment rules decide). The document is expected to rejoin the route afterwards: "next"
 is then the station after the last *on-route* station it visited. _Avoid_: ตีกลับ
 (that is Send back, which leaves the circuit)
 

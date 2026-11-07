@@ -1214,11 +1214,25 @@ msgstr "เอกสารที่มาถึงที่นี่จะไป
 
 #. module: work_center
 #: model:ir.model.fields,field_description:work_center.field_work_center_assign_wizard__user_id
+#: model:ir.model.fields,field_description:work_center.field_work_center_move_wizard__assignee_id
 #: model_terms:ir.ui.view,arch_db:work_center.work_center_assign_wizard_view_form
 msgid "Assign To"
 msgstr "มอบหมายให้"
 
 #. module: work_center
 #: model:ir.model.fields,field_description:work_center.field_work_center_assign_wizard__allowed_user_ids
+#: model:ir.model.fields,field_description:work_center.field_work_center_move_wizard__allowed_assignee_ids
 msgid "Responsible People"
 msgstr "ผู้รับผิดชอบ"
+
+#. module: work_center
+#: model:ir.model.fields,help:work_center.field_work_center_move_wizard__assignee_id
+msgid "Leave empty to let the assignment rules of the station decide."
+msgstr "เว้นว่างไว้เพื่อให้กฎการมอบหมายของสถานีปลายทางเป็นผู้เลือก"
+
+#. module: work_center
+#. odoo-python
+#: code:addons/work_center/models/work_center_mixin.py:0
+#, python-format
+msgid "%s is not responsible at the station the document is diverted to."
+msgstr "%s ไม่ได้เป็นผู้รับผิดชอบที่สถานีที่เบี่ยงเส้นทางไป"

@@ -11,12 +11,18 @@
                 <field name="mode" invisible="1" />
                 <field name="expected_station_id" invisible="1" />
                 <field name="allowed_target_ids" invisible="1" />
+                <field name="allowed_assignee_ids" invisible="1" />
                 <field name="needs_reason" invisible="1" />
                 <group>
                     <field
                         name="target_id"
                         options="{'no_create': True, 'no_open': True}"
                         attrs="{'invisible': [('mode', '!=', 'divert')], 'required': [('mode', '=', 'divert')]}"
+                    />
+                    <field
+                        name="assignee_id"
+                        options="{'no_create': True, 'no_open': True}"
+                        attrs="{'invisible': ['|', ('mode', '!=', 'divert'), ('target_id', '=', False)]}"
                     />
                     <field
                         name="missing_act_ids"

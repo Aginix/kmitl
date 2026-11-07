@@ -39,7 +39,9 @@ How it works
   from the visit log. Forwarding out of the last station leaves the circuit.
 * A station lists the **acts** it allows and requires. Forwarding without a
   required act needs a reason, which is logged together with the skipped acts.
-  Diverting ignores required acts and needs a reason too.
+  Diverting ignores required acts and needs a reason too. The one who diverts
+  may name the person at the target station who gets the document; otherwise
+  the assignment rules decide.
 * **Members** narrow who acts, they never grant: an act needs the role *and*,
   when the station has members, being one of them. A station without members
   is open to everyone holding the role. Members forward, divert and send back
