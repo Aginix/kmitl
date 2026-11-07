@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- noupdate: loan type and borrowing rules (advance_payment ADR-0030) belong to
+     the administrators once installed. -->
+<odoo noupdate="1">
+    <record id="loan_type_kmitl_project" model="advance.payment.loan.type">
+        <field name="name">ยืมเงินโครงการ</field>
+        <field name="reference_model">kmitl.project</field>
+    </record>
+
+    <record
+        id="kmitl_project.category_operating_materials"
+        model="project.budget.category"
+    >
+        <field name="loan_via_pr_only" eval="True" />
+    </record>
+
+    <!-- Project loans are not capped at 50,000; lifted for every loan type. -->
+    <record id="advance_payment_exception.excep_loan_amount_too_high" model="exception.rule">
+        <field name="active" eval="False" />
+    </record>
+
+    <record id="excep_project_not_in_progress" model="exception.rule">
+        <field name="name">โครงการยังไม่อยู่ระหว่างดำเนินการ</field>
+        <field
+            name="description"
+        >โครงการที่อ้างอิงต้องอยู่ระหว่างดำเนินการจึงจะยืมเงินได้</field>
+        <field name="sequence">34</field>
+        <field name="model">advance.payment</field>
+        <field name="exception_type">by_domain</field>
+        <field
+            name="domain"
+        >[('kmitl_project_id', '!=', False), ('is_project_in_progress', '=', False)]</field>
+        <field name="is_blocking" eval="True" />
+        <field name="active" eval="True" />
+    </record>
+</odoo>

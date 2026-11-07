@@ -84,6 +84,7 @@
         "purchase_request_advance_payment",
         "agx_approval_advance_payment",
         "advance_payment_budget_commitment",
+        "kmitl_project_advance_payment",
         "advance_payment_loan_type_group",
         "advance_payment_related_document",
         "agx_related_document_sarabun",

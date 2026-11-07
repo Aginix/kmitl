@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_advance_payment_form_kmitl_project" model="ir.ui.view">
+        <field name="name">advance.payment.form.kmitl.project</field>
+        <field name="model">advance.payment</field>
+        <field name="inherit_id" ref="advance_payment.view_advance_payment_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='terms']" position="before">
+                <group
+                    name="project_lines"
+                    string="รายการค่าใช้จ่ายของโครงการที่ยืม"
+                    attrs="{'invisible': [('loan_type_reference_model', '!=', 'kmitl.project')]}"
+                >
+                    <div colspan="2">
+                        <button
+                            name="action_load_project_lines"
+                            type="object"
+                            string="โหลดรายการค่าใช้จ่าย"
+                            class="btn-secondary"
+                            attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('reference_number', '=', False)]}"
+                        />
+                    </div>
+                    <field
+                        name="project_line_ids"
+                        nolabel="1"
+                        colspan="2"
+                        attrs="{'readonly': [('state', '!=', 'draft')]}"
+                    >
+                        <tree editable="bottom" create="0" delete="0">
+                            <field name="name" readonly="1" />
+                            <field name="category_id" readonly="1" />
+                            <field name="line_amount" readonly="1" />
+                            <field name="remaining_amount" readonly="1" />
+                            <field name="currency_id" invisible="1" />
+                            <field name="amount" />
+                        </tree>
+                    </field>
+                </group>
+            </xpath>
+            <field name="loan_amount" position="attributes">
+                <attribute name="attrs">{'readonly': ['|', ('state', '!=', 'draft'), ('loan_type_reference_model', '=', 'kmitl.project')]}</attribute>
+            </field>
+        </field>
+    </record>
+</odoo>
