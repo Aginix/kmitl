@@ -1,0 +1,81 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* disbursement_payment_clear_confirm
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-29 12:00+0000\n"
+"PO-Revision-Date: 2026-10-29 12:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: disbursement_payment_clear_confirm
+#: model:ir.model.fields,field_description:disbursement_payment_clear_confirm.field_disbursement_request__can_confirm_payment_cleared
+msgid "Can Confirm Payment Cleared"
+msgstr "ยืนยันล้างหนี้ได้"
+
+#. module: disbursement_payment_clear_confirm
+#: model:ir.model.fields,field_description:disbursement_payment_clear_confirm.field_disbursement_request__clear_confirmer_id
+msgid "Clearing Confirmed By"
+msgstr "ผู้ยืนยันล้างหนี้"
+
+#. module: disbursement_payment_clear_confirm
+#: model:ir.model.fields,field_description:disbursement_payment_clear_confirm.field_disbursement_request__clear_confirm_date
+msgid "Clearing Confirmed On"
+msgstr "วันที่ยืนยันล้างหนี้"
+
+#. module: disbursement_payment_clear_confirm
+#: model:ir.model.fields.selection,name:disbursement_payment_clear_confirm.selection__disbursement_request_signature__step__payment_clear
+msgid "Clearing Officer"
+msgstr "เจ้าหน้าที่บัญชีล้างหนี้"
+
+#. module: disbursement_payment_clear_confirm
+#. odoo-python
+#: code:addons/disbursement_payment_clear_confirm/models/disbursement_request.py:0
+#: model_terms:ir.ui.view,arch_db:disbursement_payment_clear_confirm.view_disbursement_request_form
+#, python-format
+msgid "Confirm Cleared"
+msgstr "ยืนยันล้างหนี้"
+
+#. module: disbursement_payment_clear_confirm
+#: model_terms:ir.ui.view,arch_db:disbursement_payment_clear_confirm.view_disbursement_request_form
+msgid "Confirm that every payment of this disbursement is booked?"
+msgstr "ยืนยันว่ารายการจ่ายทุกรายการของใบขอเบิกนี้ลงบัญชีล้างหนี้แล้ว?"
+
+#. module: disbursement_payment_clear_confirm
+#: model:ir.model,name:disbursement_payment_clear_confirm.model_disbursement_request
+msgid "Disbursement Request"
+msgstr "ใบขอเบิก"
+
+#. module: disbursement_payment_clear_confirm
+#: model:ir.model,name:disbursement_payment_clear_confirm.model_disbursement_request_signature
+msgid "Disbursement Request Signature"
+msgstr "ลายเซ็นในใบขอเบิก"
+
+#. module: disbursement_payment_clear_confirm
+#. odoo-python
+#: code:addons/disbursement_payment_clear_confirm/models/disbursement_request.py:0
+#, python-format
+msgid "Every payee must be paid before the clearing is confirmed."
+msgstr "ต้องจ่ายเงินให้ผู้รับทุกรายก่อนจึงจะยืนยันล้างหนี้ได้"
+
+#. module: disbursement_payment_clear_confirm
+#. odoo-python
+#: code:addons/disbursement_payment_clear_confirm/models/disbursement_request.py:0
+#, python-format
+msgid "Raise the payment vouchers first."
+msgstr "กรุณาออกใบสำคัญจ่ายก่อน"
+
+#. module: disbursement_payment_clear_confirm
+#. odoo-python
+#: code:addons/disbursement_payment_clear_confirm/models/disbursement_request.py:0
+#, python-format
+msgid "These payment entries are not posted yet: %s"
+msgstr "รายการจ่ายเหล่านี้ยังไม่ได้ลงบัญชี: %s"

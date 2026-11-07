@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_disbursement_request_form" model="ir.ui.view">
+        <field name="name">disbursement.request.form (disbursement_payment_clear_confirm)</field>
+        <field name="model">disbursement.request</field>
+        <field
+            name="inherit_id"
+            ref="disbursement_finance_kmitl.view_disbursement_request_form_inherit_finance"
+        />
+        <field name="arch" type="xml">
+            <button name="action_draft" position="before">
+                <button
+                    name="action_confirm_payment_cleared"
+                    string="Confirm Cleared"
+                    type="object"
+                    class="oe_highlight"
+                    confirm="Confirm that every payment of this disbursement is booked?"
+                    attrs="{'invisible': [('can_confirm_payment_cleared', '=', False)]}"
+                    groups="accounting_kmitl.group_accounting_kmitl_user"
+                />
+                <field name="can_confirm_payment_cleared" invisible="1" />
+            </button>
+            <xpath
+                expr="//page[@name='payment_execution']//field[@name='payment_authorize_date']"
+                position="after"
+            >
+                <field
+                    name="clear_confirmer_id"
+                    attrs="{'invisible': [('clear_confirmer_id', '=', False)]}"
+                />
+                <field
+                    name="clear_confirm_date"
+                    attrs="{'invisible': [('clear_confirmer_id', '=', False)]}"
+                />
+            </xpath>
+        </field>
+    </record>
+</odoo>
