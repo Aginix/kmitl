@@ -159,6 +159,7 @@ class PurchaseRequest(models.Model):
                     0,
                     0,
                     {
+                        "request_line_id": line.id,
                         "product_id": line.product_id.id,
                         "name": line.name,
                         "product_qty": line.product_qty,

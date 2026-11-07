@@ -11,6 +11,16 @@
                     <field name="approval_id" invisible="1"/>
                 </button>
             </xpath>
+            <xpath
+                expr="//field[@name='wa_line_ids']/tree/field[@name='purchase_line_id']"
+                position="after"
+            >
+                <field
+                    name="approval_line_id"
+                    invisible="1"
+                    force_save="1"
+                />
+            </xpath>
         </field>
     </record>
 </odoo>
