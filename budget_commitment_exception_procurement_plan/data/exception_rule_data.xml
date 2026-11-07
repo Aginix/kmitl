@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <record id="budget_commitment_excep_procurement_plan_tag" model="exception.rule">
+        <field
+            name="name"
+        >รหัสงบประมาณแผนจัดซื้อจัดจ้าง ต้องจองถึงแผนจัดซื้อจัดจ้าง</field>
+        <field
+            name="description"
+        >ใบจองงบประมาณที่ใช้รหัสงบประมาณประเภทแผนจัดซื้อจัดจ้าง ต้องระบุแผนจัดซื้อจัดจ้าง (procurement_plan_analytic_id) จึงจะจองงบประมาณได้</field>
+        <field name="sequence">20</field>
+        <field name="model">budget.commitment</field>
+        <field name="exception_type">by_method</field>
+        <field name="method">budget_commitment_check_procurement_plan_tag</field>
+        <field name="is_blocking" eval="True" />
+        <field name="active" eval="True" />
+    </record>
+</odoo>

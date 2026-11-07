@@ -142,11 +142,13 @@
                             />
                             <field
                                 name="fund_analytic_id"
+                                required="1"
                                 options="{'no_create': True, 'no_open': True}"
                             />
                             <field
                                 name="activity_analytic_id"
                                 string="ด้าน/แผนงาน/กิจกรรม"
+                                required="1"
                                 options="{'no_create': True, 'no_open': True}"
                             />
                             <field
