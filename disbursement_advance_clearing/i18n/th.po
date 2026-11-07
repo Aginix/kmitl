@@ -1,0 +1,190 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* disbursement_advance_clearing
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-07 17:13+0000\n"
+"PO-Revision-Date: 2026-11-07 17:13+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: disbursement_advance_clearing
+#. odoo-python
+#: code:addons/disbursement_advance_clearing/models/disbursement_request.py:0
+#: code:addons/disbursement_advance_clearing/models/disbursement_request.py:0
+#, python-format
+msgid "A request that clears an advance cannot carry taxes."
+msgstr "ใบขอเบิกที่ล้างลูกหนี้เงินยืมต้องไม่มีภาษี"
+
+#. module: disbursement_advance_clearing
+#: model:ir.model.fields,field_description:disbursement_advance_clearing.field_disbursement_request__advance_clearing_count
+msgid "Advance Clearing Count"
+msgstr "จำนวนรายการล้างลูกหนี้"
+
+#. module: disbursement_advance_clearing
+#. odoo-python
+#: code:addons/disbursement_advance_clearing/models/disbursement_request.py:0
+#: code:addons/disbursement_advance_clearing/models/disbursement_request.py:0
+#: model:ir.model.fields,field_description:disbursement_advance_clearing.field_disbursement_request__advance_clearing_move_ids
+#, python-format
+msgid "Advance Clearing Entries"
+msgstr "รายการล้างลูกหนี้เงินยืม"
+
+#. module: disbursement_advance_clearing
+#: model:ir.model.fields,field_description:disbursement_advance_clearing.field_res_company__advance_clearing_journal_id
+#: model:ir.model.fields,field_description:disbursement_advance_clearing.field_res_config_settings__advance_clearing_journal_id
+msgid "Advance Clearing Journal"
+msgstr "สมุดรายวันล้างลูกหนี้เงินยืม"
+
+#. module: disbursement_advance_clearing
+#: model:ir.model.fields,field_description:disbursement_advance_clearing.field_account_bank_statement_line__advance_clearing_request_id
+#: model:ir.model.fields,field_description:disbursement_advance_clearing.field_account_move__advance_clearing_request_id
+#: model:ir.model.fields,field_description:disbursement_advance_clearing.field_account_payment__advance_clearing_request_id
+msgid "Advance Clearing Request"
+msgstr "ใบขอเบิกที่ล้างลูกหนี้"
+
+#. module: disbursement_advance_clearing
+#: model:ir.model.fields,field_description:disbursement_advance_clearing.field_res_company__advance_clearing_account_id
+#: model:ir.model.fields,field_description:disbursement_advance_clearing.field_res_config_settings__advance_clearing_account_id
+msgid "Advance Receivable Account"
+msgstr "บัญชีลูกหนี้เงินยืม"
+
+#. module: disbursement_advance_clearing
+#. odoo-python
+#: code:addons/disbursement_advance_clearing/models/disbursement_request.py:0
+#: code:addons/disbursement_advance_clearing/models/disbursement_request.py:0
+#, python-format
+msgid "Advance clearing %s"
+msgstr "ล้างลูกหนี้เงินยืม %s"
+
+#. module: disbursement_advance_clearing
+#. odoo-python
+#: code:addons/disbursement_advance_clearing/models/disbursement_request.py:0
+#: code:addons/disbursement_advance_clearing/models/disbursement_request.py:0
+#, python-format
+msgid "Advance clearing entry %s created."
+msgstr "สร้างรายการล้างลูกหนี้เงินยืม %s แล้ว"
+
+#. module: disbursement_advance_clearing
+#: model:ir.model.fields,field_description:disbursement_advance_clearing.field_disbursement_request__can_confirm_advance_clearing
+msgid "Can Confirm Advance Clearing"
+msgstr "ยืนยันการล้างหนี้ได้"
+
+#. module: disbursement_advance_clearing
+#: model:ir.model.fields,field_description:disbursement_advance_clearing.field_disbursement_request__can_create_advance_clearing
+msgid "Can Create Advance Clearing"
+msgstr "สร้างรายการล้างลูกหนี้ได้"
+
+#. module: disbursement_advance_clearing
+#. odoo-python
+#: code:addons/disbursement_advance_clearing/models/disbursement_request.py:0
+#: code:addons/disbursement_advance_clearing/models/disbursement_request.py:0
+#, python-format
+msgid "Cancel the existing clearing entry before creating a new one."
+msgstr "กรุณายกเลิกรายการล้างลูกหนี้เดิมก่อนสร้างรายการใหม่"
+
+#. module: disbursement_advance_clearing
+#: model:ir.model.fields,field_description:disbursement_advance_clearing.field_disbursement_request__advance_clearing_confirmer_id
+msgid "Clearing Confirmed By"
+msgstr "ผู้ยืนยันการล้างหนี้"
+
+#. module: disbursement_advance_clearing
+#: model:ir.model.fields,field_description:disbursement_advance_clearing.field_disbursement_request__advance_clearing_confirm_date
+msgid "Clearing Confirmed On"
+msgstr "วันที่ยืนยันการล้างหนี้"
+
+#. module: disbursement_advance_clearing
+#: model:ir.model,name:disbursement_advance_clearing.model_res_company
+msgid "Companies"
+msgstr "บริษัท"
+
+#. module: disbursement_advance_clearing
+#: model:ir.model,name:disbursement_advance_clearing.model_res_config_settings
+msgid "Config Settings"
+msgstr "ตั้งค่าการกำหนดค่า"
+
+#. module: disbursement_advance_clearing
+#. odoo-python
+#: code:addons/disbursement_advance_clearing/models/disbursement_request.py:0
+#: code:addons/disbursement_advance_clearing/models/disbursement_request.py:0
+#: model_terms:ir.ui.view,arch_db:disbursement_advance_clearing.view_disbursement_request_form
+#, python-format
+msgid "Confirm Advance Cleared"
+msgstr "ยืนยันการล้างหนี้"
+
+#. module: disbursement_advance_clearing
+#. odoo-python
+#: code:addons/disbursement_advance_clearing/models/disbursement_request.py:0
+#: code:addons/disbursement_advance_clearing/models/disbursement_request.py:0
+#: model_terms:ir.ui.view,arch_db:disbursement_advance_clearing.view_disbursement_request_form
+#, python-format
+msgid "Create Advance Clearing Entry"
+msgstr "ล้างลูกหนี้เงินยืม"
+
+#. module: disbursement_advance_clearing
+#. odoo-python
+#: code:addons/disbursement_advance_clearing/models/disbursement_request.py:0
+#: code:addons/disbursement_advance_clearing/models/disbursement_request.py:0
+#, python-format
+msgid "Create the clearing entry first."
+msgstr "กรุณาสร้างรายการล้างลูกหนี้ก่อน"
+
+#. module: disbursement_advance_clearing
+#: model:ir.model,name:disbursement_advance_clearing.model_disbursement_request
+msgid "Disbursement Request"
+msgstr "ใบขอเบิก"
+
+#. module: disbursement_advance_clearing
+#: model:ir.model,name:disbursement_advance_clearing.model_account_move
+msgid "Journal Entry"
+msgstr "รายการบันทึกประจำวัน"
+
+#. module: disbursement_advance_clearing
+#. odoo-python
+#: code:addons/disbursement_advance_clearing/models/disbursement_request.py:0
+#: code:addons/disbursement_advance_clearing/models/disbursement_request.py:0
+#, python-format
+msgid ""
+"Set the advance clearing journal and the advance receivable account in "
+"Settings first."
+msgstr ""
+"กรุณาตั้งค่าสมุดรายวันล้างลูกหนี้เงินยืมและบัญชีลูกหนี้เงินยืมใน Settings "
+"ก่อน"
+
+#. module: disbursement_advance_clearing
+#. odoo-python
+#: code:addons/disbursement_advance_clearing/models/disbursement_request.py:0
+#: code:addons/disbursement_advance_clearing/models/disbursement_request.py:0
+#, python-format
+msgid "These entries are not posted yet: %s"
+msgstr "รายการเหล่านี้ยังไม่ลงบัญชี: %s"
+
+#. module: disbursement_advance_clearing
+#. odoo-python
+#: code:addons/disbursement_advance_clearing/models/disbursement_request.py:0
+#: code:addons/disbursement_advance_clearing/models/disbursement_request.py:0
+#, python-format
+msgid "This act does not apply to request %s."
+msgstr "การกระทำนี้ใช้กับใบขอเบิก %s ไม่ได้"
+
+#. module: disbursement_advance_clearing
+#: model_terms:ir.ui.view,arch_db:disbursement_advance_clearing.res_config_settings_view_form
+msgid "บัญชีลูกหนี้เงินยืมฝั่งเครดิตของรายการล้างลูกหนี้"
+msgstr ""
+
+#. module: disbursement_advance_clearing
+#: model_terms:ir.ui.view,arch_db:disbursement_advance_clearing.res_config_settings_view_form
+msgid "ล้างลูกหนี้เงินยืม"
+msgstr ""
+
+#. module: disbursement_advance_clearing
+#: model_terms:ir.ui.view,arch_db:disbursement_advance_clearing.res_config_settings_view_form
+msgid "สมุดรายวันของรายการล้างลูกหนี้เงินยืม จากใบขอเบิกประเภทเงินยืม"
+msgstr ""

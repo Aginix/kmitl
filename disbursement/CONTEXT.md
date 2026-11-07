@@ -79,6 +79,14 @@ It is linked to no advance-payment agreement, so nothing checks what the loan
 still owes (`disbursement_advance_legacy`).
 _Avoid_: เงินยืมนอกระบบ as a payment type, legacy loan.
 
+**Advance clearing entry** (รายการล้างลูกหนี้เงินยืม):
+The journal entry that books a request that pays no money out: Dr each line's
+expense, Cr the advance receivable of the borrower, in the clearing journal
+(ใบสำคัญล้างลูกหนี้เงินยืม). Raised by the accounting desk in place of a bill, and
+confirmed once posted (ADR 0009).
+_Avoid_: Bill / ใบตั้งหนี้ (that is the paying path), ใบสำคัญส่งคืนลูกหนี้เงินยืม (the
+voucher journal for cash returned).
+
 **Memo number** (เลขที่หนังสือ):
 The number of the official memo (หนังสือบันทึกข้อความ) authorising the request.
 Typed in by hand on a direct claim; on any other request it is the number
