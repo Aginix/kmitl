@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_disbursement_request_form" model="ir.ui.view">
+        <field
+            name="name"
+        >disbursement.request.form (disbursement_advance_legacy)</field>
+        <field name="model">disbursement.request</field>
+        <field name="inherit_id" ref="disbursement.view_disbursement_request_form" />
+        <field name="arch" type="xml">
+            <field name="payment_type" position="after">
+                <field
+                    name="legacy_advance_employee_id"
+                    options="{'no_create': True, 'no_open': True}"
+                    attrs="{'invisible': [('payment_type', '!=', 'advance_legacy')], 'required': [('payment_type', '=', 'advance_legacy')], 'readonly': [('can_edit_header', '=', False)]}"
+                />
+                <field
+                    name="legacy_advance_contract_number"
+                    attrs="{'invisible': [('payment_type', '!=', 'advance_legacy')], 'required': [('payment_type', '=', 'advance_legacy')], 'readonly': [('can_edit_header', '=', False)]}"
+                />
+            </field>
+        </field>
+    </record>
+
+    <record id="view_disbursement_request_tree" model="ir.ui.view">
+        <field
+            name="name"
+        >disbursement.request.tree (disbursement_advance_legacy)</field>
+        <field name="model">disbursement.request</field>
+        <field name="inherit_id" ref="disbursement.view_disbursement_request_tree" />
+        <field name="arch" type="xml">
+            <field name="memo_number" position="after">
+                <field name="legacy_advance_contract_number" optional="hide" />
+            </field>
+        </field>
+    </record>
+
+    <record id="view_disbursement_request_search" model="ir.ui.view">
+        <field
+            name="name"
+        >disbursement.request.search (disbursement_advance_legacy)</field>
+        <field name="model">disbursement.request</field>
+        <field
+            name="inherit_id"
+            ref="disbursement.view_disbursement_request_search"
+        />
+        <field name="arch" type="xml">
+            <field name="memo_number" position="after">
+                <field name="legacy_advance_contract_number" />
+                <field name="legacy_advance_employee_id" />
+            </field>
+        </field>
+    </record>
+</odoo>

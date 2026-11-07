@@ -298,6 +298,37 @@ class TestWorkCenter(TransactionCase):
             self._enter(partner_id=self.sub_dept.id).work_center_id, self.wc_dept
         )
 
+    def test_conditional_route_takes_matching_documents(self):
+        """A route with a condition goes before the default for the documents
+        it matches; the others keep the default."""
+        side_route = self.env["work.center.route"].create(
+            {
+                "name": "Side Route",
+                "area_id": self.area.id,
+                "model_id": self.doc_model.id,
+                "sequence": 1,
+                "domain": "[('name', '=', 'side')]",
+                "line_ids": [
+                    (0, 0, {"name": "Side", "work_center_ids": [(6, 0, self.wc_side.ids)]})
+                ],
+            }
+        )
+        side = self._enter(name="side", partner_id=self.dept.id)
+        self.assertEqual(side._work_center_route(), side_route)
+        self.assertEqual(side.work_center_id, self.wc_side)
+        plain = self._enter(name="plain", partner_id=self.dept.id)
+        self.assertEqual(plain._work_center_route(), self.route)
+
+    def test_one_default_route_per_model(self):
+        with self.assertRaises(ValidationError):
+            self.env["work.center.route"].create(
+                {
+                    "name": "Second Default",
+                    "area_id": self.area.id,
+                    "model_id": self.doc_model.id,
+                }
+            )
+
     # ------------------------------------------------------------------
     # Moving along the route
     # ------------------------------------------------------------------

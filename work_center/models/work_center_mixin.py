@@ -4,6 +4,8 @@ from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError, ValidationError
 from odoo.tools import plaintext2html
 
+from .work_center_rule import eval_domain
+
 ARRIVAL_ACTIVITY = "work_center.mail_activity_station_arrival"
 
 
@@ -193,18 +195,27 @@ class WorkCenterMixin(models.AbstractModel):
         return self._work_center_open_visit().work_center_id
 
     def _work_center_route(self):
-        """The active route of this document model (one with lines)."""
+        """The active route of this document (one with lines): the first, in
+        sequence, whose condition the document matches."""
         self.ensure_one()
-        return (
+        routes = (
             self.env["work.center.route"]
             .sudo()
             .search(
                 [
                     ("model_id", "=", self.env["ir.model"]._get_id(self._name)),
                     ("line_ids", "!=", False),
-                ],
-                limit=1,
+                ]
             )
+        )
+        return next(
+            (
+                route
+                for route in routes
+                if route._is_default()
+                or self.filtered_domain(eval_domain(self.env, route.domain))
+            ),
+            routes.browse(),
         )
 
     def _work_center_ou_compatible(self, stations):

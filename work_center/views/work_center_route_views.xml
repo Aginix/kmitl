@@ -6,9 +6,11 @@
         <field name="model">work.center.route</field>
         <field name="arch" type="xml">
             <tree>
+                <field name="sequence" widget="handle" />
                 <field name="name" />
                 <field name="area_id" />
                 <field name="model_id" />
+                <field name="domain" />
                 <field name="active" invisible="1" />
             </tree>
         </field>
@@ -35,8 +37,17 @@
                             <field name="area_id" options="{'no_create': True}" />
                             <field name="area_model_ids" invisible="1" />
                             <field name="model_id" options="{'no_create': True}" />
+                            <field name="model_name" invisible="1" />
+                            <field name="sequence" />
                         </group>
                     </group>
+                    <label for="domain" />
+                    <field
+                        name="domain"
+                        widget="domain"
+                        options="{'model': 'model_name', 'in_dialog': True}"
+                        attrs="{'invisible': [('model_name', '=', False)]}"
+                    />
                     <field name="line_ids" nolabel="1">
                         <tree editable="bottom">
                             <field name="sequence" widget="handle" />

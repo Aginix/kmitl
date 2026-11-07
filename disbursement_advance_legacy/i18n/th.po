@@ -1,0 +1,50 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* disbursement_advance_legacy
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: disbursement_advance_legacy
+#. odoo-python
+#: code:addons/disbursement_advance_legacy/models/disbursement_request.py:0
+#, python-format
+msgid ""
+"A เงินยืม (ระบบเก่า) request must name the borrower and the contract number."
+msgstr "ใบเบิกเงินยืม (ระบบเก่า) ต้องระบุผู้ยืมและเลขที่สัญญายืมเงิน"
+
+#. module: disbursement_advance_legacy
+#. odoo-python
+#: code:addons/disbursement_advance_legacy/models/disbursement_request.py:0
+#, python-format
+msgid "Borrower %(name)s has no contact to be paid as."
+msgstr "ผู้ยืม %(name)s ไม่มีข้อมูลผู้ติดต่อสำหรับใช้เป็นผู้รับเงิน"
+
+#. module: disbursement_advance_legacy
+#. odoo-python
+#: code:addons/disbursement_advance_legacy/models/disbursement_request.py:0
+#, python-format
+msgid ""
+"Only a request of payment type เงินยืม (ระบบเก่า) may name a legacy borrower"
+" or contract."
+msgstr ""
+"ระบุผู้ยืมหรือเลขที่สัญญา (ระบบเก่า) ได้เฉพาะใบขอเบิกประเภทการจ่ายเงินยืม "
+"(ระบบเก่า) เท่านั้น"
+
+#. module: disbursement_advance_legacy
+#. odoo-python
+#: code:addons/disbursement_advance_legacy/models/disbursement_request_line.py:0
+#, python-format
+msgid ""
+"The payee of a เงินยืม (ระบบเก่า) request must be its borrower, "
+"%(borrower)s."
+msgstr "ผู้รับเงินของใบเบิกเงินยืม (ระบบเก่า) ต้องเป็นผู้ยืม คือ %(borrower)s"

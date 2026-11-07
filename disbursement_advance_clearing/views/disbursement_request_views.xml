@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_disbursement_request_form" model="ir.ui.view">
+        <field
+            name="name"
+        >disbursement.request.form (disbursement_advance_clearing)</field>
+        <field name="model">disbursement.request</field>
+        <field name="inherit_id" ref="disbursement.view_disbursement_request_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_draft']" position="before">
+                <button
+                    name="action_create_advance_clearing"
+                    string="Create Advance Clearing Entry"
+                    type="object"
+                    class="oe_highlight"
+                    attrs="{'invisible': [('can_create_advance_clearing', '=', False)]}"
+                    groups="accounting_kmitl.group_accounting_kmitl_user"
+                />
+                <button
+                    name="action_confirm_advance_clearing"
+                    string="Confirm Advance Cleared"
+                    type="object"
+                    class="oe_highlight"
+                    attrs="{'invisible': [('can_confirm_advance_clearing', '=', False)]}"
+                    groups="accounting_kmitl.group_accounting_kmitl_user"
+                />
+            </xpath>
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <field name="can_create_advance_clearing" invisible="1" />
+                <field name="can_confirm_advance_clearing" invisible="1" />
+            </xpath>
+            <group id="other_information" position="inside">
+                <field
+                    name="advance_clearing_confirmer_id"
+                    attrs="{'invisible': [('advance_clearing_confirmer_id', '=', False)]}"
+                />
+                <field
+                    name="advance_clearing_confirm_date"
+                    attrs="{'invisible': [('advance_clearing_confirmer_id', '=', False)]}"
+                />
+            </group>
+        </field>
+    </record>
+
+    <!-- No money is paid out: there is nothing to execute. -->
+    <record id="view_disbursement_request_form_finance" model="ir.ui.view">
+        <field
+            name="name"
+        >disbursement.request.form (disbursement_advance_clearing, finance)</field>
+        <field name="model">disbursement.request</field>
+        <field
+            name="inherit_id"
+            ref="disbursement_finance_kmitl.view_disbursement_request_form_inherit_finance"
+        />
+        <field name="arch" type="xml">
+            <page name="payment_execution" position="attributes">
+                <attribute
+                    name="attrs"
+                >{'invisible': ['|', ('payment_line_ids', '=', []), ('pays_out', '=', False)]}</attribute>
+            </page>
+        </field>
+    </record>
+</odoo>
