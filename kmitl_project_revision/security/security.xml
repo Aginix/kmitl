@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- A Revision Draft (ADR-0014) belongs to its live project's owners even
+         after a draft edit changes หัวหน้าโครงการ: OR'ed with the Own rules. -->
+    <record id="kmitl_project_revision_owner_rule" model="ir.rule">
+        <field name="name">KMITL Project: Revision Owner Access</field>
+        <field name="model_id" ref="kmitl_project.model_kmitl_project" />
+        <field
+            name="groups"
+            eval="[(4, ref('kmitl_project.group_kmitl_project_user'))]"
+        />
+        <field name="domain_force">[
+            '|', '|',
+            ('revision_of_id.manager_id.user_id', '=', user.id),
+            ('revision_of_id.creating_user_id', '=', user.id),
+            ('revision_of_id.coordinator_ids', 'in', user.id)
+        ]</field>
+    </record>
+    <record id="project_plan_revision_owner_rule" model="ir.rule">
+        <field name="name">Project Plan: Revision Owner Access</field>
+        <field name="model_id" ref="kmitl_project.model_project_plan" />
+        <field
+            name="groups"
+            eval="[(4, ref('kmitl_project.group_kmitl_project_user'))]"
+        />
+        <field name="domain_force">[
+            '|', '|',
+            ('project_id.revision_of_id.manager_id.user_id', '=', user.id),
+            ('project_id.revision_of_id.creating_user_id', '=', user.id),
+            ('project_id.revision_of_id.coordinator_ids', 'in', user.id)
+        ]</field>
+    </record>
+    <record id="project_budget_line_revision_owner_rule" model="ir.rule">
+        <field name="name">Project Budget Line: Revision Owner Access</field>
+        <field name="model_id" ref="kmitl_project.model_project_budget_line" />
+        <field
+            name="groups"
+            eval="[(4, ref('kmitl_project.group_kmitl_project_user'))]"
+        />
+        <field name="domain_force">[
+            '|', '|',
+            ('project_id.revision_of_id.manager_id.user_id', '=', user.id),
+            ('project_id.revision_of_id.creating_user_id', '=', user.id),
+            ('project_id.revision_of_id.coordinator_ids', 'in', user.id)
+        ]</field>
+    </record>
+    <record id="project_target_revision_owner_rule" model="ir.rule">
+        <field name="name">Project Target: Revision Owner Access</field>
+        <field name="model_id" ref="kmitl_project.model_project_target" />
+        <field
+            name="groups"
+            eval="[(4, ref('kmitl_project.group_kmitl_project_user'))]"
+        />
+        <field name="domain_force">[
+            '|', '|',
+            ('project_id.revision_of_id.manager_id.user_id', '=', user.id),
+            ('project_id.revision_of_id.creating_user_id', '=', user.id),
+            ('project_id.revision_of_id.coordinator_ids', 'in', user.id)
+        ]</field>
+    </record>
+    <record id="project_output_revision_owner_rule" model="ir.rule">
+        <field name="name">Project Output: Revision Owner Access</field>
+        <field name="model_id" ref="kmitl_project.model_project_output" />
+        <field
+            name="groups"
+            eval="[(4, ref('kmitl_project.group_kmitl_project_user'))]"
+        />
+        <field name="domain_force">[
+            '|', '|',
+            ('project_id.revision_of_id.manager_id.user_id', '=', user.id),
+            ('project_id.revision_of_id.creating_user_id', '=', user.id),
+            ('project_id.revision_of_id.coordinator_ids', 'in', user.id)
+        ]</field>
+    </record>
+    <record id="project_expected_outcome_revision_owner_rule" model="ir.rule">
+        <field name="name">Project Expected Outcome: Revision Owner Access</field>
+        <field name="model_id" ref="kmitl_project.model_project_expected_outcome" />
+        <field
+            name="groups"
+            eval="[(4, ref('kmitl_project.group_kmitl_project_user'))]"
+        />
+        <field name="domain_force">[
+            '|', '|',
+            ('project_id.revision_of_id.manager_id.user_id', '=', user.id),
+            ('project_id.revision_of_id.creating_user_id', '=', user.id),
+            ('project_id.revision_of_id.coordinator_ids', 'in', user.id)
+        ]</field>
+    </record>
+</odoo>

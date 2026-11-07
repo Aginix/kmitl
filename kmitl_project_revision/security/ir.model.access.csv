@@ -1,0 +1,2 @@
+id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
+access_kmitl_project_revision_reason,kmitl_project_revision_reason,model_kmitl_project_revision_reason,kmitl_project.group_kmitl_project_user,1,1,1,1

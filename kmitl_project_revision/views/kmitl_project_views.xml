@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Live project: ปรับแผนโครงการ, ฉบับที่ N and the revision history. -->
+    <record id="view_kmitl_project_form_revision" model="ir.ui.view">
+        <field name="name">view.kmitl.project.form.revision</field>
+        <field name="model">kmitl.project</field>
+        <field name="inherit_id" ref="kmitl_project.view_kmitl_project_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button
+                    name="action_create_revision"
+                    string="ปรับแผนโครงการ"
+                    type="object"
+                    attrs="{'invisible': ['|', '|', ('state', 'not in', ('in_progress', 'complete')), ('can_revise', '=', False), ('revision_of_id', '!=', False)]}"
+                />
+            </xpath>
+            <xpath expr="//header" position="after">
+                <field name="can_revise" invisible="1" />
+                <field name="revision_of_id" invisible="1" />
+                <field name="open_revision_id" invisible="1" />
+                <div
+                    class="alert alert-info mb-2"
+                    role="alert"
+                    attrs="{'invisible': [('open_revision_id', '=', False)]}"
+                >
+                    <i class="fa fa-pencil me-1" />
+                    มีร่างปรับแผนโครงการที่ยังไม่อนุมัติ — กด "ปรับแผนโครงการ" เพื่อเปิดร่าง
+                </div>
+            </xpath>
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button
+                    name="action_open_revisions"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-history"
+                    attrs="{'invisible': [('revision_count', '=', 0)]}"
+                >
+                    <field
+                        name="revision_count"
+                        widget="statinfo"
+                        string="ประวัติปรับแผน"
+                    />
+                </button>
+            </xpath>
+            <xpath expr="//field[@name='key']" position="after">
+                <field
+                    name="revision_version"
+                    attrs="{'invisible': [('revision_version', '=', 0)]}"
+                />
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Revision Draft form: the project form with its own header, no smart
+         buttons, and the locked fields read-only (ADR-0014). Applied after every
+         extension of the project form, being primary. -->
+    <record id="view_kmitl_project_revision_form" model="ir.ui.view">
+        <field name="name">view.kmitl.project.revision.form</field>
+        <field name="model">kmitl.project</field>
+        <field name="inherit_id" ref="kmitl_project.view_kmitl_project_form" />
+        <field name="mode">primary</field>
+        <field name="priority">30</field>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="replace">
+                <header>
+                    <field name="state" invisible="1" />
+                    <button
+                        name="action_open_revision_reason"
+                        string="ยืนยันการปรับแผน"
+                        type="object"
+                        class="oe_highlight"
+                        context="{'revision_mode': 'confirm'}"
+                        attrs="{'invisible': ['|', ('state', 'not in', ('draft', 'returned')), ('can_revise', '=', False)]}"
+                    />
+                    <button
+                        name="action_revision_approve"
+                        string="อนุมัติ"
+                        type="object"
+                        class="oe_highlight"
+                        groups="kmitl_project.group_kmitl_project_manager"
+                        confirm="อนุมัติแล้วระบบจะปรับแผนของโครงการตามร่างนี้ทันที ต้องการอนุมัติหรือไม่?"
+                        attrs="{'invisible': [('state', '!=', 'sent')]}"
+                    />
+                    <button
+                        name="action_open_revision_reason"
+                        string="ตีกลับ"
+                        type="object"
+                        context="{'revision_mode': 'return'}"
+                        groups="kmitl_project.group_kmitl_project_manager"
+                        attrs="{'invisible': [('state', '!=', 'sent')]}"
+                    />
+                    <button
+                        name="action_revision_discard"
+                        string="ยกเลิกร่าง"
+                        type="object"
+                        confirm="ยกเลิกร่างปรับแผนนี้? โครงการจะไม่เปลี่ยนแปลง"
+                        attrs="{'invisible': ['|', ('state', 'not in', ('draft', 'returned')), ('can_revise', '=', False)]}"
+                    />
+                    <field
+                        name="revision_state"
+                        widget="statusbar"
+                        statusbar_visible="editing,to_approve,approved"
+                    />
+                </header>
+            </xpath>
+            <xpath expr="//div[@name='button_box']" position="replace">
+                <div class="oe_button_box" name="button_box" />
+            </xpath>
+            <xpath expr="//widget[@name='web_ribbon'][contains(@attrs, 'active')]" position="attributes">
+                <attribute name="attrs">{'invisible': True}</attribute>
+            </xpath>
+            <xpath expr="//widget[@name='web_ribbon'][@bg_color='bg-success']" position="attributes">
+                <attribute name="title">อนุมัติแล้ว</attribute>
+            </xpath>
+            <xpath expr="//div[hasclass('oe_title')]" position="after">
+                <group name="revision" string="การปรับแผนโครงการ">
+                    <group>
+                        <field name="revision_of_id" options="{'no_create': True}" />
+                        <field name="revision_reason" />
+                    </group>
+                    <group>
+                        <field name="revision_requested_by_id" />
+                        <field name="revision_requested_date" />
+                        <field name="revision_approved_by_id" />
+                        <field name="revision_approved_date" />
+                    </group>
+                </group>
+            </xpath>
+            <xpath expr="//field[@name='project_type']" position="attributes">
+                <attribute name="attrs">{}</attribute>
+                <attribute name="readonly">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='account_fiscal_year_id']" position="attributes">
+                <attribute name="attrs">{}</attribute>
+                <attribute name="readonly">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='operating_unit_id']" position="attributes">
+                <attribute name="readonly">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='coordinator_ids']" position="attributes">
+                <attribute name="readonly">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='source_analytic_id']" position="attributes">
+                <attribute name="attrs">{}</attribute>
+                <attribute name="readonly">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='budget_account_id']" position="attributes">
+                <attribute name="attrs">{}</attribute>
+                <attribute name="readonly">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='activity_analytic_id']" position="attributes">
+                <attribute name="attrs">{}</attribute>
+                <attribute name="readonly">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='fund_analytic_id']" position="attributes">
+                <attribute name="attrs">{}</attribute>
+                <attribute name="readonly">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='department_analytic_id']" position="attributes">
+                <attribute name="attrs">{}</attribute>
+                <attribute name="readonly">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='budget_amount']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='budget_amount']" position="after">
+                <field name="revision_live_budget_amount" />
+            </xpath>
+            <xpath expr="//field[@name='budget_reserved']" position="attributes">
+                <attribute name="attrs">{'invisible': True}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='budget_remaining']" position="attributes">
+                <attribute name="attrs">{'invisible': True}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='expense_control']" position="attributes">
+                <attribute
+                    name="attrs"
+                >{'readonly': [('state', 'not in', ('draft', 'returned'))]}</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_kmitl_project_revision_tree" model="ir.ui.view">
+        <field name="name">view.kmitl.project.revision.tree</field>
+        <field name="model">kmitl.project</field>
+        <field name="priority">30</field>
+        <field name="arch" type="xml">
+            <tree
+                create="0"
+                default_order="revision_version"
+                decoration-info="revision_state in ('editing', 'to_approve')"
+                decoration-warning="revision_state == 'returned'"
+                decoration-success="revision_state == 'approved'"
+                decoration-danger="revision_state == 'rejected'"
+                decoration-muted="revision_state in ('original', 'discarded')"
+            >
+                <field name="revision_version" />
+                <field name="name" />
+                <field name="revision_state" widget="badge" />
+                <field name="revision_reason" />
+                <field name="revision_requested_by_id" optional="show" />
+                <field name="revision_requested_date" optional="show" />
+                <field name="revision_approved_by_id" optional="show" />
+                <field name="revision_approved_date" optional="show" />
+                <field name="budget_expense_total" optional="show" />
+            </tree>
+        </field>
+    </record>
+
+    <!-- Revision Drafts are archived but are not deleted projects. -->
+    <record id="view_kmitl_project_search_revision" model="ir.ui.view">
+        <field name="name">view.kmitl.project.search.revision</field>
+        <field name="model">kmitl.project</field>
+        <field name="inherit_id" ref="kmitl_project.view_kmitl_project_search" />
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='inactive']" position="attributes">
+                <attribute
+                    name="domain"
+                >[('active', '=', False), ('revision_of_id', '=', False)]</attribute>
+            </xpath>
+            <xpath expr="//filter[@name='state_cancel']" position="attributes">
+                <attribute
+                    name="domain"
+                >[('state', '=', 'cancel'), ('active', 'in', (True, False)), ('revision_of_id', '=', False)]</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>
