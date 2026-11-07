@@ -824,19 +824,6 @@ class BudgetSupportRequest(models.Model):
             "account_fiscal_year_id": self.account_fiscal_year_id.id,
             "source_analytic_id": self.source_analytic_id.id,
             "support_request_id": self.id,
-            # ``to_line_ids`` — NOT ``line_ids``: the transfer form view only
-            # carries the from/to authoring boxes, and ``default_get`` is only
-            # asked for fields the view contains.
-            "to_line_ids": [
-                (
-                    0,
-                    0,
-                    {
-                        "transfer_direction": "to",
-                        "amount": self.amount_requested,
-                    },
-                )
-            ],
         }
 
     def _prepare_commitment_vals(self):

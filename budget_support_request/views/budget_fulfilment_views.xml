@@ -4,8 +4,8 @@
     <!-- The fulfil buttons open a NEW, unsaved budget.transfer /
          budget.commitment pre-filled through ``default_*`` context keys. Odoo
          only runs ``default_get`` for the fields the form view actually
-         contains, so ``support_request_id`` must be present (invisible, but
-         NOT readonly — the web client drops readonly fields on save) or the
+         contains, so ``support_request_id`` must be present — readonly needs
+         ``force_save`` (the web client drops readonly fields on save) or the
          back-link to the request is silently lost. -->
 
     <record id="view_budget_transfer_form_support_request" model="ir.ui.view">
@@ -13,8 +13,11 @@
         <field name="model">budget.transfer</field>
         <field name="inherit_id" ref="budget_transfer.view_budget_transfer_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='user_id']" position="after">
-                <field name="support_request_id" invisible="1"/>
+            <xpath expr="//div[hasclass('oe_title')]" position="before">
+                <div class="alert alert-info" role="status" attrs="{'invisible': [('support_request_id', '=', False)]}">
+                    <i class="fa fa-handshake-o"/>
+                    ใบโอนนี้สร้างจากคำขอรับการสนับสนุน <field name="support_request_id" readonly="1" force_save="1" class="oe_inline fw-bold"/>
+                </div>
             </xpath>
         </field>
     </record>
@@ -24,8 +27,11 @@
         <field name="model">budget.commitment</field>
         <field name="inherit_id" ref="budget.budget_commitment_form_view"/>
         <field name="arch" type="xml">
-            <xpath expr="//group[@name='basic_information']" position="inside">
-                <field name="support_request_id" invisible="1"/>
+            <xpath expr="//div[hasclass('oe_title')]" position="before">
+                <div class="alert alert-info" role="status" attrs="{'invisible': [('support_request_id', '=', False)]}">
+                    <i class="fa fa-handshake-o"/>
+                    ใบจองนี้สร้างจากคำขอรับการสนับสนุน <field name="support_request_id" readonly="1" force_save="1" class="oe_inline fw-bold"/>
+                </div>
             </xpath>
         </field>
     </record>
