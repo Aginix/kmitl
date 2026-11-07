@@ -84,9 +84,9 @@ class TestP7SignCommentEdit(SarabunCommon):
         doc.with_user(self.user_a).action_send()
         self.assertFalse(doc.returned_by_id or doc.returned_reason)
 
-    def test_returner_sent_to_inbox(self):
-        """A returner reached only in the deleted round can't reload the หนังสือ —
-        the wizard opens their incoming box instead of closing."""
+    def test_returner_keeps_reading(self):
+        """The returner was reached (a follower), so they still read the หนังสือ and
+        the wizard just closes."""
         doc = self._make_doc(sender=self.user_a)
         step = self._add_step(doc, order=10, verb="sign_approve", user=self.user_b)
         doc.action_send()
@@ -98,9 +98,8 @@ class TestP7SignCommentEdit(SarabunCommon):
             .action_confirm()
         )
         self.assertEqual(doc.state, "returned")
-        self.assertFalse(self.Doc.with_user(self.user_b).search([("id", "=", doc.id)]))
-        self.assertEqual(action.get("res_model"), "sarabun.document")
-        self.assertEqual(action.get("type"), "ir.actions.act_window")
+        self.assertTrue(self.Doc.with_user(self.user_b).search([("id", "=", doc.id)]))
+        self.assertEqual(action.get("type"), "ir.actions.act_window_close")
 
     def test_sign_comment_ignored_when_verb_disallows(self):
         self._verb("endorse").allow_sign_comment = False

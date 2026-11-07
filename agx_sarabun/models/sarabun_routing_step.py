@@ -166,17 +166,6 @@ class SarabunRoutingStep(models.Model):
         copy=False,
     )
 
-    # Followers the engine itself added by raising this step's to-dos — the only
-    # ones it may remove again (a follower added to share the หนังสือ stays).
-    auto_follower_partner_ids = fields.Many2many(
-        "res.partner",
-        relation="sarabun_routing_step_auto_follower_rel",
-        column1="step_id",
-        column2="partner_id",
-        readonly=True,
-        copy=False,
-    )
-
     # === Signature snapshot (frozen at signing — ADR-0009) ===
     # ชื่อ / ตำแหน่ง / ลายเซ็น captured the instant this step is signed, so later edits
     # to the HR name, the sarabun.position name, or the employee's signature image
@@ -465,7 +454,6 @@ class SarabunRoutingStep(models.Model):
             if not act_type:
                 continue
             doc = step.document_id
-            followers = doc.message_partner_ids
             for usr in step.actor_user_ids:
                 act = doc.activity_schedule(
                     activity_type_id=act_type.id,
@@ -479,9 +467,6 @@ class SarabunRoutingStep(models.Model):
                     Link.create(
                         {"step_id": step.id, "activity_id": act.id, "user_id": usr.id}
                     )
-            added = doc.message_partner_ids - followers
-            if added:
-                step.sudo().auto_follower_partner_ids = [(4, p.id) for p in added]
 
     def _clear_activities(self):
         """Clear every awaiting-action activity tied to these steps (all holders) —
@@ -604,8 +589,6 @@ class SarabunRoutingStep(models.Model):
             )
         step = self.sudo()
         doc = step.document_id
-        reached = doc.reached_user_ids
-        reset = step
         if step.gating:
             # reopening a gating step reopens its ลำดับ: the next one goes back to
             # waiting, and the parallel gating steps retired when it passed return
@@ -620,7 +603,6 @@ class SarabunRoutingStep(models.Model):
             doc.routing_step_ids.filtered(
                 lambda s: s.order == step.order and s.state == "skipped"
             ).write({"state": "waiting"})
-            reset |= later
         files = step.sign_attachment_ids
         step.write(
             {
@@ -643,8 +625,6 @@ class SarabunRoutingStep(models.Model):
             doc._advance_stage()  # re-activates this ลำดับ (fresh to-dos), stops here
         else:
             step._activate()  # a non-gating step never held the ลำดับ back
-        doc._unfollow_unreached(reset, reached)
-        (reset - step).auto_follower_partner_ids = [(5,)]  # re-recorded on activation
         body = _("ดึงกลับขั้นตอน %(verb)s โดย %(user)s") % {
             "verb": step.verb.name,
             "user": self.env.user.display_name,

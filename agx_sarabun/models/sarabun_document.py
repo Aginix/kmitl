@@ -1365,36 +1365,16 @@ class SarabunDocument(models.Model):
 
     def _purge_archived_steps(self):
         """Delete the set-aside steps of the previous round with their recipients,
-        to-do links and sign attachments, and unfollow whoever the หนังสือ no longer
-        reaches — only the current Route's holders (and the sender) can read it
-        (ADR-0023)."""
+        to-do links and sign attachments (ADR-0023). Followers stay: who once
+        received the หนังสือ keeps reading it."""
         Step = self.env["sarabun.routing.step"].sudo().with_context(active_test=False)
         for doc in self:
             old = Step.search([("document_id", "=", doc.id), ("active", "=", False)])
             if not old:
                 continue
-            before = doc.sudo().reached_user_ids
-            followers = old.auto_follower_partner_ids
             files = old.sign_attachment_ids
             old.unlink()  # Odoo also drops the attachments the steps own
             files.exists().sudo().unlink()
-            doc._unfollow_unreached(followers, before)
-
-    def _unfollow_unreached(self, steps_or_partners, reached_before):
-        """Unfollow the engine-added followers (``auto_follower_partner_ids``) of
-        removed / reset steps whom the หนังสือ no longer reaches. A follower added on
-        purpose (sharing) or the sender stays."""
-        self.ensure_one()
-        doc = self.sudo()
-        partners = (
-            steps_or_partners.auto_follower_partner_ids
-            if steps_or_partners._name == "sarabun.routing.step"
-            else steps_or_partners
-        )
-        gone_users = reached_before - doc.reached_user_ids - doc.sender_user_id
-        drop = partners & gone_users.partner_id
-        if drop:
-            doc.message_unsubscribe(partner_ids=drop.ids)
 
     def _restart_chain(self):
         """Archive the current chain and re-seed a fresh waiting one for a restart

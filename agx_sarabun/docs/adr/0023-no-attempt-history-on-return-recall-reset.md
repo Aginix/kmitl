@@ -5,9 +5,9 @@
 **Modules:** `agx_sarabun` (core), `agx_sarabun_reset`
 
 **Supersedes** the "archive-not-overwrite" rule of
-[ADR-0006](./0006-recall-split-pullback-vs-cancel-send.md) and ADR-0002 §3.4, and the
-"read persists across attempts" rule of
-[ADR-0013](./0013-e-saraban-access-control-model.md).
+[ADR-0006](./0006-recall-split-pullback-vs-cancel-send.md) and ADR-0002 §3.4, and
+amends [ADR-0013](./0013-e-saraban-access-control-model.md): an old round's recipient
+rows are deleted, so read for those people rests on following.
 
 ---
 
@@ -17,9 +17,11 @@ history, so it was dead weight. It also held earlier signers' comment files and 
 everyone from the old round able to read the หนังสือ.
 
 **Decision.** These three moves now **delete** the old round: its steps, their
-recipient rows, to-do links and sign-comment files. Only the current Route's holders
-(and the sender) can read the หนังสือ. Old-round holders who are no longer reached
-are also unfollowed, because following also grants read. `attempt_seq` stays at 1.
+recipient rows, to-do links and sign-comment files. `attempt_seq` stays at 1.
+Read access: people the หนังสือ reached in the old round were subscribed as followers
+when their to-do was raised, and they **keep reading it** as followers (UAT decision
+2026-11-07). People it has **not reached yet** never could read it, so a waiting step
+still grants nothing.
 What remains is the chatter: the reason of a ตีกลับ / ดึงกลับ / Reset and the
 document's tracked changes.
 
@@ -32,7 +34,5 @@ box instead of a form that would fail to reload. The 16.0.7.4.0 migration delete
 the history that already exists.
 
 **Consequences.** The ตีกลับ reason must be written into the chatter, because the
-returned step no longer survives. Anyone who acted in an old round no longer finds the
-หนังสือ until it reaches them again. This was chosen deliberately: the users only care
-about the current Route. The deletion cannot be undone, so take a database backup
+returned step no longer survives (it is also shown to the sender as a banner). The deletion cannot be undone, so take a database backup
 before deploying.

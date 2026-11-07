@@ -51,7 +51,7 @@ class TestP8TakeBack(SarabunCommon):
         self.assertTrue(self._todo(doc, self.user_a))
         self.assertEqual(s20.state, "waiting")
         self.assertFalse(self._todo(doc, self.user_b))
-        self.assertFalse(self._can_read(doc, self.user_b))
+        self.assertTrue(self._can_read(doc, self.user_b))  # reached once: a follower
         self.assertIn("พิมพ์ผิด", doc.message_ids[:1].body)
         # act again → the next ลำดับ is reached again
         self._act(s10, "complete", self.user_a)

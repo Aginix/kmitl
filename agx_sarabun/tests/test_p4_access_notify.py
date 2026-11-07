@@ -5,7 +5,7 @@ from unittest.mock import patch
 from psycopg2 import IntegrityError
 
 from odoo.exceptions import AccessError
-from odoo.tests.common import tagged
+from odoo.tests.common import new_test_user, tagged
 from odoo.tools import mute_logger
 
 from odoo.addons.agx_sarabun.tests.common import SarabunCommon
@@ -344,15 +344,21 @@ class TestP4Access(SarabunCommon):
         self.assertTrue(self._activities(doc, self.user_a), "new holder to-do")
         self.assertTrue(self._can_read(doc, self.user_a))
 
-    # === No attempt history (ADR-0023): ตีกลับ / ดึงกลับ delete the old round, so only
-    #     the current Route's holders (and the sender) can read the หนังสือ. ===
-    def test_read_revoked_after_return(self):
-        """ตีกลับ deletes the old round: its holders lose read (also as followers);
-        the sender keeps it."""
+    # === No attempt history (ADR-0023): ตีกลับ / ดึงกลับ delete the old round. Who
+    #     once received the หนังสือ keeps reading it as a follower; who it has not
+    #     reached yet never could. ===
+    def test_read_after_return(self):
+        """After ตีกลับ the returner (reached, now a follower) still reads; a holder
+        of a later ลำดับ the หนังสือ never reached does not."""
+        user_c = new_test_user(
+            self.env, login="sb_user_c4", name="ผู้ใช้ ค",
+            groups="base.group_user,agx_sarabun.group_sarabun_user",
+        )
+        emp_c = self.env["hr.employee"].create({"name": "ผู้ใช้ ค", "user_id": user_c.id})
         doc = self._make_doc(sender=self.user_a)
         self._add_step(doc, order=10, verb="sign_approve", user=self.user_b)  # gating
+        self._add_step(doc, order=20, verb="sign_approve", user=emp_c)  # never reached
         doc.with_user(self.user_a).action_send()
-        self.assertTrue(self._can_read(doc, self.user_b))
         step = self._active_step(doc)
         step.with_user(self.user_b).act_on_step(
             "return",
@@ -361,20 +367,16 @@ class TestP4Access(SarabunCommon):
         )
         self.assertEqual(doc.state, "returned")
         self.assertFalse(doc.archived_step_ids)
-        self.assertNotIn(self.user_b.partner_id, doc.message_partner_ids)
-        self.assertFalse(self._can_read(doc, self.user_b))
+        self.assertTrue(self._can_read(doc, self.user_b))
         self.assertTrue(self._can_read(doc, self.user_a))
+        self.assertFalse(self._can_read(doc, user_c))
 
-    def test_read_revoked_after_pull_back(self):
-        """ดึงกลับ by the sender deletes the old round: a holder reached in it loses
-        read until the หนังสือ reaches them again."""
+    def test_read_after_pull_back(self):
+        """ดึงกลับแบบร่าง deletes the old round; a holder it reached keeps read."""
         doc = self._make_doc(sender=self.user_a)
         self._add_step(doc, order=10, verb="sign_approve", user=self.user_b)
         doc.with_user(self.user_a).action_send()
-        self.assertTrue(self._can_read(doc, self.user_b))
         doc.with_user(self.user_a).action_pull_back(reason="ขอแก้")
         self.assertEqual(doc.state, "returned")
         self.assertFalse(doc.archived_step_ids)
-        self.assertFalse(self._can_read(doc, self.user_b))
-        doc.with_user(self.user_a).action_send()  # re-sent: reaches them again
         self.assertTrue(self._can_read(doc, self.user_b))

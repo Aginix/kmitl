@@ -30,14 +30,12 @@ def migrate(cr, version):
         if verb and not verb.button_emoji:
             verb.button_emoji = emoji
     _purge_history(env)
-    _backfill_auto_followers(env)
     cr.execute("UPDATE sarabun_document SET attempt_seq = 1 WHERE attempt_seq != 1")
 
 
 def _purge_history(env):
-    """Delete the archived rounds (ADR-0023), logging each document and who lost
-    read. Legacy steps carry no record of which followers the engine added, so the
-    old round's holders the หนังสือ no longer reaches are unfollowed outright."""
+    """Delete the archived rounds (ADR-0023), logging each document. Followers are
+    left alone: who once received a หนังสือ keeps reading it."""
     Step = env["sarabun.routing.step"].with_context(active_test=False)
     old = Step.search([("active", "=", False)])
     _logger.info(
@@ -60,33 +58,5 @@ def _purge_history(env):
                 }
             )
     for doc in old.document_id:
-        before = doc.reached_user_ids
         doc._purge_archived_steps()
-        gone = before - doc.reached_user_ids - doc.sender_user_id
-        gone = gone.filtered(lambda u: u.partner_id in doc.message_partner_ids)
-        if gone:
-            doc.message_unsubscribe(partner_ids=gone.partner_id.ids)
-        _logger.info(
-            "agx_sarabun: document %s (%s) — unfollowed: %s",
-            doc.id,
-            doc.name,
-            ", ".join(gone.mapped("login")) or "-",
-        )
-
-
-def _backfill_auto_followers(env):
-    """Steps raised before auto_follower_partner_ids existed carry no record of
-    the followers the engine added. Treat a live step's holders who follow the
-    หนังสือ as engine-added, so a later ตีกลับ / ดึงกลับ still unfollows them."""
-    steps = env["sarabun.routing.step"].search(
-        [("state", "in", ("active", "done")), ("actor_user_ids", "!=", False)]
-    )
-    count = 0
-    for step in steps:
-        partners = step.actor_user_ids.partner_id & step.document_id.message_partner_ids
-        partners -= step.document_id.sender_user_id.partner_id
-        if partners:
-            step.auto_follower_partner_ids = [(4, p.id) for p in partners]
-            count += 1
-    _logger.info("agx_sarabun: backfilled engine-added followers on %s steps", count)
-
+        _logger.info("agx_sarabun: purged history of document %s (%s)", doc.id, doc.name)
