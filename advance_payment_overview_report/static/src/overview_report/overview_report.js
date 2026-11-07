@@ -111,6 +111,11 @@ export class AdvancePaymentOverviewReport extends Component {
         return DUE_BADGES[row.return_due_status_code] || "";
     }
 
+    /** Opened in a new tab, so the report keeps its filters. */
+    recordUrl(model, id) {
+        return `/web#id=${id}&model=${model}&view_type=form`;
+    }
+
     lines(value) {
         return value ? value.split("\n") : [];
     }

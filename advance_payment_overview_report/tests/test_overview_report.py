@@ -80,7 +80,7 @@ class TestOverviewReport(TransactionCase):
         rows = self._rows()
         self.assertEqual(len(rows), 1)
         self.assertEqual(
-            rows[0]["documents"], "DR: DR-APO-0001\nDR: DR-APO-0002"
+            rows[0]["documents"], "DR-APO-0001\nDR-APO-0002"
         )
         self.assertEqual(self._data()["totals"]["loan_amount"], 1500.0)
 

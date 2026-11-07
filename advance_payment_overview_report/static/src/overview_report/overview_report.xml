@@ -30,14 +30,27 @@
                     </td>
                     <td t-elif="column[0] === 'contract'">
                         <t t-foreach="lines(row.contract)" t-as="line" t-key="line_index">
-                            <div t-if="line_first" class="fw-bold" t-esc="line" />
+                            <a
+                                t-if="line_first"
+                                class="fw-bold"
+                                target="_blank"
+                                t-att-href="recordUrl('advance.payment', row.id)"
+                                t-on-click.stop="() => {}"
+                                t-esc="line"
+                            />
                             <div t-else="" class="text-muted small" t-esc="line" />
                         </t>
                     </td>
                     <td t-elif="column[0] === 'documents'">
-                        <div t-foreach="lines(row.documents)" t-as="line" t-key="line_index">
-                            <span class="text-muted small me-1" t-esc="line.split(': ')[0]" />
-                            <t t-esc="line.split(': ')[1]" />
+                        <div t-foreach="row.document_links" t-as="doc" t-key="doc.model + doc.id">
+                            <a
+                                t-if="doc.link"
+                                target="_blank"
+                                t-att-href="recordUrl(doc.model, doc.id)"
+                                t-on-click.stop="() => {}"
+                                t-esc="doc.name"
+                            />
+                            <span t-else="" t-esc="doc.name" />
                         </div>
                     </td>
                     <td t-else=""><t t-esc="row[column[0]]" /></td>

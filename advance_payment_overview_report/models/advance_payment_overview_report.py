@@ -103,21 +103,39 @@ class AdvancePaymentOverviewReport(models.AbstractModel):
         return value.replace(tzinfo=pytz.utc).astimezone(BANGKOK_TZ).date()
 
     @api.model
-    def _documents(self, loan):
-        """One ``label: number`` line per document around the loan: its
-        source, its commitment (once, when the source is the commitment
-        itself) and every live ใบเบิกชดใช้เงินยืม."""
-        commitment = loan.budget_commitment_id.name
-        lines = []
-        if loan.reference_number and loan.reference_number != commitment:
-            lines.append("AR/PR: %s" % loan.reference_number)
+    def _documents(self, loan, readable):
+        """The documents around the loan, in order: its source, its
+        commitment (once, when the source is the commitment itself) and every
+        live ใบเบิกชดใช้เงินยืม. ``link`` only where the user may read that
+        model at all (record rules may still refuse a single record)."""
+        commitment = loan.budget_commitment_id
+        records = []
+        if loan.reference and loan.reference != commitment:
+            records.append(loan.reference)
         if commitment:
-            lines.append("BC: %s" % commitment)
-        requests = loan.disbursement_request_ids.filtered(
+            records.append(commitment)
+        records += loan.disbursement_request_ids.filtered(
             lambda r: r.state != "cancel"
         ).sorted("name")
-        lines += ["DR: %s" % r.name for r in requests if r.name]
-        return "\n".join(lines)
+        documents = []
+        for record in records:
+            if record._name not in readable:
+                readable[record._name] = self.env[record._name].check_access_rights(
+                    "read", raise_exception=False
+                )
+            if record == loan.reference:
+                name = loan.reference_number or record.display_name
+            else:
+                name = record.name
+            documents.append(
+                {
+                    "name": name,
+                    "model": record._name,
+                    "id": record.id,
+                    "link": readable[record._name],
+                }
+            )
+        return documents
 
     @api.model
     def _due_text(self, loan, due_statuses):
@@ -130,11 +148,12 @@ class AdvancePaymentOverviewReport(models.AbstractModel):
         return due_statuses.get(status, "")
 
     @api.model
-    def _row(self, loan, states, due_statuses):
+    def _row(self, loan, states, due_statuses, readable):
         thai = self.env["thai.date.mixin"]
         sudo_loan = loan.sudo()
         # The contract number once there is one, the ADV number beneath it.
         numbers = [n for n in (loan.contract_number, loan.name) if n]
+        documents = self._documents(sudo_loan, readable)
         return {
             "id": loan.id,
             "contract": "\n".join(numbers),
@@ -143,7 +162,9 @@ class AdvancePaymentOverviewReport(models.AbstractModel):
             "state": states.get(loan.state, ""),
             "state_code": loan.state,
             "effective_date": thai.format_date_thai_short(loan.effective_date),
-            "documents": self._documents(sudo_loan),
+            # Text for the PDF and the workbook; links for the screen.
+            "documents": "\n".join(d["name"] for d in documents),
+            "document_links": documents,
             "return_due_date": thai.format_date_thai_short(loan.return_due_date),
             "return_due_status": self._due_text(loan, due_statuses),
             "return_due_status_code": loan.return_due_status or "",
@@ -206,10 +227,11 @@ class AdvancePaymentOverviewReport(models.AbstractModel):
         figure column. With no group-by, one unnamed group holds every row."""
         states = self._selection_labels("state")
         due_statuses = self._selection_labels("return_due_status")
+        readable = {}
         top = {}
         grand = self._empty_totals()
         for loan in loans:
-            row = self._row(loan, states, due_statuses)
+            row = self._row(loan, states, due_statuses, readable)
             self._add_totals(grand, row)
             key_1, label_1 = self._axis(loan, specs[0]) if specs else ("", "")
             group = top.setdefault(
