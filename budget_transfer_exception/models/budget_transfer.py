@@ -8,7 +8,7 @@ class BudgetTransfer(models.Model):
     The ยืนยัน (``action_submit``) hook, the review popup, a re-check on
     approve/post, and the reset-clears-exceptions behaviour. It also turns the
     transfer's business-policy checks (4 core dimensions, budget availability,
-    the line Pool-Tag / duplicate policies) into ``exception.rule`` records, so
+    the line Pool-Tag policies) into ``exception.rule`` records, so
     each can be switched on/off (``active``) or made non-blocking; the
     structural checks (lines, FROM/TO, balance, amount > 0, single source) stay
     hard in ``budget_transfer``. The source-record checks live in thin bridge
@@ -80,7 +80,8 @@ class BudgetTransfer(models.Model):
 
     def _validate_line_policies(self):
         """Enforced by the ``budget_transfer_excep_both_tags`` /
-        ``..._tag_account_mismatch`` / ``..._duplicate_lines`` rules."""
+        ``..._tag_account_mismatch`` rules. Duplicate lines are allowed — the
+        duplicate rule was dropped (it is switched off in production)."""
         return
 
     def budget_transfer_check_core_dimensions(self):
@@ -95,9 +96,6 @@ class BudgetTransfer(models.Model):
 
     def budget_transfer_check_tag_account_mismatch(self):
         return self.filtered(lambda t: t.line_ids._get_lines_tag_account_mismatch())
-
-    def budget_transfer_check_duplicate_lines(self):
-        return self.filtered(lambda t: t.line_ids._get_duplicate_lines())
 
     def action_reset_to_draft(self):
         res = super().action_reset_to_draft()

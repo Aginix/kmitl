@@ -59,9 +59,6 @@ class TestBudgetTransferException(TransactionCase):
         cls.rule_tag_account = env.ref(
             "budget_transfer_exception.budget_transfer_excep_tag_account_mismatch"
         )
-        cls.rule_duplicate = env.ref(
-            "budget_transfer_exception.budget_transfer_excep_duplicate_lines"
-        )
 
     def _appropriate(self, amount):
         move = self.env["budget.move"].create(
@@ -129,6 +126,10 @@ class TestBudgetTransferException(TransactionCase):
     def test_core_dimension_rule_off_allows_submit(self):
         self._appropriate(100_000)
         self.rule_dims.active = False
+        # A fund-less FROM line has no appropriation at its coordinate — keep the
+        # availability rule out of it (kmitl_demo's budget.allow_negative masks
+        # this on CI; a production copy has it off).
+        self.rule_avail.active = False
         transfer = self._transfer(from_fund=False)
         transfer.action_submit()
         self.assertEqual(transfer.state, "submitted")
@@ -212,13 +213,9 @@ class TestBudgetTransferException(TransactionCase):
             ]
         )
 
-    def test_duplicate_lines_raise_popup(self):
+    def test_duplicate_lines_allowed(self):
+        # The duplicate-lines rule was dropped: no popup, no hard check.
         self._appropriate(100_000)
-        self._assert_popup(self._duplicate_transfer(), self.rule_duplicate)
-
-    def test_duplicate_rule_off_allows_submit(self):
-        self._appropriate(100_000)
-        self.rule_duplicate.active = False
         transfer = self._duplicate_transfer()
         transfer.action_submit()
         self.assertEqual(transfer.state, "submitted")
