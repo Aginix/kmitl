@@ -1,0 +1,10 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_invoice_kmitl_viewer,kmitl.invoice viewer,model_kmitl_invoice,group_invoice_kmitl_viewer,1,0,0,0
+access_invoice_kmitl_line_viewer,kmitl.invoice.line viewer,model_kmitl_invoice_line,group_invoice_kmitl_viewer,1,0,0,0
+access_invoice_submission_viewer,kmitl.invoice.submission viewer,model_kmitl_invoice_submission,group_invoice_kmitl_viewer,1,0,0,0
+access_account_analytic_account_invoice_viewer,account.analytic.account invoice viewer,analytic.model_account_analytic_account,group_invoice_kmitl_viewer,1,0,0,0
+access_account_account_invoice_viewer,account.account invoice viewer,account.model_account_account,group_invoice_kmitl_viewer,1,0,0,0
+access_invoice_kmitl_user,kmitl.invoice user,model_kmitl_invoice,group_invoice_kmitl_user,1,1,1,0
+access_invoice_kmitl_line_user,kmitl.invoice.line user,model_kmitl_invoice_line,group_invoice_kmitl_user,1,1,1,1
+access_invoice_submission_user,kmitl.invoice.submission user,model_kmitl_invoice_submission,group_invoice_kmitl_user,1,1,1,1
+access_invoice_submission_reject_user,kmitl.invoice.submission.reject user,model_kmitl_invoice_submission_reject,group_invoice_kmitl_user,1,1,1,1

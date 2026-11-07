@@ -56,7 +56,8 @@ no document and no state, and every term it uses is theirs.
 - **ใบตั้งหนี้ / AR invoice** (`account.move`, `out_invoice`, on the **ใบสำคัญลูกหนี้**
   journal seeded by `account_kmitl`): the document that makes someone owe KMITL money.
   Named for the menu the accounting office opens it from (บัญชี ▸ ลูกหนี้ ▸ ใบตั้งหนี้).
-  It is **not** settled by an ใบเสร็จรับเงิน — see the rule below. _Avoid_: "ลูกหนี้"
+  It is settled by an ใบเสร็จรับเงิน only when the receipt was raised from an ใบแจ้งหนี้
+  (`invoice_kmitl`) — see the rule below. _Avoid_: "ลูกหนี้"
   unqualified, which in this repo far more often means **ลูกหนี้เงินยืม**
   (`advance.payment`), a different debt with its own follow-up screens in
   [`advance_payment_followup`](../advance_payment_followup).
@@ -86,17 +87,25 @@ no document and no state, and every term it uses is theirs.
 
 ## Rules
 
-- **An ใบเสร็จรับเงิน never settles an ใบตั้งหนี้.** A receipt's entry is a **Dr Cash
-  Account / Cr revenue** pair per line (`payment_method_id.account_id` against
-  `line.account_id`) and a **Dr Deposit Bank Account / Cr Cash Account** remittance leg
-  for the total (`payment_method_id.deposit_account_id`) — see `receipt_kmitl`
+- **An ใบเสร็จรับเงิน settles an ใบตั้งหนี้ only when it was raised from an
+  ใบแจ้งหนี้.** An ordinary receipt's entry is a **Dr Cash Account / Cr revenue** pair per
+  line (`payment_method_id.account_id` against `line.account_id`) and a **Dr Deposit Bank
+  Account / Cr Cash Account** remittance leg for the total
+  (`payment_method_id.deposit_account_id`) — see `receipt_kmitl`
   [ADR-0004](../receipt_kmitl/docs/adr/0004-treasury-remittance-leg-in-the-receipt-entry.md).
-  Not one of the three legs is a receivable, so receipting a customer who is paying an
-  invoice would book the revenue a second time and leave the invoice open. The two
-  money-in reports therefore read two different documents and never mix them:
-  การรับเงิน counts receipts, การตั้งลูกหนี้ and ลูกหนี้ถึงกำหนดชำระ count invoices.
-  Money that settles an ใบตั้งหนี้ is outside every report here until that settlement
-  has a workflow of its own.
+  Not one of those three legs is a receivable, so receipting a customer who is paying an
+  invoice by hand would book the revenue a second time and leave the invoice open. A
+  **ใบเสร็จตัดหนี้** (`kmitl.receipt.invoice_id`, from `invoice_kmitl`) swaps the revenue
+  credit for the customer's receivable account and is reconciled against the ใบตั้งหนี้ —
+  see `invoice_kmitl`
+  [ADR-0002](../invoice_kmitl/docs/adr/0002-a-receipt-may-now-settle-an-invoice.md).
+  The two money-in reports still read two different documents and never mix them inside
+  one report: การรับเงิน counts receipts, การตั้งลูกหนี้ and ลูกหนี้ถึงกำหนดชำระ count
+  invoices. **But the same baht can now appear in both**: a ใบเสร็จตัดหนี้ is in การรับเงิน
+  once it reaches the treasury, and the ใบตั้งหนี้ it settles was in การตั้งลูกหนี้ when it
+  was raised, so the two reports read side by side add up to more than was ever received.
+  Money that settles an ใบตั้งหนี้ by any route other than a ใบเสร็จตัดหนี้ is still
+  outside every report here.
 - **The report is not a second opinion about what a record means.** Which bills and
   invoices are still owed is `accounting.kmitl.dashboard._UNPAID_STATES`, borrowed
   rather than restated, so the card the accounting office reads every morning and these
