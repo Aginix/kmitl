@@ -98,7 +98,7 @@ from earlier runs:
 - **PDF:** download it with `pg.request.get("/report/pdf/<report_name>/<id>")`, then
   `sips -s format png file.pdf --out file.png` (page 1). macOS has no `pdftoppm`.
 - **Look at every screenshot** with the Read tool before using it.
-- **Clean up:** `$T/odoo_sandbox.sh stop 18069`, `$T/odoo_sandbox.sh drop sbx_<topic>`,
+- **Clean up:** `$T/odoo_sandbox.sh stop sbx_<topic>`, `$T/odoo_sandbox.sh drop sbx_<topic>`,
   and `rm -rf /tmp/pwvenv`.
 
 If testing shows a bug, fix it, re-run the check, and mention the fix in the PR.

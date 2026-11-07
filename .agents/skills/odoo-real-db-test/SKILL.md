@@ -33,6 +33,11 @@ Three rules make this safe to do without asking every time:
   before serving it.
 - **Clean up what you create**, or leave it running only when you tell the user it's
   there and how to remove it.
+- **Assume other sessions run the same skill at the same time.** Several Claude
+  sessions share one Docker stack, one Postgres and the user's browser. Give your
+  clone a name no other session will pick (`sbx_<topic>_<worktree-or-branch>`, not
+  `sbx_test`), because the db name is what identifies your server, and never stop or
+  drop a sandbox you didn't create (`docker ps` / `dbs` show other sessions' work).
 
 Cloning a multi-GB DB and starting containers takes minutes; tell the user briefly what
 you're doing before you start.
@@ -157,8 +162,8 @@ only in `/tmp`, so the evidence can be re-run and shown later.
 
 ```bash
 $S/odoo_sandbox.sh shell sbx_<topic> $S/set_admin_password.py   # prints SANDBOX_LOGIN=...
-$S/odoo_sandbox.sh serve sbx_<topic> 18069                      # waits until /web/login answers
-node $S/ui_check.mjs --url http://127.0.0.1:18069 --login <login> --password admin \
+$S/odoo_sandbox.sh serve sbx_<topic>      # waits until /web/login answers; prints the URL
+node $S/ui_check.mjs --url <the printed url> --login <login> --password admin \
      --action <client_action_tag_or_id> --steps /tmp/steps.mjs \
      --shot <worktree>/.context/<topic>.png --rpc-filter <method>
 ```
@@ -209,12 +214,13 @@ The final screenshot is `--shot`. Each `shot(name)` saves an extra file next to 
 ### 5. Clean up
 
 ```bash
-$S/odoo_sandbox.sh stop 18069
+$S/odoo_sandbox.sh stop sbx_<topic>      # drop also removes the server
 $S/odoo_sandbox.sh drop sbx_<topic>
 ```
 
 If the user may want to click around themselves, leave the server up and tell them the
-URL, the login, and these two cleanup commands.
+exact URL `serve` printed (the `*.localhost` one, see Gotchas), the login, and these two
+cleanup commands.
 
 ## Gotchas learned the hard way
 
@@ -243,9 +249,21 @@ URL, the login, and these two cleanup commands.
   Anything that prints during a flow (e.g. posting a budget transfer) triggers it.
 - **The user's own `odoo` container may be down or on another branch.** That doesn't
   matter: the sandbox always runs the worktree passed to or detected by the script.
-- **Port collisions:** the user's proxy uses 16069. Sandbox servers default to 18069,
-  and `serve` refuses a port that is already listening. Pass another port to run two
-  sandboxes side by side.
+- **Parallel sessions: URL host and port.** `serve` prints
+  `http://sbx-<topic>.localhost:<port>`; give the user exactly that, never
+  `127.0.0.1:<port>` or `localhost:<port>`. Browsers scope cookies by host and ignore the
+  port, so every server on one host shares Odoo's `session_id` cookie: logging in to a
+  second sandbox (or the user's own dev server on `localhost:16069`) silently logs the
+  first one out within seconds. A distinct `*.localhost` name per db gives each its own
+  cookie jar and resolves to loopback without any `/etc/hosts` entry. The port is chosen
+  by Docker when you don't pass one, so sessions can't race for it; pass one only if the
+  user asks, and `serve` then refuses a busy port without touching other containers.
+  Calling `serve` again for a running db just reprints its URL.
+- **Parallel sessions: Docker.** Each sandbox container gets a private copy of
+  `odoo/auto/addons`; the shared one is rewritten by every container start, which made
+  concurrent starts crash with `FileNotFoundError ... 40-addons-link`. `odoo_run` and
+  `serve` handle it, so no retry is needed. If you ever start a container by hand, keep
+  that in mind.
 - **`install` verdict:** trust the module states it prints (`installed`), not the ERROR
   lines. A clean `-i` of a few modules finishes in seconds.
 - **Admin login differs per DB** (e.g. `admin-erp@kmitl.ac.th`). Use the login that
