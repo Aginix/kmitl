@@ -17,10 +17,15 @@ BUTTON_EMOJI = {
 def migrate(cr, version):
     """Keep today's behaviour: every signing verb keeps its comment box (now
     ความเห็นในการลงนาม); seed the act-button emoji of the built-in verbs (data is
-    noupdate)."""
+    noupdate). Then drop the old-round history (ADR-0023): delete every
+    set-aside step of past attempts and reset the attempt counter."""
     cr.execute("UPDATE sarabun_verb SET allow_sign_comment = show_signature")
     env = api.Environment(cr, SUPERUSER_ID, {})
     for xmlid, emoji in BUTTON_EMOJI.items():
         verb = env.ref("agx_sarabun." + xmlid, raise_if_not_found=False)
         if verb and not verb.button_emoji:
             verb.button_emoji = emoji
+    Step = env["sarabun.routing.step"].with_context(active_test=False)
+    docs = Step.search([("active", "=", False)]).document_id
+    docs._purge_archived_steps()
+    cr.execute("UPDATE sarabun_document SET attempt_seq = 1 WHERE attempt_seq != 1")

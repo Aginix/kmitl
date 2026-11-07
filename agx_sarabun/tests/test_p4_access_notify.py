@@ -344,40 +344,37 @@ class TestP4Access(SarabunCommon):
         self.assertTrue(self._activities(doc, self.user_a), "new holder to-do")
         self.assertTrue(self._can_read(doc, self.user_a))
 
-    # === Archive-path visibility (ADR-0013): read persists across the transitions
-    #     that archive the whole chain (active=False) — ตีกลับ / ดึงกลับ. reached_user_ids
-    #     spans archived attempts, so a prior actor never loses the audit trail. ===
-    def test_read_persists_after_return(self):
-        """ตีกลับ (Return) archives the chain; the returner (and a reached CC) keep read."""
+    # === No attempt history (ADR-0023): ตีกลับ / ดึงกลับ delete the old round, so only
+    #     the current Route's holders (and the sender) can read the หนังสือ. ===
+    def test_read_revoked_after_return(self):
+        """ตีกลับ deletes the old round: its holders lose read (also as followers);
+        the sender keeps it."""
         doc = self._make_doc(sender=self.user_a)
         self._add_step(doc, order=10, verb="sign_approve", user=self.user_b)  # gating
-        self._add_step(
-            doc, order=10, verb="acknowledge", target_mode="person", user=self.manager
-        )  # reached CC, will not act
         doc.with_user(self.user_a).action_send()
         self.assertTrue(self._can_read(doc, self.user_b))
-        step = doc.routing_step_ids.filtered(
-            lambda s: s.verb == self._verb("sign_approve") and s.state == "active"
-        )
+        step = self._active_step(doc)
         step.with_user(self.user_b).act_on_step(
             "return",
             {"note": "แก้ไข", "destination": "sender_restart"},
             actor=self.user_b,
         )
         self.assertEqual(doc.state, "returned")
-        # the chain is archived — routing_step_ids re-seeded fresh — yet the prior
-        # attempt's holders stay readable via reached_user_ids
-        self.assertTrue(doc.archived_step_ids)
-        self.assertTrue(self._can_read(doc, self.user_b))
+        self.assertFalse(doc.archived_step_ids)
+        self.assertNotIn(self.user_b.partner_id, doc.message_partner_ids)
+        self.assertFalse(self._can_read(doc, self.user_b))
+        self.assertTrue(self._can_read(doc, self.user_a))
 
-    def test_read_persists_after_pull_back(self):
-        """ดึงกลับ (Recall) by the sender archives the chain; a holder reached in the
-        pulled-back attempt keeps read."""
+    def test_read_revoked_after_pull_back(self):
+        """ดึงกลับ by the sender deletes the old round: a holder reached in it loses
+        read until the หนังสือ reaches them again."""
         doc = self._make_doc(sender=self.user_a)
         self._add_step(doc, order=10, verb="sign_approve", user=self.user_b)
         doc.with_user(self.user_a).action_send()
         self.assertTrue(self._can_read(doc, self.user_b))
         doc.with_user(self.user_a).action_pull_back(reason="ขอแก้")
         self.assertEqual(doc.state, "returned")
-        self.assertTrue(doc.archived_step_ids)
-        self.assertTrue(self._can_read(doc, self.user_b))  # reached in prior attempt
+        self.assertFalse(doc.archived_step_ids)
+        self.assertFalse(self._can_read(doc, self.user_b))
+        doc.with_user(self.user_a).action_send()  # re-sent: reaches them again
+        self.assertTrue(self._can_read(doc, self.user_b))

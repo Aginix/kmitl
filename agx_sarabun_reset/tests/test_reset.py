@@ -76,9 +76,9 @@ class TestSarabunReset(SarabunCommon):
         self.assertEqual(len(gating), 1)
         self.assertTrue(all(s.state == "waiting" for s in doc.routing_step_ids))
         self.assertTrue(doc.routing_step_ids.filtered("is_originator"))
-        # finished attempt archived as history
-        self.assertTrue(doc.archived_step_ids)
-        self.assertEqual(doc.attempt_seq, 2)
+        # finished attempt deleted — no history (ADR-0023)
+        self.assertFalse(doc.archived_step_ids)
+        self.assertEqual(doc.attempt_seq, 1)
         # un-frozen
         self.assertFalse(doc.is_frozen)
         self.assertFalse(doc.signed_pdf)
@@ -147,7 +147,7 @@ class TestSarabunReset(SarabunCommon):
         self.assertEqual(doc.state, "draft")
         self.assertEqual(doc.register_number_id, number)
         self.assertEqual(number.state, "used")
-        self.assertTrue(doc.archived_step_ids)
+        self.assertFalse(doc.archived_step_ids)
         self.assertTrue(all(s.state == "waiting" for s in doc.routing_step_ids))
 
     def test_reset_blocked_from_draft(self):
@@ -165,10 +165,10 @@ class TestSarabunReset(SarabunCommon):
         with self.assertRaises(UserError):
             self._reset(doc, reason="")
 
-    def test_read_persists_after_reset(self):
-        """Reset archives the finished attempt and re-seeds the ORIGINAL Route as
-        fresh waiting steps; a user reached in the archived attempt keeps READ via
-        reached_user_ids (ADR-0013) — being involved is a property of the หนังสือ."""
+    def test_read_revoked_after_reset(self):
+        """Reset deletes the finished attempt and re-seeds the ORIGINAL Route as
+        fresh waiting steps; a user reached only in the deleted attempt loses READ
+        until the re-sent หนังสือ reaches them again (ADR-0023)."""
         doc = self._make_doc(sender=self.user_a)
         self._add_step(doc, order=10, verb="sign_approve", target_mode="person",
                        user=self.user_b)
@@ -183,11 +183,9 @@ class TestSarabunReset(SarabunCommon):
         self._reset(doc, reason="แก้คำผิด")
 
         self.assertEqual(doc.state, "draft")
-        self.assertTrue(doc.archived_step_ids)
-        # new attempt's step is only waiting (not yet reached), but the archived
-        # attempt's recipient row keeps user_b in reached_user_ids → still readable
+        self.assertFalse(doc.archived_step_ids)
         still_reads = bool(self.Doc.with_user(self.user_b).search([("id", "=", doc.id)]))
-        self.assertTrue(still_reads, "read persists across reset")
+        self.assertFalse(still_reads, "old round's holder no longer reads")
 
     def test_can_reset_flag(self):
         """can_reset drives the button: True for a reset admin on a non-draft doc,

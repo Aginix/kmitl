@@ -238,15 +238,16 @@ class SarabunDocument(models.Model):
         # conversion then hands back an empty set, so every reader saw nothing.
         context={"active_test": False},
         copy=False,
-        help="Frozen steps of closed attempts (kept for the เกษียน trail).",
+        help="Steps set aside during a ตีกลับ / ดึงกลับ / Reset — deleted when the flow "
+        "ends (ADR-0023), so normally empty.",
     )
     attempt_seq = fields.Integer(
         string="Attempt",
         default=1,
         readonly=True,
         copy=False,
-        help="Generation counter bumped on each re-send so prior attempts survive "
-        "as history (ADR-0002 §3.4).",
+        help="Legacy attempt counter — no attempt history is kept any more, so it "
+        "stays 1 (ADR-0023).",
     )
     reached_user_ids = fields.Many2many(
         comodel_name="res.users",
@@ -657,11 +658,10 @@ class SarabunDocument(models.Model):
         "archived_step_ids.recipient_ids.user_id",
     )
     def _compute_reached_user_ids(self):
-        """Aggregate every recipient holder across ACTIVE and ARCHIVED steps
-        (ADR-0013). Recipient rows carry a stored ``document_id``, so a direct
-        search — under ``sudo`` and ``active_test=False`` — spans archived attempts
-        that the ``active``-scoped ``routing_step_ids`` traversal would drop. The
-        field only ever grows (rows are never deleted), so read never lapses."""
+        """Aggregate every recipient holder of the หนังสือ (ADR-0013). A direct
+        search by the stored ``document_id`` (``sudo``, ``active_test=False``) also
+        covers steps set aside mid-flow; the old round's rows are deleted with it
+        (ADR-0023), so only the current Route's holders remain."""
         Recipient = (
             self.env["sarabun.step.recipient"].sudo().with_context(active_test=False)
         )
@@ -1079,6 +1079,7 @@ class SarabunDocument(models.Model):
         self.state = "returned"
         self.message_post(body=_("Document pulled back (ดึงกลับ). Reason: %s") % reason)
         self._call_origin("_on_sarabun_recalled", self)
+        self._purge_archived_steps()
         return True
 
     def action_recall(self, reason=None):
@@ -1273,7 +1274,11 @@ class SarabunDocument(models.Model):
             # would wipe the sender's route edits and runtime insertions.
             self._recreate_chain_verbatim()
         self.state = "returned"
-        self.message_post(body=_("Document returned for revision (ตีกลับ)."))
+        # The returned step is purged with its attempt (ADR-0023) — keep the reason.
+        self.message_post(
+            body=_("Document returned for revision (ตีกลับ). Reason: %s")
+            % (step.note or "-")
+        )
         self._call_origin("_on_sarabun_returned", self, step)
 
     def _do_reject(self, step):
@@ -1289,7 +1294,9 @@ class SarabunDocument(models.Model):
         self._call_origin("_on_sarabun_rejected", self, step)
 
     def _bump_attempt_and_archive(self):
-        """Freeze the current attempt's steps as history and start a new attempt.
+        """Set the current steps aside (``active=False``) so callbacks can still read
+        them; ``_purge_archived_steps`` deletes them once the flow is done. No attempt
+        history is kept (ADR-0023).
 
         sudo: archiving is an ENGINE write over the whole chain — the originator row
         included — so it must pass the ผู้จัดทำ/ผู้ส่ง write-guard. Without it the
@@ -1297,7 +1304,24 @@ class SarabunDocument(models.Model):
         sudoed ตีกลับ) died on "the ผู้จัดทำ/ผู้ส่ง step is fixed"."""
         self.ensure_one()
         self.routing_step_ids.sudo().write({"active": False})
-        self.attempt_seq = (self.attempt_seq or 1) + 1
+
+    def _purge_archived_steps(self):
+        """Delete the set-aside steps of the previous round with their recipients,
+        to-do links and sign attachments, and unfollow whoever the หนังสือ no longer
+        reaches — only the current Route's holders (and the sender) can read it
+        (ADR-0023)."""
+        Step = self.env["sarabun.routing.step"].sudo().with_context(active_test=False)
+        for doc in self:
+            old = Step.search([("document_id", "=", doc.id), ("active", "=", False)])
+            if not old:
+                continue
+            before = doc.sudo().reached_user_ids
+            files = old.sign_attachment_ids
+            old.unlink()
+            files.sudo().unlink()
+            gone = before - doc.sudo().reached_user_ids - doc.sender_user_id
+            if gone:
+                doc.sudo().message_unsubscribe(partner_ids=gone.partner_id.ids)
 
     def _restart_chain(self):
         """Archive the current chain and re-seed a fresh waiting one for a restart
@@ -1317,6 +1341,7 @@ class SarabunDocument(models.Model):
         # The archived attempt's originator is now inactive — re-add it (unless the
         # recreated seeds already carried one) so the new attempt keeps its row 1.
         self._ensure_originator_step()
+        self._purge_archived_steps()
 
     def _recreate_chain_verbatim(self):
         """Archive the current attempt and recreate the SAME เส้นทาง exactly (ดึงกลับ and

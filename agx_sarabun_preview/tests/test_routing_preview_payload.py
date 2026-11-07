@@ -119,8 +119,9 @@ class TestRoutingPreviewPayload(SarabunCommon):
 
     # -- attempt history ----------------------------------------------------
 
-    def test_attempt_seq_and_history_flag(self):
-        """After ตีกลับ, attempt_seq >= 2, has_history=True, archived payload non-empty."""
+    def test_no_history_after_return(self):
+        """After ตีกลับ no attempt history is kept (ADR-0023): attempt_seq stays 1,
+        has_history=False, no archived payload."""
         doc = self._make_doc(sender=self.user_a)
         self._add_step(doc, order=10, verb="sign_approve", target_mode="person", user=self.user_a)
         self._add_step(doc, order=20, verb="sign_approve", target_mode="person", user=self.user_b)
@@ -131,12 +132,9 @@ class TestRoutingPreviewPayload(SarabunCommon):
         self.assertTrue(second)
         self._act(second, "return", self.user_b, note="ขอแก้")
         data = self._payload(doc)
-        self.assertGreaterEqual(data["attempt_seq"], 2)
-        self.assertTrue(data["has_history"])
-        history = doc._build_archived_attempts_payload()
-        self.assertTrue(history)
-        seqs = [a["attempt_seq"] for a in history]
-        self.assertEqual(seqs, sorted(seqs, reverse=True))
+        self.assertEqual(data["attempt_seq"], 1)
+        self.assertFalse(data["has_history"])
+        self.assertFalse(doc._build_archived_attempts_payload())
 
     # -- action RPC ---------------------------------------------------------
 

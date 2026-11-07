@@ -170,7 +170,7 @@ class TestP2Engine(SarabunCommon):
 
     # --------------------------------------------------------- negative paths
     def test_return_sender_restart(self):
-        """ตีกลับ (sender_restart) sends the doc back and bumps the attempt."""
+        """ตีกลับ (sender_restart) sends the doc back; no attempt history (ADR-0023)."""
         doc = self._make_doc()
         step = self._add_step(doc, order=10, verb="endorse", user=self.user_a)
         self._add_step(doc, order=20, user=self.user_b)  # ออกเลข (ADR-0017)
@@ -180,12 +180,13 @@ class TestP2Engine(SarabunCommon):
             step, "return", self.user_a, note="แก้เนื้อหา", destination="sender_restart"
         )
         self.assertTrue(doc.is_returned)
-        self.assertEqual(doc.attempt_seq, 2)
+        self.assertEqual(doc.attempt_seq, 1)
+        self.assertFalse(step.exists())  # the old round is deleted
+        self.assertIn("แก้เนื้อหา", doc.message_ids[:1].body)  # reason kept in chatter
 
     def test_return_resume_step(self):
-        """ตีกลับ (resume_step): archive-not-overwrite (ADR-0006) — the original chain
-        is frozen as history and a fresh waiting chain is recreated from the resume
-        step onward."""
+        """ตีกลับ (resume_step): the old round is deleted (ADR-0023) and a fresh
+        waiting chain is recreated from the resume step onward."""
         doc = self._make_doc()
         s10 = self._add_step(doc, order=10, verb="endorse", user=self.user_a)
         s20 = self._add_step(doc, order=20, verb="sign_approve", user=self.user_b)
@@ -200,11 +201,8 @@ class TestP2Engine(SarabunCommon):
             resume_step_id=s10.id,
         )
         self.assertTrue(doc.is_returned)
-        self.assertEqual(doc.attempt_seq, 2)
-        # original step kept as history, never overwritten
-        self.assertFalse(s10.active)
-        self.assertEqual(s10.state, "done")
-        self.assertIn(s10, doc.archived_step_ids)
+        self.assertFalse(s10.exists() or s20.exists())
+        self.assertFalse(doc.archived_step_ids)
         # a fresh waiting chain is recreated from the resume order onward
         self.assertTrue(
             doc.routing_step_ids.filtered(
@@ -247,7 +245,7 @@ class TestP2Engine(SarabunCommon):
             doc.action_recall(reason="x")
 
     def test_pull_back_returns_and_rearchives(self):
-        """ดึงกลับ → returned, archive + bump the attempt (ADR-0006). Since ADR-0010
+        """ดึงกลับ → returned; the old round is deleted (ADR-0023). Since ADR-0010
         the number runs only at completion, so a circulating doc carries none — the
         pull-back is purely back-to-editable, re-sendable on the same (still empty)
         register."""
@@ -255,11 +253,12 @@ class TestP2Engine(SarabunCommon):
         self._add_step(doc, order=10, verb="sign_approve", user=self.user_a)
         doc.action_send()
         self.assertFalse(doc.register_number_id)  # not numbered while circulating
-        attempt = doc.attempt_seq
+        old = doc.routing_step_ids
         doc.action_pull_back(reason="แก้ไขเนื้อหาก่อนส่งใหม่")
         self.assertTrue(doc.is_returned)
         self.assertFalse(doc.register_number_id)  # still unnumbered
-        self.assertEqual(doc.attempt_seq, attempt + 1)  # prior chain archived
+        self.assertFalse(old.exists())  # prior chain deleted, no history
+        self.assertFalse(doc.archived_step_ids)
         # a fresh waiting chain exists to re-send on the same number
         self.assertTrue(doc.routing_step_ids.filtered(lambda s: s.state == "waiting"))
 
@@ -364,8 +363,7 @@ class TestP2Engine(SarabunCommon):
         )
 
         self.assertTrue(doc.is_returned)
-        self.assertEqual(doc.attempt_seq, 2)
-        self.assertFalse(any(before.mapped("active")))  # prior attempt archived
+        self.assertFalse(before.exists())  # prior round deleted
         after = doc.routing_step_ids
         self.assertEqual(len(after), 3)
         self.assertTrue(all(s.state == "waiting" for s in after))

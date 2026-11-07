@@ -45,6 +45,45 @@ class TestP7SignCommentEdit(SarabunCommon):
         self.assertEqual((att.res_model, att.res_id), ("sarabun.document", doc.id))
         self.assertEqual(doc.sign_attachment_ids, att)
 
+    def test_return_drops_old_round_sign_files(self):
+        """ตีกลับ deletes the old round with its sign comment files (ADR-0023)."""
+        self._verb("endorse").allow_sign_comment = True
+        doc = self._make_doc(sender=self.user_a)
+        s10 = self._add_step(doc, order=10, verb="endorse", user=self.user_b)
+        self._add_step(doc, order=20, verb="sign_approve", user=self.manager)
+        doc.action_send()
+        att = self._attachment(self.user_b)
+        self._act(s10, "complete", self.user_b, sign_attachment_ids=att.ids)
+        self.assertEqual(doc.sign_attachment_ids, att)
+        wizard = (
+            self.env["sarabun.step.act.wizard"]
+            .with_user(self.manager)
+            .with_context(sarabun_disposition="return")
+            .create({"step_id": self._active_step(doc).id, "note": "แก้"})
+        )
+        wizard.action_confirm()
+        self.assertEqual(doc.state, "returned")
+        self.assertFalse(att.exists())
+        self.assertFalse(doc.sign_attachment_ids)
+
+    def test_returner_sent_to_inbox(self):
+        """A returner reached only in the deleted round can't reload the หนังสือ —
+        the wizard opens their incoming box instead of closing."""
+        doc = self._make_doc(sender=self.user_a)
+        step = self._add_step(doc, order=10, verb="sign_approve", user=self.user_b)
+        doc.action_send()
+        action = (
+            self.env["sarabun.step.act.wizard"]
+            .with_user(self.user_b)
+            .with_context(sarabun_disposition="return")
+            .create({"step_id": step.id, "note": "แก้"})
+            .action_confirm()
+        )
+        self.assertEqual(doc.state, "returned")
+        self.assertFalse(self.Doc.with_user(self.user_b).search([("id", "=", doc.id)]))
+        self.assertEqual(action.get("res_model"), "sarabun.document")
+        self.assertEqual(action.get("type"), "ir.actions.act_window")
+
     def test_sign_comment_ignored_when_verb_disallows(self):
         self._verb("endorse").allow_sign_comment = False
         doc = self._make_doc(sender=self.user_a)

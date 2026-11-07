@@ -168,5 +168,12 @@ class SarabunStepActWizard(models.TransientModel):
             if not self.note:
                 raise UserError(_("Please provide a rejection reason."))
 
+        doc_id = self.document_id.id
         self.step_id.act_on_step(self.disposition, vals)
+        # A ตีกลับ drops the old round (ADR-0023): the returner may no longer reach
+        # the หนังสือ — send them to their incoming box instead of a failing reload.
+        if not self.env["sarabun.document"].search_count([("id", "=", doc_id)]):
+            return self.env["ir.actions.act_window"]._for_xml_id(
+                "agx_sarabun.action_sarabun_document_inbox"
+            )
         return {"type": "ir.actions.act_window_close"}

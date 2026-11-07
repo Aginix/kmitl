@@ -76,7 +76,7 @@ class SarabunDocument(models.Model):
         ):
             doc._reclaim_voided_number(reason)
         # Un-freeze the ฉบับลงนาม — discard the prior PDF (writing False on an
-        # attachment field removes the attachment; audit survives on the archived steps).
+        # attachment field removes the attachment; the reason stays in the chatter).
         doc.write({
             "signed_pdf": False,
             "signed_pdf_filename": False,
@@ -88,6 +88,7 @@ class SarabunDocument(models.Model):
         doc.message_post(body=_(
             "Document reset to draft by %(user)s. Reason: %(reason)s"
         ) % {"user": self.env.user.display_name, "reason": reason})
+        doc._purge_archived_steps()  # no attempt history (ADR-0023)
         return True
 
     def _reset_restart_chain(self):

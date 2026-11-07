@@ -539,6 +539,9 @@ class SarabunRoutingStep(models.Model):
 
         # Generic per-step origin callback (same transaction — ADR-0004).
         step.document_id._call_origin("_on_sarabun_step", self, disposition)
+        if disposition == "return":
+            # every callback has read the returned step — drop the old round (ADR-0023)
+            step.document_id._purge_archived_steps()
         return True
 
     # --------------------------------------------------------- disposition core
