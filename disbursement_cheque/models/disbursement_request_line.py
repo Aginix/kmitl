@@ -16,18 +16,22 @@ class DisbursementRequestLine(models.Model):
         readonly=False,
     )
 
-    @api.depends("request_id.pays_out")
+    @api.depends("request_id.pays_out", "display_type")
     def _compute_payment_method(self):
         for line in self:
-            if not line.request_id.pays_out:
+            if not line.request_id.pays_out or line.display_type:
                 line.payment_method = False
             elif not line.payment_method:
                 line.payment_method = "transfer"
 
-    @api.constrains("payment_method", "request_id")
+    @api.constrains("payment_method", "request_id", "display_type")
     def _check_payment_method(self):
         for line in self:
-            if line.request_id.pays_out and not line.payment_method:
+            if (
+                line.request_id.pays_out
+                and not line.display_type
+                and not line.payment_method
+            ):
                 raise ValidationError(_("Payment method is required on each line."))
 
     @api.depends("payment_method")
@@ -42,6 +46,10 @@ class DisbursementRequestLine(models.Model):
             ):
                 line.partner_bank_id = False
         return res
+
+    @api.depends("payment_method")
+    def _compute_requires_partner_bank(self):
+        return super()._compute_requires_partner_bank()
 
     def _requires_partner_bank(self):
         return super()._requires_partner_bank() and self.payment_method == "transfer"

@@ -52,7 +52,8 @@ class DisbursementRequest(models.Model):
     )
 
     # Every payee on the lines must be of this type (ประเภทผู้รับเงิน); the
-    # payees themselves live on the lines only.
+    # payees themselves live on the lines only. Only จ่ายตรง may pay a
+    # non-internal type.
     partner_type_id = fields.Many2one(
         comodel_name="res.partner.type",
         string="Payee Type",
@@ -60,6 +61,7 @@ class DisbursementRequest(models.Model):
         tracking=True,
         index=True,
         ondelete="restrict",
+        domain="[('is_internal', '=', True)] if payment_type != 'direct' else []",
     )
 
     # Loaded on the form so มีภาษี can be locked for a company payee type.
@@ -80,6 +82,9 @@ class DisbursementRequest(models.Model):
         tracking=True,
     )
 
+    # Core declares every type but carries no type-specific behaviour: an
+    # add-on brings it through the hooks below (เงินยืม:
+    # advance_payment_disbursement, ADR 0009).
     payment_type = fields.Selection(
         selection=[
             ("direct", "Direct paid"),
@@ -91,10 +96,13 @@ class DisbursementRequest(models.Model):
         tracking=True,
     )
 
-    # Whether the request pays money out to its payees. An advance (เงินยืม)
-    # books spending already paid out of a loan: no payment method, no bank
-    # account.
+    # Hook: whether the request pays money out to its payees. One that does
+    # not has no payment method and no bank account.
     pays_out = fields.Boolean(compute="_compute_pays_out")
+
+    # Hook: whether the request may be taxable at all. One that may not has
+    # มีภาษี hidden and forced off.
+    can_have_tax = fields.Boolean(compute="_compute_can_have_tax")
 
     # เลขที่หนังสือ: stamped by disbursement_sarabun when e-Saraban issues the
     # หนังสือ's number; typed from the memo on a direct claim
@@ -116,9 +124,10 @@ class DisbursementRequest(models.Model):
     )
 
     # มีภาษี: off clears VAT and WHT from every line and hides the tax columns.
+    # Off by default; a request created with taxed lines starts taxable.
     has_tax = fields.Boolean(
         string="Taxable",
-        default=True,
+        default=False,
         tracking=True,
     )
 
@@ -152,6 +161,7 @@ class DisbursementRequest(models.Model):
         comodel_name="disbursement.request.line",
         inverse_name="request_id",
         string="WHT Lines",
+        domain=[("display_type", "=", False)],
         readonly=True,
         copy=False,
     )
@@ -476,19 +486,24 @@ class DisbursementRequest(models.Model):
     # -------------------------------------------------------------------------
     # Taxable (มีภาษี)
     # -------------------------------------------------------------------------
-    @api.onchange("payment_type", "partner_type_id")
-    def _onchange_has_tax_default(self):
-        """A company starts out taxed; an advance or a prepayment starts out
-        untaxed (the user may tick it back)."""
-        if self.partner_type_id.company_type == "company":
-            self.has_tax = True
-        elif self.payment_type in ("advance", "prepaid"):
+    @api.onchange("payment_type")
+    def _onchange_payment_type(self):
+        """Only จ่ายตรง may pay a non-internal payee type; a request that may
+        not be taxable is untaxed."""
+        if self.payment_type != "direct" and not self.partner_type_id.is_internal:
+            self.partner_type_id = False
+        if not self.can_have_tax:
             self.has_tax = False
 
     @api.depends("payment_type")
     def _compute_pays_out(self):
         for rec in self:
-            rec.pays_out = rec.payment_type != "advance"
+            rec.pays_out = True
+
+    @api.depends("payment_type")
+    def _compute_can_have_tax(self):
+        for rec in self:
+            rec.can_have_tax = True
 
     @api.onchange("has_tax")
     def _onchange_has_tax(self):
@@ -497,6 +512,9 @@ class DisbursementRequest(models.Model):
 
     def _clear_untaxed_lines(self):
         """Keep programmatic creates/writes consistent with ``has_tax``."""
+        untaxable = self.filtered(lambda r: r.has_tax and not r.can_have_tax)
+        if untaxable:
+            untaxable.write({"has_tax": False})
         lines = self.filtered(lambda r: not r.has_tax).line_ids.filtered(
             lambda l: l.tax_ids or l.wht_tax_id
         )
@@ -513,6 +531,27 @@ class DisbursementRequest(models.Model):
                 % partner.display_name
             )
         return partner.partner_type_id
+
+    def _payable_lines(self):
+        """The lines that pay: sections and notes are headings only."""
+        return self.line_ids.filtered(lambda l: not l.display_type)
+
+    def _report_partner_lines(self, partner):
+        """``partner``'s lines in order, each preceded by the section and notes
+        heading it that this payee's table has not printed yet — the printed
+        request groups lines per payee."""
+        self.ensure_one()
+        lines = self.env["disbursement.request.line"]
+        pending = lines
+        for line in self.line_ids:
+            if line.display_type == "line_section":
+                pending = line
+            elif line.display_type == "line_note":
+                pending |= line
+            elif line.partner_id == partner:
+                lines |= pending | line
+                pending = pending.browse()
+        return lines
 
     def _get_source_document(self):
         """The document this request was raised from (PO, PA, AR …), or an
@@ -574,12 +613,16 @@ class DisbursementRequest(models.Model):
                 vals["account_fiscal_year_id"] = fy.id if fy else False
 
         records = super().create(vals_list)
+        # A request raised with taxed lines (a PO, a PA …) starts taxable.
+        for rec, vals in zip(records, vals_list):
+            if "has_tax" not in vals and rec.can_have_tax and rec.line_ids.tax_ids:
+                rec.has_tax = True
         records._clear_untaxed_lines()
         return records
 
     def write(self, vals):
         res = super().write(vals)
-        if "has_tax" in vals or "line_ids" in vals:
+        if {"has_tax", "line_ids", "payment_type"} & set(vals):
             self._clear_untaxed_lines()
         if vals.get("account_fiscal_year_id"):
             # The number follows the year: a draft moved to another year gets
@@ -631,7 +674,7 @@ class DisbursementRequest(models.Model):
     def _compute_amount_all(self):
         """Aggregate amounts from lines with tax calculation (mirrors PO logic)"""
         for request in self:
-            request_lines = request.line_ids
+            request_lines = request._payable_lines()
 
             # Check company rounding method
             if request.company_id.tax_calculation_rounding_method == "round_globally":
@@ -667,7 +710,7 @@ class DisbursementRequest(models.Model):
         """Prepare detailed tax display information (mirrors PO logic)"""
         for request in self:
             request.tax_totals = self.env["account.tax"]._prepare_tax_totals(
-                [x._convert_to_tax_base_line_dict() for x in request.line_ids],
+                [x._convert_to_tax_base_line_dict() for x in request._payable_lines()],
                 request.currency_id,
             )
 
@@ -690,7 +733,7 @@ class DisbursementRequest(models.Model):
         for record in self:
             if record.state != "draft":
                 raise UserError(_("Only draft requests can be submitted."))
-            if not record.line_ids:
+            if not record._payable_lines():
                 raise UserError(
                     _(
                         "Cannot submit a disbursement request with no lines. "
@@ -699,6 +742,10 @@ class DisbursementRequest(models.Model):
                 )
             if record.detect_exceptions() and not record.ignore_exception:
                 return record._popup_exceptions()
+            # Not required on the field: sections and notes carry none, and a
+            # draft may wait for its account (e.g. a project budget code).
+            if record._payable_lines().filtered(lambda l: not l.account_id):
+                raise UserError(_("Set an account on every line before submitting."))
             record._assign_number()
             record.state = "submitted"
         return True

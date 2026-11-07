@@ -2,7 +2,7 @@
 
 {
     "name": "Disbursement",
-    "version": "16.0.19.3.0",
+    "version": "16.0.20.0.0",
     "category": "Disbursement",
     "license": "LGPL-3",
     "author": "KMITL",
@@ -31,6 +31,11 @@
         "views/disbursement_return_views.xml",
         "views/exception_rule_views.xml",
     ],
+    "assets": {
+        "web.assets_backend": [
+            "disbursement/static/src/js/section_and_note_field.esm.js",
+        ],
+    },
     "installable": True,
     "application": True,
 }

@@ -55,17 +55,6 @@ class TestCheque(TwoApproverCommon):
         dr.line_ids.payment_method = "transfer"
         self.assertTrue(dr.line_ids.partner_bank_id)
 
-    def test_advance_request_has_no_payment_method(self):
-        """An advance pays no money out: blank method, no account needed."""
-        dr = self._draft()
-        self.assertEqual(dr.line_ids.payment_method, "transfer")
-        dr.payment_type = "advance"
-        self.assertFalse(dr.line_ids.payment_method)
-        self.assertFalse(dr.line_ids.partner_bank_id)
-        self.assertFalse(dr.line_ids._requires_partner_bank())
-        dr.payment_type = "direct"
-        self.assertEqual(dr.line_ids.payment_method, "transfer")
-
     def test_paying_request_requires_a_payment_method(self):
         dr = self._draft()
         with self.assertRaises(ValidationError):

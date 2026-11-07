@@ -267,7 +267,9 @@ class DisbursementRequest(models.Model):
             # expense against the wrong account with no way for the user to
             # correct it. A blank account is refused on submit.
             account = rec._budget_account_default_account()
-            for line in rec.line_ids.filtered(lambda l: l.account_id != account):
+            for line in rec._payable_lines().filtered(
+                lambda l: l.account_id != account
+            ):
                 line.account_id = account
                 if not line.name:
                     line.name = account.name

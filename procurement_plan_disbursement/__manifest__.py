@@ -1,7 +1,7 @@
 {
     "name": "Procurement Plan Disbursement",
     "summary": "Track actual disbursement per procurement-plan installment (งวด)",
-    "version": "16.0.1.4.0",
+    "version": "16.0.1.5.0",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",

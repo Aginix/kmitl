@@ -2,7 +2,7 @@
 
 from datetime import date
 
-from odoo.tests.common import tagged
+from odoo.tests.common import Form, tagged
 
 from .test_two_approver import TwoApproverCommon
 
@@ -50,8 +50,8 @@ class TestPayeeType(TwoApproverCommon):
             dr.exception_ids,
         )
 
-    def test_advance_to_external_payee_blocks_submit(self):
-        dr = self._draft(self.partner, payment_type="advance")
+    def test_prepaid_to_external_payee_blocks_submit(self):
+        dr = self._draft(self.partner, payment_type="prepaid")
         dr.action_submit()
         self.assertEqual(dr.state, "draft")
         self.assertIn(
@@ -71,6 +71,37 @@ class TestPayeeType(TwoApproverCommon):
         )
         dr.action_submit()
         self.assertEqual(dr.state, "submitted")
+
+    def test_non_direct_clears_external_payee_type(self):
+        """Only จ่ายตรง may pay a non-internal payee type."""
+        form = Form(self.DR)
+        form.partner_type_id = self.partner.partner_type_id
+        form.payment_type = "prepaid"
+        self.assertFalse(form.partner_type_id)
+
+    def test_line_payee_type_is_a_snapshot(self):
+        dr = self._draft(self.partner)
+        self.assertEqual(dr.line_ids.partner_type_id, self.partner.partner_type_id)
+        self.partner.partner_type_id = self.student_type
+        self.assertNotEqual(dr.line_ids.partner_type_id, self.student_type)
+
+    def test_sections_and_notes_are_headings_only(self):
+        dr = self._draft(self.partner)
+        dr.line_ids.sequence = 20
+        section, note = self.env["disbursement.request.line"].create([
+            {"request_id": dr.id, "display_type": "line_section",
+             "note": "Travel", "sequence": 10},
+            {"request_id": dr.id, "display_type": "line_note",
+             "note": "Bangkok", "sequence": 15},
+        ])
+        self.assertEqual(dr.amount_total, 100.0)
+        self.assertEqual(
+            dr._report_partner_lines(self.partner).ids,
+            [section.id, note.id] + dr._payable_lines().ids,
+        )
+        dr.action_submit()
+        self.assertEqual(dr.state, "submitted")
+        self.assertFalse(dr.exception_ids)
 
     def test_payee_without_bank_blocks_submit_until_added(self):
         self.partner.bank_ids.unlink()

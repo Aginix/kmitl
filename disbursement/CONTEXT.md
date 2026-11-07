@@ -29,6 +29,24 @@ request belongs to, chosen on the request. A source document paying several
 types becomes one request per type.
 _Avoid_: Partner type single/multi (the retired header switch).
 
+**Payment type** (ประเภทการจ่ายเงิน):
+How the request pays: จ่ายตรง (straight to the payee), สำรองจ่าย (repays staff who
+paid first) or เงินยืม (an **advance clearing request**, whose behaviour comes from the
+loan bridge, ADR 0009). One request has one payment type. Only จ่ายตรง may pay a payee
+type other than บุคลากรภายใน.
+_Avoid_: Payment method (how a payee is paid: transfer or cheque).
+
+**Section / Note** (หัวข้อ / หมายเหตุ):
+A free heading among a request's lines. It has no business meaning: it pays nothing
+and never reaches the bills, the payments or the budget. Printed above the payee's
+lines it heads.
+_Avoid_: Line (a line pays a payee).
+
+**Payee-type snapshot** (ประเภทผู้รับเงินของรายการ):
+The payee's type as it was when the line was filled in. Kept as history: re-typing the
+partner later does not rewrite it. The request's **payee type** still decides which
+payees may be picked.
+
 **Source document** (เอกสารต้นทาง):
 The document a request was raised from — a purchase order, a purchase request
 approval, an approval request — held by the bridge that raised it and printed as
@@ -80,9 +98,9 @@ is the request's own `DR/<yy>/…`).
 
 **Taxable** (มีภาษี):
 Whether the request's lines carry taxes at all — VAT and withholding tax alike.
-A request paid to a company (บริษัท) is always taxable; an advance or a
-prepayment starts out not taxable. A request that is not taxable has no taxes
-on any line.
+A manual switch: a request starts out not taxable, whatever its payee type, unless
+it is raised with taxed lines (from a purchase order, for example). An advance is
+never taxable. A request that is not taxable has no taxes on any line.
 _Avoid_: VAT flag (it covers withholding tax too).
 
 **Stand-alone request** (ใบขอเบิกแบบอิสระ):

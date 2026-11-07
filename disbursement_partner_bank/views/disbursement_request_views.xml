@@ -9,6 +9,8 @@
                 expr="//field[@name='line_ids']/tree/field[@name='partner_bank_id']"
                 position="after"
             >
+                <!-- Only a payee paid by transfer has accounts to manage. -->
+                <field name="requires_partner_bank" invisible="1" />
                 <button
                     name="action_open_partner_bank_wizard"
                     type="object"
@@ -16,7 +18,7 @@
                     string="Bank Accounts"
                     title="Bank Accounts"
                     class="btn-secondary btn-sm"
-                    attrs="{'invisible': [('parent.state', '!=', 'draft')]}"
+                    attrs="{'invisible': ['|', ('parent.state', '!=', 'draft'), ('requires_partner_bank', '=', False)]}"
                 />
             </xpath>
         </field>
