@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_purchase_order_form" model="ir.ui.view">
+        <field name="name">view.purchase.order.form (KMITL Project)</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase_budget.view_purchase_order_form" />
+        <field name="arch" type="xml">
+            <field name="budget_commitment_id" position="before">
+                <field
+                    name="kmitl_project_id"
+                    options="{'no_create': True, 'no_open': True}"
+                    attrs="{'readonly': [('state', 'in', ('purchase', 'done', 'cancel'))]}"
+                />
+                <field name="kmitl_project_analytic_id" invisible="1" />
+            </field>
+            <field name="budget_commitment_id" position="attributes">
+                <attribute
+                    name="attrs"
+                >{'readonly': ['|', ('state', 'in', ('purchase', 'done', 'cancel')), ('kmitl_project_id', '!=', False)]}</attribute>
+            </field>
+        </field>
+    </record>
+</odoo>
