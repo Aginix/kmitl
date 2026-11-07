@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <!-- Drives the report's native search bar. Not a primary view, so the
-         loan menus keep their own search view. -->
+    <!-- Drives the report's native search bar. Priority 100, so the loan
+         menus keep their own (default) search view. -->
     <record id="view_overview_search" model="ir.ui.view">
         <field name="name">advance.payment.overview.search</field>
         <field name="model">advance.payment</field>
@@ -14,13 +14,14 @@
                 <field name="department_analytic_id" />
                 <field name="loan_type_id" />
                 <!-- 1 ต.ค. – 30 ก.ย. around today: shift into the calendar year
-                     by +3 months, take 1 ม.ค., shift back. -->
+                     by +3 months, take 1 ม.ค., shift back. Local midnight in
+                     UTC, since date_submitted is a datetime. -->
                 <filter
                     name="current_fiscal_year"
                     string="ปีงบประมาณปัจจุบัน"
                     domain="[
-                        ('date_submitted', '&gt;=', (context_today() + relativedelta(months=3) + relativedelta(month=1, day=1, months=-3)).strftime('%Y-%m-%d')),
-                        ('date_submitted', '&lt;', (context_today() + relativedelta(months=3) + relativedelta(month=1, day=1, months=9)).strftime('%Y-%m-%d')),
+                        ('date_submitted', '&gt;=', datetime.datetime.combine(context_today() + relativedelta(months=3) + relativedelta(month=1, day=1, months=-3), datetime.time(0, 0, 0)).to_utc().strftime('%Y-%m-%d %H:%M:%S')),
+                        ('date_submitted', '&lt;', datetime.datetime.combine(context_today() + relativedelta(months=3) + relativedelta(month=1, day=1, months=9), datetime.time(0, 0, 0)).to_utc().strftime('%Y-%m-%d %H:%M:%S')),
                     ]"
                 />
                 <filter name="date_submitted" string="วันที่ส่งคำขอ" date="date_submitted" />

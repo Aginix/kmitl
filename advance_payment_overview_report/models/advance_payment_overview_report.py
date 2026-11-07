@@ -7,6 +7,7 @@ REPORT_MODEL = "advance.payment.overview.report"
 CARRIER_MODEL = "advance.payment.overview.report.wizard"
 BANGKOK_TZ = pytz.timezone("Asia/Bangkok")
 NO_VALUE = "—"
+BLANK_KEY = "~"
 
 # Not yet asked for (draft) or never going to be (cancel).
 EXCLUDED_STATES = ("draft", "cancel")
@@ -31,6 +32,9 @@ class AdvancePayment(models.Model):
         self.overview_document_number = False
 
     def _search_overview_document_number(self, operator, value):
+        negative = operator in expression.NEGATIVE_TERM_OPERATORS
+        if negative:
+            operator = expression.TERM_OPERATORS_NEGATION[operator]
         if operator not in ("ilike", "=", "like") or not value:
             return []
         loans = self.sudo().search(
@@ -50,7 +54,7 @@ class AdvancePayment(models.Model):
                 ("employee_id.name", operator, value),
             ]
         )
-        return [("id", "in", loans.ids)]
+        return [("id", "not in" if negative else "in", loans.ids)]
 
 
 class AdvancePaymentOverviewReport(models.AbstractModel):
@@ -193,9 +197,11 @@ class AdvancePaymentOverviewReport(models.AbstractModel):
         field = loan._fields[field_name]
         value = loan.sudo()[field_name]
         if not value:
-            return ("~", NO_VALUE)
+            return (BLANK_KEY, NO_VALUE)
         if field.type == "many2one":
-            return (value.display_name or "", value.display_name or "")
+            # The id keeps same-named records (two namesake borrowers) apart.
+            label = value.display_name or ""
+            return ("%s\x00%d" % (label, value.id), label)
         if field.type == "selection":
             choices = field._description_selection(self.env)
             keys = [key for key, _label in choices]
@@ -207,6 +213,15 @@ class AdvancePaymentOverviewReport(models.AbstractModel):
                 return (str(day), thai.format_date_thai_short(day))
             if interval == "year":
                 return (str(day.year), str(day.year + 543))
+            if interval == "quarter":
+                quarter = (day.month - 1) // 3 + 1
+                return (
+                    "%d-Q%d" % (day.year, quarter),
+                    "ไตรมาส %d %d" % (quarter, day.year + 543),
+                )
+            if interval == "week":
+                year, week, _weekday = day.isocalendar()
+                return ("%d-W%02d" % (year, week), "สัปดาห์ %d %d" % (week, year + 543))
             # month — Odoo's default interval — for anything else
             label = thai.format_date_thai_short(day).split(" ", 1)[1]
             return (day.strftime("%Y-%m"), label)
@@ -265,11 +280,14 @@ class AdvancePaymentOverviewReport(models.AbstractModel):
             else:
                 group["rows"].append(row)
 
+        def blank_last(key):
+            return (key == BLANK_KEY, key)
+
         groups = []
-        for key in sorted(top):
+        for key in sorted(top, key=blank_last):
             group = top[key]
             subs = group.pop("subs")
-            group["subgroups"] = [subs[sub_key] for sub_key in sorted(subs)]
+            group["subgroups"] = [subs[k] for k in sorted(subs, key=blank_last)]
             groups.append(group)
         return {
             "groups": groups,

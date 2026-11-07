@@ -62,11 +62,17 @@ export class AdvancePaymentOverviewReport extends Component {
     }
 
     async load(props) {
+        // Only the latest search may fill the table: a slower earlier reply
+        // must not overwrite it.
+        const loadId = (this.loadId = (this.loadId || 0) + 1);
         this.state.loading = true;
         try {
             const data = await this.orm.call(REPORT_MODEL, "get_report_data", [
                 this.options(props),
             ]);
+            if (loadId !== this.loadId) {
+                return;
+            }
             Object.assign(this.state, {
                 groups: data.groups,
                 totals: data.totals,
