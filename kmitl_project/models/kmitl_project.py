@@ -6,7 +6,7 @@ from markupsafe import Markup, escape
 
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
-from odoo.tools import float_is_zero
+from odoo.tools import float_compare, float_is_zero
 
 _logger = logging.getLogger(__name__)
 
@@ -332,6 +332,27 @@ class KmitlProject(models.Model):
         readonly=True,
         states=EDITABLE_STATES,
     )
+
+    expense_control = fields.Boolean(
+        string="ควบคุมตามรายจ่าย",
+        default=True,
+        tracking=True,
+        readonly=True,
+        states=EDITABLE_STATES,
+        help="ติ๊กเมื่อใบขอเบิกทุกรายการต้องเลือกรายจ่ายของโครงการ "
+        "และเบิกได้ไม่เกินจำนวนเงินของรายจ่ายนั้น (ADR-0013)",
+    )
+    can_edit_expense_control = fields.Boolean(
+        compute="_compute_can_edit_expense_control",
+    )
+
+    @api.depends_context("uid")
+    def _compute_can_edit_expense_control(self):
+        is_manager = self.env.user.has_group(
+            "kmitl_project.group_kmitl_project_manager"
+        )
+        for rec in self:
+            rec.can_edit_expense_control = is_manager
 
     budget_income_total = fields.Float(
         string="รวมรายรับ",
@@ -1027,6 +1048,24 @@ class KmitlProject(models.Model):
                     "เนื่องจากมีรายการงบประมาณที่ยังไม่ได้ระบุจำนวนเงิน (ต้องมากกว่า 0):\n%s"
                 )
                 % "\n".join("- %s" % (line.name or _("(ไม่ระบุรายการ)")) for line in bad)
+            )
+
+    def _check_budget_plan_total(self, cap=None):
+        """Σ expense lines may not exceed the Project Budget (ADR-0013); ``cap``
+        overrides ``budget_amount`` (a Revision Draft checks its live project's)."""
+        self.ensure_one()
+        cap = self.budget_amount if cap is None else cap
+        rounding = self.company_id.currency_id.rounding
+        if (
+            float_compare(self.budget_expense_total, cap, precision_rounding=rounding)
+            > 0
+        ):
+            raise UserError(
+                _("รวมรายจ่าย %(total)s บาท เกินงบประมาณที่ได้รับการจัดสรร %(cap)s บาท")
+                % {
+                    "total": "{:,.2f}".format(self.budget_expense_total),
+                    "cap": "{:,.2f}".format(cap),
+                }
             )
 
     def _compute_is_editable(self):

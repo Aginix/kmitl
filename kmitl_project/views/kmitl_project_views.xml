@@ -209,6 +209,9 @@
                             </div>
                             <group>
                                 <field name="has_income" />
+                                <field name="can_edit_expense_control" invisible="1" />
+                                <!-- The planning Manager may switch it at any time (ADR-0013). -->
+                                <field name="expense_control" attrs="{'readonly': [('can_edit_expense_control', '=', False), ('state', 'not in', ('draft', 'to_verify', 'to_send', 'returned'))]}" />
                             </group>
                             <div attrs="{'invisible': [('has_income', '=', False)]}">
                                 <separator string="รายรับ" />
@@ -399,6 +402,7 @@
                 <field name="unit_price" optional="hide" />
                 <field name="description" placeholder="คำอธิบาย (แตกตัวคูณ)" />
                 <field name="amount" sum="รวม" />
+                <field name="claimed_amount" optional="show" />
             </tree>
         </field>
     </record>

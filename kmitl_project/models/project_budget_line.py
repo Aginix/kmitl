@@ -85,6 +85,21 @@ class ProjectBudgetLine(models.Model):
     # Free to leave blank/zero while drafting; validated when the project reserves
     # its budget (kmitl.project._check_budget_plan_lines).
     amount = fields.Float(string="จำนวนเงิน", digits="Product Price")
+    # Claimed Amount (ADR-0013): what spending documents have claimed on the line.
+    claimed_amount = fields.Float(
+        string="ยอดเบิกแล้ว",
+        digits="Product Price",
+        compute="_compute_claimed_amount",
+    )
+
+    def _compute_claimed_amount(self):
+        claimed = self._origin._get_claimed_amounts()
+        for line in self:
+            line.claimed_amount = claimed.get(line._origin.id, 0.0)
+
+    def _get_claimed_amounts(self):
+        """Hook: ``{line_id: claimed}``, extended by the spending bridges."""
+        return dict.fromkeys(self.ids, 0.0)
 
     @api.onchange("budget_item_id")
     def _onchange_budget_item_id(self):
