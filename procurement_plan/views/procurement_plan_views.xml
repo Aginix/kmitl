@@ -35,12 +35,13 @@
                     <button name="action_send_to_verify" string="ส่งเข้ารอจัดสรรงบประมาณ" type="object" class="btn-primary" states="draft" confirm="ส่งแผนเข้ารอจัดสรรงบประมาณ? ระบบจะออกเลขที่แผน หลังส่งแล้วแก้ไขปีงบประมาณ มิติ และรหัสงบประมาณไม่ได้ (กดกลับเป็นแบบร่างได้จนกว่าแผนจะได้รับงบประมาณ)" />
                     <button name="action_verify" string="ยืนยัน" type="object" class="btn-primary" states="to_verify" />
                     <!-- A plan starts through its first purchase request (ADR-0004).
-                         ADR-0005: closing is manual and returns the unspent reservation;
-                         there is no Cancel — a plan is taken out of use by Delete. -->
+                         ADR-0005: closing is manual and returns the unspent reservation. -->
                     <button name="action_done" string="ปิดแผน" type="object" states="in_progress" groups="procurement_plan.group_procurement_plan_manager" confirm="ปิดแผนนี้? เงินจองที่เหลือจะถูกคืน (คืนจอง) และแผนจะแก้ไขต่อไม่ได้" />
                     <!-- Plan users pull back a plan still waiting for money; any later reset is the plan manager's (ADR-0002). -->
                     <button name="action_reset_to_draft" string="กลับเป็นแบบร่าง" type="object" states="to_verify" groups="procurement_plan.group_procurement_plan_user" confirm="กลับเป็นแบบร่างเพื่อแก้ไขแผน? เลขที่แผนเดิมยังคงอยู่" />
                     <button name="action_reset_to_draft" string="กลับเป็นแบบร่าง" type="object" states="verified,cancel" groups="procurement_plan.group_procurement_plan_manager" confirm="กลับเป็นแบบร่าง? หากแผนจองงบประมาณไว้และยังไม่ได้ใช้ ใบจองจะถูกยกเลิก" />
+                    <!-- ADR-0007: any plan user cancels a numbered plan once it holds no money and no open พ.1 points at it. -->
+                    <button name="action_cancel" string="ยกเลิกแผน" type="object" groups="procurement_plan.group_procurement_plan_user" attrs="{'invisible': ['|', ('state', 'in', ('done', 'cancel')), ('name', 'in', (False, '/'))]}" confirm="ยกเลิกแผนนี้? แผนจะถูกเก็บถาวรพร้อมมิติแผน (ผู้จัดการแผนกู้คืนได้ด้วยเลขเดิม) ต้องโอนคืนงบลอยให้เหลือ 0 บาท และไม่มีใบขอซื้อค้างอยู่ก่อน" />
                 </header>
                 <sheet>
                     <field name="can_edit" invisible="1"/>
@@ -49,7 +50,7 @@
                     <div class="oe_button_box" name="button_box"/>
                     <!-- A banner, not a web_ribbon: the ribbon covers the last smart button. -->
                     <div class="alert alert-danger" role="alert" attrs="{'invisible': [('active', '=', True)]}">
-                        <strong>แผนนี้ถูกลบ (เก็บประวัติ)</strong> — ผู้จัดการแผนกด กลับเป็นแบบร่าง เพื่อกู้คืนได้ด้วยเลขเดิม
+                        <strong>แผนนี้ถูกยกเลิก (เก็บถาวร)</strong> — ผู้จัดการแผนกด กลับเป็นแบบร่าง เพื่อกู้คืนได้ด้วยเลขเดิม
                     </div>
                     <div class="alert alert-info" role="status" name="next_step_draft" attrs="{'invisible': [('state', '!=', 'draft')]}">
                         <strong>แบบร่าง</strong> — กรอกข้อมูลแผนให้ครบ แล้วกด <strong>ส่งเข้ารอจัดสรรงบประมาณ</strong> เพื่อออกเลขที่แผนและส่งให้งานแผนจัดสรรงบประมาณ
@@ -150,15 +151,13 @@
                 <field name="fund_analytic_id" />
                 <field name="activity_analytic_id" />
                 <separator/>
-                <filter name="hide_cancel" string="ซ่อนที่ยกเลิก" domain="[('state', '!=', 'cancel')]" />
-                <separator/>
                 <filter name="state_draft" string="แบบร่าง" domain="[('state', '=', 'draft')]" />
                 <filter name="state_to_verify" string="รอจัดสรรงบประมาณ" domain="[('state', '=', 'to_verify')]" />
                 <filter name="state_verified" string="รอดำเนินการ" domain="[('state', '=', 'verified')]" />
-                <filter name="state_in_progress" string="กำลังดำเนินการ" domain="[('state', '=', 'in_progress')]" />
-                <filter name="state_done" string="เสร็จสิ้น" domain="[('state', '=', 'done')]" />
-                <filter name="state_cancel" string="ยกเลิก" domain="[('state', '=', 'cancel')]" />
-                <filter name="archived" string="ถูกลบ (เก็บประวัติ)" domain="[('active', '=', False)]" />
+                <filter name="state_in_progress" string="อยู่ในระหว่างดำเนินการ" domain="[('state', '=', 'in_progress')]" />
+                <filter name="state_done" string="จัดซื้อจัดจ้างเสร็จสิ้น" domain="[('state', '=', 'done')]" />
+                <!-- A cancelled plan is archived, so this is the only way to list them. -->
+                <filter name="cancelled" string="ยกเลิก (เก็บถาวร)" domain="['|', ('active', '=', False), ('state', '=', 'cancel')]" />
                 <separator/>
                 <filter name="current_fy" string="ปีงบประมาณปัจจุบัน" domain="[('account_fiscal_year_id.date_from', '&lt;=', context_today()), ('account_fiscal_year_id.date_to', '&gt;=', context_today())]" />
                 <separator/>
@@ -177,6 +176,7 @@
                     <filter string="บริษัท" name="group_by_company" context="{'group_by': 'company_id'}" groups="base.group_multi_company" />
                 </group>
                 <searchpanel>
+                    <field name="state" icon="fa-flag" select="multi" enable_counters="1" />
                     <field name="account_fiscal_year_id" icon="fa-calendar" select="multi" enable_counters="1" />
                 </searchpanel>
             </search>
@@ -190,7 +190,7 @@
         <field name="res_model">procurement.plan</field>
         <field name="view_mode">tree,form</field>
         <field name="domain">[]</field>
-        <field name="context">{'search_default_hide_cancel': 1}</field>
+        <field name="context">{'search_default_current_fy': 1}</field>
         <field name="help" type="html">
             <p class="oe_view_nocontent_create">
                 There is no examples click here to add new Procurement Plan.
