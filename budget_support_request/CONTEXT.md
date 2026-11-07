@@ -56,7 +56,7 @@ _Avoid_: allocation (that is ปรับเข้าแผน into a project di
 **Fulfil (จัดสรร)**:
 The act, after approval, of opening the target document from an approved request: central
 chooses the method, and the request opens a **new, pre-filled but unsaved**
-`budget.transfer` form (amount + แหล่งเงิน pre-filled as context defaults; no other dimension) or
+`budget.transfer` form (แหล่งเงิน pre-filled as context defaults; no other dimension and no ขาเข้า line — central adds it) or
 `budget.commitment` form (amount pre-filled; the beneficiary OU is pre-filled by the
 Operating Unit bridge) — never a persisted draft. `budget.move.line.account_id` and
 `budget.commitment.account_id` are hard `required=True` with no default, so the document
@@ -68,7 +68,7 @@ is issued — the request's own approval is the authority; the generated transfe
 moment central confirms it (ยืนยัน), with no second approver and no สร้างหนังสือ, and carries
 the request's เลขที่หนังสือ; the commitment is reserved directly. The request
 links to the generated document and moves to `in_progress` the moment that document is
-posted/reserved (not merely opened); central marks the request `done` by hand.
+posted/reserved (not merely opened); both documents show a banner linking back to the request; central marks the request `done` by hand.
 _Avoid_: execute, allocate, "spawns a draft" (nothing is persisted until central saves)
 
 **Buddy (เจ้าหน้าที่ Buddy ส่วนกลาง)**:
