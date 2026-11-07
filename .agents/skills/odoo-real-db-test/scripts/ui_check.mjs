@@ -4,7 +4,7 @@
 // errors, and saves a screenshot.
 //
 // Usage:
-//   node ui_check.mjs --url http://127.0.0.1:18069 --login L --password P \
+//   node ui_check.mjs --url http://sbx-topic.localhost:18069 --login L --password P \
 //        --action budget_dashboard [--steps steps.mjs] [--shot out.png] \
 //        [--rpc-filter get_dashboard_data]
 //

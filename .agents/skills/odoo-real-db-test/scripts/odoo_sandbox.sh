@@ -13,8 +13,9 @@
 #   install <db> <mod1,mod2> [worktree]   -i modules, --stop-after-init
 #   update  <db> <mod1,mod2> [worktree]   -u modules (cascades to dependents!)
 #   shell   <db> <script.py> [worktree]   pipe a script into `odoo shell`
-#   serve   <db> [port] [worktree]        detached HTTP server, waits until up
-#   stop    [port]                        remove the server container
+#   serve   <db> [port] [worktree]        detached HTTP server, waits until up;
+#                                         port defaults to a free one Docker picks
+#   stop    [db|port]                     remove the server container
 #   drop    <db>                          DROP DATABASE
 # Every command that writes to or runs Odoo on a db refuses names that don't
 # start with the sandbox prefix; only `dbs` and `sql` read other databases.
@@ -62,13 +63,28 @@ db_exists() {
         "select 1 from pg_database where datname = '$1'")" = 1 ]
 }
 
+# Every doodba container start deletes and recreates the ~1900 symlinks in the
+# shared ./odoo/auto/addons bind mount, so two containers starting together
+# crash each other (FileNotFoundError in 40-addons-link). Each sandbox container
+# gets a private, initially empty copy of that directory instead; the entrypoint
+# fills it itself.
+private_addons() {
+    local d="$COMPOSE_DIR/odoo/auto/.sandbox-$1"
+    rm -rf "$d"; mkdir -p "$d" && chmod 777 "$d"
+    echo "$d"
+}
+
 # One-off odoo container running the worktree's code. Extra args go to `odoo`.
 # Tracing is off so sandbox runs don't show up as "kmitl-erp" in shared Grafana.
 odoo_run() {
-    local wt="$1"; shift
+    local wt="$1" rc=0 links; shift
+    links="$(private_addons "run-$$")"
     (cd "$COMPOSE_DIR" && docker compose -f devel.yaml run --rm --no-deps -T \
         -e DKN_OTEL_ENABLE=false \
-        -v "$wt:$MOUNT_POINT:ro" odoo odoo "$@" --addons-path="$ADDONS_PATH")
+        -v "$wt:$MOUNT_POINT:ro" -v "$links:/opt/odoo/auto/addons" \
+        odoo odoo "$@" --addons-path="$ADDONS_PATH") || rc=$?
+    rm -rf "$links"
+    return $rc
 }
 
 require_sandbox_name() {
@@ -79,6 +95,18 @@ require_sandbox_name() {
 }
 
 port_in_use() { (echo >"/dev/tcp/127.0.0.1/$1") 2>/dev/null; }
+
+# One server container per db: the db name is unique across sessions (clone
+# refuses an existing name), a port is not.
+server_name() { echo "odoo_sandbox_$1"; }
+
+# Browsers key cookies by host, never by port, so every sandbox on 127.0.0.1
+# shares one `session_id` cookie and each login logs the others out. A distinct
+# `*.localhost` name per db gives each its own cookie jar (it resolves to
+# loopback with no /etc/hosts entry).
+host_of() { echo "${1//_/-}.localhost"; }
+
+server_port() { docker port "$1" 8069/tcp 2>/dev/null | sed -n 's/.*://p' | head -1; }
 
 cmd="${1:-}"; shift || true
 case "$cmd" in stop|"") ;; *) DB_CONTAINER="$(db_container)" ;; esac
@@ -169,50 +197,81 @@ case "$cmd" in
     serve)
         [ $# -ge 1 ] || die "usage: serve <db> [port] [worktree]"
         require_sandbox_name "$1"
-        port="${2:-18069}"
+        port="${2:-}"
         wt="$(worktree_of "${3:-}")"
-        name="odoo_sandbox_$port"
+        name="$(server_name "$1")"
+        host="$(host_of "$1")"
+        # Idempotent per db, and only ever touches this db's own container, so
+        # a parallel session's server is never removed.
+        if [ "$(docker inspect -f '{{.State.Running}}' "$name" 2>/dev/null)" = true ]; then
+            echo "up: http://$host:$(server_port "$name") (container $name, already running)"
+            exit 0
+        fi
         docker rm -f "$name" >/dev/null 2>&1 || true
-        port_in_use "$port" && die "port $port is already in use (another sandbox or service); pick another"
+        # Without an explicit port Docker picks a free one atomically, so two
+        # sessions can never race for the same number.
+        if [ -n "$port" ]; then
+            port_in_use "$port" && die "port $port is already in use (another sandbox or service); omit the port to get a free one"
+        fi
         # The server joins a non-internal network below, so refuse a db that
         # could still mail real people.
         [ "$(docker exec "$DB_CONTAINER" psql -U "$DB_USER" -d "$1" -tAc \
             "select count(*) from ir_config_parameter
              where key = 'database.is_neutralized' and value ilike 'true'")" = 1 ] ||
             die "'$1' is not neutralized; run: $0 neutralize $1"
+        links="$(private_addons "$name")"
         # No cron threads: modules installed after neutralize may re-enable
         # their own crons.
         (cd "$COMPOSE_DIR" && docker compose -f devel.yaml run -d --name "$name" --no-deps \
             -e DKN_OTEL_ENABLE=false \
-            -p "127.0.0.1:$port:8069" -v "$wt:$MOUNT_POINT:ro" odoo odoo \
+            -p "127.0.0.1:${port}:8069" -v "$wt:$MOUNT_POINT:ro" -v "$links:/opt/odoo/auto/addons" odoo odoo \
             -d "$1" --db-filter="^$1\$" --addons-path="$ADDONS_PATH" \
-            --workers=0 --max-cron-threads=0 --http-port=8069) >/dev/null 2>&1
+            --workers=0 --max-cron-threads=0 --http-port=8069) >/dev/null 2>&1 ||
+            { docker rm -f "$name" >/dev/null 2>&1; rm -rf "$links"; die "could not start $name (port ${port:-auto} taken?)"; }
         # Docker publishes no ports for a container on internal networks only,
         # and doodba's `default` is internal unless DOODBA_NETWORK_INTERNAL=false.
         # Join a bridge of our own: doodba's `public` only exists while a proxy
-        # service is up, and its name depends on the compose project.
+        # service is up, and its name depends on the compose project. A parallel
+        # session may create it between the check and the create, hence the
+        # re-inspect.
         docker network inspect odoo_sandbox_public >/dev/null 2>&1 ||
-            docker network create odoo_sandbox_public >/dev/null
+            docker network create odoo_sandbox_public >/dev/null 2>&1 ||
+            docker network inspect odoo_sandbox_public >/dev/null
         docker network connect odoo_sandbox_public "$name" || {
-            docker rm -f "$name" >/dev/null 2>&1
+            docker rm -f "$name" >/dev/null 2>&1; rm -rf "$links"
             die "could not attach $name to network odoo_sandbox_public"
         }
+        port="$(server_port "$name")"
         for _ in $(seq 1 60); do
             [ "$(docker inspect -f '{{.State.Running}}' "$name" 2>/dev/null)" = true ] || break
             code="$(curl -s -o /dev/null -w '%{http_code}' "http://127.0.0.1:$port/web/login" || true)"
-            [ "$code" = 200 ] && { echo "up: http://127.0.0.1:$port (container $name)"; exit 0; }
+            [ "$code" = 200 ] && { echo "up: http://$host:$port (container $name)"; exit 0; }
             sleep 3
         done
         docker logs --tail 30 "$name" >&2
+        docker rm -f "$name" >/dev/null 2>&1; rm -rf "$links"
         die "server did not come up on port $port"
         ;;
     stop)
-        port="${1:-18069}"
-        docker rm -f "odoo_sandbox_$port" >/dev/null && echo "stopped odoo_sandbox_$port"
+        # Accepts the db name (preferred) or the port the server listens on.
+        target="${1:-}"
+        [ -n "$target" ] || die "usage: stop <db|port>"
+        case "$target" in
+            *[!0-9]*) name="$(server_name "$target")" ;;
+            *) name=""
+               for c in $(docker ps --format '{{.Names}}' | grep '^odoo_sandbox_'); do
+                   [ "$(server_port "$c")" = "$target" ] && name="$c"
+               done
+               [ -n "$name" ] || die "no sandbox server listens on port $target" ;;
+        esac
+        docker rm -f "$name" >/dev/null && echo "stopped $name"
+        rm -rf "$COMPOSE_DIR/odoo/auto/.sandbox-$name"
         ;;
     drop)
         [ $# -eq 1 ] || die "usage: drop <db>"
         require_sandbox_name "$1"
+        docker rm -f "$(server_name "$1")" >/dev/null 2>&1 || true   # its server, if any
+        rm -rf "$COMPOSE_DIR/odoo/auto/.sandbox-$(server_name "$1")"
         psql_admin "DROP DATABASE IF EXISTS \"$1\" WITH (FORCE)" && echo "dropped $1"
         ;;
     *)
