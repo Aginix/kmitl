@@ -23,9 +23,11 @@ class PurchaseOrder(models.Model):
     budget_commitment_id = fields.Many2one(
         "budget.commitment",
         string="Budget Commitment",
-        readonly=True,
+        domain=[("state", "not in", ["draft", "done", "cancel"])],
+        states=READONLY_STATES,
         copy=False,
-        help="Related budget commitment for this purchase request",
+        help="Pick an existing budget commitment to consume; "
+             "budget dimensions will be copied and locked from that commitment.",
     )
 
     budget_account_id = fields.Many2one(
@@ -34,6 +36,12 @@ class PurchaseOrder(models.Model):
         states=READONLY_STATES,
         domain=lambda self: self._domain_budget_account_id(),
         help="Budget account to be used for commitment",
+    )
+
+    budget_account_product_id = fields.Many2one(
+        related="budget_account_id.product_id",
+        string="Budget Product",
+        readonly=True,
     )
 
     activity_analytic_id = fields.Many2one(
@@ -117,6 +125,23 @@ class PurchaseOrder(models.Model):
             "res_id": self.procurement_plan_id.id,
             "target": "current",
         }
+
+    @api.onchange("budget_commitment_id")
+    def _onchange_budget_commitment_id(self):
+        for rec in self:
+            if not rec.budget_commitment_id:
+                continue
+            budget = rec.budget_commitment_id
+            rec.budget_account_id = budget.account_id
+            rec.analytic_distribution = budget.analytic_distribution
+            # Also mirror the individual dimension fields so the form shows
+            # them immediately — the mixin's inverse only populates them on
+            # save, which leaves those four rows blank until the record is
+            # persisted.
+            rec.activity_analytic_id = budget.activity_analytic_id
+            rec.department_analytic_id = budget.department_analytic_id
+            rec.fund_analytic_id = budget.fund_analytic_id
+            rec.source_analytic_id = budget.source_analytic_id
 
     @api.onchange("analytic_distribution")
     def _onchange_analytic_distribution(self):
