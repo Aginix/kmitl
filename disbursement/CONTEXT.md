@@ -71,6 +71,14 @@ clears the loan by the consumed amount (`advance_payment_disbursement`,
 advance_payment ADR-0032).
 _Avoid_: ใบเบิกเงินยืม (sounds like paying the loan out), advance DR.
 
+**Legacy advance clearing request** (ใบเบิกชดใช้เงินยืม (ระบบเก่า)):
+A request of payment type เงินยืม (ระบบเก่า). It clears a loan made outside
+the system before advance payments went live. It names the borrower and the old
+contract number only, its only payee is that borrower, and it pays no money out.
+It is linked to no advance-payment agreement, so nothing checks what the loan
+still owes (`disbursement_advance_legacy`).
+_Avoid_: เงินยืมนอกระบบ as a payment type, legacy loan.
+
 **Memo number** (เลขที่หนังสือ):
 The number of the official memo (หนังสือบันทึกข้อความ) authorising the request.
 Typed in by hand on a direct claim; on any other request it is the number
