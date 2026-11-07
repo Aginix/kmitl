@@ -1,5 +1,7 @@
 # Project Budget Plan line `amount` is entered manually, not computed
 
+> **Superseded in part by [ADR-0013](./0013-expense-lines-cap-disbursement-claims.md):** expense lines now cap ใบขอเบิก claims and Σ expense ≤ Project Budget; the last consequence below no longer holds.
+
 A **Budget Item** (`project.budget.item`) carries a standard `unit` (หน่วยนับ) and
 `unit_price` (ราคาต่อหน่วย). A **Project Budget Plan** line (`project.budget.line`)
 shows those two as **read-only reference** (related from the chosen item) and keeps

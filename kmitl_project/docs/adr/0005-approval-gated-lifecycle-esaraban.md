@@ -1,5 +1,7 @@
 # Approval-gated project lifecycle routed through e-Saraban
 
+> **Amended by [ADR-0014](./0014-project-revision-draft-merged-back.md):** an approved project's content changes through a Project Revision (an archived draft merged back on approval).
+
 > **Amended by [ADR-0011](./0011-project-deletion-replaces-cancel.md):** Cancel is no longer its own action — ลบโครงการ hard-deletes a project with no ledger footprint, or soft-deletes it (`cancel` + archived) once it holds no money.
 
 > **Amended by [ADR-0010](./0010-project-reserves-on-approval.md):** `to_verify → to_send` now only confirms the allocated budget (ยืนยันงบประมาณ); the commitment is reserved when the project is approved (`→ in_progress`).

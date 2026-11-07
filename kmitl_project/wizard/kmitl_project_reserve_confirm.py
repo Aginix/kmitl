@@ -15,5 +15,6 @@ class KmitlProjectReserveConfirm(models.TransientModel):
         if project.state != "to_verify":
             raise UserError(_("ยืนยันงบประมาณได้เฉพาะสถานะรอจัดสรรงบประมาณ"))
         project._check_budget_plan_lines()
+        project._check_budget_plan_total()
         # The commitment is reserved at approval, not here (ADR-0010).
         project.write({"state": "to_send"})

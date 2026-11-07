@@ -55,6 +55,11 @@ class DisbursementRequest(models.Model):
                 else False
             )
 
+    kmitl_project_expense_control = fields.Boolean(
+        related="kmitl_project_id.expense_control",
+        string="ควบคุมตามรายจ่าย",
+    )
+
     # True when this DR draws a project budget code.
     is_project_expense = fields.Boolean(
         related="budget_account_id.is_project",
@@ -73,10 +78,11 @@ class DisbursementRequest(models.Model):
             rec.is_line_account_locked = True
 
     def _project_disbursement_claimed_total(self):
-        """Total amount claimed by this project's non-cancelled disbursements
-        (this DR included) — the disbursement analog of the พ.1 headroom cap that
-        keeps a project's spend within its reserved Project Budget (ADR-0007).
-        sudo: sibling DRs may belong to other requesters."""
+        """Total amount claimed by this project's submitted, non-cancelled
+        disbursements (this DR included; other drafts are not claims, ADR-0013)
+        — the disbursement analog of the พ.1 headroom cap that keeps a project's
+        spend within its reserved Project Budget (ADR-0007). sudo: sibling DRs
+        may belong to other requesters."""
         self.ensure_one()
         project = self.kmitl_project_id
         if not project:
@@ -84,7 +90,7 @@ class DisbursementRequest(models.Model):
         siblings = self.env["disbursement.request"].sudo().search(
             [
                 ("kmitl_project_id", "=", project.id),
-                ("state", "!=", "cancel"),
+                ("state", "not in", ("draft", "cancel")),
             ]
         )
         return sum((siblings | self).mapped("amount_total"))
