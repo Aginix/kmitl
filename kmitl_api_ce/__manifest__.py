@@ -1,0 +1,21 @@
+{
+    "name": "KMITL API CE",
+    "version": "16.0.1.0.4",
+    "category": "Human Resources",
+    "website": "https://github.com/aginix/kmitl-odoo",
+    "author": "Nopparut, Aginix Technologies",
+    "maintainers": ["nopparuts", "n3n"],
+    "license": "AGPL-3",
+    "installable": True,
+    "application": False,
+    "summary": "Provide api infomation of employees.",
+    "depends": [
+        "hr",
+        "auth_api_key",
+        "aginix_hrms_base",
+        "hr_employee_code",
+        "hr_employee_extra_fields",
+        "kmitl_hr_employee_full_name",
+        "hr_employee_role",
+    ],
+}
