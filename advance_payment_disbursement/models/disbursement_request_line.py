@@ -10,7 +10,7 @@ class DisbursementRequestLine(models.Model):
         """A ใบเบิกชดใช้เงินยืม pays the borrower only."""
         for line in self:
             loan = line.request_id.advance_payment_id.sudo()
-            if loan and line.partner_id != loan.partner_id:
+            if loan and not line.display_type and line.partner_id != loan.partner_id:
                 raise ValidationError(
                     _(
                         "The payee of a request clearing loan %(loan)s must be "

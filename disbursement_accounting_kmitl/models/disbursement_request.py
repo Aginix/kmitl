@@ -190,7 +190,7 @@ class DisbursementRequest(models.Model):
         """
         self.ensure_one()
         partner_lines = {}
-        for line in self.line_ids:
+        for line in self._payable_lines():
             partner_lines.setdefault(
                 line.partner_id,
                 self.env["disbursement.request.line"],

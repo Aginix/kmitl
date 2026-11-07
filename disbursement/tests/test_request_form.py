@@ -93,7 +93,7 @@ class TestRequestForm(TwoApproverCommon):
 
 @tagged("post_install", "-at_install")
 class TestTaxable(TwoApproverCommon):
-    """มีภาษี covers VAT and WHT; a company payee type is always taxed."""
+    """มีภาษี covers VAT and WHT; it starts off unless the lines carry taxes."""
 
     @classmethod
     def setUpClass(cls):
@@ -108,23 +108,13 @@ class TestTaxable(TwoApproverCommon):
             }
         )
 
-    def test_advance_defaults_untaxed_unless_company(self):
-        # Onchange behaviour only — never saved.
+    def test_starts_untaxed_whatever_the_type(self):
+        # A manual switch: no payee type ticks it.
         form = Form(self.DR)
-        form.partner_type_id = self.person_type
-        self.assertTrue(form.has_tax)
-        form.payment_type = "advance"
+        form.partner_type_id = self.company_type
         self.assertFalse(form.has_tax)
-        form.partner_type_id = self.company_type
-        self.assertTrue(form.has_tax)
-
-    def test_company_may_be_untaxed(self):
-        # A company still starts out taxed, but the user may untick it.
-        form = Form(self.DR)
-        form.partner_type_id = self.company_type
-        self.assertTrue(form.has_tax)
-        dr = self.DR.create({"partner_type_id": self.company_type.id, "has_tax": False})
-        self.assertFalse(dr.has_tax)
+        form.payment_type = "prepaid"
+        self.assertFalse(form.has_tax)
 
     def test_untaxed_request_clears_line_taxes(self):
         dr = self.DR.create(
@@ -145,6 +135,8 @@ class TestTaxable(TwoApproverCommon):
                 ],
             }
         )
+        # Raised with taxed lines (as a PO bridge does): starts taxable.
+        self.assertTrue(dr.has_tax)
         self.assertTrue(dr.line_ids.tax_ids)
         dr.has_tax = False
         self.assertFalse(dr.line_ids.tax_ids)

@@ -23,6 +23,13 @@ class DisbursementRequestLine(models.Model):
         default=10,
     )
 
+    # Free headings with no business meaning, as on a sale order: they pay
+    # nothing and never reach bills, payments or the budget.
+    display_type = fields.Selection(
+        [("line_section", "Section"), ("line_note", "Note")],
+        default=False,
+    )
+
     # Not required: filled from the account when left blank.
     name = fields.Text(
         string="Description",
@@ -69,7 +76,6 @@ class DisbursementRequestLine(models.Model):
     account_id = fields.Many2one(
         comodel_name="account.account",
         string="Account",
-        required=True,
         domain="[('company_id', '=', company_id), ('deprecated', '=', False)]",
     )
 
@@ -97,6 +103,18 @@ class DisbursementRequestLine(models.Model):
         domain="[('partner_type_id', '=', parent.partner_type_id)]",
     )
 
+    # Snapshot of the payee's type when it was picked, kept as history: a
+    # later re-typing of the partner does not rewrite it.
+    partner_type_id = fields.Many2one(
+        comodel_name="res.partner.type",
+        string="Payee Type",
+        compute="_compute_partner_type_id",
+        store=True,
+        readonly=False,
+        index=True,
+        ondelete="set null",
+    )
+
     partner_bank_id = fields.Many2one(
         comodel_name="res.partner.bank",
         string="Recipient Bank",
@@ -105,6 +123,9 @@ class DisbursementRequestLine(models.Model):
         readonly=False,
         domain="[('partner_id', '=', partner_id)]",
     )
+
+    # For the views: whether this payee is paid into a bank account.
+    requires_partner_bank = fields.Boolean(compute="_compute_requires_partner_bank")
 
     analytic_distribution = fields.Json(
         copy=False,
@@ -185,6 +206,11 @@ class DisbursementRequestLine(models.Model):
     # -------------------------------------------------------------------------
     # Partner compute methods
     # -------------------------------------------------------------------------
+    @api.depends("partner_id")
+    def _compute_partner_type_id(self):
+        for line in self:
+            line.partner_type_id = line.partner_id.partner_type_id
+
     # bank_ids too: a user who adds the missing account on the partner gets it
     # filled in here without re-picking the partner.
     @api.depends(
@@ -202,7 +228,7 @@ class DisbursementRequestLine(models.Model):
             request = line.request_id
             if request.state not in (False, "draft") and not request.can_edit_lines:
                 line.partner_bank_id = line.partner_bank_id
-            elif line.partner_id and request.pays_out:
+            elif line.partner_id and request.pays_out and not line.display_type:
                 banks = line.partner_id.bank_ids.filtered(
                     lambda b: (
                         not b.company_id or b.company_id == line.request_id.company_id
@@ -215,26 +241,35 @@ class DisbursementRequestLine(models.Model):
             else:
                 line.partner_bank_id = False
 
+    @api.depends("request_id.pays_out", "display_type")
+    def _compute_requires_partner_bank(self):
+        for line in self:
+            line.requires_partner_bank = line._requires_partner_bank()
+
     def _requires_partner_bank(self):
         """Whether this payee is paid into a bank account (hook: e.g. a
         cheque payee needs none). A request that pays no money out needs none."""
         self.ensure_one()
-        return self.request_id.pays_out
+        return self.request_id.pays_out and not self.display_type
 
-    @api.constrains("partner_id")
+    @api.constrains("partner_id", "display_type")
     def _check_line_partner_required(self):
         for line in self:
-            if not line.partner_id:
+            if not line.display_type and not line.partner_id:
                 raise ValidationError(_("Partner is required on each line."))
 
     # -------------------------------------------------------------------------
     # WHT methods
     # -------------------------------------------------------------------------
-    @api.depends("partner_id.partner_type_id.wht_tax_id", "request_id.has_tax")
+    @api.depends(
+        "partner_id.partner_type_id.wht_tax_id", "request_id.has_tax", "display_type"
+    )
     def _compute_wht_tax_id(self):
         for line in self:
             line.wht_tax_id = (
-                line.request_id.has_tax and line.partner_id.partner_type_id.wht_tax_id
+                not line.display_type
+                and line.request_id.has_tax
+                and line.partner_id.partner_type_id.wht_tax_id
             )
 
     # -------------------------------------------------------------------------
@@ -246,6 +281,10 @@ class DisbursementRequestLine(models.Model):
     @api.model
     def _reverse_field(self):
         return "disbursement_request_ids"
+
+    def _get_base_domain(self):
+        # Sections and notes are headings: no line rule applies to them.
+        return super()._get_base_domain() + [("display_type", "=", False)]
 
     def _detect_exceptions(self, rule):
         records = super()._detect_exceptions(rule)

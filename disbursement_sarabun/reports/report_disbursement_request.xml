@@ -91,13 +91,19 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <t t-foreach="partner_lines" t-as="line">
-                        <tr>
-                            <td class="text-center" style="width: 8%" t-out="global_row_no"/>
-                            <td style="white-space: pre-wrap"><t t-out="line.name"/><t t-if="line.note"><br/>หมายเหตุ: <t t-out="line.note"/></t></td>
-                            <td class="text-end" t-out="'{0:,.2f} ฿'.format(line.price_subtotal)"/>
+                    <!-- Sections and notes print as full-width headings. -->
+                    <t t-foreach="o._report_partner_lines(partner)" t-as="line">
+                        <tr t-if="line.display_type">
+                            <td colspan="3" t-att-class="'fw-bold' if line.display_type == 'line_section' else 'fst-italic'" style="white-space: pre-wrap" t-out="line.note"/>
                         </tr>
-                        <t t-set="global_row_no" t-value="global_row_no + 1"/>
+                        <t t-else="">
+                            <tr>
+                                <td class="text-center" style="width: 8%" t-out="global_row_no"/>
+                                <td style="white-space: pre-wrap"><t t-out="line.name"/><t t-if="line.note"><br/>หมายเหตุ: <t t-out="line.note"/></t></td>
+                                <td class="text-end" t-out="'{0:,.2f} ฿'.format(line.price_subtotal)"/>
+                            </tr>
+                            <t t-set="global_row_no" t-value="global_row_no + 1"/>
+                        </t>
                     </t>
                     <!-- Totals — appended to the last partner's table; the amount in
                          words follows the final total. -->

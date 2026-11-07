@@ -64,6 +64,23 @@ class DisbursementRequest(models.Model):
         if self.payment_type != "advance":
             self.advance_payment_id = False
 
+    @api.depends("payment_type")
+    def _compute_pays_out(self):
+        """An advance pays the borrower nothing: no payment method, no bank
+        account."""
+        res = super()._compute_pays_out()
+        for rec in self.filtered(lambda r: r.payment_type == "advance"):
+            rec.pays_out = False
+        return res
+
+    @api.depends("payment_type")
+    def _compute_can_have_tax(self):
+        """An advance is never taxable."""
+        res = super()._compute_can_have_tax()
+        for rec in self.filtered(lambda r: r.payment_type == "advance"):
+            rec.can_have_tax = False
+        return res
+
     @api.onchange("advance_payment_id")
     def _onchange_advance_payment_id(self):
         """The borrower is the only payee: type the request after them and
@@ -73,8 +90,9 @@ class DisbursementRequest(models.Model):
             return
         if partner.partner_type_id:
             self.partner_type_id = partner.partner_type_id
-        if self.line_ids:
-            self.line_ids.update({"partner_id": partner.id})
+        lines = self._payable_lines()
+        if lines:
+            lines.update({"partner_id": partner.id})
         else:
             self.line_ids = [Command.create({"partner_id": partner.id})]
 

@@ -104,6 +104,15 @@ class TestClearing(TransactionCase):
         ):
             yield
 
+    def test_advance_pays_nothing_out_and_is_never_taxed(self):
+        request = self._request(self._loan(), 100.0)
+        self.assertFalse(request.pays_out)
+        self.assertFalse(request.line_ids.partner_bank_id)
+        self.assertFalse(request.line_ids._requires_partner_bank())
+        self.assertFalse(request.has_tax)
+        request.has_tax = True
+        self.assertFalse(request.has_tax)
+
     def test_picker_offers_outstanding_loans_of_the_ou_as_sudo(self):
         loan = self._loan()
         closed = self._loan()

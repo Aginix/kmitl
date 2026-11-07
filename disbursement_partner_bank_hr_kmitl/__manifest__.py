@@ -3,7 +3,7 @@
 {
     "name": "Disbursement Payee Bank Accounts — Internal Staff Lock",
     "summary": "Hide the bank-account wizard button and block edits for internal-staff payees",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.1.0",
     "category": "Disbursement",
     "license": "LGPL-3",
     "author": "KMITL",

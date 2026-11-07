@@ -11,7 +11,7 @@
             >
                 <field
                     name="payment_method"
-                    attrs="{'required': [('parent.pays_out', '=', True)], 'column_invisible': [('parent.pays_out', '=', False)]}"
+                    attrs="{'required': [('parent.pays_out', '=', True), ('display_type', '=', False)], 'column_invisible': [('parent.pays_out', '=', False)]}"
                 />
             </xpath>
             <xpath

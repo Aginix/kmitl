@@ -479,6 +479,7 @@ msgstr "ยังไม่ตั้งหนี้"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request_line__note
+#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request_line__display_type__line_note
 msgid "Note"
 msgstr "หมายเหตุ"
 
@@ -597,6 +598,7 @@ msgstr "ลักษณะประเภทผู้รับเงิน"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__partner_type_id
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request_line__partner_type_id
 #: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
 msgid "Payee Type"
 msgstr "ประเภทผู้รับเงิน"
@@ -987,3 +989,35 @@ msgstr "เพื่อโปรดพิจารณา"
 #: code:addons/disbursement/models/disbursement_request_signature.py:0
 msgid "Approved"
 msgstr "อนุมัติ"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request_line__display_type
+msgid "Display Type"
+msgstr "ประเภทการแสดงผล"
+
+#. module: disbursement
+#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request_line__display_type__line_section
+msgid "Section"
+msgstr "หัวข้อ"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+msgid "Add a line"
+msgstr "เพิ่มรายการ"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+msgid "Add a section"
+msgstr "เพิ่มหัวข้อ"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+msgid "Add a note"
+msgstr "เพิ่มหมายเหตุ"
+
+#. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_request.py:0
+#, python-format
+msgid "Set an account on every line before submitting."
+msgstr "กรุณาระบุรหัสบัญชีให้ทุกรายการก่อนยืนยัน"

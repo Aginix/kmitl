@@ -27,7 +27,7 @@
             >
                 <attribute
                     name="attrs"
-                >{'invisible': ['|', ('parent.state', '!=', 'draft'), ('partner_is_internal', '=', True)]}</attribute>
+                >{'invisible': ['|', '|', ('parent.state', '!=', 'draft'), ('requires_partner_bank', '=', False), ('partner_is_internal', '=', True)]}</attribute>
             </xpath>
         </field>
     </record>
