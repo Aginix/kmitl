@@ -106,20 +106,17 @@ overwrite the account the person just picked.
   than the state, or a request would drop out of it the moment it is paid.
 - **Payment Authorization** (`action_authorize`,
   `payment_audited → payment_authorized`): the rector's delegate authorises the money to
-  be paid, and that press is also what **raises the vouchers** — one `account.payment`
-  per payment line (net of WHT), each numbered and confirmed for the bank, so the
-  finance office's first act on the request is the e-payment file rather than turning
-  the request into payments one press per payee. Raising them is not part of the
-  authorisation's transaction: a coordinate that fails leaves the request authorized
-  with the reason in the chatter. See ADR-0006. _Avoid_: reading "authorize" as touching
-  only the request's state.
+  be paid; the press stamps the authorizer and signs the ใบขอเบิก. It does **not**
+  raise the vouchers — the finance office does that with its own press, **Create
+  Payment** (`action_create_payment`), at its own station. See ADR-0006 (superseded in
+  part).
 - **Payment** (`account.payment`, made by `_create_payments`): one payee's voucher
   against one posted bill. It carries the line's paying account and takes its voucher
-  journal from it, and it is **dated the day the request was authorised** — that date is
+  journal from it, and it is **dated the day Create Payment was pressed** — that date is
   its accounting period and what numbers it, and neither may move afterwards. The
   request stays at `payment_authorized` while the payments are in transit.
-  `action_create_payment` is the same work behind a button, kept only for the requests
-  the authorisation could not raise vouchers for.
+  `action_create_payment` raises one per payment line (net of WHT), each numbered and
+  confirmed for the bank.
 - **Bank Result / ผลการจ่าย** (`account.payment.bank_result_status`): the finance
   office's **assertion** that the money reached the payee (`success` / `failed`) — not
   something a bank ever told Odoo. The bank's own result file is never imported (see
@@ -203,16 +200,16 @@ overwrite the account the person just picked.
   paying account can be recorded, and it holds one.
 - **A payment line's banking coordinates are editable exactly while no payment
   contradicts them** — the auditor's during Payment Audit, nobody's once the
-  `account.payment` exists, which since ADR-0006 is from the authorisation onwards. The
+  `account.payment` exists, which is from Create Payment onwards. The
   rule is phrased against the payment rather than against a list of states, so it stays
   true if the workflow ever grows another step.
 - **The voucher's date and the day the money left are two different facts.** The voucher
-  is dated when it was authorised, because that is what numbers it and what period it
-  books in, and a number that has been issued must not change. The day the money
+  is dated when it was raised (Create Payment), because that is what numbers it and
+  what period it books in, and a number that has been issued must not change. The day the money
   actually left is the e-payment file's **effective date**, and that is what the
   withholding-tax certificate is dated from — the law dates the withholding by the day
   the income was paid. They agree except when a file leaves in a later month than the
-  authorisation, and then they are deliberately allowed to differ. See ADR-0006.
+  voucher, and then they are deliberately allowed to differ. See ADR-0006.
 - **One e-payment file debits one account.** The paying account is chosen on the bank
   payment export first, and the payments that can be picked into it are narrowed to the
   ones paid from it — a DR whose payees span four paying accounts produces four files.

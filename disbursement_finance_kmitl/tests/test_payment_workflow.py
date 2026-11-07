@@ -183,9 +183,12 @@ class TestPaymentWorkflow(TransactionCase):
         request.action_authorize()
         self.assertEqual(request.payment_authorizer_id, self.env.user)
         self.assertTrue(request.payment_authorize_date)
-        # The authorization raised the vouchers; the acts do not move the state.
-        self.assertEqual(len(request.payment_ids), 1)
+        # The authorization raises no voucher: the finance office does, with
+        # its own press. The acts do not move the state.
+        self.assertFalse(request.payment_ids)
         self.assertEqual(request.state, "signed")
+        request.action_create_payment()
+        self.assertEqual(len(request.payment_ids), 1)
 
     def test_authorize_leaves_a_signature_that_is_never_archived(self):
         """The authorization contributes a row to the ใบขอเบิก's
@@ -230,6 +233,7 @@ class TestPaymentWorkflow(TransactionCase):
     def test_cancel_blocked_after_authorize_when_billed(self):
         request = self._billed_request()
         request.action_authorize()
+        request.action_create_payment()
         with self.assertRaises(UserError):
             request.action_cancel()
 
@@ -400,6 +404,7 @@ class TestPaymentWorkflow(TransactionCase):
             [self.payee_ktb, self.payee_other], self.subject_auto
         )
         request.action_authorize()
+        request.action_create_payment()
         by_payee = {p.partner_id: p for p in request.payment_ids}
         self.assertEqual(
             by_payee[self.payee_ktb].payment_method_line_id, self.ktb_account
@@ -422,6 +427,7 @@ class TestPaymentWorkflow(TransactionCase):
     def test_banking_coordinates_freeze_once_the_payment_exists(self):
         request = self._billed_request([self.payee_ktb], self.subject_fixed)
         request.action_authorize()
+        request.action_create_payment()
         with self.assertRaises(UserError):
             request.payment_line_ids.paying_account_id = self.ktb_account
 
@@ -443,10 +449,11 @@ class TestPaymentWorkflow(TransactionCase):
                 }
             )
         request.action_authorize()
+        request.action_create_payment()
         return request
 
     def _authorized_without_payments(self):
-        """A request the authorisation could not raise vouchers for.
+        """An authorized request whose vouchers cannot be raised yet.
 
         The payee's account is removed after the audit passed, which is the shape
         every real failure has: a banking coordinate that was right when the
@@ -477,14 +484,11 @@ class TestPaymentWorkflow(TransactionCase):
         self.assertEqual(request.payment_authorizer_id, self.env.user)
         self.assertEqual(request.settlement_stage, "billed")
         self.assertFalse(request.payment_ids)
-        self.assertTrue(
-            any(
-                "Create Payment" in (message.body or "")
-                for message in request.message_ids
-            ),
-            "the reason belongs in the chatter, with the way back in",
-        )
-        # And the way back in works once the coordinate is right again.
+        # Create Payment refuses while the coordinate is wrong...
+        with self.assertRaises(UserError):
+            request.action_create_payment()
+        self.assertFalse(request.payment_ids)
+        # ...and works once it is right again.
         self.env["res.partner.bank"].create(
             {
                 "partner_id": self.payee_ktb.id,
@@ -566,6 +570,7 @@ class TestPaymentWorkflow(TransactionCase):
         request = self._billed_request([self.payee_ktb, self.payee_other])
         request.payment_subject_id = self.subject_fixed
         request.action_authorize()
+        request.action_create_payment()
         payments = request.payment_ids
         self.assertEqual(len(payments), 2)
         self.assertEqual(request.settlement_stage, "billed")
@@ -682,6 +687,7 @@ class TestPaymentWorkflow(TransactionCase):
         request.payment_subject_id = self.subject_fixed
         request.payment_line_ids.paying_account_id = self.cheque_account
         request.action_authorize()
+        request.action_create_payment()
         cheques = self.env["cheque.register"]
         for index, payment in enumerate(request.payment_ids):
             payment.action_create_cheques()
@@ -705,6 +711,7 @@ class TestPaymentWorkflow(TransactionCase):
         request = self._billed_request([self.payee_ktb, self.payee_other])
         request.payment_subject_id = self.subject_fixed
         request.action_authorize()
+        request.action_create_payment()
         first, second = request.payment_ids[0], request.payment_ids[1]
         first._mark_paid()
         self.assertEqual(request.settlement_stage, "billed")
@@ -787,6 +794,7 @@ class TestPaymentWorkflow(TransactionCase):
             }
         )
         request.action_authorize()
+        request.action_create_payment()
         payment = request.payment_ids
         self.assertFalse(payment.needs_bank_export)
 

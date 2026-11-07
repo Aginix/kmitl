@@ -59,8 +59,7 @@ class AccountPayment(models.Model):
         ``sudo`` because the crossing is a **consequence** of what the user did, not
         something they are editing: an e-payment officer holds write on the file they
         just closed and read-only on the request it belongs to, so without it the
-        close raises AccessError and rolls back — taking the file with it. The same
-        reason ``_try_create_payments`` is sudo'd.
+        close raises AccessError and rolls back — taking the file with it.
         """
         return requests.sudo()._try_hand_over_when_all_paid()
 

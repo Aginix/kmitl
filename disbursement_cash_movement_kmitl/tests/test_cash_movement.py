@@ -148,6 +148,7 @@ class TestCashMovement(TransactionCase):
             {"paying_account_id": paying_line.id, "paying_account_match": "manual"}
         )
         line.request_id.action_authorize()
+        line.request_id.action_create_payment()
         return line.request_id.payment_ids
 
     # ------------------------------------------------------------------

@@ -3,6 +3,13 @@
 > **Superseded in part (station model).** The authorization is an act
 > (`disbursement.authorize_payment`) of its station, not the transition
 > `payment_audited → payment_authorized`. It still stamps, signs and raises the vouchers.
+>
+> **Superseded in part (manual Create Payment).** Decisions 1 and 2 no longer hold:
+> the authorization only stamps and signs. The vouchers are raised by the finance
+> office's own press, *Create Payment* (`action_create_payment`), so a voucher's
+> `date` (point 4) is the day it was raised, not the day of authorization. The
+> authorization no longer schedules the finance office's To-pay Todo
+> (`mail_activity_dr_to_pay`): the request arriving at their station tells them.
 
 - Status: accepted
 - Date: 2026-08-14

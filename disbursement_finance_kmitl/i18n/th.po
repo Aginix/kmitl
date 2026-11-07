@@ -96,8 +96,8 @@ msgstr "อนุมัติที่เลือก"
 #. module: disbursement_finance_kmitl
 #: model_terms:ir.ui.view,arch_db:disbursement_finance_kmitl.view_disbursement_request_form_inherit_finance
 #: model_terms:ir.ui.view,arch_db:disbursement_finance_kmitl.view_disbursement_request_queue_tree
-msgid "Authorize this disbursement? The payment vouchers will be raised and numbered for every payee at once, ready to go to the bank."
-msgstr "ยืนยันอนุมัติให้เบิกจ่ายเงินตามใบขอเบิกนี้? ระบบจะออกใบสำคัญจ่ายพร้อมเลขที่ให้ทุกผู้รับเงินทันที และพร้อมส่งธนาคาร"
+msgid "Authorize this disbursement?"
+msgstr "ยืนยันอนุมัติให้เบิกจ่ายเงินตามใบขอเบิกนี้?"
 
 #. module: disbursement_finance_kmitl
 #: model_terms:ir.ui.view,arch_db:disbursement_finance_kmitl.view_disbursement_request_search_inherit_finance
@@ -193,7 +193,10 @@ msgid "Could not process:"
 msgstr "ไม่สามารถดำเนินการรายการต่อไปนี้:"
 
 #. module: disbursement_finance_kmitl
+#. odoo-python
+#: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
 #: model_terms:ir.ui.view,arch_db:disbursement_finance_kmitl.view_disbursement_request_form_inherit_finance
+#, python-format
 msgid "Create Payment"
 msgstr "สร้างใบจ่ายเงิน"
 
@@ -524,13 +527,6 @@ msgstr "บัญชีของผู้รับเงินที่เงิ
 #, python-format
 msgid "The payment of %(payee)s can no longer be changed: %(reason)s"
 msgstr "รายการจ่ายเงินของ %(payee)s แก้ไขไม่ได้แล้ว: %(reason)s"
-
-#. module: disbursement_finance_kmitl
-#. odoo-python
-#: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
-#, python-format
-msgid "The payment vouchers could not be raised: %s Correct it, then use Create Payment."
-msgstr "ออกใบสำคัญจ่ายไม่สำเร็จ: %s กรุณาแก้ไขแล้วกดปุ่มสร้างใบจ่ายเงิน"
 
 #. module: disbursement_finance_kmitl
 #: model:ir.model.fields,help:disbursement_finance_kmitl.field_disbursement_payment_line__paying_account_match

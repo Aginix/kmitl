@@ -203,20 +203,20 @@
                     string="Authorize Disbursements"
                     type="object"
                     class="oe_highlight"
-                    confirm="Authorize this disbursement? The payment vouchers will be raised and numbered for every payee at once, ready to go to the bank."
+                    confirm="Authorize this disbursement?"
                     attrs="{'invisible': [('can_authorize_payment', '=', False)]}"
                     groups="disbursement_finance_kmitl.group_disbursement_payment_authorizer"
                 />
-                <!-- The authorisation raises the vouchers, so this is only ever
-                     reached when it could not: a banking coordinate that was
-                     wrong at the time, a request authorized before this was
-                     built, or a batch that was cancelled and is wanted again. -->
+                <!-- The finance office raises the vouchers with its own act
+                     (disbursement.create_payment), separate from the
+                     authorisation, at whichever station lists it. Hidden once
+                     the request has any voucher. -->
                 <button
                     name="action_create_payment"
                     string="Create Payment"
                     type="object"
                     class="oe_highlight"
-                    attrs="{'invisible': ['|', ('payment_authorizer_id', '=', False), ('payment_count', '>', 0)]}"
+                    attrs="{'invisible': [('can_create_payment', '=', False)]}"
                     groups="disbursement_finance_kmitl.group_disbursement_payment_finance"
                 />
                 <!-- A request crosses the Hand-over on its own, when the last of
@@ -239,6 +239,7 @@
                     groups="base.group_no_one"
                 />
                 <field name="can_authorize_payment" invisible="1" />
+                <field name="can_create_payment" invisible="1" />
                 <field name="can_edit_payment_subject" invisible="1" />
             </xpath>
 
