@@ -17,7 +17,7 @@ class ProcurementPlan(models.Model):
     # its label only (no new value, no ondelete needed).
     state = fields.Selection(
         selection_add=[
-            ("to_verify", "รอจัดสรรงบประมาณ (ปรับเข้าแผน) และจองงบประมาณ"),
+            ("to_verify", "รอจัดสรรงบประมาณ"),
         ],
     )
 
@@ -459,28 +459,39 @@ class ProcurementPlan(models.Model):
             held = self._held_outside_target(*target)
         else:
             held = self._plan_ledger_sum(("appropriation", "entry"))
-        if not float_is_zero(held, precision_digits=2):
-            reason = _("มีงบประมาณค้างในมิติแผน %s บาท") % "{:,.2f}".format(held)
-            if not target:
-                # Only the plan's own coordinate can be returned from.
-                stray = self._held_outside_target(
-                    self.budget_account_id.id, self.analytic_distribution
-                )
-                if not float_is_zero(stray, precision_digits=2):
-                    reason += _(
-                        " (ในจำนวนนี้ %s บาท อยู่ที่รหัสงบประมาณ/มิติเดิมของแผน "
-                        "กรุณาแก้รหัสงบประมาณ/มิติกลับให้ตรงกับที่เงินอยู่ก่อนโอนคืนงบลอย)"
-                    ) % "{:,.2f}".format(stray)
-            reasons.append(reason)
         reserved = sum(
             self.sudo()
             .budget_commitment_ids.filtered(lambda c: c.state != "cancel")
             .mapped("available_to_obligate")
         )
-        if reserved > 0 and not float_is_zero(reserved, precision_digits=2):
-            reasons.append(
-                _("มีเงินจองงบประมาณที่ยังไม่ได้ใช้ %s บาท") % "{:,.2f}".format(reserved)
+        has_held = not float_is_zero(held, precision_digits=2)
+        has_reserved = reserved > 0 and not float_is_zero(reserved, precision_digits=2)
+        if target:
+            if has_held:
+                reasons.append(
+                    _("มีงบประมาณค้างในมิติแผน %s บาท") % "{:,.2f}".format(held)
+                )
+            if has_reserved:
+                reasons.append(
+                    _("มีเงินจองงบประมาณที่ยังไม่ได้ใช้ %s บาท")
+                    % "{:,.2f}".format(reserved)
+                )
+        elif has_held or has_reserved:
+            # One line from the plan's own คงเหลือ; the reservation is part of it.
+            stray = self._held_outside_target(
+                self.budget_account_id.id, self.analytic_distribution
             )
+            has_stray = not float_is_zero(stray, precision_digits=2)
+            remaining = self.budget_remaining
+            if has_stray or float_is_zero(remaining, precision_digits=2):
+                remaining = held if has_held else reserved
+            reason = _("มีงบประมาณคงเหลือ %s บาท") % "{:,.2f}".format(remaining)
+            if has_stray:
+                reason += _(
+                    " (ในจำนวนนี้ %s บาท อยู่ที่รหัสงบประมาณ/มิติเดิมของแผน "
+                    "กรุณาแก้รหัสงบประมาณ/มิติกลับให้ตรงกับที่เงินอยู่ก่อนโอนคืนงบลอย)"
+                ) % "{:,.2f}".format(stray)
+            reasons.append(reason)
         if self._has_pending_plan_transfer():
             reasons.append(_("มีใบโอนงบประมาณของแผนที่ยังดำเนินการไม่เสร็จ"))
         return reasons

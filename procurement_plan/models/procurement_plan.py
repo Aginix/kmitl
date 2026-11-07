@@ -57,19 +57,16 @@ class ProcurementPlan(models.Model):
         string="ชื่อรายการ",
         required=True,
         tracking=True,
-        states=READONLY_STATES,
         help="Fill the details include unit",
     )
     amount = fields.Integer(
         required=True,
         tracking=True,
-        states=READONLY_STATES,
     )
     unit = fields.Char(
         "Unit of Measure",
         required=True,
         tracking=True,
-        states=READONLY_STATES,
     )
     total_price = fields.Float(
         "วงเงินรวม",
@@ -133,7 +130,7 @@ class ProcurementPlan(models.Model):
         states=READONLY_STATES,
     )
     responsible_id = fields.Many2one(
-        string="เจ้าหน้าที่ผู้รับผิดชอบ",
+        string="เจ้าหน้าที่งานพัสดุ (จัดซื้อจัดจ้าง)",
         comodel_name="res.users",
         domain=[("share", "=", False)],
         index=True,
@@ -155,19 +152,14 @@ class ProcurementPlan(models.Model):
         readonly=True,
     )
 
-    can_edit_description = fields.Boolean(
-        store=False, compute="_compute_can_edit_description"
-    )
+    # The plan's details (ชื่อรายการ, จำนวน, หน่วย, วงเงินรวม, โน้ต, งวดงาน) stay
+    # editable until the plan is closed or deleted; its dimensions lock on submit.
+    can_edit_details = fields.Boolean(compute="_compute_can_edit_details")
 
     @api.depends("state")
-    def _compute_can_edit_description(self):
+    def _compute_can_edit_details(self):
         for record in self:
-            record.can_edit_description = record.state in (
-                "draft",
-                "to_verify",
-                "verified",
-                "in_progress",
-            )
+            record.can_edit_details = record.state not in ("done", "cancel")
 
     analytic_account_id = fields.Many2one(
         "account.analytic.account",
@@ -209,8 +201,16 @@ class ProcurementPlan(models.Model):
         part of the budget history is soft-deleted (``action_cancel``) instead,
         so it stays archived and can be revived."""
         for plan in self:
-            plan._check_deletable()
+            plan._check_deletable(_("ลบ"))
         soft = self.filtered(lambda p: p._must_soft_delete())
+        # Deleting a numbered plan for good: its creator/preparer or a manager.
+        for plan in self - soft:
+            if (
+                plan.name
+                and plan.name != "/"
+                and self.env.user not in (plan.create_uid | plan.user_id)
+            ):
+                plan._check_plan_manager(_("ลบแผนที่มีเลขที่แล้ว (%s)") % plan.name)
         soft.action_cancel()
         hard = self - soft
         analytics = hard.analytic_account_id
@@ -236,29 +236,33 @@ class ProcurementPlan(models.Model):
             return
         raise UserError(_("%s ได้เฉพาะผู้จัดการแผนจัดซื้อจัดจ้างเท่านั้น") % action)
 
-    def _check_deletable(self):
-        """Every guard of ลบแผน (ADR-0005): deleting never moves money and never
-        strands a document that still points at the plan."""
+    def _check_deletable(self, action):
+        """Every guard of ลบ/ยกเลิกแผน (ADR-0005): it never moves money and
+        never strands a document that still points at the plan. ``action`` is
+        the act's label for the messages."""
         self.ensure_one()
-        if self.name and self.name != "/":
-            self._check_plan_manager(_("ลบแผนที่มีเลขที่แล้ว (%s)") % self.name)
+        values = {"action": action, "plan": self.name}
         if self.state == "done":
-            raise UserError(_("ไม่สามารถลบแผนที่ปิดแล้ว (%s)") % self.name)
+            raise UserError(_("ไม่สามารถ%(action)sแผนที่ปิดแล้ว (%(plan)s)") % values)
         if self._has_spent():
             raise UserError(
-                _("แผน %s มีการใช้จ่ายงบประมาณแล้ว ลบไม่ได้ กรุณาปิดแผนแทน") % self.name
+                _("แผน %(plan)s มีการใช้จ่ายงบประมาณแล้ว %(action)sไม่ได้ กรุณาปิดแผนแทน")
+                % values
             )
         reasons = self._get_held_money_reasons()
         if reasons:
             raise UserError(
-                _("ไม่สามารถลบแผน %s ได้ เนื่องจาก:\n%s\nกรุณาโอนคืนงบลอยให้เหลือ 0 บาทก่อน")
-                % (self.name, "\n".join("- %s" % reason for reason in reasons))
+                _(
+                    "ไม่สามารถ%(action)sแผน %(plan)s ได้ เนื่องจาก:\n%(reasons)s\n"
+                    "กรุณาโอนคืนงบลอยให้เหลือ 0 บาทก่อน"
+                )
+                % dict(values, reasons="\n".join("- %s" % r for r in reasons))
             )
         open_documents = self._get_open_downstream_documents()
         if open_documents:
             raise UserError(
-                _("ไม่สามารถลบแผน %s ได้ เนื่องจากยังมีเอกสารที่อ้างถึงแผนนี้:\n%s")
-                % (self.name, "\n".join("- %s" % doc for doc in open_documents))
+                _("ไม่สามารถ%(action)sแผน %(plan)s ได้ เนื่องจากยังมีเอกสารที่อ้างถึงแผนนี้:\n%(docs)s")
+                % dict(values, docs="\n".join("- %s" % d for d in open_documents))
             )
 
     def _has_spent(self):
@@ -278,6 +282,15 @@ class ProcurementPlan(models.Model):
         bridges that own them. Blocks ปิดแผน and ลบแผน."""
         self.ensure_one()
         return []
+
+    @api.model
+    def search_panel_select_multi_range(self, field_name, **kwargs):
+        """List the statuses in the search panel in lifecycle order, not by key."""
+        res = super().search_panel_select_multi_range(field_name, **kwargs)
+        if field_name == "state":
+            order = [key for key, _label in self._fields["state"].selection]
+            res.get("values", []).sort(key=lambda value: order.index(value["id"]))
+        return res
 
     def _track_subtype(self, init_values):
         self.ensure_one()
@@ -303,6 +316,22 @@ class ProcurementPlan(models.Model):
         return res
 
     def write(self, vals):
+        if "account_fiscal_year_id" in vals:
+            renumber = self.filtered(
+                lambda p: p.name
+                and p.name != "/"
+                and p.account_fiscal_year_id.id != vals["account_fiscal_year_id"]
+            )
+            for plan in renumber:
+                # The number carries the fiscal year: a plan with history keeps
+                # both; one without is renumbered on its next submit.
+                if plan._must_soft_delete():
+                    raise UserError(
+                        _("แผน %s มีประวัติในบัญชีงบประมาณแล้ว เปลี่ยนปีงบประมาณไม่ได้")
+                        % plan.name
+                    )
+            if renumber:
+                super(ProcurementPlan, renumber).write({"name": "/"})
         res = super().write(vals)
         # Keep the plan's analytic account label in step with its description —
         # the description is minted onto the analytic at ส่งเข้ารอจัดสรรงบประมาณ
@@ -357,7 +386,11 @@ class ProcurementPlan(models.Model):
                 )
         self.write({"state": "to_verify"})
         for record in self:
-            if not record.analytic_account_id:
+            if record.analytic_account_id:
+                # Renumbered after a fiscal-year change (see ``write``).
+                if record.analytic_account_id.code != record.name:
+                    record.analytic_account_id.sudo().code = record.name
+            else:
                 analytic_account = record._create_analytic_account_from_values(
                     {
                         "name": record.description,
@@ -403,9 +436,14 @@ class ProcurementPlan(models.Model):
         return
 
     def action_reset_to_draft(self):
-        self._check_plan_manager(_("กลับเป็นแบบร่าง"))
+        """Plan users may pull back a submitted plan that holds no money yet;
+        any other reset is a plan-manager act (ADR-0002)."""
         if self.filtered(lambda p: p.state not in ("to_verify", "verified", "cancel")):
             raise UserError(_("กลับเป็นแบบร่างได้เฉพาะแผนที่รอจัดสรร/รอดำเนินการ หรือแผนที่ถูกลบ"))
+        if self.filtered(
+            lambda p: p.state != "to_verify" or p._get_held_money_reasons()
+        ):
+            self._check_plan_manager(_("กลับเป็นแบบร่างแผนที่ได้รับงบประมาณ/จองงบแล้ว หรือแผนที่ถูกลบ"))
         self._on_reset()
         # A soft-deleted plan comes back with its analytic account (ADR-0005).
         self.write({"state": "draft", "active": True})
@@ -418,12 +456,12 @@ class ProcurementPlan(models.Model):
         return
 
     def action_cancel(self):
-        """Soft delete (ADR-0005): → ``cancel`` and archive the plan and its
-        analytic account, for a plan whose analytic is part of the budget
-        history. No button of its own — reached through ลบแผน (``unlink``),
-        only once ``_check_deletable`` passes; Reset to Draft revives both."""
+        """ยกเลิกแผน, the soft delete (ADR-0005/0007): → ``cancel`` and archive
+        the plan and its analytic account. Any plan user of the unit, once the
+        plan holds no money and no open document points at it; also reached
+        through ลบแผน for a plan with history. Reset to Draft revives both."""
         for plan in self:
-            plan._check_deletable()
+            plan._check_deletable(_("ยกเลิก"))
         self._on_cancel()
         self.write({"state": "cancel", "active": False})
         self.analytic_account_id.sudo().filtered("active").write({"active": False})
@@ -431,6 +469,14 @@ class ProcurementPlan(models.Model):
     def _on_cancel(self):
         """No-op hook. Budget layer releases an untouched reservation here."""
         return
+
+    def action_archive(self):
+        """Archiving a plan is its soft delete (ADR-0005)."""
+        self.filtered("active").action_cancel()
+
+    def action_unarchive(self):
+        """Restoring a soft-deleted plan is Reset to Draft (ADR-0005)."""
+        self.filtered(lambda p: not p.active).action_reset_to_draft()
 
     can_edit = fields.Boolean(compute="_compute_can_edit")
 
