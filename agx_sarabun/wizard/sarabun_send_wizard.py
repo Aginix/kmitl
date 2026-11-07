@@ -20,7 +20,7 @@ class SarabunSendWizard(models.TransientModel):
     originator_sign_mode = fields.Selection(
         [
             ("sign", "ลงนาม — ผู้จัดทำ (เจ้าของเรื่อง) ลงนามในหนังสือ"),
-            ("no_sign", "ไม่ลงนาม — ผู้จัดทำร่างเท่านั้น (หัวหน้าลงนามส่งออก)"),
+            ("no_sign", "ไม่ลงนาม — จัดทำร่างเท่านั้น"),
         ],
         string="การลงนามของผู้จัดทำ",
         required=True,

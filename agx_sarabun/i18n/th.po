@@ -3240,7 +3240,7 @@ msgstr ""
 
 #. module: agx_sarabun
 #: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_send_wizard__originator_sign_mode__no_sign
-msgid "ไม่ลงนาม — ผู้จัดทำร่างเท่านั้น (หัวหน้าลงนามส่งออก)"
+msgid "ไม่ลงนาม — จัดทำร่างเท่านั้น"
 msgstr ""
 
 #. module: agx_sarabun
