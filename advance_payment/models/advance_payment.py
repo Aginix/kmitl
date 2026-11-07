@@ -725,10 +725,15 @@ class AdvancePayment(models.Model):
 
         A m2m read does not apply active_test, so archived members have to be
         filtered out by hand.
+
+        The group may not exist yet: the column default runs on a fresh
+        install, before security.xml is loaded.
         """
-        return self.env.ref(
-            "advance_payment.group_advance_payment_loan_officer"
-        ).users.filtered("active")
+        group = self.env.ref(
+            "advance_payment.group_advance_payment_loan_officer",
+            raise_if_not_found=False,
+        )
+        return group.users.filtered("active") if group else self.env["res.users"]
 
     @api.model
     def _loan_officer_candidates(self):
