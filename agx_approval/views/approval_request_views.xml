@@ -163,10 +163,12 @@
                          ใบจองงบประมาณ their request ended up with. -->
                     <group name="budget_commitment_info_group" string="รหัสงบประมาณ"
                         attrs="{'invisible': [('budget_commitment_id', '=', False)]}">
-                        <field name="budget_commitment_state" invisible="1" />
-                        <field name="budget_commitment_id" colspan="2" nolabel="1"
-                            widget="budget_commitment_info" readonly="1"
-                            options="{'no_create': True, 'no_open': True}" />
+                        <group name="budget_commitment_info_card">
+                            <field name="budget_commitment_state" invisible="1" />
+                            <field name="budget_commitment_id" colspan="2" nolabel="1"
+                                widget="budget_commitment_info" readonly="1"
+                                options="{'no_create': True, 'no_open': True}" />
+                        </group>
                     </group>
                     <!-- Budget selection UI: reserved to ผู้ตรวจสอบคำขอ and ผู้ยืนยัน
                          งบประมาณ (ADR-0008). Everyone else never sees this group nor
@@ -185,12 +187,16 @@
                             attrs="{'invisible': [('is_budget_editable', '=', False)]}" />
 
                         <field name="reservation_commitment_domain" invisible="1" />
-                        <field name="reservation_commitment_id" colspan="2"
-                            widget="budget_commitment_info"
-                            domain="reservation_commitment_domain"
-                            options="{'no_create': True, 'no_open': True}"
-                            attrs="{'invisible': ['|', '&amp;', ('budget_selection_mode', '=', 'normal'), ('reservation_commitment_id', '=', False), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', 'not in', ('cancel', 'draft'))], 'readonly': [('is_budget_editable', '=', False)]}"
-                            placeholder="เลือกใบจองงบประมาณที่จะหยิบไปใช้" />
+                        <group colspan="2" name="reservation_commitment_picker">
+                            <group>
+                                <field name="reservation_commitment_id" colspan="2"
+                                    widget="budget_commitment_info"
+                                    domain="reservation_commitment_domain"
+                                    options="{'no_create': True, 'no_open': True}"
+                                    attrs="{'invisible': ['|', '&amp;', ('budget_selection_mode', '=', 'normal'), ('reservation_commitment_id', '=', False), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', 'not in', ('cancel', 'draft'))], 'readonly': [('is_budget_editable', '=', False)]}"
+                                    placeholder="เลือกใบจองงบประมาณที่จะหยิบไปใช้" />
+                            </group>
+                        </group>
 
                         <!-- Picked directly on the form (no chart picker, ADR-0008):
                              ผู้ตรวจสอบคำขอ at to_verify, ผู้ยืนยันงบประมาณ at to_commit.

@@ -1,15 +1,97 @@
-// Show every value in full: long analytic and budget-code names wrap instead of
-// ending in an ellipsis (a reader confirming the slip must see all of it).
 .o_budget_commitment_info {
-    .o_budget_commitment_info_title,
-    .o_budget_commitment_info_value,
-    .o_budget_commitment_info_path,
-    .o_budget_commitment_info_lines td {
+    border: 1px solid $border-color;
+    border-radius: 6px;
+    background: $white;
+
+    .o_bci_header {
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+        padding: 8px 12px;
+        border-bottom: 1px solid $gray-200;
+    }
+    .o_bci_title {
+        color: $gray-700;
+    }
+    .o_bci_state {
+        font-size: 0.85em;
+        color: $gray-700;
+        border: 1px solid $gray-300;
+        border-radius: 10px;
+        padding: 0 8px;
+        white-space: nowrap;
+    }
+    .o_bci_open {
+        color: $gray-600;
+        &:hover {
+            color: $o-brand-primary;
+        }
+    }
+
+    .o_bci_rows {
+        padding: 4px 0;
+    }
+    .o_bci_row,
+    .o_bci_amount {
+        display: grid;
+        grid-template-columns: 9rem 1fr;
+        gap: 12px;
+        padding: 4px 12px;
+    }
+    .o_bci_row + .o_bci_row {
+        border-top: 1px solid $gray-100;
+    }
+    .o_bci_label {
+        color: $gray-600;
+        font-size: 0.9em;
+    }
+    .o_bci_title,
+    .o_bci_value {
         white-space: normal;
         overflow-wrap: anywhere;
     }
-    .o_budget_commitment_info_lines td {
-        vertical-align: top;
-        border-bottom-width: 0;
+    .o_bci_code {
+        color: $gray-600;
+        margin-right: 4px;
+        font-variant-numeric: tabular-nums;
+    }
+    .o_bci_empty {
+        color: $gray-400;
+    }
+
+    .o_bci_lines {
+        width: 100%;
+        border: 1px solid $gray-200;
+        font-size: 0.95em;
+        th {
+            font-weight: normal;
+            color: $gray-600;
+            background: $gray-100;
+        }
+        th,
+        td {
+            padding: 3px 8px;
+            vertical-align: top;
+            border-bottom: 1px solid $gray-200;
+        }
+        tr:last-child td {
+            border-bottom: 0;
+        }
+    }
+
+    .o_bci_amounts {
+        padding: 6px 0;
+        border-top: 1px solid $gray-200;
+        background: $gray-100;
+        border-radius: 0 0 6px 6px;
+    }
+    .o_bci_amount {
+        align-items: baseline;
+    }
+    .o_bci_money {
+        text-align: right;
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
     }
 }

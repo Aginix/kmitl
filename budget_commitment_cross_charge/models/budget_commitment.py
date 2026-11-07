@@ -433,22 +433,23 @@ class BudgetCommitment(models.Model):
         return self._create_reserve_lines_from_split()
 
     def get_reservation_info(self):
-        """The info card lists a ถัวจ่าย reservation's codes as a table."""
+        """The info card lists a ถัวจ่าย reservation's codes under its
+        รหัสงบประมาณ row."""
         infos = super().get_reservation_info()
         # sudo: the card shows on documents (คำขออนุมัติ, DR…) whose users can
         # read the reservation but hold no access to its split rows.
         for record, info in zip(self.sudo(), infos):
-            if len(record.split_ids) > 1:
-                info["lines_label"] = _("รายการจองงบประมาณ (ถัวจ่าย)")
-                info["lines"] = [
-                    {
-                        "primary": split.is_primary,
-                        "code": split.account_id.code or "",
-                        "name": split.account_id.name,
-                        "amount": formatLang(
-                            self.env, split.amount, currency_obj=record.currency_id
-                        ),
-                    }
-                    for split in record.split_ids
-                ]
+            if len(record.split_ids) <= 1:
+                continue
+            for row in info["rows"]:
+                if row.get("field") == "account_id":
+                    row["lines"] = [
+                        {
+                            "value": split.account_id.display_name,
+                            "amount": formatLang(
+                                self.env, split.amount, currency_obj=record.currency_id
+                            ),
+                        }
+                        for split in record.split_ids
+                    ]
         return infos

@@ -600,12 +600,11 @@ class BudgetCommitment(models.Model):
     # engine matches all dimensions or pins a missing one to False, so "this
     # reservation has no กองทุน" is information the reader needs, not noise.
     _RESERVATION_INFO_FIELDS = (
-        "account_id",
-        "department_analytic_id",
         "source_analytic_id",
-        "activity_analytic_id",
+        "department_analytic_id",
         "fund_analytic_id",
-        "account_fiscal_year_id",
+        "activity_analytic_id",
+        "account_id",
     )
     # โครงการ/แผนจัดซื้อจัดจ้าง are source markers rather than part of every
     # reservation — a standalone slip carries neither — so they are listed only
@@ -618,12 +617,15 @@ class BudgetCommitment(models.Model):
     def _reservation_info_rows(self):
         """Dimension/identity rows shown by the widget (label, value) pairs."""
         self.ensure_one()
+        labels = {"activity_analytic_id": _("ด้าน/แผนงาน/กิจกรรม")}
         rows = []
         for fname in self._RESERVATION_INFO_FIELDS:
             value = self[fname]
             rows.append(
                 {
-                    "label": self._fields[fname]._description_string(self.env),
+                    "field": fname,
+                    "label": labels.get(fname)
+                    or self._fields[fname]._description_string(self.env),
                     "value": value.display_name if value else "-",
                 }
             )
@@ -632,6 +634,7 @@ class BudgetCommitment(models.Model):
             if value:
                 rows.append(
                     {
+                        "field": fname,
                         "label": self._fields[fname]._description_string(self.env),
                         "value": value.display_name,
                     }
@@ -639,14 +642,8 @@ class BudgetCommitment(models.Model):
         return rows
 
     def _reservation_info_amounts(self):
-        """Money rows shown by the widget: just the reservation's own amount.
-
-        Kept as a list so a bridge can still add a figure, but the widget shows
-        one by default. The obligated/leftover breakdown belongs on the
-        reservation itself — on a consuming document it read as a ledger the
-        reader had to interpret, where all they are answering is "is this the
-        right slip, and for how much".
-        """
+        """Money rows shown by the widget: the reservation's amount and what is
+        still left to obligate from it."""
         self.ensure_one()
         return [
             {
@@ -654,7 +651,15 @@ class BudgetCommitment(models.Model):
                 "value": formatLang(
                     self.env, self.amount, currency_obj=self.currency_id
                 ),
-            }
+            },
+            {
+                "label": _("คงเหลือ"),
+                "value": formatLang(
+                    self.env,
+                    self.available_to_obligate,
+                    currency_obj=self.currency_id,
+                ),
+            },
         ]
 
     # --- Workflow Methods ---
