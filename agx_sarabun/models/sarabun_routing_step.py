@@ -544,6 +544,76 @@ class SarabunRoutingStep(models.Model):
             step.document_id._purge_archived_steps()
         return True
 
+    # ------------------------------------------------------------- take back
+    def _can_take_back(self, user):
+        """ดึงกลับ (take back): the actor of a completed step may reopen it while the
+        หนังสือ circulates and no later ลำดับ has acted (ADR-0024)."""
+        self.ensure_one()
+        doc = self.document_id
+        return (
+            doc.state == "circulating"
+            and self.state == "done"
+            and self.disposition == "complete"
+            and not self.is_originator
+            and self.acted_by_id == user
+            and not doc.routing_step_ids.filtered(
+                lambda s: s.order > self.order and s.state == "done"
+            )
+        )
+
+    def action_take_back(self, reason=None):
+        """Reopen my completed step to fix it and act again; the following ลำดับ
+        goes back to waiting. Not the sender's ดึงกลับแบบร่าง (which restarts the
+        whole Route)."""
+        self.ensure_one()
+        if not self._can_take_back(self.env.user):
+            raise UserError(
+                _("This step can no longer be taken back — the next ลำดับ has acted.")
+            )
+        step = self.sudo()
+        doc = step.document_id
+        reached = doc.reached_user_ids
+        later = doc.routing_step_ids.filtered(
+            lambda s: s.order > step.order and s.state == "active"
+        )
+        later._clear_activities()
+        later.recipient_ids.unlink()
+        later.write({"state": "waiting", "activated_date": False, "actor_user_ids": [(5,)]})
+        # parallel gating steps retired when this ลำดับ passed come back
+        doc.routing_step_ids.filtered(
+            lambda s: s.order == step.order and s.state == "skipped"
+        ).write({"state": "waiting"})
+        files = step.sign_attachment_ids
+        step.write(
+            {
+                "state": "waiting",
+                "disposition": False,
+                "acted_by_id": False,
+                "acted_date": False,
+                "sent_date": False,
+                "signed_as_position_id": False,
+                "note": False,
+                "sign_comment": False,
+                "sign_attachment_ids": [(5,)],
+                "signed_name": False,
+                "signed_position_name": False,
+                "signed_signature": False,
+            }
+        )
+        files.unlink()
+        doc._advance_stage()  # re-activates this ลำดับ (fresh to-dos), stops here
+        gone = reached - doc.reached_user_ids - doc.sender_user_id
+        if gone:
+            doc.message_unsubscribe(partner_ids=gone.partner_id.ids)
+        body = _("ดึงกลับขั้นตอน %(verb)s โดย %(user)s") % {
+            "verb": step.verb.name,
+            "user": self.env.user.display_name,
+        }
+        if reason:
+            body += _(" — เหตุผล: %s") % reason
+        doc.message_post(body=body, subtype_xmlid="mail.mt_note")
+        return True
+
     # --------------------------------------------------------- disposition core
     def _stamp(self, actor, note, disposition, signed_as_position=False):
         now = fields.Datetime.now()

@@ -302,6 +302,12 @@ class SarabunDocument(models.Model):
         compute="_compute_my_active_step",
         help="Label of the act button: the verb's emoji + name.",
     )
+    my_take_back_step_id = fields.Many2one(
+        comodel_name="sarabun.routing.step",
+        compute="_compute_my_active_step",
+        help="My last completed step I may still ดึงกลับ (take back) — the next "
+        "ลำดับ has not acted yet (ADR-0024).",
+    )
     my_step_can_return = fields.Boolean(
         compute="_compute_my_active_step",
         help="My active step is gating, so ตีกลับ is offered.",
@@ -723,6 +729,12 @@ class SarabunDocument(models.Model):
             verb = record.my_active_step_id.verb
             record.my_step_button_label = verb._button_label() if verb else False
             record.my_step_can_return = record.my_active_step_id.gating
+            mine = record.routing_step_ids.filtered(
+                lambda s: s.state == "done" and s.acted_by_id == uid
+            ).sorted("order", reverse=True)
+            record.my_take_back_step_id = mine.filtered(
+                lambda s: s._can_take_back(uid)
+            )[:1]
             # "reaching" step drives the persistent incoming box + its columns. It is
             # keyed on my sarabun.step.recipient rows (the permanent per-person ledger,
             # never removed) — not the mutable actor_user_ids snapshot — so it survives
@@ -1100,6 +1112,11 @@ class SarabunDocument(models.Model):
         self._call_origin("_on_sarabun_cancelled", self)
         return True
 
+    def action_open_take_back_wizard(self):
+        """🔙 ดึงกลับ — reopen my last completed step (ADR-0024)."""
+        self.ensure_one()
+        return self.with_context(sarabun_recall_mode="take_back").action_open_recall_wizard()
+
     def action_open_recall_wizard(self):
         """Open the ดึงกลับ / ยกเลิกการส่ง wizard (collects the mandatory reason)."""
         self.ensure_one()
@@ -1107,7 +1124,11 @@ class SarabunDocument(models.Model):
         mode = self.env.context.get("sarabun_recall_mode") or "pull_back"
         return {
             "type": "ir.actions.act_window",
-            "name": _("⏪ ดึงกลับ") if mode == "pull_back" else _("🚫 ยกเลิกการส่ง"),
+            "name": {
+                "pull_back": _("⏪ ดึงกลับแบบร่าง"),
+                "cancel_send": _("🚫 ยกเลิกการส่ง"),
+                "take_back": _("🔙 ดึงกลับ"),
+            }[mode],
             "res_model": "sarabun.recall.wizard",
             "view_mode": "form",
             "target": "new",

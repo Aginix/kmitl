@@ -60,10 +60,18 @@
                         context="{'sarabun_disposition': 'return'}"
                         attrs="{'invisible': [('my_step_can_return', '=', False)]}"
                     />
+                    <!-- 🔙 ดึงกลับ: a route actor reopens their own last step (ADR-0024);
+                         ⏪ ดึงกลับแบบร่าง: the sender restarts the whole Route. -->
+                    <button
+                        name="action_open_take_back_wizard"
+                        type="object"
+                        string="🔙 ดึงกลับ"
+                        attrs="{'invisible': [('my_take_back_step_id', '=', False)]}"
+                    />
                     <button
                         name="action_open_recall_wizard"
                         type="object"
-                        string="⏪ ดึงกลับ"
+                        string="⏪ ดึงกลับแบบร่าง"
                         context="{'sarabun_recall_mode': 'pull_back'}"
                         attrs="{'invisible': [('can_withdraw', '=', False)]}"
                     />
@@ -301,6 +309,7 @@
                     <field name="can_withdraw" invisible="1" />
                     <field name="my_active_step_id" invisible="1" />
                     <field name="my_step_can_return" invisible="1" />
+                    <field name="my_take_back_step_id" invisible="1" />
                     <field name="can_edit_content" invisible="1" />
                     <field name="is_content_editable" invisible="1" />
                     <!-- busts the inline PDF cache after an in-flight content edit -->
