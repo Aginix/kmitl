@@ -5,7 +5,7 @@ SarabunRoutingTimeline OWL widget (agx_sarabun_preview).
 The payload contract must stay stable — a shape break silently blanks both the
 form and wizard surfaces. These tests pin the shape end-to-end: grouping by
 Stage, holder resolution (pre- vs post-activation), state/disposition mapping,
-note truncation, and archived-attempt grouping."""
+and note truncation (no attempt history — ADR-0023)."""
 import json
 
 from odoo.tests.common import tagged
@@ -26,8 +26,6 @@ class TestRoutingPreviewPayload(SarabunCommon):
         """A draft with no seeded steps yields a well-formed empty payload."""
         doc = self._make_doc(sender=self.user_a)
         data = self._payload(doc)
-        self.assertEqual(data["attempt_seq"], 1)
-        self.assertFalse(data["has_history"])
         self.assertEqual(data["stages"], [])
 
     def test_draft_route_all_waiting(self):
@@ -117,33 +115,3 @@ class TestRoutingPreviewPayload(SarabunCommon):
         self.assertTrue(card["note_short"].endswith("…"))
         self.assertEqual(len(card["note_short"]), doc._PREVIEW_NOTE_MAX + 1)
 
-    # -- attempt history ----------------------------------------------------
-
-    def test_no_history_after_return(self):
-        """After ตีกลับ no attempt history is kept (ADR-0023): attempt_seq stays 1,
-        has_history=False, no archived payload."""
-        doc = self._make_doc(sender=self.user_a)
-        self._add_step(doc, order=10, verb="sign_approve", target_mode="person", user=self.user_a)
-        self._add_step(doc, order=20, verb="sign_approve", target_mode="person", user=self.user_b)
-        doc.with_user(self.user_a).action_send()
-        first = self._active_step(doc)
-        self._act(first, "complete", self.user_a)
-        second = self._active_step(doc)
-        self.assertTrue(second)
-        self._act(second, "return", self.user_b, note="ขอแก้")
-        data = self._payload(doc)
-        self.assertEqual(data["attempt_seq"], 1)
-        self.assertFalse(data["has_history"])
-        self.assertFalse(doc._build_archived_attempts_payload())
-
-    # -- action RPC ---------------------------------------------------------
-
-    def test_action_open_routing_history_shape(self):
-        """action_open_routing_history returns client-action tag + params.attempts."""
-        doc = self._make_doc(sender=self.user_a)
-        self._add_step(doc, order=10, verb="sign_approve", target_mode="person", user=self.user_a)
-        action = doc.action_open_routing_history()
-        self.assertEqual(action["type"], "ir.actions.client")
-        self.assertEqual(action["tag"], "sarabun_routing_timeline_archive")
-        self.assertIn("attempts", action["params"])
-        self.assertEqual(action["params"]["doc_id"], doc.id)

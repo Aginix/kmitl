@@ -351,7 +351,8 @@ class SarabunDocumentMixin(models.AbstractModel):
 
         Args:
             step: the ``sarabun.routing.step`` acted on (never the old recipient)
-            disposition: 'complete' / 'direct' / 'delegate' / 'return' / 'reject'
+            disposition: 'complete' / 'direct' / 'delegate' / 'return' / 'reject' /
+                'take_back' (the actor reopened their completed step — ADR-0024)
         """
         pass
 

@@ -22,6 +22,18 @@ logged in the chatter.
 
 The sender's move is renamed **⏪ ดึงกลับแบบร่าง** so the two are not confused.
 
+**Gating vs non-gating.** Reopening a **gating** step reopens its ลำดับ, which is
+what sends the next ลำดับ back to waiting. A **non-gating** step (รับทราบ / CC) never
+held the ลำดับ back, so taking it back reopens only that step and leaves the following
+ลำดับ untouched. A gating step whose ลำดับ was also passed by another gating actor
+cannot be taken back, because reopening it would not reopen anything. The origin is
+told through `_on_sarabun_step(step, "take_back")`.
+
+**Followers.** Only followers the engine added itself when it raised a step's to-dos
+are unfollowed (`auto_follower_partner_ids`); a follower added to share the หนังสือ
+stays. The 16.0.7.4.0 migration has no such record for old rounds, so it unfollows
+the old round's unreached holders outright and logs each document and user.
+
 **Limits.** Only steps completed with **complete** can be taken back (เกษียนสั่งการ is
 excluded, since it inserts a step). The ผู้จัดทำ row is excluded too, because the
 sender already has ดึงกลับแบบร่าง.

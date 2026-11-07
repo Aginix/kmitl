@@ -19,8 +19,8 @@ class TestP7SignCommentEdit(SarabunCommon):
 
     # ------------------------------------------------------------ sign comment
     def test_sign_comment_and_files_stamped_on_step(self):
-        """The wizard stores the Html comment + files on the step; the files are
-        re-owned by the หนังสือ."""
+        """The wizard stores the Html comment + files on the step, which owns the
+        files: readable with the หนังสือ, locked against write/unlink."""
         self._verb("endorse").allow_sign_comment = True
         doc = self._make_doc(sender=self.user_a)
         step = self._add_step(doc, order=10, verb="endorse", user=self.user_b)
@@ -42,7 +42,11 @@ class TestP7SignCommentEdit(SarabunCommon):
         self.assertEqual(step.state, "done")
         self.assertIn("อนุมัติ", step.sign_comment)
         self.assertEqual(step.sign_attachment_ids, att)
-        self.assertEqual((att.res_model, att.res_id), ("sarabun.document", doc.id))
+        self.assertEqual((att.res_model, att.res_id), ("sarabun.routing.step", step.id))
+        # readers of the หนังสือ download it; nobody but the engine may delete it
+        self.assertTrue(att.with_user(self.user_a).datas)
+        with self.assertRaises(AccessError):
+            att.with_user(self.user_a).unlink()
         self.assertEqual(doc.sign_attachment_ids, att)
 
     def test_return_drops_old_round_sign_files(self):

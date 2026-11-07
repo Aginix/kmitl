@@ -166,6 +166,17 @@ class SarabunRoutingStep(models.Model):
         copy=False,
     )
 
+    # Followers the engine itself added by raising this step's to-dos — the only
+    # ones it may remove again (a follower added to share the หนังสือ stays).
+    auto_follower_partner_ids = fields.Many2many(
+        "res.partner",
+        relation="sarabun_routing_step_auto_follower_rel",
+        column1="step_id",
+        column2="partner_id",
+        readonly=True,
+        copy=False,
+    )
+
     # === Signature snapshot (frozen at signing — ADR-0009) ===
     # ชื่อ / ตำแหน่ง / ลายเซ็น captured the instant this step is signed, so later edits
     # to the HR name, the sarabun.position name, or the employee's signature image
@@ -454,6 +465,7 @@ class SarabunRoutingStep(models.Model):
             if not act_type:
                 continue
             doc = step.document_id
+            followers = doc.message_partner_ids
             for usr in step.actor_user_ids:
                 act = doc.activity_schedule(
                     activity_type_id=act_type.id,
@@ -467,6 +479,9 @@ class SarabunRoutingStep(models.Model):
                     Link.create(
                         {"step_id": step.id, "activity_id": act.id, "user_id": usr.id}
                     )
+            added = doc.message_partner_ids - followers
+            if added:
+                step.sudo().auto_follower_partner_ids = [(4, p.id) for p in added]
 
     def _clear_activities(self):
         """Clear every awaiting-action activity tied to these steps (all holders) —
@@ -501,7 +516,12 @@ class SarabunRoutingStep(models.Model):
         vals = vals or {}
         actor = actor or self.env.user
         if self.state != "active":
-            raise UserError(_("This step is not active."))
+            raise UserError(
+                _(
+                    "This step is no longer awaiting action (it may have been taken "
+                    "back) — please reopen the document."
+                )
+            )
         if self.document_id.state != "circulating":
             raise UserError(_("The document is not circulating."))
         self._check_act_authority(actor)
@@ -559,6 +579,18 @@ class SarabunRoutingStep(models.Model):
             and not doc.routing_step_ids.filtered(
                 lambda s: s.order > self.order and s.state == "done"
             )
+            # a gating step another gating actor also passed can't reopen its ลำดับ
+            and not (self.gating and self._other_gating_done())
+        )
+
+    def _other_gating_done(self):
+        self.ensure_one()
+        return self.document_id.routing_step_ids.filtered(
+            lambda s: s != self
+            and s.order == self.order
+            and s.gating
+            and s.state == "done"
+            and s.disposition in POSITIVE_DISPOSITIONS
         )
 
     def action_take_back(self, reason=None):
@@ -573,16 +605,22 @@ class SarabunRoutingStep(models.Model):
         step = self.sudo()
         doc = step.document_id
         reached = doc.reached_user_ids
-        later = doc.routing_step_ids.filtered(
-            lambda s: s.order > step.order and s.state == "active"
-        )
-        later._clear_activities()
-        later.recipient_ids.unlink()
-        later.write({"state": "waiting", "activated_date": False, "actor_user_ids": [(5,)]})
-        # parallel gating steps retired when this ลำดับ passed come back
-        doc.routing_step_ids.filtered(
-            lambda s: s.order == step.order and s.state == "skipped"
-        ).write({"state": "waiting"})
+        reset = step
+        if step.gating:
+            # reopening a gating step reopens its ลำดับ: the next one goes back to
+            # waiting, and the parallel gating steps retired when it passed return
+            later = doc.routing_step_ids.filtered(
+                lambda s: s.order > step.order and s.state == "active"
+            )
+            later._clear_activities()
+            later.recipient_ids.unlink()
+            later.write(
+                {"state": "waiting", "activated_date": False, "actor_user_ids": [(5,)]}
+            )
+            doc.routing_step_ids.filtered(
+                lambda s: s.order == step.order and s.state == "skipped"
+            ).write({"state": "waiting"})
+            reset |= later
         files = step.sign_attachment_ids
         step.write(
             {
@@ -601,10 +639,12 @@ class SarabunRoutingStep(models.Model):
             }
         )
         files.unlink()
-        doc._advance_stage()  # re-activates this ลำดับ (fresh to-dos), stops here
-        gone = reached - doc.reached_user_ids - doc.sender_user_id
-        if gone:
-            doc.message_unsubscribe(partner_ids=gone.partner_id.ids)
+        if step.gating:
+            doc._advance_stage()  # re-activates this ลำดับ (fresh to-dos), stops here
+        else:
+            step._activate()  # a non-gating step never held the ลำดับ back
+        doc._unfollow_unreached(reset, reached)
+        (reset - step).auto_follower_partner_ids = [(5,)]  # re-recorded on activation
         body = _("ดึงกลับขั้นตอน %(verb)s โดย %(user)s") % {
             "verb": step.verb.name,
             "user": self.env.user.display_name,
@@ -612,6 +652,7 @@ class SarabunRoutingStep(models.Model):
         if reason:
             body += _(" — เหตุผล: %s") % reason
         doc.message_post(body=body, subtype_xmlid="mail.mt_note")
+        doc._call_origin("_on_sarabun_step", self, "take_back")
         return True
 
     # --------------------------------------------------------- disposition core
@@ -645,9 +686,8 @@ class SarabunRoutingStep(models.Model):
         self._clear_activities()
 
     def _write_sign_comment(self, vals, actor):
-        """Store the ความเห็นในการลงนาม + its files; the files are re-owned by the
-        หนังสือ so every reader of it can download them. Only the actor's own
-        unowned uploads are taken — never another record's file."""
+        """Store the ความเห็นในการลงนาม + its files. Only the actor's own unowned
+        uploads are taken — never another record's file."""
         self.ensure_one()
         if not self.verb.allow_sign_comment:
             return
@@ -657,9 +697,9 @@ class SarabunRoutingStep(models.Model):
             .browse(vals.get("sign_attachment_ids") or [])
             .filtered(lambda a: a.create_uid == actor and not a.res_id)
         )
-        attachments.sudo().write(
-            {"res_model": "sarabun.document", "res_id": self.document_id.id}
-        )
+        # owned by the step: readable by whoever reads the หนังสือ, kept out of its
+        # chatter attachment box, and write/unlink-locked (ir.attachment.check)
+        attachments.sudo().write({"res_model": self._name, "res_id": self.id})
         self.write(
             {
                 "sign_comment": vals.get("sign_comment") or False,

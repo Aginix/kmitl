@@ -114,7 +114,6 @@ class SarabunRoutingStep(models.Model):
                 vals.update(
                     state="waiting",
                     created_by_disposition="direct",
-                    attempt_seq=doc.attempt_seq or 1,
                 )
                 edit_docs |= doc
         steps = super().create(vals_list)

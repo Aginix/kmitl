@@ -299,17 +299,17 @@ class SarabunDocument(models.Model):
         "after the user has acted.",
     )
     my_step_button_label = fields.Char(
-        compute="_compute_my_active_step",
+        compute="_compute_my_step_actions",
         help="Label of the act button: the verb's emoji + name.",
     )
     my_take_back_step_id = fields.Many2one(
         comodel_name="sarabun.routing.step",
-        compute="_compute_my_active_step",
+        compute="_compute_my_step_actions",
         help="My last completed step I may still ดึงกลับ (take back) — the next "
         "ลำดับ has not acted yet (ADR-0024).",
     )
     my_step_can_return = fields.Boolean(
-        compute="_compute_my_active_step",
+        compute="_compute_my_step_actions",
         help="My active step is gating, so ตีกลับ is offered.",
     )
     content_editor_user_ids = fields.Many2many(
@@ -726,15 +726,6 @@ class SarabunDocument(models.Model):
             record.my_active_step_id = record.routing_step_ids.filtered(
                 lambda s: s.state == "active" and uid in s.actor_user_ids
             )[:1]
-            verb = record.my_active_step_id.verb
-            record.my_step_button_label = verb._button_label() if verb else False
-            record.my_step_can_return = record.my_active_step_id.gating
-            mine = record.routing_step_ids.filtered(
-                lambda s: s.state == "done" and s.acted_by_id == uid
-            ).sorted("order", reverse=True)
-            record.my_take_back_step_id = mine.filtered(
-                lambda s: s._can_take_back(uid)
-            )[:1]
             # "reaching" step drives the persistent incoming box + its columns. It is
             # keyed on my sarabun.step.recipient rows (the permanent per-person ledger,
             # never removed) — not the mutable actor_user_ids snapshot — so it survives
@@ -748,6 +739,32 @@ class SarabunDocument(models.Model):
                 active or my_recips.sorted(key=lambda r: (r.step_id.order, r.id))[-1:]
             )
             record.my_reaching_step_id = reaching.step_id
+
+    @api.depends(
+        "state",
+        "routing_step_ids.state",
+        "routing_step_ids.actor_user_ids",
+        "routing_step_ids.acted_by_id",
+    )
+    @api.depends_context("uid")
+    def _compute_my_step_actions(self):
+        """Form-only header buttons — kept out of _compute_my_active_step, which
+        the incoming-box list also triggers."""
+        uid = self.env.user
+        for record in self:
+            active = record.routing_step_ids.filtered(
+                lambda s: s.state == "active" and uid in s.actor_user_ids
+            )[:1]
+            record.my_step_button_label = (
+                active.verb._button_label() if active.verb else False
+            )
+            record.my_step_can_return = active.gating
+            mine = record.routing_step_ids.filtered(
+                lambda s: s.state == "done" and s.acted_by_id == uid
+            ).sorted("order", reverse=True)
+            record.my_take_back_step_id = mine.filtered(
+                lambda s: s._can_take_back(uid)
+            )[:1]
 
     @api.depends(
         "state",
@@ -1012,7 +1029,6 @@ class SarabunDocument(models.Model):
                     "is_originator": True,
                     "target_mode": "person",
                     "employee_id": self.sender_user_id.employee_id.id,
-                    "attempt_seq": self.attempt_seq or 1,
                     "created_by_disposition": "seed",
                     "state": "waiting",
                 },
@@ -1128,7 +1144,7 @@ class SarabunDocument(models.Model):
                 "pull_back": _("⏪ ดึงกลับแบบร่าง"),
                 "cancel_send": _("🚫 ยกเลิกการส่ง"),
                 "take_back": _("🔙 ดึงกลับ"),
-            }[mode],
+            }.get(mode, _("ดึงกลับ / ยกเลิกการส่ง")),
             "res_model": "sarabun.recall.wizard",
             "view_mode": "form",
             "target": "new",
@@ -1182,10 +1198,7 @@ class SarabunDocument(models.Model):
         if not template:
             return
         self.route_template_id = template
-        self.routing_step_ids = [
-            (0, 0, dict(line._seed_vals(), attempt_seq=self.attempt_seq or 1))
-            for line in template.line_ids
-        ]
+        self.routing_step_ids = [(0, 0, line._seed_vals()) for line in template.line_ids]
 
     def action_seed_route_from_template(self):
         """Button (draft/returned): (re)load the Route from ``route_template_id``.
@@ -1270,10 +1283,9 @@ class SarabunDocument(models.Model):
     def _do_return(self, step, destination="sender_restart", resume_step_id=None):
         """ตีกลับ — send back for revision; destination chosen by the returner.
 
-        Archive-not-overwrite (ADR-0006): the current attempt is ALWAYS frozen as
-        history (``active=False``, ``attempt_seq`` bumped) — never reset in place.
-        The new attempt recreates either the whole live เส้นทาง verbatim (restart) or
-        just the chosen resume step onward (resume), leaving the prior chain intact."""
+        The current round is set aside and deleted once the flow ends — no attempt
+        history (ADR-0023). The new round recreates either the whole live เส้นทาง
+        verbatim (restart) or just the chosen resume step onward (resume)."""
         self.ensure_one()
         self.routing_step_ids._clear_activities()  # drop to-dos before archive
         if destination == "resume_step" and resume_step_id:
@@ -1285,10 +1297,7 @@ class SarabunDocument(models.Model):
             ).sorted("order")
             seeds = [s._resume_seed_vals() for s in tail]
             self._bump_attempt_and_archive()
-            new_seq = self.attempt_seq or 1
-            self.routing_step_ids = [
-                (0, 0, dict(v, attempt_seq=new_seq)) for v in seeds
-            ]
+            self.routing_step_ids = [(0, 0, v) for v in seeds]
             self._ensure_originator_step()  # resume tail starts above row 1 — re-add it
         else:
             # Restart on the SAME เส้นทาง — never re-seed from the template, which
@@ -1325,6 +1334,9 @@ class SarabunDocument(models.Model):
         sudoed ตีกลับ) died on "the ผู้จัดทำ/ผู้ส่ง step is fixed"."""
         self.ensure_one()
         self.routing_step_ids.sudo().write({"active": False})
+        # Safety net: whichever flow archives, the old round is gone by commit even
+        # if a caller forgets the explicit purge (flows purge earlier themselves).
+        self.env.cr.precommit.add(self.sudo()._purge_archived_steps)
 
     def _purge_archived_steps(self):
         """Delete the set-aside steps of the previous round with their recipients,
@@ -1337,12 +1349,27 @@ class SarabunDocument(models.Model):
             if not old:
                 continue
             before = doc.sudo().reached_user_ids
+            followers = old.auto_follower_partner_ids
             files = old.sign_attachment_ids
-            old.unlink()
-            files.sudo().unlink()
-            gone = before - doc.sudo().reached_user_ids - doc.sender_user_id
-            if gone:
-                doc.sudo().message_unsubscribe(partner_ids=gone.partner_id.ids)
+            old.unlink()  # Odoo also drops the attachments the steps own
+            files.exists().sudo().unlink()
+            doc._unfollow_unreached(followers, before)
+
+    def _unfollow_unreached(self, steps_or_partners, reached_before):
+        """Unfollow the engine-added followers (``auto_follower_partner_ids``) of
+        removed / reset steps whom the หนังสือ no longer reaches. A follower added on
+        purpose (sharing) or the sender stays."""
+        self.ensure_one()
+        doc = self.sudo()
+        partners = (
+            steps_or_partners.auto_follower_partner_ids
+            if steps_or_partners._name == "sarabun.routing.step"
+            else steps_or_partners
+        )
+        gone_users = reached_before - doc.reached_user_ids - doc.sender_user_id
+        drop = partners & gone_users.partner_id
+        if drop:
+            doc.message_unsubscribe(partner_ids=drop.ids)
 
     def _restart_chain(self):
         """Archive the current chain and re-seed a fresh waiting one for a restart
@@ -1355,10 +1382,7 @@ class SarabunDocument(models.Model):
         self._bump_attempt_and_archive()
         self._seed_route_from_template()
         if not self.routing_step_ids:
-            new_seq = self.attempt_seq or 1
-            self.routing_step_ids = [
-                (0, 0, dict(v, attempt_seq=new_seq)) for v in seeds
-            ]
+            self.routing_step_ids = [(0, 0, v) for v in seeds]
         # The archived attempt's originator is now inactive — re-add it (unless the
         # recreated seeds already carried one) so the new attempt keeps its row 1.
         self._ensure_originator_step()
@@ -1381,8 +1405,7 @@ class SarabunDocument(models.Model):
             for step in self.routing_step_ids.sorted("order")
         ]
         self._bump_attempt_and_archive()
-        new_seq = self.attempt_seq or 1
-        self.routing_step_ids = [(0, 0, dict(v, attempt_seq=new_seq)) for v in seeds]
+        self.routing_step_ids = [(0, 0, v) for v in seeds]
         # Defensive: seeds already carry the originator row, so this is normally a no-op.
         self._ensure_originator_step()
 

@@ -1,4 +1,8 @@
+import logging
+
 from odoo import SUPERUSER_ID, api
+
+_logger = logging.getLogger(__name__)
 
 BUTTON_EMOJI = {
     "verb_originate": "✍️",
@@ -25,7 +29,31 @@ def migrate(cr, version):
         verb = env.ref("agx_sarabun." + xmlid, raise_if_not_found=False)
         if verb and not verb.button_emoji:
             verb.button_emoji = emoji
-    Step = env["sarabun.routing.step"].with_context(active_test=False)
-    docs = Step.search([("active", "=", False)]).document_id
-    docs._purge_archived_steps()
+    _purge_history(env)
     cr.execute("UPDATE sarabun_document SET attempt_seq = 1 WHERE attempt_seq != 1")
+
+
+def _purge_history(env):
+    """Delete the archived rounds (ADR-0023), logging each document and who lost
+    read. Legacy steps carry no record of which followers the engine added, so the
+    old round's holders the หนังสือ no longer reaches are unfollowed outright."""
+    Step = env["sarabun.routing.step"].with_context(active_test=False)
+    old = Step.search([("active", "=", False)])
+    _logger.info(
+        "agx_sarabun: purging %s archived steps on %s documents (ADR-0023)",
+        len(old),
+        len(old.document_id),
+    )
+    for doc in old.document_id:
+        before = doc.reached_user_ids
+        doc._purge_archived_steps()
+        gone = before - doc.reached_user_ids - doc.sender_user_id
+        gone = gone.filtered(lambda u: u.partner_id in doc.message_partner_ids)
+        if gone:
+            doc.message_unsubscribe(partner_ids=gone.partner_id.ids)
+        _logger.info(
+            "agx_sarabun: document %s (%s) — unfollowed: %s",
+            doc.id,
+            doc.name,
+            ", ".join(gone.mapped("login")) or "-",
+        )
