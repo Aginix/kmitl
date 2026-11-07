@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="partner_simple_form" model="ir.ui.view">
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="partner_middlename.partner_simple_form" />
+        <field name="arch" type="xml">
+            <field name="middlename" position="before">
+                <field name="firstname" position="move" />
+            </field>
+            <field name="middlename" position="after">
+                <field name="lastname" position="move" />
+            </field>
+            <field name="middlename" position="attributes">
+                <attribute name="attrs">{}</attribute>
+            </field>
+        </field>
+    </record>
+
+    <record id="partner_form" model="ir.ui.view">
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="partner_middlename.partner_form" />
+        <field name="arch" type="xml">
+            <!-- Inner contact form of child_ids: process first so the main-form
+                 fields keep their "first match" status for the main-form move. -->
+            <xpath
+                expr="//field[@name='child_ids']/form//field[@name='middlename']"
+                position="before"
+            >
+                <xpath
+                    expr="//field[@name='child_ids']/form//field[@name='firstname']"
+                    position="move"
+                />
+            </xpath>
+            <xpath
+                expr="//field[@name='child_ids']/form//field[@name='middlename']"
+                position="after"
+            >
+                <xpath
+                    expr="//field[@name='child_ids']/form//field[@name='lastname']"
+                    position="move"
+                />
+            </xpath>
+            <xpath
+                expr="//field[@name='child_ids']/form//field[@name='middlename']"
+                position="attributes"
+            >
+                <attribute name="attrs">{}</attribute>
+            </xpath>
+            <!-- Main form -->
+            <field name="middlename" position="before">
+                <field name="firstname" position="move" />
+            </field>
+            <field name="middlename" position="after">
+                <field name="lastname" position="move" />
+            </field>
+            <field name="middlename" position="attributes">
+                <attribute name="attrs">{}</attribute>
+            </field>
+        </field>
+    </record>
+
+</odoo>
