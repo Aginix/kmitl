@@ -1,6 +1,6 @@
 /** @odoo-module **/
 
-const { Component, useState, onMounted, onWillStart, mount, xml } = owl;
+const {Component, useState, onMounted, onWillStart, mount, xml} = owl;
 
 class ProjectDashboard extends Component {
     static template = xml`
@@ -226,7 +226,8 @@ class ProjectDashboard extends Component {
 
     setup() {
         this.state = useState({
-            fiscalYearId: this.props.initialFiscalYearId || (this.props.fiscalYears[0]?.id || null),
+            fiscalYearId:
+                this.props.initialFiscalYearId || this.props.fiscalYears[0]?.id || null,
             departmentId: this.props.initialDepartmentId || null,
             loading: true,
             error: false,
@@ -254,15 +255,16 @@ class ProjectDashboard extends Component {
     }
 
     async _loadECharts() {
-        if (typeof echarts !== 'undefined') {
+        if (typeof echarts !== "undefined") {
             return;
         }
         return new Promise((resolve) => {
-            const script = document.createElement('script');
-            script.src = 'https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js';
+            const script = document.createElement("script");
+            script.src =
+                "https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js";
             script.onload = resolve;
             script.onerror = () => {
-                console.error('Failed to load ECharts');
+                console.error("Failed to load ECharts");
                 resolve();
             };
             document.head.appendChild(script);
@@ -271,8 +273,8 @@ class ProjectDashboard extends Component {
 
     _initFiltersFromUrl() {
         const params = new URLSearchParams(window.location.search);
-        const urlFiscalYear = params.get('fiscal_year_id');
-        const urlDepartment = params.get('department_id');
+        const urlFiscalYear = params.get("fiscal_year_id");
+        const urlDepartment = params.get("department_id");
 
         if (urlFiscalYear) {
             this.state.fiscalYearId = urlFiscalYear;
@@ -287,16 +289,16 @@ class ProjectDashboard extends Component {
     _updateUrl(pushState = true) {
         const params = new URLSearchParams();
         if (this.state.fiscalYearId) {
-            params.set('fiscal_year_id', this.state.fiscalYearId);
+            params.set("fiscal_year_id", this.state.fiscalYearId);
         }
         if (this.state.departmentId) {
-            params.set('department_id', this.state.departmentId);
+            params.set("department_id", this.state.departmentId);
         }
-        const newUrl = '/project/dashboard?' + params.toString();
+        const newUrl = "/project/dashboard?" + params.toString();
         if (pushState) {
-            history.pushState(null, '', newUrl);
+            history.pushState(null, "", newUrl);
         } else {
-            history.replaceState(null, '', newUrl);
+            history.replaceState(null, "", newUrl);
         }
     }
 
@@ -317,14 +319,14 @@ class ProjectDashboard extends Component {
         this.state.error = false;
 
         try {
-            const response = await fetch('/project/dashboard/api', {
-                method: 'POST',
+            const response = await fetch("/project/dashboard/api", {
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    jsonrpc: '2.0',
-                    method: 'call',
+                    jsonrpc: "2.0",
+                    method: "call",
                     params: {
                         fiscal_year_id: this.state.fiscalYearId,
                         department_id: this.state.departmentId,
@@ -344,28 +346,28 @@ class ProjectDashboard extends Component {
                 // Update chart after DOM update
                 setTimeout(() => this._updateChart(), 100);
             } else {
-                throw new Error(result.error || 'API Error');
+                throw new Error(result.error || "API Error");
             }
         } catch (error) {
-            console.error('API Error:', error);
+            console.error("API Error:", error);
             this.state.error = true;
             this.state.loading = false;
         }
     }
 
     _updateChart() {
-        if (typeof echarts === 'undefined' || !this.state.chartData?.budget_by_impact) {
+        if (typeof echarts === "undefined" || !this.state.chartData?.budget_by_impact) {
             return;
         }
 
-        const chartDom = document.getElementById('budgetPieChart');
+        const chartDom = document.getElementById("budgetPieChart");
         if (!chartDom) {
             return;
         }
 
         if (!this.chart) {
             this.chart = echarts.init(chartDom);
-            window.addEventListener('resize', () => {
+            window.addEventListener("resize", () => {
                 if (this.chart) {
                     this.chart.resize();
                 }
@@ -373,71 +375,74 @@ class ProjectDashboard extends Component {
         }
 
         const impactColors = {
-            'Education': '#17a2b8',
-            'Academic': '#28a745',
-            'Industrial': '#ffc107',
-            'Social': '#dc3545',
+            Education: "#17a2b8",
+            Academic: "#28a745",
+            Industrial: "#ffc107",
+            Social: "#dc3545",
         };
 
         const pieData = this.state.chartData.budget_by_impact.map((item) => ({
             name: item.name,
             value: item.value,
             itemStyle: {
-                color: impactColors[item.name] || '#6c757d'
-            }
+                color: impactColors[item.name] || "#6c757d",
+            },
         }));
 
         const option = {
             title: {
-                text: '',
-                left: 'center'
+                text: "",
+                left: "center",
             },
             tooltip: {
-                trigger: 'item',
+                trigger: "item",
                 formatter: (params) => {
-                    const value = params.value.toLocaleString('th-TH');
-                    return `${params.name}: ${value} บาท (${params.percent.toFixed(1)}%)`;
-                }
+                    const value = params.value.toLocaleString("th-TH");
+                    return `${params.name}: ${value} บาท (${params.percent.toFixed(
+                        1
+                    )}%)`;
+                },
             },
             legend: {
-                orient: 'vertical',
-                left: 'left',
-                top: 'middle'
+                orient: "vertical",
+                left: "left",
+                top: "middle",
             },
             series: [
                 {
-                    name: 'งบประมาณ',
-                    type: 'pie',
-                    radius: ['40%', '70%'],
-                    center: ['60%', '50%'],
+                    name: "งบประมาณ",
+                    type: "pie",
+                    radius: ["40%", "70%"],
+                    center: ["60%", "50%"],
                     avoidLabelOverlap: true,
                     itemStyle: {
                         borderRadius: 10,
-                        borderColor: '#fff',
-                        borderWidth: 2
+                        borderColor: "#fff",
+                        borderWidth: 2,
                     },
                     label: {
                         show: true,
-                        formatter: (params) => `${params.name}\n${params.percent.toFixed(1)}%`
+                        formatter: (params) =>
+                            `${params.name}\n${params.percent.toFixed(1)}%`,
                     },
                     emphasis: {
                         label: {
                             show: true,
                             fontSize: 16,
-                            fontWeight: 'bold'
+                            fontWeight: "bold",
                         },
                         itemStyle: {
                             shadowBlur: 10,
                             shadowOffsetX: 0,
-                            shadowColor: 'rgba(0, 0, 0, 0.5)'
-                        }
+                            shadowColor: "rgba(0, 0, 0, 0.5)",
+                        },
                     },
                     labelLine: {
-                        show: true
+                        show: true,
                     },
-                    data: pieData
-                }
-            ]
+                    data: pieData,
+                },
+            ],
         };
 
         this.chart.setOption(option, true);
@@ -445,11 +450,11 @@ class ProjectDashboard extends Component {
 
     formatNumber(num) {
         if (num === null || num === undefined) {
-            return '0.00';
+            return "0.00";
         }
-        return num.toLocaleString('th-TH', {
+        return num.toLocaleString("th-TH", {
             minimumFractionDigits: 2,
-            maximumFractionDigits: 2
+            maximumFractionDigits: 2,
         });
     }
 
@@ -464,7 +469,7 @@ class ProjectDashboard extends Component {
     getDepartmentUrl(deptId) {
         const params = new URLSearchParams();
         if (this.state.fiscalYearId) {
-            params.set('fiscal_year_id', this.state.fiscalYearId);
+            params.set("fiscal_year_id", this.state.fiscalYearId);
         }
         return `/project/dashboard/${deptId}?${params.toString()}`;
     }
@@ -688,7 +693,8 @@ class DepartmentDashboard extends Component {
 
     setup() {
         this.state = useState({
-            fiscalYearId: this.props.initialFiscalYearId || (this.props.fiscalYears[0]?.id || null),
+            fiscalYearId:
+                this.props.initialFiscalYearId || this.props.fiscalYears[0]?.id || null,
             loading: true,
             error: false,
             stats: {
@@ -709,7 +715,7 @@ class DepartmentDashboard extends Component {
 
     _initFiltersFromUrl() {
         const params = new URLSearchParams(window.location.search);
-        const urlFiscalYear = params.get('fiscal_year_id');
+        const urlFiscalYear = params.get("fiscal_year_id");
 
         if (urlFiscalYear) {
             this.state.fiscalYearId = urlFiscalYear;
@@ -721,13 +727,15 @@ class DepartmentDashboard extends Component {
     _updateUrl(pushState = true) {
         const params = new URLSearchParams();
         if (this.state.fiscalYearId) {
-            params.set('fiscal_year_id', this.state.fiscalYearId);
+            params.set("fiscal_year_id", this.state.fiscalYearId);
         }
-        const newUrl = `/project/dashboard/${this.props.departmentId}?${params.toString()}`;
+        const newUrl = `/project/dashboard/${
+            this.props.departmentId
+        }?${params.toString()}`;
         if (pushState) {
-            history.pushState(null, '', newUrl);
+            history.pushState(null, "", newUrl);
         } else {
-            history.replaceState(null, '', newUrl);
+            history.replaceState(null, "", newUrl);
         }
     }
 
@@ -742,20 +750,23 @@ class DepartmentDashboard extends Component {
         this.state.error = false;
 
         try {
-            const response = await fetch(`/project/dashboard/${this.props.departmentId}/api`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    jsonrpc: '2.0',
-                    method: 'call',
-                    params: {
-                        fiscal_year_id: this.state.fiscalYearId,
+            const response = await fetch(
+                `/project/dashboard/${this.props.departmentId}/api`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
                     },
-                    id: Date.now(),
-                }),
-            });
+                    body: JSON.stringify({
+                        jsonrpc: "2.0",
+                        method: "call",
+                        params: {
+                            fiscal_year_id: this.state.fiscalYearId,
+                        },
+                        id: Date.now(),
+                    }),
+                }
+            );
 
             const result = await response.json();
 
@@ -764,10 +775,10 @@ class DepartmentDashboard extends Component {
                 this.state.projectsTable = result.result.projects_table || [];
                 this.state.loading = false;
             } else {
-                throw new Error(result.error || 'API Error');
+                throw new Error(result.error || "API Error");
             }
         } catch (error) {
-            console.error('API Error:', error);
+            console.error("API Error:", error);
             this.state.error = true;
             this.state.loading = false;
         }
@@ -775,11 +786,11 @@ class DepartmentDashboard extends Component {
 
     formatNumber(num) {
         if (num === null || num === undefined || num === 0) {
-            return '-';
+            return "-";
         }
-        return num.toLocaleString('th-TH', {
+        return num.toLocaleString("th-TH", {
             minimumFractionDigits: 2,
-            maximumFractionDigits: 2
+            maximumFractionDigits: 2,
         });
     }
 
@@ -793,23 +804,23 @@ class DepartmentDashboard extends Component {
 
     getStateClass(state) {
         const classes = {
-            'draft': 'badge bg-secondary',
-            'to_verify': 'badge bg-info',
-            'to_send': 'badge bg-info',
-            'sent': 'badge bg-primary',
-            'returned': 'badge bg-warning',
-            'rejected': 'badge bg-danger',
-            'in_progress': 'badge bg-primary',
-            'complete': 'badge bg-success',
-            'cancel': 'badge bg-danger',
+            draft: "badge bg-secondary",
+            to_verify: "badge bg-info",
+            to_send: "badge bg-info",
+            sent: "badge bg-primary",
+            returned: "badge bg-warning",
+            rejected: "badge bg-danger",
+            in_progress: "badge bg-primary",
+            complete: "badge bg-success",
+            cancel: "badge bg-danger",
         };
-        return classes[state] || 'badge bg-secondary';
+        return classes[state] || "badge bg-secondary";
     }
 }
 
 // Mount function for main dashboard
 function mountProjectDashboard() {
-    const container = document.getElementById('project_dashboard_owl');
+    const container = document.getElementById("project_dashboard_owl");
     if (!container) {
         return;
     }
@@ -834,7 +845,7 @@ function mountProjectDashboard() {
 
 // Mount function for department dashboard
 function mountDepartmentDashboard() {
-    const container = document.getElementById('department_dashboard_owl');
+    const container = document.getElementById("department_dashboard_owl");
     if (!container) {
         return;
     }
@@ -864,8 +875,8 @@ function initDashboards() {
     mountDepartmentDashboard();
 }
 
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initDashboards);
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initDashboards);
 } else {
     initDashboards();
 }

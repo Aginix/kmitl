@@ -1,7 +1,7 @@
 from odoo.http import request
 from odoo.osv import expression
 
-from odoo.addons.kmitl_project.controller.kmitl_project import KmitlProjectPortal
+from odoo.addons.kmitl_project_portal.controllers.portal import KmitlProjectPortal
 
 
 class KmitlProjectCoordinatorPortal(KmitlProjectPortal):

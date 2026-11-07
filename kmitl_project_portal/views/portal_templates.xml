@@ -1,0 +1,498 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Home Page: Projects Counter -->
+    <template
+        id="portal_my_home"
+        name="Show KMITL Projects"
+        customize_show="True"
+        inherit_id="portal.portal_my_home"
+        priority="25"
+    >
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="title">โครงการ/กิจกรรม</t>
+                <t t-set="url" t-value="'/my/kmitl-projects'" />
+                <t t-set="placeholder_count" t-value="'project_count'" />
+            </t>
+        </xpath>
+    </template>
+
+    <!-- Status: coloured dot + Thai label -->
+    <template id="kmitl_project_status" name="KMITL Project Status">
+        <t
+            t-set="_state_labels"
+            t-value="{
+                'draft': 'แบบร่าง',
+                'to_verify': 'รอตรวจสอบ/จองงบ',
+                'to_send': 'รอส่งขออนุมัติ',
+                'sent': 'ส่งขออนุมัติแล้ว',
+                'returned': 'ถูกตีกลับ',
+                'rejected': 'ถูกปฏิเสธ',
+                'in_progress': 'กำลังดำเนินการ',
+                'complete': 'แล้วเสร็จ',
+                'cancel': 'ยกเลิก',
+            }"
+        />
+        <span
+            class="o_kp_status"
+            t-att-data-state="state"
+            t-out="_state_labels.get(state, state)"
+        />
+    </template>
+
+    <!-- Project list (public and "my"), grouped by fiscal year -->
+    <template id="portal_kmitl_projects" name="KMITL Projects">
+        <t t-call="portal.portal_layout">
+            <t t-set="no_breadcrumbs" t-value="True" />
+            <t
+                t-set="_type_labels"
+                t-value="{'project': 'โครงการงบประจำ', 'activity': 'กิจกรรมงบประจำ', 'strategic_project': 'โครงการยุทธศาสตร์'}"
+            />
+            <div class="o_kp o_kpc">
+                <div class="o_kp_crumbs">
+                    <a
+                        t-att-href="'/my' if page_name == 'kmitl_projects' else '/'"
+                    >หน้าหลัก</a>
+                    <span>/</span>
+                    <t t-out="title" />
+                </div>
+
+                <div class="o_kp_listhead">
+                    <div>
+                        <h1 t-out="title" />
+                        <p>ทั้งหมด <t t-out="projects_count" /> รายการ</p>
+                    </div>
+                    <form t-att-action="default_url" method="get" role="search">
+                        <input
+                            type="search"
+                            name="search"
+                            class="o_kp_search"
+                            placeholder="ค้นหาชื่อหรือรหัสโครงการ"
+                            t-att-value="search"
+                        />
+                    </form>
+                </div>
+
+                <div t-if="not projects" class="o_kp_empty py-5 text-center">
+                    <t t-if="search">ไม่พบโครงการที่ตรงกับ "<t t-out="search" />"</t>
+                    <t t-else="">ยังไม่มีโครงการในระบบ</t>
+                </div>
+
+                <t t-foreach="projects" t-as="project">
+                    <t t-set="fiscal_year" t-value="project.account_fiscal_year_id" />
+                    <div
+                        t-if="project_first or fiscal_year != projects[project_index - 1].account_fiscal_year_id"
+                        class="o_kpc_year"
+                    >
+                        <t t-if="fiscal_year">ปีงบประมาณ <t
+                                t-out="fiscal_year.name"
+                            /></t>
+                        <t t-else="">ไม่ระบุปีงบประมาณ</t>
+                    </div>
+                    <a class="o_kpc_item" t-attf-href="#{project_url}#{project.id}">
+                        <span class="o_kpc_name" t-out="project.name" />
+                        <span
+                            class="o_kpc_amt"
+                            t-out="'{:,.2f}'.format(project.budget_amount)"
+                        />
+                        <span class="o_kpc_sub">
+                            <span
+                                class="o_kp_code"
+                                t-out="project.key or 'ยังไม่ออกรหัส'"
+                            />
+                            <span
+                                t-if="project.department_analytic_id"
+                                t-out="project.department_analytic_id.name"
+                            />
+                            <span
+                                t-out="_type_labels.get(project.project_type, project.project_type)"
+                            />
+                        </span>
+                        <t t-call="kmitl_project_portal.kmitl_project_status">
+                            <t t-set="state" t-value="project.state" />
+                        </t>
+                    </a>
+                </t>
+
+                <div t-if="pager['page_count'] > 1" class="mt-4">
+                    <t t-call="portal.pager" />
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Project Detail View -->
+    <template id="portal_my_kmitl_project" name="KMITL Project Portal Template">
+        <t t-call="portal.portal_layout">
+            <t t-set="no_breadcrumbs" t-value="True" />
+            <div class="o_kp o_kpc">
+                <div class="o_kp_crumbs">
+                    <a
+                        t-att-href="'/' if list_url == '/projects' else '/my'"
+                    >หน้าหลัก</a>
+                    <span>/</span>
+                    <a t-att-href="list_url">โครงการ/กิจกรรม</a>
+                </div>
+                <t t-call="kmitl_project_portal.kmitl_project_portal_content" />
+            </div>
+        </t>
+    </template>
+
+    <!-- Project Content Details: a reading column ordered like the proposal form.
+         Sections are numbered by a CSS counter, so extensions can add one freely. -->
+    <template id="kmitl_project_portal_content" name="KMITL Project Portal Content">
+        <t
+            t-set="_type_labels"
+            t-value="{'project': 'โครงการงบประจำ', 'activity': 'กิจกรรมงบประจำ', 'strategic_project': 'โครงการยุทธศาสตร์'}"
+        />
+
+        <div class="o_kp_eyebrow">
+            <span class="o_kp_code" t-out="kmitl_project.key or 'ยังไม่ออกรหัส'" />
+            <span
+                t-out="_type_labels.get(kmitl_project.project_type, kmitl_project.project_type)"
+            />
+            <t t-call="kmitl_project_portal.kmitl_project_status">
+                <t t-set="state" t-value="kmitl_project.state" />
+            </t>
+        </div>
+        <h1 class="o_kp_title" t-out="kmitl_project.name" />
+
+        <div class="o_kpc_sheet">
+            <dl class="o_kp_dl">
+                <dt>หน่วยงาน</dt>
+                <dd t-out="kmitl_project.department_analytic_id.name or '—'" />
+                <dt>หัวหน้าโครงการ</dt>
+                <dd t-out="kmitl_project.manager_id.name or '—'" />
+                <dt>ปีงบประมาณ</dt>
+                <dd t-out="kmitl_project.account_fiscal_year_id.name or '—'" />
+                <dt>ระยะเวลา</dt>
+                <dd>
+                    <t t-if="kmitl_project.date_start or kmitl_project.date_end">
+                        <span t-field="kmitl_project.date_start" /> – <span
+                            t-field="kmitl_project.date_end"
+                        />
+                    </t>
+                    <t t-else="">—</t>
+                </dd>
+            </dl>
+            <dl class="o_kp_dl o_kpc_money">
+                <dt>งบประมาณที่ได้รับ</dt>
+                <dd t-out="'{:,.2f}'.format(kmitl_project.budget_amount)" />
+                <t t-if="kmitl_project.has_income">
+                    <dt>รวมรายรับ</dt>
+                    <dd t-out="'{:,.2f}'.format(kmitl_project.budget_income_total)" />
+                </t>
+                <dt>รวมรายจ่าย</dt>
+                <dd t-out="'{:,.2f}'.format(kmitl_project.budget_expense_total)" />
+                <dt class="is-total">คงเหลือ (บาท)</dt>
+                <dd
+                    t-attf-class="is-total #{'text-danger' if kmitl_project.budget_remaining &lt; 0 else ''}"
+                    t-out="'{:,.2f}'.format(kmitl_project.budget_remaining)"
+                />
+            </dl>
+        </div>
+
+        <section class="o_kpc_sec">
+            <h2>หลักการและเหตุผล</h2>
+            <div
+                t-if="kmitl_project.introduction"
+                t-field="kmitl_project.introduction"
+            />
+            <div t-else="" class="o_kp_empty">ไม่มีข้อมูล</div>
+        </section>
+
+        <section class="o_kpc_sec">
+            <h2>วัตถุประสงค์</h2>
+            <div class="o_kp_prose" t-out="kmitl_project.objective or '—'" />
+        </section>
+
+        <section class="o_kpc_sec">
+            <h2>ความสอดคล้องเชิงนโยบายและยุทธศาสตร์</h2>
+            <h3>นโยบายสถาบัน</h3>
+            <dl class="o_kp_dl">
+                <dt>Impact</dt>
+                <dd t-out="kmitl_project.impact_id.name or '—'" />
+                <dt>Global Index</dt>
+                <dd t-out="kmitl_project.global_index_id.name or '—'" />
+                <dt>FIGHT</dt>
+                <dd t-out="kmitl_project.fight_id.name or '—'" />
+            </dl>
+            <h3>แผนยุทธศาสตร์</h3>
+            <dl id="strategic-plan" class="o_kp_dl">
+                <dt>ยุทธศาสตร์ชาติ</dt>
+                <dd t-out="kmitl_project.national_strategy_id.name or '—'" />
+                <dt>แผนแม่บทฯ</dt>
+                <dd t-out="kmitl_project.master_plan_id.name or '—'" />
+                <dt>แผนพัฒนาฯ ฉ.13</dt>
+                <dd t-out="kmitl_project.nesdc_plan_id.name or '—'" />
+                <dt>แผนกลยุทธ์สถาบัน</dt>
+                <dd t-out="kmitl_project.kmitl_plan_id.name or '—'" />
+            </dl>
+        </section>
+
+        <section class="o_kpc_sec">
+            <h2>รหัสงบประมาณและมิติทางบัญชี</h2>
+            <dl class="o_kp_dl">
+                <t
+                    t-foreach="[
+                        ('รหัสงบประมาณ', kmitl_project.budget_account_id),
+                        ('แหล่งเงิน', kmitl_project.source_analytic_id),
+                        ('ส่วนงาน', kmitl_project.department_analytic_id),
+                        ('กองทุน', kmitl_project.fund_analytic_id),
+                        ('กิจกรรม', kmitl_project.activity_analytic_id),
+                    ]"
+                    t-as="dim"
+                >
+                    <dt t-out="dim[0]" />
+                    <dd t-if="dim[1]">
+                        <span class="o_kp_code me-2" t-out="dim[1].code" />
+                        <t t-out="dim[1].complete_name" />
+                    </dd>
+                    <dd t-else="">—</dd>
+                </t>
+            </dl>
+        </section>
+
+        <section class="o_kpc_sec">
+            <h2>สถานที่และวิธีดำเนินการ</h2>
+            <div class="o_kp_prose mb-3" t-out="kmitl_project.location or '—'" />
+            <div t-if="kmitl_project.methodology_ids" class="o_kp_tags">
+                <span
+                    t-foreach="kmitl_project.methodology_ids"
+                    t-as="method"
+                    t-out="method.name"
+                />
+            </div>
+            <div
+                t-if="kmitl_project.methodology_detail"
+                class="o_kp_prose"
+                t-out="kmitl_project.methodology_detail"
+            />
+        </section>
+
+        <section class="o_kpc_sec">
+            <h2>กลุ่มเป้าหมายและผู้เกี่ยวข้อง</h2>
+            <t
+                t-set="people_sections"
+                t-value="[
+                    ('กลุ่มเป้าหมาย', kmitl_project.target_ids),
+                    ('ผู้เข้าร่วม', kmitl_project.participant_ids),
+                    ('ผู้จัดงาน', kmitl_project.organizer_ids),
+                ]"
+            />
+            <table
+                t-if="kmitl_project.target_ids or kmitl_project.participant_ids or kmitl_project.organizer_ids"
+                class="o_kp_table"
+            >
+                <thead>
+                    <tr>
+                        <th>กลุ่ม</th>
+                        <th>รายการ</th>
+                        <th class="o_kp_num">จำนวน</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <t t-foreach="people_sections" t-as="people">
+                        <tr t-foreach="people[1]" t-as="row">
+                            <td
+                                class="text-muted"
+                                t-out="people[0] if row_first else ''"
+                            />
+                            <td t-out="row.name" />
+                            <td class="o_kp_num" t-out="'{:,.0f}'.format(row.amount)" />
+                        </tr>
+                    </t>
+                </tbody>
+            </table>
+            <div t-else="" class="o_kp_empty">ไม่มีข้อมูล</div>
+        </section>
+
+        <section class="o_kpc_sec">
+            <h2>แผนการดำเนินงานและแผนการใช้จ่ายงบประมาณ</h2>
+            <div t-if="kmitl_project.plan_ids" class="table-responsive">
+                <table class="o_kp_table o_kp_plan">
+                    <thead>
+                        <tr>
+                            <th rowspan="2" class="align-bottom">รายการ</th>
+                            <th rowspan="2" class="o_kp_num align-bottom">งบประมาณ</th>
+                            <th
+                                t-foreach="range(1, 5)"
+                                t-as="quarter"
+                                colspan="3"
+                                class="o_kp_q"
+                            >ไตรมาส <t t-out="quarter" /></th>
+                        </tr>
+                        <tr>
+                            <th
+                                t-foreach="['ต.ค.', 'พ.ย.', 'ธ.ค.', 'ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.']"
+                                t-as="month"
+                                class="o_kp_m"
+                                t-out="month"
+                            />
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="kmitl_project.plan_ids" t-as="plan">
+                            <td t-out="plan.name" />
+                            <td
+                                class="o_kp_num"
+                                t-out="'{:,.2f}'.format(plan.amount)"
+                            />
+                            <td
+                                t-foreach="[plan.m10, plan.m11, plan.m12, plan.m1, plan.m2, plan.m3, plan.m4, plan.m5, plan.m6, plan.m7, plan.m8, plan.m9]"
+                                t-as="month"
+                                t-attf-class="o_kp_m #{'is-on' if month else ''}"
+                            ><i /></td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td>รวม</td>
+                            <td
+                                class="o_kp_num"
+                                t-out="'{:,.2f}'.format(sum(kmitl_project.plan_ids.mapped('amount')))"
+                            />
+                            <td colspan="12" />
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            <div t-else="" class="o_kp_empty">ยังไม่มีข้อมูลแผนการใช้จ่าย</div>
+        </section>
+
+        <section class="o_kpc_sec">
+            <h2>รายรับ-รายจ่าย</h2>
+            <t
+                t-set="budget_sections"
+                t-value="[
+                    {'label': 'รายรับ', 'type': 'income', 'lines': kmitl_project.income_line_ids, 'total': kmitl_project.budget_income_total},
+                    {'label': 'รายจ่าย', 'type': 'expense', 'lines': kmitl_project.expense_line_ids, 'total': kmitl_project.budget_expense_total},
+                ]"
+            />
+            <t t-foreach="budget_sections" t-as="section">
+                <t t-if="section['lines']">
+                    <h3 t-out="section['label']" />
+                    <div class="table-responsive">
+                        <table class="o_kp_table">
+                            <tbody>
+                                <t
+                                    t-foreach="kmitl_project._portal_budget_tree(section['type'])"
+                                    t-as="row"
+                                >
+                                    <tr t-if="row['type'] == 'header'" class="is-group">
+                                        <td
+                                            colspan="2"
+                                            t-attf-style="padding-left: #{0.5 + row['level'] * 1.25}rem"
+                                            t-out="row['name']"
+                                        />
+                                        <td
+                                            class="o_kp_num"
+                                            t-out="'{:,.2f}'.format(row['total'])"
+                                        />
+                                    </tr>
+                                    <tr t-else="">
+                                        <td
+                                            t-attf-style="padding-left: #{0.5 + row['level'] * 1.25}rem"
+                                            t-out="row['line'].name"
+                                        />
+                                        <td
+                                            class="o_kp_desc"
+                                            t-out="(row['line'].description or '').strip()"
+                                        />
+                                        <td
+                                            class="o_kp_num"
+                                            t-out="'{:,.2f}'.format(row['line'].amount)"
+                                        />
+                                    </tr>
+                                </t>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="2">รวม<t
+                                            t-out="section['label']"
+                                        /></td>
+                                    <td
+                                        class="o_kp_num"
+                                        t-out="'{:,.2f}'.format(section['total'])"
+                                    />
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </t>
+            </t>
+            <div
+                t-if="not kmitl_project.income_line_ids and not kmitl_project.expense_line_ids"
+                class="o_kp_empty"
+            >ยังไม่มีรายการรายรับ-รายจ่าย</div>
+        </section>
+
+        <section class="o_kpc_sec">
+            <h2>ผลผลิต ผลลัพธ์ และผลที่คาดว่าจะได้รับ</h2>
+            <t
+                t-foreach="[('ผลผลิต', kmitl_project.output_ids), ('ผลลัพธ์', kmitl_project.outcome_ids)]"
+                t-as="result"
+            >
+                <h3 t-out="result[0]" />
+                <ul t-if="result[1]" class="o_kp_list">
+                    <li t-foreach="result[1]" t-as="output">
+                        <span t-out="output.name" />
+                        <span class="o_kp_num"><t t-out="output.target" /> <t
+                                t-out="output.unit"
+                            /></span>
+                    </li>
+                </ul>
+                <div t-else="" class="o_kp_empty">ไม่มีข้อมูล</div>
+            </t>
+            <h3>ผลที่คาดว่าจะได้รับ</h3>
+            <ul t-if="kmitl_project.expected_outcome_ids" class="o_kp_list">
+                <li
+                    t-foreach="kmitl_project.expected_outcome_ids"
+                    t-as="outcome"
+                    t-out="outcome.name"
+                />
+            </ul>
+            <div t-else="" class="o_kp_empty">ไม่มีข้อมูล</div>
+        </section>
+
+        <section class="o_kpc_sec">
+            <h2>การติดตามและประเมินผล</h2>
+            <div t-if="kmitl_project.evaluation_ids" class="o_kp_tags">
+                <span
+                    t-foreach="kmitl_project.evaluation_ids"
+                    t-as="evaluation"
+                    t-out="evaluation.name"
+                />
+            </div>
+            <div
+                t-if="kmitl_project.evaluation_detail"
+                class="o_kp_prose"
+                t-out="kmitl_project.evaluation_detail"
+            />
+            <div
+                t-if="not kmitl_project.evaluation_ids and not kmitl_project.evaluation_detail"
+                class="o_kp_empty"
+            >ไม่มีข้อมูล</div>
+        </section>
+
+        <section class="o_kpc_sec">
+            <h2>เอกสารแนบ</h2>
+            <div t-if="kmitl_project.attachment_ids" class="o_kp_files">
+                <a
+                    t-foreach="kmitl_project.attachment_ids"
+                    t-as="attachment"
+                    t-attf-href="/web/content/#{attachment.id}?download=true"
+                >
+                    <i class="fa fa-file-o text-muted" />
+                    <span class="o_kp_fname" t-out="attachment.name" />
+                    <span
+                        class="o_kp_fsize"
+                        t-out="'{:,.0f} KB'.format((attachment.file_size or 0) / 1024.0)"
+                    />
+                    <i class="fa fa-download text-muted" />
+                </a>
+            </div>
+            <div t-else="" class="o_kp_empty">ไม่มีเอกสารแนบ</div>
+        </section>
+    </template>
+</odoo>
