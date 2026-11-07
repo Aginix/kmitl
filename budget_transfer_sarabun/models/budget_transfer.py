@@ -52,6 +52,18 @@ class BudgetTransfer(models.Model):
         ondelete="set null",
         readonly=True,
     )
+    # เลขที่หนังสือ — filled from the หนังสือ when it is numbered (see
+    # ``SarabunDocument._assign_register_number``), or typed in by hand when the
+    # transfer was signed on paper outside the system and approved via the
+    # manual fallback.
+    sarabun_document_number = fields.Char(
+        string="เลขที่หนังสือ",
+        copy=False,
+        index="trigram",
+        tracking=True,
+        help="Filled automatically when the e-Saraban หนังสือ is numbered; typed in "
+        "by hand when the transfer was approved on paper outside the system.",
+    )
 
     # --- hooks ---------------------------------------------------------
     def _get_sarabun_document_type(self):
@@ -304,3 +316,17 @@ class BudgetTransfer(models.Model):
             raise UserError(_("Only submitted transfers can be posted."))
         self._check_no_live_sarabun_document()
         return super().action_post()
+
+
+class SarabunDocument(models.Model):
+    _inherit = "sarabun.document"
+
+    def _assign_register_number(self):
+        """Mirror the issued number onto the originating budget transfer
+        (sudo: the signer usually has no rights on the transfer)."""
+        res = super()._assign_register_number()
+        if self.origin_model == "budget.transfer" and self.origin_res_id:
+            self.env["budget.transfer"].sudo().browse(
+                self.origin_res_id
+            ).sarabun_document_number = self.name
+        return res

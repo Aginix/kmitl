@@ -205,6 +205,9 @@ class TestBudgetTransferSarabun(TransactionCase):
         # The transfer's hidden date tracks the letter's ลงวันที่ (issuing sign).
         self.assertTrue(document.date)
         self.assertEqual(transfer.date, document.date)
+        # The letter's issued number is mirrored onto the transfer.
+        self.assertNotEqual(document.name, "/")
+        self.assertEqual(transfer.sarabun_document_number, document.name)
 
     def test_rejected_never_posts_and_cancels_move(self):
         transfer = self._submitted_transfer()
@@ -348,6 +351,18 @@ class TestBudgetTransferSarabun(TransactionCase):
         transfer = self._submitted_transfer()
         transfer.with_user(manager).action_approve()
         self.assertEqual(transfer.state, "posted")
+        # Signed on paper: the เลขที่หนังสือ is typed in after approval and is
+        # searchable alongside the transfer number.
+        transfer.with_user(manager).sarabun_document_number = "อว 7001/123"
+        self.assertEqual(transfer.sarabun_document_number, "อว 7001/123")
+        found = self.env["budget.transfer"].search(
+            [
+                "|",
+                ("name", "ilike", "7001/123"),
+                ("sarabun_document_number", "ilike", "7001/123"),
+            ]
+        )
+        self.assertIn(transfer, found)
 
     # ------------------------------------------------------------------
     # extra guards this bridge adds on top of the base's action methods
