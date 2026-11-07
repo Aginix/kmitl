@@ -235,6 +235,11 @@ upfront.
   post/reserve; the request moves `approved → in_progress` the moment that document is
   posted/reserved (an idempotent hook on the transfer's `_post_transfer()` /
   commitment's `action_reserve()`).
+- **Disbursement → KMITL Project**: each ใบขอเบิก line raised under a project names one
+  expense line of its Project Budget Plan; under the project's **Expense Control** the
+  claims on a line may not exceed its amount, and Σ ใบขอเบิก stays within the Project
+  Budget either way (`kmitl_project_disbursement`, kmitl_project ADR-0013). Changing the
+  plan of an approved project goes through a **Project Revision** (ADR-0014).
 - **Disbursement ↔ Finance (paying account)**: a **หัวจ่าย** is one of Odoo's own
   `account.payment.method.line` records — bank account × method × voucher × GL — seeded
   by `account_kmitl` on ใบสำคัญจ่าย (PV) and administered in `finance_kmitl`
