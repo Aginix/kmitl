@@ -1,6 +1,6 @@
 {
     "name": "KMITL HR Employee Full Name",
-    "version": "16.0.1.2.3",
+    "version": "16.0.1.2.4",
     "summary": "KMITL HR Employee Full Name",
     "author": "Nopparut, Aginix Technologies",
     "maintainers": ["nopparuts"],
