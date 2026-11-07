@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- DR users pick the project expense line a DR line claims (ADR-0013),
+         whether or not they are project users: read every expense line. -->
+    <record id="project_budget_line_disbursement_user_rule" model="ir.rule">
+        <field name="name">Project Budget Line: Disbursement User Read</field>
+        <field name="model_id" ref="kmitl_project.model_project_budget_line" />
+        <field
+            name="groups"
+            eval="[(4, ref('disbursement.group_disbursement_user'))]"
+        />
+        <field name="domain_force">[('budget_type', '=', 'expense')]</field>
+        <field name="perm_read" eval="True" />
+        <field name="perm_write" eval="False" />
+        <field name="perm_create" eval="False" />
+        <field name="perm_unlink" eval="False" />
+    </record>
+</odoo>

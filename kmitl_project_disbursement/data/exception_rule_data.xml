@@ -71,4 +71,50 @@ if self._exceeds_project_budget():
         <field name="is_blocking" eval="True" />
         <field name="active" eval="True" />
     </record>
+
+    <!-- Expense-line claims (kmitl_project ADR-0013): under the project's
+         ควบคุมตามรายจ่าย every line names an expense line of the project and
+         stays within what is left of it. A line of another project / an income
+         line is refused whatever the switch. All blocking. -->
+    <record id="excep_disbursement_line_project_budget_line_missing" model="exception.rule">
+        <field name="name">ต้องเลือกรายจ่ายของโครงการ</field>
+        <field name="description">โครงการนี้ควบคุมตามรายจ่าย ทุกรายการของใบขอเบิกต้องเลือกรายจ่ายของโครงการที่จะเบิก</field>
+        <field name="sequence">64</field>
+        <field name="model">disbursement.request.line</field>
+        <field name="exception_type">by_py_code</field>
+        <field name="code">
+if self._kmitl_project_budget_line_missing():
+    failed = True
+        </field>
+        <field name="is_blocking" eval="True" />
+        <field name="active" eval="True" />
+    </record>
+
+    <record id="excep_disbursement_line_project_budget_line_mismatch" model="exception.rule">
+        <field name="name">รายจ่ายที่เลือกไม่ใช่รายจ่ายของโครงการนี้</field>
+        <field name="description">มีรายการที่เลือกรายจ่ายของโครงการอื่น หรือเลือกรายการรายรับ กรุณาเลือกรายจ่ายของโครงการของใบขอเบิกนี้</field>
+        <field name="sequence">65</field>
+        <field name="model">disbursement.request.line</field>
+        <field name="exception_type">by_py_code</field>
+        <field name="code">
+if self._kmitl_project_budget_line_mismatch():
+    failed = True
+        </field>
+        <field name="is_blocking" eval="True" />
+        <field name="active" eval="True" />
+    </record>
+
+    <record id="excep_disbursement_line_project_budget_line_exceeded" model="exception.rule">
+        <field name="name">ยอดเบิกเกินจำนวนเงินของรายจ่ายโครงการ</field>
+        <field name="description">ยอดเบิกรวมของรายจ่ายนี้ (ใบขอเบิกที่ส่งแล้วรวมกับใบนี้) เกินจำนวนเงินที่โครงการวางแผนไว้ กรุณาลดยอดเบิกหรือขอปรับแผนโครงการ</field>
+        <field name="sequence">66</field>
+        <field name="model">disbursement.request.line</field>
+        <field name="exception_type">by_py_code</field>
+        <field name="code">
+if self._kmitl_project_budget_line_exceeded():
+    failed = True
+        </field>
+        <field name="is_blocking" eval="True" />
+        <field name="active" eval="True" />
+    </record>
 </odoo>
