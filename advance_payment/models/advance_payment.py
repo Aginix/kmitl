@@ -717,6 +717,14 @@ class AdvancePayment(models.Model):
         return user & candidates
 
     @api.model
+    def _active_group_users(self, xmlid):
+        """Active direct members of the group, or none while the group does
+        not exist yet — column defaults run on install before security.xml
+        is loaded."""
+        group = self.env.ref(xmlid, raise_if_not_found=False)
+        return group.users.filtered("active") if group else self.env["res.users"]
+
+    @api.model
     def _loan_officer_group_members(self):
         """Everyone `loan_verifier_id`'s own domain accepts: direct members of
         the officer group, matched the same way the domain matches — so a user
@@ -725,15 +733,10 @@ class AdvancePayment(models.Model):
 
         A m2m read does not apply active_test, so archived members have to be
         filtered out by hand.
-
-        The group may not exist yet: the column default runs on a fresh
-        install, before security.xml is loaded.
         """
-        group = self.env.ref(
-            "advance_payment.group_advance_payment_loan_officer",
-            raise_if_not_found=False,
+        return self._active_group_users(
+            "advance_payment.group_advance_payment_loan_officer"
         )
-        return group.users.filtered("active") if group else self.env["res.users"]
 
     @api.model
     def _loan_officer_candidates(self):
@@ -794,9 +797,7 @@ class AdvancePayment(models.Model):
         """Members of the director group who may be named as director —
         matched the same way the field's own domain matches, as for the
         approver (ADR-0017)."""
-        return self.env.ref(
-            "advance_payment.group_advance_payment_director"
-        ).users.filtered("active")
+        return self._active_group_users("advance_payment.group_advance_payment_director")
 
     @api.model
     def _default_director_id(self):
@@ -830,9 +831,9 @@ class AdvancePayment(models.Model):
         matched the same way the field's own domain matches (direct
         membership), so a configured user can never resolve to a default the
         domain then rejects (ADR-0017)."""
-        return self.env.ref(
+        return self._active_group_users(
             "advance_payment.group_advance_payment_loan_approver"
-        ).users.filtered("active")
+        )
 
     @api.model
     def _default_approver_id(self):
