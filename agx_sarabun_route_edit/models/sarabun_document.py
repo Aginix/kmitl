@@ -92,6 +92,13 @@ class SarabunDocument(models.Model):
                 lambda s: s.state == "active"
             )._check_route_edit_actors()
 
+    def _content_editor_allowed_fields(self):
+        # A route editor who also holds a แก้ไขเอกสารได้ step still saves Route edits.
+        res = super()._content_editor_allowed_fields()
+        if self.env.user.has_group(ROUTE_EDIT_GROUP):
+            res = res | {"routing_step_ids"}
+        return res
+
     # ------------------------------------------------------------------ ORM
     def write(self, vals):
         """Saving the form sends the Route edits as one batch of o2m commands —

@@ -29,15 +29,26 @@ class SarabunStepActWizard(models.TransientModel):
             # ("direct", "เกษียนสั่งการ (Direct — insert next)"),
             # ("delegate", "มอบหมาย (Delegate — reassign this step)"),
             ("return", "ตีกลับ (Return)"),
-            ("reject", "ปฏิเสธ (Reject)"),
+            # ปฏิเสธ is engine-only — no UI path (user decision).
         ],
         required=True,
-        default="complete",
+        default=lambda self: self.env.context.get("sarabun_disposition") or "complete",
     )
     note = fields.Text(
         string="Comment / Reason",
         placeholder="Comment...",
         help="Optional comment or reason for this action.",
+    )
+
+    # complete — ความเห็นในการลงนาม (verb.allow_sign_comment)
+    step_allow_sign_comment = fields.Boolean(related="step_id.verb.allow_sign_comment")
+    sign_comment = fields.Html(string="ความเห็นในการลงนาม")
+    sign_attachment_ids = fields.Many2many(
+        "ir.attachment",
+        relation="sarabun_step_act_wizard_sign_attachment_rel",
+        column1="wizard_id",
+        column2="attachment_id",
+        string="เอกสารประกอบการลงนาม",
     )
 
     # complete (sign capacity — P5 adds full capacity selection)
@@ -117,6 +128,14 @@ class SarabunStepActWizard(models.TransientModel):
         vals = {"note": self.note}
         if self.disposition == "complete":
             vals["signed_as_position_id"] = self.signed_as_position_id.id
+            if self.step_allow_sign_comment:
+                vals.update(
+                    {
+                        "note": False,
+                        "sign_comment": self.sign_comment,
+                        "sign_attachment_ids": self.sign_attachment_ids.ids,
+                    }
+                )
         elif self.disposition in ("direct", "delegate"):
             if self.target_mode == "position" and not self.target_position_id:
                 raise UserError(_("Select a target Position."))
@@ -149,5 +168,12 @@ class SarabunStepActWizard(models.TransientModel):
             if not self.note:
                 raise UserError(_("Please provide a rejection reason."))
 
+        doc_id = self.document_id.id
         self.step_id.act_on_step(self.disposition, vals)
+        # A ตีกลับ drops the old round (ADR-0023): the returner may no longer reach
+        # the หนังสือ — send them to their incoming box instead of a failing reload.
+        if not self.env["sarabun.document"].search_count([("id", "=", doc_id)]):
+            return self.env["ir.actions.act_window"]._for_xml_id(
+                "agx_sarabun.action_sarabun_document_inbox"
+            )
         return {"type": "ir.actions.act_window_close"}

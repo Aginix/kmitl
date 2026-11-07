@@ -15,3 +15,4 @@ from . import sarabun_reference_line
 from . import hr_department
 from . import sarabun_document
 from . import sarabun_document_mixin
+from . import ir_attachment

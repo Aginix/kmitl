@@ -76,7 +76,7 @@ class SarabunDocument(models.Model):
         ):
             doc._reclaim_voided_number(reason)
         # Un-freeze the ฉบับลงนาม — discard the prior PDF (writing False on an
-        # attachment field removes the attachment; audit survives on the archived steps).
+        # attachment field removes the attachment; the reason stays in the chatter).
         doc.write({
             "signed_pdf": False,
             "signed_pdf_filename": False,
@@ -88,10 +88,11 @@ class SarabunDocument(models.Model):
         doc.message_post(body=_(
             "Document reset to draft by %(user)s. Reason: %(reason)s"
         ) % {"user": self.env.user.display_name, "reason": reason})
+        doc._purge_archived_steps()  # no attempt history (ADR-0023)
         return True
 
     def _reset_restart_chain(self):
-        """Archive the finished attempt and recreate the ORIGINAL seed Route as fresh
+        """Set the finished attempt aside and recreate the ORIGINAL seed Route as fresh
         waiting steps — ``_restart_chain`` with its no-template fallback narrowed from
         "recreate all live steps" to the seed backbone only (created_by_disposition
         == 'seed'), so runtime เกษียนสั่งการ ('direct') insertions are dropped."""
@@ -105,10 +106,7 @@ class SarabunDocument(models.Model):
         self._bump_attempt_and_archive()
         self._seed_route_from_template()
         if not self.routing_step_ids:
-            new_seq = self.attempt_seq or 1
-            self.routing_step_ids = [
-                (0, 0, dict(v, attempt_seq=new_seq)) for v in seeds
-            ]
+            self.routing_step_ids = [(0, 0, v) for v in seeds]
         # Re-add the mandatory originator row unless the recreated seeds already carry one.
         self._ensure_originator_step()
 

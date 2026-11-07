@@ -6,3 +6,5 @@ from . import test_p3_numbering
 from . import test_p4_access_notify
 from . import test_p5_signing
 from . import test_p6_adapter
+from . import test_p7_sign_comment_edit
+from . import test_p8_take_back

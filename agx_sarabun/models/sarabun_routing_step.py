@@ -153,6 +153,18 @@ class SarabunRoutingStep(models.Model):
     delegated_to_id = fields.Many2one(
         "hr.employee", string="Delegated To", readonly=True
     )
+    # ความเห็นในการลงนาม — only for verbs with allow_sign_comment; `note` stays the
+    # plain-text return / reject reason.
+    sign_comment = fields.Html(string="ความเห็นในการลงนาม", readonly=True, copy=False)
+    sign_attachment_ids = fields.Many2many(
+        "ir.attachment",
+        relation="sarabun_routing_step_sign_attachment_rel",
+        column1="step_id",
+        column2="attachment_id",
+        string="เอกสารประกอบการลงนาม",
+        readonly=True,
+        copy=False,
+    )
 
     # === Signature snapshot (frozen at signing — ADR-0009) ===
     # ชื่อ / ตำแหน่ง / ลายเซ็น captured the instant this step is signed, so later edits
@@ -489,7 +501,12 @@ class SarabunRoutingStep(models.Model):
         vals = vals or {}
         actor = actor or self.env.user
         if self.state != "active":
-            raise UserError(_("This step is not active."))
+            raise UserError(
+                _(
+                    "This step is no longer awaiting action (it may have been taken "
+                    "back) — please reopen the document."
+                )
+            )
         if self.document_id.state != "circulating":
             raise UserError(_("The document is not circulating."))
         self._check_act_authority(actor)
@@ -512,6 +529,7 @@ class SarabunRoutingStep(models.Model):
         step = self.sudo()
         note = vals.get("note")
         if disposition == "complete":
+            step._write_sign_comment(vals, actor)
             step._do_complete(actor, note, vals.get("signed_as_position_id"))
         elif disposition == "direct":
             step._do_direct(actor, note, vals)
@@ -526,6 +544,95 @@ class SarabunRoutingStep(models.Model):
 
         # Generic per-step origin callback (same transaction — ADR-0004).
         step.document_id._call_origin("_on_sarabun_step", self, disposition)
+        if disposition == "return":
+            # every callback has read the returned step — drop the old round (ADR-0023)
+            step.document_id._purge_archived_steps()
+        return True
+
+    # ------------------------------------------------------------- take back
+    def _can_take_back(self, user):
+        """ดึงกลับ (take back): the actor of a completed step may reopen it while the
+        หนังสือ circulates and no later ลำดับ has acted (ADR-0024)."""
+        self.ensure_one()
+        doc = self.document_id
+        return (
+            doc.state == "circulating"
+            and self.state == "done"
+            and self.disposition == "complete"
+            and not self.is_originator
+            and self.acted_by_id == user
+            and not doc.routing_step_ids.filtered(
+                lambda s: s.order > self.order and s.state == "done"
+            )
+            # a gating step another gating actor also passed can't reopen its ลำดับ
+            and not (self.gating and self._other_gating_done())
+        )
+
+    def _other_gating_done(self):
+        self.ensure_one()
+        return self.document_id.routing_step_ids.filtered(
+            lambda s: s != self
+            and s.order == self.order
+            and s.gating
+            and s.state == "done"
+            and s.disposition in POSITIVE_DISPOSITIONS
+        )
+
+    def action_take_back(self, reason=None):
+        """Reopen my completed step to fix it and act again; the following ลำดับ
+        goes back to waiting. Not the sender's ดึงกลับแบบร่าง (which restarts the
+        whole Route)."""
+        self.ensure_one()
+        if not self._can_take_back(self.env.user):
+            raise UserError(
+                _("This step can no longer be taken back — the next ลำดับ has acted.")
+            )
+        step = self.sudo()
+        doc = step.document_id
+        if step.gating:
+            # reopening a gating step reopens its ลำดับ: the next one goes back to
+            # waiting, and the parallel gating steps retired when it passed return
+            later = doc.routing_step_ids.filtered(
+                lambda s: s.order > step.order and s.state == "active"
+            )
+            later._clear_activities()
+            later.recipient_ids.unlink()
+            later.write(
+                {"state": "waiting", "activated_date": False, "actor_user_ids": [(5,)]}
+            )
+            doc.routing_step_ids.filtered(
+                lambda s: s.order == step.order and s.state == "skipped"
+            ).write({"state": "waiting"})
+        files = step.sign_attachment_ids
+        step.write(
+            {
+                "state": "waiting",
+                "disposition": False,
+                "acted_by_id": False,
+                "acted_date": False,
+                "sent_date": False,
+                "signed_as_position_id": False,
+                "note": False,
+                "sign_comment": False,
+                "sign_attachment_ids": [(5,)],
+                "signed_name": False,
+                "signed_position_name": False,
+                "signed_signature": False,
+            }
+        )
+        files.unlink()
+        if step.gating:
+            doc._advance_stage()  # re-activates this ลำดับ (fresh to-dos), stops here
+        else:
+            step._activate()  # a non-gating step never held the ลำดับ back
+        body = _("ดึงกลับขั้นตอน %(verb)s โดย %(user)s") % {
+            "verb": step.verb.name,
+            "user": self.env.user.display_name,
+        }
+        if reason:
+            body += _(" — เหตุผล: %s") % reason
+        doc.message_post(body=body, subtype_xmlid="mail.mt_note")
+        doc._call_origin("_on_sarabun_step", self, "take_back")
         return True
 
     # --------------------------------------------------------- disposition core
@@ -557,6 +664,28 @@ class SarabunRoutingStep(models.Model):
         if disposition in POSITIVE_DISPOSITIONS and self.verb.issues_number:
             self.document_id._assign_register_number()
         self._clear_activities()
+
+    def _write_sign_comment(self, vals, actor):
+        """Store the ความเห็นในการลงนาม + its files. Only the actor's own unowned
+        uploads are taken — never another record's file."""
+        self.ensure_one()
+        if not self.verb.allow_sign_comment:
+            return
+        attachments = (
+            self.env["ir.attachment"]
+            .sudo()
+            .browse(vals.get("sign_attachment_ids") or [])
+            .filtered(lambda a: a.create_uid == actor and not a.res_id)
+        )
+        # owned by the step: readable by whoever reads the หนังสือ, kept out of its
+        # chatter attachment box, and write/unlink-locked (ir.attachment.check)
+        attachments.sudo().write({"res_model": self._name, "res_id": self.id})
+        self.write(
+            {
+                "sign_comment": vals.get("sign_comment") or False,
+                "sign_attachment_ids": [(6, 0, attachments.ids)],
+            }
+        )
 
     def _signature_snapshot_vals(self, actor, capacity=False):
         """Snapshot the signer's rendered identity — ชื่อ / ตำแหน่ง / ลายเซ็น — at the

@@ -17,15 +17,24 @@ class SarabunRecallWizard(models.TransientModel):
         [
             ("pull_back", "ดึงกลับ — เก็บเลข แก้ไขแล้วส่งใหม่ (Recall, keep number)"),
             ("cancel_send", "ยกเลิกการส่ง — ยกเลิกเลข ปิดเรื่อง (Cancel-send, void)"),
+            ("take_back", "ดึงกลับ — เปิดขั้นตอนของฉันอีกครั้งเพื่อแก้ไข (Take back)"),
         ],
         string="การดำเนินการ (Action)",
         required=True,
-        default="pull_back",
+        default=lambda self: self.env.context.get("sarabun_recall_mode")
+        or "pull_back",
     )
-    reason = fields.Text(string="เหตุผล (Reason)", required=True)
+    # required except for ดึงกลับ (take back) — see the view
+    reason = fields.Text(string="เหตุผล (Reason)")
 
     def action_confirm(self):
         self.ensure_one()
+        if self.mode == "take_back":
+            step = self.document_id.my_take_back_step_id
+            if not step:
+                raise UserError(_("You have no step to take back on this document."))
+            step.action_take_back(self.reason)
+            return {"type": "ir.actions.act_window_close"}
         if not self.reason:
             raise UserError(_("A reason is required."))
         if self.mode == "pull_back":

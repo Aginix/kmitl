@@ -2,7 +2,7 @@
 {
     "name": "e-Sarabun — Routing Timeline Preview",
     "summary": "Visual routing-timeline preview for e-Sarabun documents",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.0.1",
     "category": "KMITL/Correspondence",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",

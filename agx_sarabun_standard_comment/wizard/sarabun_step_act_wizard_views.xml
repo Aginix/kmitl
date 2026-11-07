@@ -5,16 +5,15 @@
         <field name="model">sarabun.step.act.wizard</field>
         <field name="inherit_id" ref="agx_sarabun.view_sarabun_step_act_wizard_form" />
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='note']" position="before">
+            <!-- Shown wherever a comment box is: ตีกลับ reason or ความเห็นในการลงนาม. -->
+            <xpath expr="//label[@for='note']" position="before">
                 <field
                     name="standard_comment_id"
+                    string="ข้อความมาตรฐาน"
                     placeholder="----- เลือกความเห็นมาตรฐาน -----"
                     widget="selection"
-                    nolabel="1"
+                    attrs="{'invisible': [('disposition', '=', 'complete'), ('step_allow_sign_comment', '=', False)]}"
                 />
-                <p name="text" class="lead">
-                    และ/หรือพิมพ์ความเห็นเอง (ระบุ)
-                </p>
             </xpath>
         </field>
     </record>

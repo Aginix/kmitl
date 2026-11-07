@@ -7,8 +7,11 @@
             <form string="ดึงกลับ / ยกเลิกการส่ง">
                 <field name="document_id" invisible="1"/>
                 <group>
-                    <field name="mode" widget="radio"/>
-                    <field name="reason" placeholder="ระบุเหตุผล / reason..."/>
+                    <!-- Locked by the header button (⏪ ดึงกลับแบบร่าง / 🚫 ยกเลิกการส่ง /
+                         🔙 ดึงกลับ); the reason is optional only for 🔙 ดึงกลับ. -->
+                    <field name="mode" invisible="1"/>
+                    <field name="reason" placeholder="ระบุเหตุผล / reason..."
+                           attrs="{'required': [('mode', '!=', 'take_back')]}"/>
                 </group>
                 <footer>
                     <button name="action_confirm" type="object" string="ยืนยัน (Confirm)"

@@ -24,8 +24,15 @@
                     t-as="sig"
                     style="margin-bottom: 42px; page-break-inside: avoid;"
                 >
+                    <!-- ความเห็นในการลงนาม (Html); legacy rows carry a plain-text note. -->
                     <div
-                        t-if="sig.note"
+                        t-if="sig.sign_comment"
+                        style="min-width: 300px; max-width: 750px; width: -webkit-fit-content; width: fit-content; margin-left:auto;"
+                    >
+                        <div t-out="sig.sign_comment" />
+                    </div>
+                    <div
+                        t-elif="sig.note"
                         style="min-width: 300px; max-width: 750px; width: -webkit-fit-content; width: fit-content; margin-left:auto; white-space: pre-line;"
                     >
                         <div t-out="sig.note" />
@@ -57,6 +64,11 @@
                             t-if="sig.acted_date"
                             t-out="doc.format_datetime_thai_sign(sig.acted_date)"
                         />
+                      <!-- เอกสารประกอบการลงนาม — filenames last, after the date. -->
+                      <div
+                            t-foreach="sig.sign_attachment_ids"
+                            t-as="sig_file"
+                        >แนบ: <span t-out="sig_file.name" /></div>
                     </div>
                 </div>
             </div>

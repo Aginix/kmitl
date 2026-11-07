@@ -74,6 +74,20 @@
             <field name="perm_unlink" eval="False"/>
         </record>
 
+        <!-- Content editor (WRITE): a holder of an active แก้ไขเอกสารได้ step may edit
+             the หนังสือ while it circulates; write() limits them to the content
+             fields (ADR-0022). Also lets them upload สิ่งที่ส่งมาด้วย files. -->
+        <record id="sarabun_document_content_editor_rule" model="ir.rule">
+            <field name="name">Sarabun Document: Content Editor (write)</field>
+            <field name="model_id" ref="model_sarabun_document"/>
+            <field name="groups" eval="[(4, ref('group_sarabun_user'))]"/>
+            <field name="domain_force">[('content_editor_user_ids', 'in', user.id)]</field>
+            <field name="perm_read" eval="False"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
         <!-- Follower (READ ONLY): a user who follows the หนังสือ may open it. Explicit
              exception to the reached-actor key (ADR-0013): sharing = add a follower.
              Write/delete stay sender-only. Note: a sender's chatter "Send message"

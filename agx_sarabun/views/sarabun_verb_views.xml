@@ -12,6 +12,9 @@
                 <field name="show_signature" widget="boolean_toggle"/>
                 <field name="is_signature" widget="boolean_toggle"/>
                 <field name="issues_number" widget="boolean_toggle"/>
+                <field name="allow_sign_comment" widget="boolean_toggle" optional="show"/>
+                <field name="can_edit_document" widget="boolean_toggle" optional="show"/>
+                <field name="button_emoji" optional="show"/>
                 <field name="active" widget="boolean_toggle"/>
             </tree>
         </field>
@@ -47,6 +50,10 @@
                             <field name="show_signature"/>
                             <field name="is_signature"/>
                             <field name="issues_number"/>
+                            <field name="allow_sign_comment"
+                                   attrs="{'invisible': [('show_signature', '=', False)]}"/>
+                            <field name="can_edit_document"/>
+                            <field name="button_emoji" placeholder="✍️ / ✅ / 👀"/>
                         </group>
                     </group>
                     <div class="text-muted">
@@ -57,7 +64,10 @@
                         <strong>ลายเซ็นเชิงอำนาจ (Authoritative sign)</strong> also blocks
                         Recall and always shows; <strong>ออกเลขที่หนังสือ (Issues
                         number)</strong> gives the หนังสือ its official number when the
-                        step is completed. The built-in verbs are referenced by the
+                        step is completed. <strong>เปิดให้ใส่ความเห็นในการลงนาม</strong>
+                        lets the signer add a rich-text ความเห็น and attachments to the
+                        signature block; <strong>แก้ไขเอกสารได้</strong> lets the step's
+                        holder edit the หนังสือ while the step is active. The built-in verbs are referenced by the
                         engine via their XML id — relabel freely, but don't delete them.
                         Each verb owns an <strong>Activity Type</strong> named after it
                         (the to-do its holder sees); its name and archive state follow

@@ -3,7 +3,6 @@
 import { registry } from "@web/core/registry";
 import { standardWidgetProps } from "@web/views/widgets/standard_widget_props";
 import { useService } from "@web/core/utils/hooks";
-import { Dialog } from "@web/core/dialog/dialog";
 
 const { Component, useState } = owl;
 
@@ -11,17 +10,14 @@ const COLLAPSE_STORAGE_KEY = "sarabun.timeline.collapsed";
 
 /**
  * Vertical routing-timeline visual for sarabun.document. Renders the current
- * attempt's Route (or an archived attempt) as a top-to-bottom sequence of
+ * Route as a top-to-bottom sequence of
  * Stage rows; parallel steps within a Stage sit side-by-side; step cards are
  * colored by state/disposition. Read-only — no click-to-open, no acting here.
  *
- * Two adapters register this component into the framework:
- *   - SarabunRoutingTimelineWidget: a view widget used as
- *     <widget name="sarabun_routing_timeline"/> inside a form or wizard; reads
- *     its data from the record's routing_preview_json field.
- *   - SarabunRoutingTimelineDialog: a client action tag
- *     "sarabun_routing_timeline_archive" that opens a dialog listing every
- *     archived attempt as its own timeline.
+ * SarabunRoutingTimelineWidget registers it as a view widget
+ * (<widget name="sarabun_routing_timeline"/>) inside a form or wizard; it reads
+ * its data from the record's routing_preview_json field. No attempt history is
+ * kept any more (ADR-0023), so there is no history dialog.
  */
 export class SarabunRoutingTimeline extends Component {
     stepClass(step) {
@@ -68,7 +64,6 @@ SarabunRoutingTimeline.props = {
     open: { type: Boolean, optional: true },
     showToggle: { type: Boolean, optional: true },
     onToggle: { type: Function, optional: true },
-    onOpenHistory: { type: Function, optional: true },
 };
 SarabunRoutingTimeline.defaultProps = {
     open: true,
@@ -110,11 +105,11 @@ export class SarabunRoutingTimelineWidget extends Component {
 
     get payload() {
         const raw = this.props.record.data.routing_preview_json;
-        if (!raw) return { attempt_seq: 1, has_history: false, stages: [] };
+        if (!raw) return { stages: [] };
         try {
             return JSON.parse(raw);
         } catch (e) {
-            return { attempt_seq: 1, has_history: false, stages: [] };
+            return { stages: [] };
         }
     }
 
@@ -124,18 +119,6 @@ export class SarabunRoutingTimelineWidget extends Component {
             this._writeStoredCollapsed(!this.state.open);
         }
     }
-
-    async openHistory() {
-        const docId = this.props.record.resId
-            || (this.props.record.data.document_id && this.props.record.data.document_id[0]);
-        if (!docId) return;
-        const action = await this.orm.call(
-            "sarabun.document",
-            "action_open_routing_history",
-            [[docId]],
-        );
-        await this.action.doAction(action);
-    }
 }
 SarabunRoutingTimelineWidget.template = "agx_sarabun_preview.SarabunRoutingTimelineWidget";
 SarabunRoutingTimelineWidget.components = { SarabunRoutingTimeline };
@@ -144,22 +127,3 @@ SarabunRoutingTimelineWidget.props = { ...standardWidgetProps };
 registry
     .category("view_widgets")
     .add("sarabun_routing_timeline", SarabunRoutingTimelineWidget);
-
-/**
- * Client action tag "sarabun_routing_timeline_archive": opens a dialog listing
- * every archived attempt as its own timeline. Data arrives pre-rendered in
- * action.params.attempts so no extra RPC fires when the modal opens.
- */
-export class SarabunRoutingTimelineDialog extends Component {
-    setup() {
-        const params = (this.props.action && this.props.action.params) || {};
-        this.attempts = params.attempts || [];
-    }
-}
-SarabunRoutingTimelineDialog.template = "agx_sarabun_preview.SarabunRoutingTimelineDialog";
-SarabunRoutingTimelineDialog.components = { Dialog, SarabunRoutingTimeline };
-SarabunRoutingTimelineDialog.props = ["*"];
-
-registry
-    .category("actions")
-    .add("sarabun_routing_timeline_archive", SarabunRoutingTimelineDialog);

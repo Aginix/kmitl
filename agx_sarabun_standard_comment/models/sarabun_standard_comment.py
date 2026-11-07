@@ -6,9 +6,8 @@ Actors repeatedly type the same standard phrases when they act on a routing step
 Act-on-step wizard offers them as a picker that fills its เกษียน comment box, and
 a ``sarabun.verb`` may name one as its default so the comment pre-fills on open.
 
-``body`` is plain ``Text`` on purpose: the wizard's target
-``sarabun.step.act.wizard.note`` is a ``fields.Text``, so an Html body would
-inject markup into a plain-text comment.
+``body`` is plain ``Text``: it fills both the plain-text ตีกลับ reason and the
+Html ความเห็นในการลงนาม (converted with plaintext2html).
 """
 from odoo import fields, models
 

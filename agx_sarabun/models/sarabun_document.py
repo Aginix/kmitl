@@ -11,11 +11,25 @@ import base64
 import logging
 
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError, ValidationError
+from odoo.exceptions import AccessError, UserError, ValidationError
+from odoo.tools import html2plaintext
 
 from .sarabun_routing_step import POSITIVE_DISPOSITIONS
 
 _logger = logging.getLogger(__name__)
+
+# What a แก้ไขเอกสารได้ step holder may change while circulating (ADR-0022).
+CONTENT_EDITOR_FIELDS = {
+    "subject",
+    "addressee_prefix_id",
+    "addressee",
+    "include_content",
+    "content",
+    "remark",
+    "enclosure_attachment_ids",
+    "reference_document_ids",
+    "reference_line_ids",
+}
 
 
 class SarabunDocument(models.Model):
@@ -224,15 +238,16 @@ class SarabunDocument(models.Model):
         # conversion then hands back an empty set, so every reader saw nothing.
         context={"active_test": False},
         copy=False,
-        help="Frozen steps of closed attempts (kept for the เกษียน trail).",
+        help="Steps set aside during a ตีกลับ / ดึงกลับ / Reset — deleted when the flow "
+        "ends (ADR-0023), so normally empty.",
     )
     attempt_seq = fields.Integer(
         string="Attempt",
         default=1,
         readonly=True,
         copy=False,
-        help="Generation counter bumped on each re-send so prior attempts survive "
-        "as history (ADR-0002 §3.4).",
+        help="Legacy attempt counter — no attempt history is kept any more, so it "
+        "stays 1 (ADR-0023).",
     )
     reached_user_ids = fields.Many2many(
         comodel_name="res.users",
@@ -282,6 +297,48 @@ class SarabunDocument(models.Model):
         "step, or (once they have acted) their most recent completed step. Backs the "
         "incoming-box columns (read status / received / verb) so they stay populated "
         "after the user has acted.",
+    )
+    my_step_button_label = fields.Char(
+        compute="_compute_my_step_actions",
+        help="Label of the act button: the verb's emoji + name.",
+    )
+    # Last ตีกลับ — kept on the หนังสือ because the returned step is purged with its
+    # round (ADR-0023); shown as a banner while returned, cleared once it leaves.
+    returned_by_id = fields.Many2one("res.users", string="ตีกลับโดย", readonly=True, copy=False)
+    returned_date = fields.Datetime(string="วันที่ตีกลับ", readonly=True, copy=False)
+    returned_step_name = fields.Char(string="ขั้นตอนที่ตีกลับ", readonly=True, copy=False)
+    returned_reason = fields.Text(string="เหตุผลการตีกลับ", readonly=True, copy=False)
+    my_take_back_step_id = fields.Many2one(
+        comodel_name="sarabun.routing.step",
+        compute="_compute_my_step_actions",
+        help="My last completed step I may still ดึงกลับ (take back) — the next "
+        "ลำดับ has not acted yet (ADR-0024).",
+    )
+    my_step_can_return = fields.Boolean(
+        compute="_compute_my_step_actions",
+        help="My active step is gating, so ตีกลับ is offered.",
+    )
+    content_editor_user_ids = fields.Many2many(
+        comodel_name="res.users",
+        relation="sarabun_document_content_editor_rel",
+        column1="document_id",
+        column2="user_id",
+        compute="_compute_content_editor_user_ids",
+        store=True,
+        string="ผู้แก้ไขเอกสารได้ (Content editors)",
+        help="Holders of an active แก้ไขเอกสารได้ step — may edit the หนังสือ while "
+        "it circulates (ADR-0022).",
+    )
+    can_edit_content = fields.Boolean(compute="_compute_can_edit_content")
+    is_content_editable = fields.Boolean(
+        compute="_compute_can_edit_content",
+        help="The content fields are open: the ผู้จัดทำ's draft / returned หนังสือ, or "
+        "a แก้ไขเอกสารได้ holder's circulating one.",
+    )
+    sign_attachment_ids = fields.Many2many(
+        comodel_name="ir.attachment",
+        compute="_compute_sign_attachment_ids",
+        string="เอกสารประกอบการลงนาม",
     )
     pending_ack_count = fields.Integer(
         compute="_compute_routing_progress",
@@ -419,10 +476,80 @@ class SarabunDocument(models.Model):
         return docs
 
     def write(self, vals):
+        if vals.get("state") and vals["state"] != "returned":
+            vals = dict(vals, **self._returned_clear_vals())
+        editing = self._content_editor_records()
+        if editing and set(vals) - editing._content_editor_allowed_fields():
+            raise AccessError(
+                _("ระหว่างเวียนหนังสือ แก้ไขได้เฉพาะ เรื่อง / เรียน / เนื้อหา / อ้างถึง / "
+                  "หมายเหตุ / สิ่งที่ส่งมาด้วย")
+            )
+        before = {d.id: {f: d[f] for f in vals} for d in editing}
         res = super().write(vals)
         if "enclosure_attachment_ids" in vals:
             self._adopt_enclosures()
+        for doc in editing:
+            doc._log_content_edit(
+                [
+                    f
+                    for f in vals
+                    if f in CONTENT_EDITOR_FIELDS
+                    and doc._content_changed(f, before[doc.id][f])
+                ]
+            )
         return res
+
+    @api.model
+    def _returned_clear_vals(self):
+        return {
+            "returned_by_id": False,
+            "returned_date": False,
+            "returned_step_name": False,
+            "returned_reason": False,
+        }
+
+    def _content_editor_allowed_fields(self):
+        """Fields a แก้ไขเอกสารได้ holder may write; add-ons may widen it."""
+        return CONTENT_EDITOR_FIELDS
+
+    def _content_changed(self, fname, old):
+        # The Html editor re-sends an untouched เนื้อหา with re-measured tab widths;
+        # compare its text, not its markup.
+        ftype = self._fields[fname].type
+        if ftype == "html":
+            return html2plaintext(self[fname] or "") != html2plaintext(old or "")
+        if ftype == "one2many":
+            # line edits keep the same ids; the form only sends dirty o2m commands
+            return True
+        return self[fname] != old
+
+    def _content_editor_records(self):
+        """Records the current user writes as a แก้ไขเอกสารได้ holder (not as the
+        ผู้จัดทำ / manager / engine) — ADR-0022."""
+        if self.env.su:
+            return self.browse()
+        # cheap state filter first: only a circulating หนังสือ has content editors
+        circulating = self.filtered(lambda d: d.state == "circulating")
+        if not circulating or self.env.user.has_group(
+            "agx_sarabun.group_sarabun_manager"
+        ):
+            return self.browse()
+        user = self.env.user
+        return circulating.filtered(
+            lambda d: d.sender_user_id != user and user in d.content_editor_user_ids
+        )
+
+    def _log_content_edit(self, fnames):
+        self.ensure_one()
+        if not fnames:
+            return
+        labels = ", ".join(
+            self._fields[f].get_description(self.env)["string"] for f in sorted(fnames)
+        )
+        self.message_post(
+            body=_("แก้ไขเอกสารระหว่างเวียน: %s") % labels,
+            subtype_xmlid="mail.mt_note",
+        )
 
     def _adopt_enclosures(self):
         """Keep every enclosure owned by its own หนังสือ, so whoever can read the
@@ -435,6 +562,13 @@ class SarabunDocument(models.Model):
           original owner keeps its file."""
         for doc in self:
             enclosures = doc.enclosure_attachment_ids.sudo()
+            if not self.env.su:
+                # Only files the writer may read themselves: the sudo adopt below
+                # would otherwise publish any linked attachment to the หนังสือ.
+                others = enclosures.filtered(
+                    lambda a: (a.res_model, a.res_id) != (self._name, doc.id)
+                )
+                others.with_env(self.env).check("read")
             orphans = enclosures.filtered(lambda a: not a.res_id)
             if orphans:
                 orphans.write({"res_model": self._name, "res_id": doc.id})
@@ -547,11 +681,10 @@ class SarabunDocument(models.Model):
         "archived_step_ids.recipient_ids.user_id",
     )
     def _compute_reached_user_ids(self):
-        """Aggregate every recipient holder across ACTIVE and ARCHIVED steps
-        (ADR-0013). Recipient rows carry a stored ``document_id``, so a direct
-        search — under ``sudo`` and ``active_test=False`` — spans archived attempts
-        that the ``active``-scoped ``routing_step_ids`` traversal would drop. The
-        field only ever grows (rows are never deleted), so read never lapses."""
+        """Aggregate every recipient holder of the หนังสือ (ADR-0013). A direct
+        search by the stored ``document_id`` (``sudo``, ``active_test=False``) also
+        covers steps set aside mid-flow; the old round's rows are deleted with it
+        (ADR-0023), so only the current Route's holders remain."""
         Recipient = (
             self.env["sarabun.step.recipient"].sudo().with_context(active_test=False)
         )
@@ -601,6 +734,7 @@ class SarabunDocument(models.Model):
         "routing_step_ids.actor_user_ids",
         "routing_step_ids.recipient_ids.user_id",
     )
+    @api.depends_context("uid")
     def _compute_my_active_step(self):
         uid = self.env.user
         for record in self:
@@ -622,6 +756,59 @@ class SarabunDocument(models.Model):
                 active or my_recips.sorted(key=lambda r: (r.step_id.order, r.id))[-1:]
             )
             record.my_reaching_step_id = reaching.step_id
+
+    @api.depends(
+        "state",
+        "routing_step_ids.state",
+        "routing_step_ids.actor_user_ids",
+        "routing_step_ids.acted_by_id",
+    )
+    @api.depends_context("uid")
+    def _compute_my_step_actions(self):
+        """Form-only header buttons — kept out of _compute_my_active_step, which
+        the incoming-box list also triggers."""
+        uid = self.env.user
+        for record in self:
+            active = record.routing_step_ids.filtered(
+                lambda s: s.state == "active" and uid in s.actor_user_ids
+            )[:1]
+            record.my_step_button_label = (
+                active.verb._button_label() if active.verb else False
+            )
+            record.my_step_can_return = active.gating
+            mine = record.routing_step_ids.filtered(
+                lambda s: s.state == "done" and s.acted_by_id == uid
+            ).sorted("order", reverse=True)
+            record.my_take_back_step_id = mine.filtered(
+                lambda s: s._can_take_back(uid)
+            )[:1]
+
+    @api.depends(
+        "state",
+        "routing_step_ids.state",
+        "routing_step_ids.actor_user_ids",
+        "routing_step_ids.verb.can_edit_document",
+    )
+    def _compute_content_editor_user_ids(self):
+        for record in self:
+            steps = record.routing_step_ids.filtered(
+                lambda s: s.state == "active" and s.verb.can_edit_document
+            )
+            record.content_editor_user_ids = (
+                steps.actor_user_ids if record.state == "circulating" else False
+            )
+
+    @api.depends("content_editor_user_ids", "state", "sender_user_id")
+    @api.depends_context("uid")
+    def _compute_can_edit_content(self):
+        for record in self:
+            record.can_edit_content = self.env.user in record.content_editor_user_ids
+            record.is_content_editable = record.is_editable or record.can_edit_content
+
+    @api.depends("routing_step_ids.sign_attachment_ids")
+    def _compute_sign_attachment_ids(self):
+        for record in self:
+            record.sign_attachment_ids = record.routing_step_ids.sign_attachment_ids
 
     # Depend on the real routing_step_ids O2m (searchable), not the non-stored
     # my_reaching_step_id — Odoo can't resolve reverse triggers (e.g. when a verb
@@ -859,7 +1046,6 @@ class SarabunDocument(models.Model):
                     "is_originator": True,
                     "target_mode": "person",
                     "employee_id": self.sender_user_id.employee_id.id,
-                    "attempt_seq": self.attempt_seq or 1,
                     "created_by_disposition": "seed",
                     "state": "waiting",
                 },
@@ -938,6 +1124,7 @@ class SarabunDocument(models.Model):
         self.state = "returned"
         self.message_post(body=_("Document pulled back (ดึงกลับ). Reason: %s") % reason)
         self._call_origin("_on_sarabun_recalled", self)
+        self._purge_archived_steps()
         return True
 
     def action_recall(self, reason=None):
@@ -958,16 +1145,27 @@ class SarabunDocument(models.Model):
         self._call_origin("_on_sarabun_cancelled", self)
         return True
 
+    def action_open_take_back_wizard(self):
+        """🔙 ดึงกลับ — reopen my last completed step (ADR-0024)."""
+        self.ensure_one()
+        return self.with_context(sarabun_recall_mode="take_back").action_open_recall_wizard()
+
     def action_open_recall_wizard(self):
         """Open the ดึงกลับ / ยกเลิกการส่ง wizard (collects the mandatory reason)."""
         self.ensure_one()
+        # Set by the header button: ⏪ ดึงกลับ (pull_back) or 🚫 ยกเลิกการส่ง.
+        mode = self.env.context.get("sarabun_recall_mode") or "pull_back"
         return {
             "type": "ir.actions.act_window",
-            "name": _("ดึงกลับ / ยกเลิกการส่ง"),
+            "name": {
+                "pull_back": _("⏪ ดึงกลับแบบร่าง"),
+                "cancel_send": _("🚫 ยกเลิกการส่ง"),
+                "take_back": _("🔙 ดึงกลับ"),
+            }.get(mode, _("ดึงกลับ / ยกเลิกการส่ง")),
             "res_model": "sarabun.recall.wizard",
             "view_mode": "form",
             "target": "new",
-            "context": {"default_document_id": self.id},
+            "context": {"default_document_id": self.id, "sarabun_recall_mode": mode},
         }
 
     def action_act_on_my_step(self):
@@ -975,13 +1173,22 @@ class SarabunDocument(models.Model):
         self.ensure_one()
         if not self.my_active_step_id:
             raise UserError(_("You have no pending action on this document."))
+        # Set by the header button: ✍️ <verb> (complete) or ↩️ ตีกลับ (return).
+        disposition = self.env.context.get("sarabun_disposition") or "complete"
         return {
             "type": "ir.actions.act_window",
-            "name": _("Act on Step"),
+            "name": self.my_step_button_label
+            if disposition == "complete"
+            else _("↩️ ตีกลับ"),
             "res_model": "sarabun.step.act.wizard",
             "view_mode": "form",
             "target": "new",
-            "context": {"default_step_id": self.my_active_step_id.id},
+            "context": {
+                "default_step_id": self.my_active_step_id.id,
+                # not default_disposition: it would leak into the steps the
+                # engine creates on ตีกลับ (sarabun.routing.step.disposition).
+                "sarabun_disposition": disposition,
+            },
         }
 
     # The awaiting-action surface is native mail.activity now (ADR-0014): the
@@ -1008,10 +1215,7 @@ class SarabunDocument(models.Model):
         if not template:
             return
         self.route_template_id = template
-        self.routing_step_ids = [
-            (0, 0, dict(line._seed_vals(), attempt_seq=self.attempt_seq or 1))
-            for line in template.line_ids
-        ]
+        self.routing_step_ids = [(0, 0, line._seed_vals()) for line in template.line_ids]
 
     def action_seed_route_from_template(self):
         """Button (draft/returned): (re)load the Route from ``route_template_id``.
@@ -1096,11 +1300,18 @@ class SarabunDocument(models.Model):
     def _do_return(self, step, destination="sender_restart", resume_step_id=None):
         """ตีกลับ — send back for revision; destination chosen by the returner.
 
-        Archive-not-overwrite (ADR-0006): the current attempt is ALWAYS frozen as
-        history (``active=False``, ``attempt_seq`` bumped) — never reset in place.
-        The new attempt recreates either the whole live เส้นทาง verbatim (restart) or
-        just the chosen resume step onward (resume), leaving the prior chain intact."""
+        The current round is set aside and deleted once the flow ends — no attempt
+        history (ADR-0023). The new round recreates either the whole live เส้นทาง
+        verbatim (restart) or just the chosen resume step onward (resume)."""
         self.ensure_one()
+        self.write(
+            {
+                "returned_by_id": step.acted_by_id.id,
+                "returned_date": step.acted_date,
+                "returned_step_name": step.verb.name,
+                "returned_reason": step.note,
+            }
+        )
         self.routing_step_ids._clear_activities()  # drop to-dos before archive
         if destination == "resume_step" and resume_step_id:
             resume = self.env["sarabun.routing.step"].browse(int(resume_step_id))
@@ -1111,17 +1322,18 @@ class SarabunDocument(models.Model):
             ).sorted("order")
             seeds = [s._resume_seed_vals() for s in tail]
             self._bump_attempt_and_archive()
-            new_seq = self.attempt_seq or 1
-            self.routing_step_ids = [
-                (0, 0, dict(v, attempt_seq=new_seq)) for v in seeds
-            ]
+            self.routing_step_ids = [(0, 0, v) for v in seeds]
             self._ensure_originator_step()  # resume tail starts above row 1 — re-add it
         else:
             # Restart on the SAME เส้นทาง — never re-seed from the template, which
             # would wipe the sender's route edits and runtime insertions.
             self._recreate_chain_verbatim()
         self.state = "returned"
-        self.message_post(body=_("Document returned for revision (ตีกลับ)."))
+        # The returned step is purged with its attempt (ADR-0023) — keep the reason.
+        self.message_post(
+            body=_("Document returned for revision (ตีกลับ). Reason: %s")
+            % (step.note or "-")
+        )
         self._call_origin("_on_sarabun_returned", self, step)
 
     def _do_reject(self, step):
@@ -1137,7 +1349,9 @@ class SarabunDocument(models.Model):
         self._call_origin("_on_sarabun_rejected", self, step)
 
     def _bump_attempt_and_archive(self):
-        """Freeze the current attempt's steps as history and start a new attempt.
+        """Set the current steps aside (``active=False``) so callbacks can still read
+        them; ``_purge_archived_steps`` deletes them once the flow is done. No attempt
+        history is kept (ADR-0023).
 
         sudo: archiving is an ENGINE write over the whole chain — the originator row
         included — so it must pass the ผู้จัดทำ/ผู้ส่ง write-guard. Without it the
@@ -1145,7 +1359,22 @@ class SarabunDocument(models.Model):
         sudoed ตีกลับ) died on "the ผู้จัดทำ/ผู้ส่ง step is fixed"."""
         self.ensure_one()
         self.routing_step_ids.sudo().write({"active": False})
-        self.attempt_seq = (self.attempt_seq or 1) + 1
+        # Safety net: whichever flow archives, the old round is gone by commit even
+        # if a caller forgets the explicit purge (flows purge earlier themselves).
+        self.env.cr.precommit.add(self.sudo()._purge_archived_steps)
+
+    def _purge_archived_steps(self):
+        """Delete the set-aside steps of the previous round with their recipients,
+        to-do links and sign attachments (ADR-0023). Followers stay: who once
+        received the หนังสือ keeps reading it."""
+        Step = self.env["sarabun.routing.step"].sudo().with_context(active_test=False)
+        for doc in self:
+            old = Step.search([("document_id", "=", doc.id), ("active", "=", False)])
+            if not old:
+                continue
+            files = old.sign_attachment_ids
+            old.unlink()  # Odoo also drops the attachments the steps own
+            files.exists().sudo().unlink()
 
     def _restart_chain(self):
         """Archive the current chain and re-seed a fresh waiting one for a restart
@@ -1158,13 +1387,11 @@ class SarabunDocument(models.Model):
         self._bump_attempt_and_archive()
         self._seed_route_from_template()
         if not self.routing_step_ids:
-            new_seq = self.attempt_seq or 1
-            self.routing_step_ids = [
-                (0, 0, dict(v, attempt_seq=new_seq)) for v in seeds
-            ]
+            self.routing_step_ids = [(0, 0, v) for v in seeds]
         # The archived attempt's originator is now inactive — re-add it (unless the
         # recreated seeds already carried one) so the new attempt keeps its row 1.
         self._ensure_originator_step()
+        self._purge_archived_steps()
 
     def _recreate_chain_verbatim(self):
         """Archive the current attempt and recreate the SAME เส้นทาง exactly (ดึงกลับ and
@@ -1183,8 +1410,7 @@ class SarabunDocument(models.Model):
             for step in self.routing_step_ids.sorted("order")
         ]
         self._bump_attempt_and_archive()
-        new_seq = self.attempt_seq or 1
-        self.routing_step_ids = [(0, 0, dict(v, attempt_seq=new_seq)) for v in seeds]
+        self.routing_step_ids = [(0, 0, v) for v in seeds]
         # Defensive: seeds already carry the originator row, so this is normally a no-op.
         self._ensure_originator_step()
 

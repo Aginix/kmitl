@@ -1,6 +1,6 @@
 {
     "name": "e-Sarabun Todos",
-    "version": "16.0.1.1.0",
+    "version": "16.0.1.2.0",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL/Correspondence",
@@ -16,6 +16,7 @@
     ],
     "data": [
         "data/mail_activity_completed_data.xml",
+        "data/mail_activity_returned_data.xml",
         "views/res_users_views.xml",
         "views/sarabun_verb_views.xml",
     ],

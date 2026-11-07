@@ -40,6 +40,8 @@ export class SarabunPdfInline extends Component {
             d.pending_ack_count,
             d.has_signed,
             activeStep && activeStep[0],
+            // a แก้ไขเอกสารได้ holder's saved edit (ADR-0022)
+            d.write_date,
         ].join("-");
     }
     get previewUrl() {

@@ -18,15 +18,6 @@
                     <span class="ms-1">เส้นทางการเดินเรื่อง (Preview)</span>
                 </button>
                 <span t-if="!props.showToggle" class="fw-bold">เส้นทางการเดินเรื่อง (Preview)</span>
-                <span t-if="props.data and props.data.has_history"
-                      class="ms-auto text-muted small">
-                    <a href="#"
-                       class="text-decoration-none"
-                       t-on-click.prevent="() => props.onOpenHistory and props.onOpenHistory()">
-                        ครั้งที่ <t t-esc="props.data.attempt_seq"/>
-                        (มีประวัติ <t t-esc="props.data.attempt_seq - 1"/> ครั้งก่อนหน้า)
-                    </a>
-                </span>
             </div>
 
             <div t-if="props.open" class="o_sarabun_timeline_body">
@@ -113,36 +104,8 @@
                 data="payload"
                 open="state.open"
                 showToggle="true"
-                onToggle="() => this.toggle()"
-                onOpenHistory="() => this.openHistory()"/>
+                onToggle="() => this.toggle()"/>
         </div>
-    </t>
-
-    <!-- Archive modal: one <details> per archived attempt. -->
-    <t t-name="agx_sarabun_preview.SarabunRoutingTimelineDialog" owl="1">
-        <Dialog title="'ประวัติการเดินเรื่อง'" size="'xl'">
-            <div class="o_sarabun_timeline_history">
-                <t t-if="!attempts.length">
-                    <div class="text-muted fst-italic p-3">ไม่มีประวัติการเดินเรื่อง</div>
-                </t>
-                <t t-else="">
-                    <t t-foreach="attempts" t-as="attempt" t-key="attempt.attempt_seq">
-                        <details class="mb-3" t-att-open="attempt_first ? 'open' : undefined">
-                            <summary class="fw-bold">
-                                ครั้งที่ <t t-esc="attempt.attempt_seq"/>
-                                (<t t-esc="attempt.stages.length"/> ลำดับ)
-                            </summary>
-                            <div class="mt-2">
-                                <SarabunRoutingTimeline
-                                    data="attempt"
-                                    open="true"
-                                    showToggle="false"/>
-                            </div>
-                        </details>
-                    </t>
-                </t>
-            </div>
-        </Dialog>
     </t>
 
 </templates>

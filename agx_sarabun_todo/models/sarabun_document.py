@@ -37,3 +37,50 @@ class SarabunDocument(models.Model):
             note=Markup("<p>%s</p>") % _("หนังสือดำเนินการเสร็จสิ้นแล้ว"),
             user_id=creator.id,
         )
+
+    def _do_return(self, step, destination="sender_restart", resume_step_id=None):
+        """Tell the creator their หนังสือ was ตีกลับ — core only logs an internal
+        note, so nothing reaches them otherwise."""
+        res = super()._do_return(
+            step, destination=destination, resume_step_id=resume_step_id
+        )
+        self._notify_creator_returned(step)
+        return res
+
+    def _notify_creator_returned(self, step):
+        self.ensure_one()
+        creator = self.sender_user_id
+        xmlid = "agx_sarabun_todo.mail_activity_sarabun_returned"
+        if not creator or not self.env.ref(xmlid, raise_if_not_found=False):
+            return
+        note = _(
+            "หนังสือถูกตีกลับโดย %(who)s — เหตุผล: %(reason)s",
+            who=step.acted_by_id.name or "",
+            reason=step.note or "-",
+        )
+        self.activity_schedule(
+            act_type_xmlid=xmlid,
+            summary=self._activity_subject() or _("หนังสือถูกตีกลับ"),
+            note=Markup("<p>%s</p>") % note,
+            user_id=creator.id,
+        )
+
+    def write(self, vals):
+        """Leaving ตีกลับ (re-send, Reset to draft, …) is the creator acting on the
+        ตีกลับ Todo — close it (Execution: never by Mark as Read)."""
+        returned = self.browse()
+        if vals.get("state", "returned") != "returned":
+            returned = self.filtered(lambda d: d.state == "returned")
+        res = super().write(vals)
+        returned_type = returned and self.env.ref(
+            "agx_sarabun_todo.mail_activity_sarabun_returned", raise_if_not_found=False
+        )
+        if returned_type:
+            self.env["mail.activity"].sudo().search(
+                [
+                    ("res_model", "=", self._name),
+                    ("res_id", "in", returned.ids),
+                    ("activity_type_id", "=", returned_type.id),
+                ]
+            ).action_done()
+        return res

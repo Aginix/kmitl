@@ -9,6 +9,7 @@ import json
 import logging
 
 from odoo import api, fields, models
+from odoo.tools import html2plaintext
 
 _logger = logging.getLogger(__name__)
 
@@ -26,7 +27,6 @@ class SarabunDocument(models.Model):
     )
 
     @api.depends(
-        "attempt_seq",
         "routing_step_ids.order",
         "routing_step_ids.state",
         "routing_step_ids.disposition",
@@ -39,6 +39,7 @@ class SarabunDocument(models.Model):
         "routing_step_ids.acted_date",
         "routing_step_ids.activated_date",
         "routing_step_ids.note",
+        "routing_step_ids.sign_comment",
         "routing_step_ids.delegated_to_id",
         "routing_step_ids.preview_holder_ids",
         "routing_step_ids.actor_user_ids",
@@ -84,7 +85,9 @@ class SarabunDocument(models.Model):
             holders = step.preview_holder_ids
         else:
             holders = step.actor_user_ids.mapped("employee_id") or step.preview_holder_ids
-        note_full = (step.note or "").strip()
+        note_full = (
+            step.note or html2plaintext(step.sign_comment or "")
+        ).strip()
         note_short = None
         if note_full:
             note_short = (
@@ -134,45 +137,4 @@ class SarabunDocument(models.Model):
             {"order": order, "steps": stage_steps}
             for order, stage_steps in sorted(stages_by_order.items())
         ]
-        return {
-            "attempt_seq": self.attempt_seq,
-            "has_history": self.attempt_seq > 1,
-            "stages": stages,
-        }
-
-    def _build_archived_attempts_payload(self):
-        """Group archived steps by ``attempt_seq`` DESC so the modal lists the
-        most recent prior attempt first.  Uses ``archived_step_ids`` which is
-        already ``active_test=False`` scoped (see agx_sarabun.sarabun_document)."""
-        self.ensure_one()
-        by_attempt = {}
-        for step in self.archived_step_ids.sorted(
-            key=lambda s: (-s.attempt_seq, s.order, s.id)
-        ):
-            by_attempt.setdefault(step.attempt_seq, []).append(step)
-        result = []
-        for attempt_seq in sorted(by_attempt.keys(), reverse=True):
-            steps = self.env["sarabun.routing.step"].browse(
-                [s.id for s in by_attempt[attempt_seq]]
-            )
-            payload = self._build_routing_preview_payload(steps)
-            payload["attempt_seq"] = attempt_seq
-            payload["has_history"] = False  # no re-link inside the archive modal
-            result.append(payload)
-        return result
-
-    def action_open_routing_history(self):
-        """Open the archived-attempts modal (ir.actions.client) driven by the
-        SarabunRoutingTimeline widget's history link.  Data is pre-rendered here
-        so the client fires no extra RPCs when the dialog opens."""
-        self.ensure_one()
-        from odoo import _
-        return {
-            "type": "ir.actions.client",
-            "tag": "sarabun_routing_timeline_archive",
-            "name": _("ประวัติการเดินเรื่อง (%s)") % (self.subject or self.name or ""),
-            "params": {
-                "doc_id": self.id,
-                "attempts": self._build_archived_attempts_payload(),
-            },
-        }
+        return {"stages": stages}

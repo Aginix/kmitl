@@ -66,6 +66,20 @@ class TestSarabunRouteEdit(SarabunCommon):
             doc.with_user(user).check_access_rule("read")
 
     # ------------------------------------------------------------------ tests
+    def test_content_editor_who_is_route_editor_saves_route(self):
+        """A route editor holding the active แก้ไขเอกสารได้ step still saves Route
+        edits (the content-editor field whitelist widens for them)."""
+        self._verb("verify").can_edit_document = True
+        self.editor.groups_id |= self.env.ref("agx_sarabun.group_sarabun_user")
+        doc = self._make_doc(sender=self.user_a)
+        self._add_step(doc, order=10, verb="verify", user=self.editor)
+        self._add_step(doc, order=20, verb="sign_approve", user=self.user_a)
+        doc.action_send()
+        self.assertTrue(doc.with_user(self.editor).can_edit_content)
+        waiting = self._step(doc, 20)
+        self._edit(doc, [Command.update(waiting.id, {"employee_id": self.emp_c.id})])
+        self.assertEqual(waiting.employee_id, self.emp_c)
+
     def test_retarget_waiting_step(self):
         doc = self._circulating_doc()
         waiting = self._step(doc, 20)

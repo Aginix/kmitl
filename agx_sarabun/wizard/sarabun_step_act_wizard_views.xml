@@ -12,28 +12,45 @@
                 <field name="is_return" invisible="1" />
                 <field name="step_target_mode" invisible="1" />
                 <field name="step_show_signature" invisible="1" />
+                <field name="step_allow_sign_comment" invisible="1" />
                 <group>
                     <field name="target_name" string="Step" readonly="1" />
                     <field name="step_verb" options="{'no_open': True}" />
                     <field name="sign_date_display" />
-                    <field name="disposition" />
-                    <!-- A non-signing verb (show_signature ✗, e.g. ตรวจเอกสาร) writes no
-                         เกษียน on complete; a ตีกลับ / ปฏิเสธ still needs its reason. -->
+                    <!-- Locked by the header button that opened the wizard. -->
+                    <field name="disposition" invisible="1" />
+                    <!-- เหตุผลตีกลับ (plain text) — only for ตีกลับ. -->
                     <label
                         for="note"
-                        attrs="{'invisible': [('disposition', '=', 'complete'), ('step_show_signature', '=', False)]}"
+                        string="เหตุผล"
+                        attrs="{'invisible': [('disposition', '=', 'complete')]}"
                     />
                     <div
                         name="comment"
-                        attrs="{'invisible': [('disposition', '=', 'complete'), ('step_show_signature', '=', False)]}"
+                        attrs="{'invisible': [('disposition', '=', 'complete')]}"
                     >
                         <field
                             name="note"
-                            attrs="{'required': [('disposition', '=', 'reject')]}"
-                            placeholder="Comment..."
+                            attrs="{'required': [('disposition', '!=', 'complete')]}"
+                            placeholder="เหตุผล..."
                             nolabel="1"
                         />
                     </div>
+                </group>
+                <!-- ความเห็นในการลงนาม + files (verb.allow_sign_comment), both optional. -->
+                <group
+                    name="sign_comment"
+                    string="ความเห็นในการลงนาม"
+                    attrs="{'invisible': ['|', ('disposition', '!=', 'complete'), ('step_allow_sign_comment', '=', False)]}"
+                >
+                    <div name="sign_comment_box" colspan="2">
+                        <field
+                            name="sign_comment"
+                            nolabel="1"
+                            placeholder="ความเห็น (ถ้ามี)..."
+                        />
+                    </div>
+                    <field name="sign_attachment_ids" widget="many2many_binary" />
                 </group>
                 <group attrs="{'invisible': [('is_sign', '=', False)]}">
                     <field
@@ -88,7 +105,7 @@
                     <button
                         name="action_confirm"
                         type="object"
-                        string="Confirm"
+                        string="ยืนยัน"
                         class="btn-primary"
                     />
                     <button string="Cancel" class="btn-secondary" special="cancel" />

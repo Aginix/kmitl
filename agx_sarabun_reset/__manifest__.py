@@ -2,7 +2,7 @@
 {
     "name": "e-Sarabun: Admin Reset",
     "summary": "Admin-only reset of a หนังสือ back to draft, keeping its number and Route (ADR-0011)",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.0.1",
     "category": "KMITL/Correspondence",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
