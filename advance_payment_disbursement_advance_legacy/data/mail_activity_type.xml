@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Acknowledgement: the loan officer only takes note ("Mark as Read"). -->
+    <record id="mail_activity_type_legacy_advance_consumed" model="mail.activity.type">
+        <field name="name">รับทราบการตัดงบเงินยืม (ระบบเก่า)</field>
+        <field name="res_model">disbursement.request</field>
+        <field name="category">default</field>
+        <field name="icon">fa-info-circle</field>
+        <field name="todo_category">acknowledgement</field>
+    </record>
+</odoo>

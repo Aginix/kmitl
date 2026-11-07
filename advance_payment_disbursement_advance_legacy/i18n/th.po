@@ -1,0 +1,53 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* advance_payment_disbursement_advance_legacy
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-07 17:14+0000\n"
+"PO-Revision-Date: 2026-11-07 17:14+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: advance_payment_disbursement_advance_legacy
+#. odoo-python
+#: code:addons/advance_payment_disbursement_advance_legacy/models/disbursement_request.py:0
+#: code:addons/advance_payment_disbursement_advance_legacy/models/disbursement_request.py:0
+#, python-format
+msgid ""
+"%(request)s: borrower %(borrower)s, contract %(contract)s, budget consumed "
+"%(amount)s."
+msgstr ""
+"%(request)s: ผู้ยืม %(borrower)s สัญญา %(contract)s ตัดงบประมาณ %(amount)s"
+
+#. module: advance_payment_disbursement_advance_legacy
+#. odoo-python
+#: code:addons/advance_payment_disbursement_advance_legacy/models/disbursement_request.py:0
+#: code:addons/advance_payment_disbursement_advance_legacy/models/disbursement_request.py:0
+#, python-format
+msgid "Budget consumption reversed: the loan officer's notice was withdrawn."
+msgstr "ยกเลิกการตัดงบประมาณแล้ว: ถอนการแจ้งเจ้าหน้าที่งานเงินยืม"
+
+#. module: advance_payment_disbursement_advance_legacy
+#: model:ir.model,name:advance_payment_disbursement_advance_legacy.model_disbursement_request
+msgid "Disbursement Request"
+msgstr "ใบขอเบิก"
+
+#. module: advance_payment_disbursement_advance_legacy
+#. odoo-python
+#: code:addons/advance_payment_disbursement_advance_legacy/models/disbursement_request.py:0
+#: code:addons/advance_payment_disbursement_advance_legacy/models/disbursement_request.py:0
+#, python-format
+msgid "Legacy advance %s consumed"
+msgstr "ตัดงบเงินยืม (ระบบเก่า) สัญญา %s แล้ว"
+
+#. module: advance_payment_disbursement_advance_legacy
+#: model:mail.activity.type,name:advance_payment_disbursement_advance_legacy.mail_activity_type_legacy_advance_consumed
+msgid "รับทราบการตัดงบเงินยืม (ระบบเก่า)"
+msgstr ""
